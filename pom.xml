@@ -2,9 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>uk.ac.vfb</groupId>
-	<artifactId>geppetto</artifactId>
-	<name>VFB Geppetto DataSources</name>
+	<groupId>uk.ac</groupId>
+	<artifactId>vfb.geppetto</artifactId>
+	<name>VFB Geppetto Data Sources</name>
 	<version>0.2.8.1</version>
 	<packaging>bundle</packaging>
 	<properties>
@@ -12,7 +12,6 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<dependencies>
-
 		<dependency>
 			<groupId>org.geppetto</groupId>
 			<artifactId>core</artifactId>
@@ -100,7 +99,7 @@
 				<version>2.15</version>
 				<configuration>
 					<junitArtifactName>org.junit:com.springsource.org.junit</junitArtifactName>
-				</configuration>	
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.felix</groupId>

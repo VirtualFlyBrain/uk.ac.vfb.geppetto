@@ -12,7 +12,7 @@
 	</appender>
 
 	<!-- Application loggers -->
-	<logger name="org.geppetto.model">
+	<logger name="uk.ac.vfb.geppetto">
 		<level value="debug" />
 	</logger>
 

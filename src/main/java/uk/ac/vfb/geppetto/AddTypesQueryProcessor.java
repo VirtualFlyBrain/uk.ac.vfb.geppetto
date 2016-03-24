@@ -53,7 +53,7 @@ import org.geppetto.model.variables.Variable;
  * @author matteocantarelli
  *
  */
-public class AddTypeQueryProcessor implements IQueryProcessor
+public class AddTypesQueryProcessor implements IQueryProcessor
 {
 
 	/*
