@@ -79,7 +79,7 @@ public class AddImportTypesQueryProcessor implements IQueryProcessor
 			metaDataVar.setId("metaDataVar");
 			CompositeType metaData = TypesFactory.eINSTANCE.createCompositeType();
 			metaDataVar.getTypes().add(metaData);
-			type.setId("metadata");
+			metaData.setId("metadata");
 
 			Type textType = geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE);
 			Type htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
@@ -158,7 +158,7 @@ public class AddImportTypesQueryProcessor implements IQueryProcessor
 			}
 			
 			type.getVariables().add(metaDataVar);
-			geppettoModelAccess.addTypeToLibrary(metaData, ((GeppettoModel) variable.eContainer()).getLibraries().get(0));
+			geppettoModelAccess.addTypeToLibrary(metaData, dataSource.getDependenciesLibrary().get(0));
 		}
 		catch(GeppettoVisitingException e)
 		{
