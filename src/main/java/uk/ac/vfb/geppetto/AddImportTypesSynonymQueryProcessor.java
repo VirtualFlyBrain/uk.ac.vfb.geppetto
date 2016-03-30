@@ -45,6 +45,7 @@ import org.geppetto.model.DataSource;
 import org.geppetto.model.ProcessQuery;
 import org.geppetto.model.QueryResults;
 import org.geppetto.model.types.CompositeType;
+import org.geppetto.model.types.HTMLType;
 import org.geppetto.model.types.Type;
 import org.geppetto.model.types.TypesFactory;
 import org.geppetto.model.types.TypesPackage;
@@ -121,7 +122,7 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 				Variable synonyms = VariablesFactory.eINSTANCE.createVariable();
 				synonyms.setId("synonyms");
 				synonyms.setName("Alternative names");
-				synonyms.getTypes().add(metaData);
+				synonyms.getTypes().add(geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE));
 				metaData.getVariables().add(synonyms);
 				HTML synonymsValue = ValuesFactory.eINSTANCE.createHTML();
 
