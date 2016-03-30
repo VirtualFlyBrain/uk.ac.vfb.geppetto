@@ -32,9 +32,6 @@
  *******************************************************************************/
 package uk.ac.vfb.geppetto;
 
-import java.util.List;
-import java.util.Map;
-
 import org.geppetto.core.datasources.GeppettoDataSourceException;
 import org.geppetto.core.datasources.IQueryProcessor;
 import org.geppetto.core.features.IFeature;
@@ -42,18 +39,12 @@ import org.geppetto.core.model.GeppettoModelAccess;
 import org.geppetto.core.services.GeppettoFeature;
 import org.geppetto.core.services.registry.ServicesRegistry;
 import org.geppetto.model.DataSource;
-import org.geppetto.model.GeppettoModel;
 import org.geppetto.model.ProcessQuery;
 import org.geppetto.model.QueryResults;
 import org.geppetto.model.types.CompositeType;
-import org.geppetto.model.types.Type;
-import org.geppetto.model.types.TypesFactory;
 import org.geppetto.model.types.TypesPackage;
 import org.geppetto.model.util.GeppettoVisitingException;
 import org.geppetto.model.util.ModelUtility;
-import org.geppetto.model.values.HTML;
-import org.geppetto.model.values.Text;
-import org.geppetto.model.values.ValuesFactory;
 import org.geppetto.model.variables.Variable;
 import org.geppetto.model.variables.VariablesFactory;
 
@@ -73,8 +64,8 @@ public class AddImportTypesQueryProcessor implements IQueryProcessor
 	public QueryResults process(ProcessQuery query, DataSource dataSource, Variable variable, QueryResults results, GeppettoModelAccess geppettoModelAccess) throws GeppettoDataSourceException
 	{
 
-//		try
-//		{
+		try
+		{
 			System.out.println(results);
 			//Matteo START
 
@@ -83,6 +74,7 @@ public class AddImportTypesQueryProcessor implements IQueryProcessor
 			//append to metadataType
 			Variable newVar = VariablesFactory.eINSTANCE.createVariable();
 			newVar.setId("testAddVar");
+			newVar.getTypes().add(geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE));
 			geppettoModelAccess.addVariableToType(newVar,metadataType);
 			
 			//Matteo END
@@ -201,11 +193,11 @@ public class AddImportTypesQueryProcessor implements IQueryProcessor
 //			
 //			type.getVariables().add(metaDataVar);
 //			geppettoModelAccess.addTypeToLibrary(metaData, dataSource.getTargetLibrary());
-//		}
-//		catch(GeppettoVisitingException e)
-//		{
-//			throw new GeppettoDataSourceException(e);
-//		}
+		}
+		catch(GeppettoVisitingException e)
+		{
+			throw new GeppettoDataSourceException(e);
+		}
 
 		return results;
 	}
