@@ -45,7 +45,6 @@ import org.geppetto.model.DataSource;
 import org.geppetto.model.ProcessQuery;
 import org.geppetto.model.QueryResults;
 import org.geppetto.model.types.CompositeType;
-import org.geppetto.model.types.HTMLType;
 import org.geppetto.model.types.Type;
 import org.geppetto.model.types.TypesFactory;
 import org.geppetto.model.types.TypesPackage;
@@ -122,7 +121,7 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 				Variable synonyms = VariablesFactory.eINSTANCE.createVariable();
 				synonyms.setId("synonyms");
 				synonyms.setName("Alternative names");
-				synonyms.getTypes().add(geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE));
+				synonyms.getTypes().add(htmlType);
 				metaData.getVariables().add(synonyms);
 				HTML synonymsValue = ValuesFactory.eINSTANCE.createHTML();
 
@@ -168,8 +167,6 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 					}
 				}
 				synonymsValue.setHtml(synonymLinks);
-
-				htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
 				synonyms.getInitialValues().put(htmlType, synonymsValue);
 			}
 
@@ -179,12 +176,10 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 				Variable description = VariablesFactory.eINSTANCE.createVariable();
 				description.setId("description");
 				description.setName("Description");
-				description.getTypes().add(metaData);
+				description.getTypes().add(textType);
 				metaData.getVariables().add(description);
 				Text descriptionValue = ValuesFactory.eINSTANCE.createText();
 				descriptionValue.setText((String) ((List<String>) results.getValue("description", 0)).get(0));
-
-				textType = geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE);
 				description.getInitialValues().put(textType, descriptionValue);
 			}
 
@@ -194,12 +189,10 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 				Variable comment = VariablesFactory.eINSTANCE.createVariable();
 				comment.setId("comment");
 				comment.setName("Notes");
-				comment.getTypes().add(metaData);
+				comment.getTypes().add(textType);
 				metaData.getVariables().add(comment);
 				Text commentValue = ValuesFactory.eINSTANCE.createText();
 				commentValue.setText((String) ((List<String>) results.getValue("comment", 0)).get(0));
-
-				textType = geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE);
 				comment.getInitialValues().put(textType, commentValue);
 			}
 
