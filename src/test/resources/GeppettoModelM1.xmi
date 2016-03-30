@@ -100,7 +100,10 @@
           xsi:type="gep:ProcessQuery"
           label="This processing step will populate a Variable with the synonyms and references resulting from the previous query"
           description="This processing step will populate a Variable with the synonyms and references resulting from the previous query"
-          queryProcessorId="vfbImportTypesSynonymQueryProcessor"/>
+          queryProcessorId="vfbImportTypesSynonymQueryProcessor">
+        <matchingCriteria
+            type="//@libraries.3/@types.6"/>
+      </queryChain>
       <queryChain
           xsi:type="gep:SimpleQuery"
           label="Fetch 6 example individuals for classes"
@@ -114,7 +117,10 @@
           xsi:type="gep:ProcessQuery"
           label="This processing step will populate the Variable with the different import type"
           description=""
-          queryProcessorId="vfbImportTypesQueryProcessor"/>
+          queryProcessorId="vfbImportTypesQueryProcessor">
+        <matchingCriteria
+            type="//@libraries.3/@types.1 //@libraries.3/@types.6"/>
+      </queryChain>
     </fetchVariableQuery>
   </dataSources>
 </gep:GeppettoModel>

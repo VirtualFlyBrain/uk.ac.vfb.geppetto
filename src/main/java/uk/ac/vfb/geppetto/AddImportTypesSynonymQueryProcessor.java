@@ -49,6 +49,7 @@ import org.geppetto.model.types.Type;
 import org.geppetto.model.types.TypesFactory;
 import org.geppetto.model.types.TypesPackage;
 import org.geppetto.model.util.GeppettoVisitingException;
+import org.geppetto.model.util.ModelUtility;
 import org.geppetto.model.values.HTML;
 import org.geppetto.model.values.Text;
 import org.geppetto.model.values.ValuesFactory;
@@ -76,53 +77,21 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 		try
 		{
 
-			CompositeType type = (CompositeType) variable.getAnonymousTypes().get(0);
+			// retrieving the metadatatype
+			CompositeType metadataType = (CompositeType) ModelUtility.getTypeFromLibrary(variable.getId() + "_metadata", dataSource.getTargetLibrary());
 
-			Variable metaDataVar = VariablesFactory.eINSTANCE.createVariable();
-			metaDataVar.setId("metaDataVar");
-			CompositeType metaData = TypesFactory.eINSTANCE.createCompositeType();
-			metaDataVar.getTypes().add(metaData);
-			metaDataVar.setId(variable.getId() + "_metaDataVar");
-			metaData.setId(variable.getId() + "_metadata");
-
-			Type textType = geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE);
 			Type htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
-			String descriptionRef = "";
-
-			// set meta id:
-			Variable metaID = VariablesFactory.eINSTANCE.createVariable();
-			metaID.setId("id");
-			metaID.setName("ID");
-			metaID.getTypes().add(htmlType);
-			metaData.getVariables().add(metaID);
-			HTML metaIdValue = ValuesFactory.eINSTANCE.createHTML();
-			String idLink = "<a href=\"#\" instancepath=\"" + (String) results.getValue("id", 0) + "\">" + (String) results.getValue("id", 0) + "</a>";
-			metaIdValue.setHtml(idLink);
-
-			htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
-			metaID.getInitialValues().put(htmlType, metaIdValue);
-
-			// set meta label/name:
-			Variable label = VariablesFactory.eINSTANCE.createVariable();
-			label.setId("label");
-			label.setName("Name");
-			label.getTypes().add(htmlType);
-			metaData.getVariables().add(label);
-			HTML labelValue = ValuesFactory.eINSTANCE.createHTML();
-			String labelLink = "<a href=\"#\" instancepath=\"" + (String) results.getValue("id", 0) + "\">" + (String) results.getValue("name", 0) + "</a>";
-			labelValue.setHtml(labelLink);
-
-			htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
-			label.getInitialValues().put(htmlType, labelValue);
-
+			
+			System.out.println(results.getValue("relationship", 0));
+			
 			// set synonyms:
-			if(results.getValue("synonyms", 0) != null)
+			if(results.getValue("relationship", 0) != null)
 			{
 				Variable synonyms = VariablesFactory.eINSTANCE.createVariable();
 				synonyms.setId("synonyms");
 				synonyms.setName("Alternative names");
 				synonyms.getTypes().add(htmlType);
-				metaData.getVariables().add(synonyms);
+				geppettoModelAccess.addVariableToType(synonyms,metadataType);
 				HTML synonymsValue = ValuesFactory.eINSTANCE.createHTML();
 
 				String synonymLinks = "";
@@ -166,38 +135,13 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 						i++;
 					}
 				}
+				System.out.println(synonymLinks);
 				synonymsValue.setHtml(synonymLinks);
 				synonyms.getInitialValues().put(htmlType, synonymsValue);
 			}
+			
 
-			// set description:
-			if(results.getValue("description", 0) != null)
-			{
-				Variable description = VariablesFactory.eINSTANCE.createVariable();
-				description.setId("description");
-				description.setName("Description");
-				description.getTypes().add(textType);
-				metaData.getVariables().add(description);
-				Text descriptionValue = ValuesFactory.eINSTANCE.createText();
-				descriptionValue.setText((String) ((List<String>) results.getValue("description", 0)).get(0));
-				description.getInitialValues().put(textType, descriptionValue);
-			}
-
-			// set comment:
-			if(results.getValue("comment", 0) != null)
-			{
-				Variable comment = VariablesFactory.eINSTANCE.createVariable();
-				comment.setId("comment");
-				comment.setName("Notes");
-				comment.getTypes().add(textType);
-				metaData.getVariables().add(comment);
-				Text commentValue = ValuesFactory.eINSTANCE.createText();
-				commentValue.setText((String) ((List<String>) results.getValue("comment", 0)).get(0));
-				comment.getInitialValues().put(textType, commentValue);
-			}
-
-			type.getVariables().add(metaDataVar);
-			geppettoModelAccess.addTypeToLibrary(metaData, dataSource.getTargetLibrary());
+			
 		}
 		catch(GeppettoVisitingException e)
 		{
