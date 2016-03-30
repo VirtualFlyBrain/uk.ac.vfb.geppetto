@@ -82,6 +82,7 @@ public class AddTypesQueryProcessor implements IQueryProcessor
 				type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
 			}
 		}
+		
 		return results;
 	}
 

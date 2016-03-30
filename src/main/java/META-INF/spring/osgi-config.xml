@@ -11,6 +11,13 @@
        						http://www.springframework.org/schema/aop/spring-aop-3.1.xsd">
 
 
+	<osgi:service id="VFBAddImportTypesQueryProcessorExporter" ref="vfbAddImportTypesSynonymQueryProcessor"
+		interface="org.geppetto.core.datasources.IQueryProcessor">
+	</osgi:service>
+	<bean id="vfbAddImportTypesSynonymQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.vfbAddImportTypesSynonymQueryProcessor">
+	<aop:scoped-proxy proxy-target-class="false"/>
+	</bean>
+	
 	<osgi:service id="VFBAddImportTypesQueryProcessorExporter" ref="vfbAddImportTypesQueryProcessor"
 		interface="org.geppetto.core.datasources.IQueryProcessor">
 	</osgi:service>
