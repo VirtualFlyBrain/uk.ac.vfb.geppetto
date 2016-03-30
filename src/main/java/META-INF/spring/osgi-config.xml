@@ -14,7 +14,7 @@
 	<osgi:service id="VFBAddImportTypesQueryProcessorExporter" ref="vfbAddImportTypesSynonymQueryProcessor"
 		interface="org.geppetto.core.datasources.IQueryProcessor">
 	</osgi:service>
-	<bean id="vfbAddImportTypesSynonymQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.vfbAddImportTypesSynonymQueryProcessor">
+	<bean id="vfbAddImportTypesSynonymQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.AddImportTypesSynonymQueryProcessor">
 	<aop:scoped-proxy proxy-target-class="false"/>
 	</bean>
 	
