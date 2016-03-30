@@ -93,7 +93,7 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 			Variable metaID = VariablesFactory.eINSTANCE.createVariable();
 			metaID.setId("id");
 			metaID.setName("ID");
-			metaID.getTypes().add(metaData);
+			metaID.getTypes().add(htmlType);
 			metaData.getVariables().add(metaID);
 			HTML metaIdValue = ValuesFactory.eINSTANCE.createHTML();
 			String idLink = "<a href=\"#\" instancepath=\"" + (String) results.getValue("id", 0) + "\">" + (String) results.getValue("id", 0) + "</a>";
@@ -106,7 +106,7 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 			Variable label = VariablesFactory.eINSTANCE.createVariable();
 			label.setId("label");
 			label.setName("Name");
-			label.getTypes().add(metaData);
+			label.getTypes().add(htmlType);
 			metaData.getVariables().add(label);
 			HTML labelValue = ValuesFactory.eINSTANCE.createHTML();
 			String labelLink = "<a href=\"#\" instancepath=\"" + (String) results.getValue("id", 0) + "\">" + (String) results.getValue("name", 0) + "</a>";
