@@ -87,6 +87,9 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 			// set synonyms:
 			if(results.getValue("relationship", 0) != null)
 			{
+				System.out.println(results.getResults());
+				int listCount = results.getResults().size();
+				System.out.println(Integer.toString(listCount));
 				Variable synonyms = VariablesFactory.eINSTANCE.createVariable();
 				synonyms.setId("synonyms");
 				synonyms.setName("Alternative names");
@@ -95,34 +98,38 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 				HTML synonymsValue = ValuesFactory.eINSTANCE.createHTML();
 
 				String synonymLinks = "";
-				System.out.println(results.getValue("relationship", 0));
 				if(results.getValue("relationship", 0) != null)
 				{
 					int i = 0;
 					while(results.getValue("relationship", i) != null)
 					{
-						System.out.println(results.getValue("relationship", i));
+						System.out.println("Check " + Integer.toString(i)  + " - " + results.getValue("relationship", i));
 						if((String) ((Map) results.getValue("relationship", i)).get("synonym") != null)
 						{
-							System.out.println((String) ((Map) results.getValue("relationship", i)).get("synonym"));
+							System.out.println("syn " + Integer.toString(i)  + " - " + (String) ((Map) results.getValue("relationship", i)).get("synonym"));
 							synonymLinks += "<a href=\"#\" instancepath=\"" + (String) results.getValue("id", 0) + "\">" + (String) ((Map) results.getValue("relationship", i)).get("synonym") + "</a>";
 							if(((Map) results.getValue("relationship", i)).get("scope") != null)
 							{
 								synonymLinks += " [synonym scope: \'" + (String) ((Map) results.getValue("relationship", i)).get("scope") + "\']";
 							}
-							if(results.getValue("relRef", i) != null)
+							System.out.println(synonymLinks);
+							System.out.println(results.getValue("relRef", i)); // TODO Failing here
+							if(results.getValue("relRef", i) != null) 
 							{
 								synonymLinks += " (" + (String) results.getValue("relRef", i);
+								System.out.println(synonymLinks);
 								if(results.getValue("relFBrf", i) != null)
 								{
 									synonymLinks += "; <a href=\"flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >FlyBase: "
 											+ (String) results.getValue("relFBrf", i) + "</a>";
 								}
+								System.out.println(synonymLinks);
 								if(results.getValue("relPMID", i) != null)
 								{
 									synonymLinks += "; <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + (String) results.getValue("relPMID", i) + "\" target=\"_blank\" >PMID: "
 											+ (String) results.getValue("relPMID", i) + "</a>";
 								}
+								System.out.println(synonymLinks);
 								if(results.getValue("relDOI", i) != null)
 								{
 									synonymLinks += "; <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >doi: "
@@ -145,7 +152,12 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 		}
 		catch(GeppettoVisitingException e)
 		{
+			System.out.println(e);
 			throw new GeppettoDataSourceException(e);
+		}
+		catch(Exception e)
+		{
+			System.out.println(e);
 		}
 
 		return results;
