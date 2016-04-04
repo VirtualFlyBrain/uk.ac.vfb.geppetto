@@ -42,6 +42,7 @@ import org.geppetto.model.DataSource;
 import org.geppetto.model.ProcessQuery;
 import org.geppetto.model.QueryResults;
 import org.geppetto.model.types.CompositeType;
+import org.geppetto.model.types.Type;
 import org.geppetto.model.types.TypesPackage;
 import org.geppetto.model.util.GeppettoVisitingException;
 import org.geppetto.model.util.ModelUtility;
@@ -71,11 +72,14 @@ public class AddImportTypesQueryProcessor implements IQueryProcessor
 
 			// retrieving the metadatatype
 			CompositeType metadataType = (CompositeType) ModelUtility.getTypeFromLibrary(variable.getId() + "_metadata", dataSource.getTargetLibrary());
+			
+			Type htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
+			
 			//append to metadataType
-			Variable newVar = VariablesFactory.eINSTANCE.createVariable();
-			newVar.setId("testAddVar");
-			newVar.getTypes().add(geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE));
-			geppettoModelAccess.addVariableToType(newVar,metadataType);
+//			Variable newVar = VariablesFactory.eINSTANCE.createVariable();
+//			newVar.setId("testAddVar");
+//			newVar.getTypes().add(geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE));
+//			geppettoModelAccess.addVariableToType(newVar,metadataType);
 			
 			//Matteo END
 //			
