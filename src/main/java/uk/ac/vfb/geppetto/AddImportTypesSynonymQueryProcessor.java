@@ -111,8 +111,6 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 			HTML labelValue = ValuesFactory.eINSTANCE.createHTML();
 			String labelLink = "<a href=\"#\" instancepath=\"" + (String) results.getValue("id", 0) + "\">" + (String) results.getValue("name", 0) + "</a>";
 			labelValue.setHtml(labelLink);
-
-			htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
 			label.getInitialValues().put(htmlType, labelValue);
 
 			// set synonyms:
