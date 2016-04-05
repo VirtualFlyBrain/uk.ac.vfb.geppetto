@@ -83,138 +83,143 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 			// running through returned items - references.
 			if(results.getValue("relationship", 0) != null)
 			{
-				// set synonyms with refs:
-				Variable synonyms = VariablesFactory.eINSTANCE.createVariable();
-				synonyms.setId("synonyms");
-				synonyms.setName("Alternative names");
-				synonyms.getTypes().add(htmlType);
-				geppettoModelAccess.addVariableToType(synonyms,metadataType);
-				HTML synonymsValue = ValuesFactory.eINSTANCE.createHTML();
-
-				// set Definition refs:
-				Variable defReferences = VariablesFactory.eINSTANCE.createVariable();
-				defReferences.setId("references");
-				defReferences.setName("Definition References");
-				defReferences.getTypes().add(htmlType);
-				geppettoModelAccess.addVariableToType(defReferences,metadataType);
-				HTML defReferencesValue = ValuesFactory.eINSTANCE.createHTML();
-				
-				// set Relationships and refs:
-				Variable relationships = VariablesFactory.eINSTANCE.createVariable();
-				relationships.setId("relationships");
-				relationships.setName("Relationships");
-				relationships.getTypes().add(htmlType);
-				geppettoModelAccess.addVariableToType(relationships,metadataType);
-				HTML relationshipsValue = ValuesFactory.eINSTANCE.createHTML();
 				
 				String synonymLinks = "";
 				String defRefs = "";
 				String relat = "";
-				if(results.getValue("relationship", 0) != null)
-				{
-					int i = 0;
-					while(results.getValue("relationship", i) != null)
-					{	// synonyms and refs:
-						if((String) ((Map) results.getValue("relationship", i)).get("synonym") != null)
+				
+				int i = 0;
+				while(results.getValue("relationship", i) != null)
+				{	// synonyms and refs:
+					if((String) ((Map) results.getValue("relationship", i)).get("synonym") != null)
+					{
+						synonymLinks += "<a href=\"#\" instancepath=\"" + (String) results.getValue("id", 0) + "\">" + (String) ((Map) results.getValue("relationship", i)).get("synonym") + "</a>";
+						if(((Map) results.getValue("relationship", i)).get("scope") != null)
 						{
-							synonymLinks += "<a href=\"#\" instancepath=\"" + (String) results.getValue("id", 0) + "\">" + (String) ((Map) results.getValue("relationship", i)).get("synonym") + "</a>";
-							if(((Map) results.getValue("relationship", i)).get("scope") != null)
+							synonymLinks += " [synonym scope: \'" + (String) ((Map) results.getValue("relationship", i)).get("scope") + "\']";
+						}
+						if(results.getValue("relRef", i) != null) 
+						{
+							synonymLinks += " (" + (String) results.getValue("relRef", i);
+							if(results.getValue("relFBrf", i) != null)
 							{
-								synonymLinks += " [synonym scope: \'" + (String) ((Map) results.getValue("relationship", i)).get("scope") + "\']";
+								synonymLinks += "; <a href=\"flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >FlyBase: "
+										+ (String) results.getValue("relFBrf", i) + "</a>";
 							}
+							if(results.getValue("relPMID", i) != null)
+							{
+								synonymLinks += "; <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + (String) results.getValue("relPMID", i) + "\" target=\"_blank\" >PMID: "
+										+ (String) results.getValue("relPMID", i) + "</a>";
+							}
+							if(results.getValue("relDOI", i) != null)
+							{
+								synonymLinks += "; <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >doi: "
+										+ (String) results.getValue("relPMID", i) + "</a>";
+							}
+							synonymLinks += ")";
+						}
+						synonymLinks += "<br/>";
+					}
+					else{
+						// definition refs:
+						if((String) ((Map) results.getValue("relationship", i)).get("typ") == "def"){
 							if(results.getValue("relRef", i) != null) 
 							{
-								synonymLinks += " (" + (String) results.getValue("relRef", i);
+								defRefs += "" + (String) results.getValue("relRef", i);
 								if(results.getValue("relFBrf", i) != null)
 								{
-									synonymLinks += "; <a href=\"flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >FlyBase: "
+									defRefs += "; <a href=\"flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >FlyBase: "
 											+ (String) results.getValue("relFBrf", i) + "</a>";
 								}
 								if(results.getValue("relPMID", i) != null)
 								{
-									synonymLinks += "; <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + (String) results.getValue("relPMID", i) + "\" target=\"_blank\" >PMID: "
+									defRefs += "; <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + (String) results.getValue("relPMID", i) + "\" target=\"_blank\" >PMID: "
 											+ (String) results.getValue("relPMID", i) + "</a>";
 								}
 								if(results.getValue("relDOI", i) != null)
 								{
-									synonymLinks += "; <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >doi: "
+									defRefs += "; <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >doi: "
 											+ (String) results.getValue("relPMID", i) + "</a>";
 								}
-								synonymLinks += ")";
+								defRefs += "<br/>";
 							}
-							synonymLinks += "<br/>";
-						}
-						else{
-							// definition refs:
-							if((String) ((Map) results.getValue("relationship", i)).get("typ") == "def"){
+						}else{
+							// relationships and refs:
+							if ((String) ((Map) results.getValue("relationship", i)).get("__type__") == "Related"){
+								if (((Map) results.getValue("relationship", i)).get("label") != null){
+									relat += (String) ((Map) results.getValue("relationship", i)).get("label") + " ";
+								}
+								if(results.getValue("relName", i) != null) 
+								{
+									if(results.getValue("relId", i) != null)
+									{
+										relat += "<a href=\"#\" instancepath=\"" + (String) results.getValue("relId", i) + "\">" + (String) results.getValue("relName", i) + "</a> ";
+									}else{
+										relat +=(String) results.getValue("relName", i) + " ";
+									}
+								}
 								if(results.getValue("relRef", i) != null) 
 								{
-									defRefs += "" + (String) results.getValue("relRef", i);
+									relat += "(" + (String) results.getValue("relRef", i);
 									if(results.getValue("relFBrf", i) != null)
 									{
-										defRefs += "; <a href=\"flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >FlyBase: "
+										relat += "; <a href=\"flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >FlyBase: "
 												+ (String) results.getValue("relFBrf", i) + "</a>";
 									}
 									if(results.getValue("relPMID", i) != null)
 									{
-										defRefs += "; <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + (String) results.getValue("relPMID", i) + "\" target=\"_blank\" >PMID: "
+										relat += "; <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + (String) results.getValue("relPMID", i) + "\" target=\"_blank\" >PMID: "
 												+ (String) results.getValue("relPMID", i) + "</a>";
 									}
 									if(results.getValue("relDOI", i) != null)
 									{
-										defRefs += "; <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >doi: "
+										relat += "; <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >doi: "
 												+ (String) results.getValue("relPMID", i) + "</a>";
 									}
-									defRefs += "<br/>";
+									relat += ")";
 								}
-							}else{
-								// relationships and refs:
-								if ((String) ((Map) results.getValue("relationship", i)).get("__type__") == "Related"){
-									if (((Map) results.getValue("relationship", i)).get("label") != null){
-										relat += (String) ((Map) results.getValue("relationship", i)).get("label") + " ";
-									}
-									if(results.getValue("relName", i) != null) 
-									{
-										if(results.getValue("relId", i) != null)
-										{
-											relat += "<a href=\"#\" instancepath=\"" + (String) results.getValue("relId", i) + "\">" + (String) results.getValue("relName", i) + "</a> ";
-										}else{
-											relat +=(String) results.getValue("relName", i) + " ";
-										}
-									}
-									if(results.getValue("relRef", i) != null) 
-									{
-										relat += "(" + (String) results.getValue("relRef", i);
-										if(results.getValue("relFBrf", i) != null)
-										{
-											relat += "; <a href=\"flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >FlyBase: "
-													+ (String) results.getValue("relFBrf", i) + "</a>";
-										}
-										if(results.getValue("relPMID", i) != null)
-										{
-											relat += "; <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + (String) results.getValue("relPMID", i) + "\" target=\"_blank\" >PMID: "
-													+ (String) results.getValue("relPMID", i) + "</a>";
-										}
-										if(results.getValue("relDOI", i) != null)
-										{
-											relat += "; <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >doi: "
-													+ (String) results.getValue("relPMID", i) + "</a>";
-										}
-										relat += ")";
-									}
-									relat += "<br/>";
-								}
+								relat += "<br/>";
 							}
 						}
-						i++;
 					}
+					i++;
 				}
-				synonymsValue.setHtml(synonymLinks);
-				synonyms.getInitialValues().put(htmlType, synonymsValue);
-				defReferencesValue.setHtml(defRefs);
-				defReferences.getInitialValues().put(htmlType, defReferencesValue);
-				relationshipsValue.setHtml(relat);
-				relationships.getInitialValues().put(htmlType, relationshipsValue);
+			
+				// set Synonyms with any related references:
+				if (synonymLinks != ""){
+					Variable synonyms = VariablesFactory.eINSTANCE.createVariable();
+					synonyms.setId("synonyms");
+					synonyms.setName("Alternative names");
+					synonyms.getTypes().add(htmlType);
+					geppettoModelAccess.addVariableToType(synonyms,metadataType);
+					HTML synonymsValue = ValuesFactory.eINSTANCE.createHTML();
+					synonymsValue.setHtml(synonymLinks);
+					synonyms.getInitialValues().put(htmlType, synonymsValue);
+				}
+
+				// set Definition references:
+				if (defRefs != ""){
+					Variable defReferences = VariablesFactory.eINSTANCE.createVariable();
+					defReferences.setId("references");
+					defReferences.setName("Definition References");
+					defReferences.getTypes().add(htmlType);
+					geppettoModelAccess.addVariableToType(defReferences,metadataType);
+					HTML defReferencesValue = ValuesFactory.eINSTANCE.createHTML();
+					defReferencesValue.setHtml(defRefs);
+					defReferences.getInitialValues().put(htmlType, defReferencesValue);	
+				}
+				
+				// set Relationships with any related references:
+				if (relat != ""){
+					Variable relationships = VariablesFactory.eINSTANCE.createVariable();
+					relationships.setId("relationships");
+					relationships.setName("Relationships");
+					relationships.getTypes().add(htmlType);
+					geppettoModelAccess.addVariableToType(relationships,metadataType);
+					HTML relationshipsValue = ValuesFactory.eINSTANCE.createHTML();
+					relationshipsValue.setHtml(relat);
+					relationships.getInitialValues().put(htmlType, relationshipsValue);
+				}
 			}
 			
 
