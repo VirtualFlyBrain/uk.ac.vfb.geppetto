@@ -93,7 +93,7 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 				{	// synonyms and refs:
 					if((String) ((Map) results.getValue("relationship", i)).get("synonym") != null)
 					{
-						synonymLinks += "<a href=\"#\" instancepath=\"" + (String) results.getValue("id", 0) + "\">" + (String) ((Map) results.getValue("relationship", i)).get("synonym") + "</a>";
+						synonymLinks += "<a href=\"#\" instancepath=\"" + variable.getId() + "\">" + (String) ((Map) results.getValue("relationship", i)).get("synonym") + "</a>";
 						if(((Map) results.getValue("relationship", i)).get("scope") != null)
 						{
 							synonymLinks += " [synonym scope: \'" + (String) ((Map) results.getValue("relationship", i)).get("scope") + "\']";
@@ -174,7 +174,7 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 									if(results.getValue("relDOI", i) != null)
 									{
 										relat += "; <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >doi: "
-												+ (String) results.getValue("relPMID", i) + "</a>";
+												+ (String) results.getValue("relDOI", i) + "</a>";
 									}
 									relat += ")";
 								}
