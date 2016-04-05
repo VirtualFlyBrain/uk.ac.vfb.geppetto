@@ -32,10 +32,8 @@
  *******************************************************************************/
 package uk.ac.vfb.geppetto;
 
-import java.io.IOException;
 import java.util.List;
 
-import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.datasources.GeppettoDataSourceException;
 import org.geppetto.core.datasources.IQueryProcessor;
 import org.geppetto.core.features.IFeature;
@@ -103,7 +101,6 @@ public class AddTypesQueryProcessor implements IQueryProcessor
 		try {
 			Type textType = geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE);
 			Type htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
-			String descriptionRef = "";
 			
 			// set meta id:
 			Variable metaID = VariablesFactory.eINSTANCE.createVariable();

@@ -80,9 +80,10 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 
 			Type htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
 			
-			// set synonyms:
+			// running through returned items - references.
 			if(results.getValue("relationship", 0) != null)
 			{
+				// set synonyms with refs:
 				Variable synonyms = VariablesFactory.eINSTANCE.createVariable();
 				synonyms.setId("synonyms");
 				synonyms.setName("Alternative names");
@@ -90,12 +91,30 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 				geppettoModelAccess.addVariableToType(synonyms,metadataType);
 				HTML synonymsValue = ValuesFactory.eINSTANCE.createHTML();
 
+				// set Definition refs:
+				Variable defReferences = VariablesFactory.eINSTANCE.createVariable();
+				defReferences.setId("synonyms");
+				defReferences.setName("Alternative names");
+				defReferences.getTypes().add(htmlType);
+				geppettoModelAccess.addVariableToType(defReferences,metadataType);
+				HTML defReferencesValue = ValuesFactory.eINSTANCE.createHTML();
+				
+				// set Relationships and refs:
+				Variable relationships = VariablesFactory.eINSTANCE.createVariable();
+				relationships.setId("synonyms");
+				relationships.setName("Alternative names");
+				relationships.getTypes().add(htmlType);
+				geppettoModelAccess.addVariableToType(relationships,metadataType);
+				HTML relationshipsValue = ValuesFactory.eINSTANCE.createHTML();
+				
 				String synonymLinks = "";
+				String defRefs = "";
+				String relat = "";
 				if(results.getValue("relationship", 0) != null)
 				{
 					int i = 0;
 					while(results.getValue("relationship", i) != null)
-					{
+					{	// synonyms and refs:
 						if((String) ((Map) results.getValue("relationship", i)).get("synonym") != null)
 						{
 							synonymLinks += "<a href=\"#\" instancepath=\"" + (String) results.getValue("id", 0) + "\">" + (String) ((Map) results.getValue("relationship", i)).get("synonym") + "</a>";
@@ -125,11 +144,77 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 							}
 							synonymLinks += "<br/>";
 						}
+						else{
+							// definition refs:
+							if((String) ((Map) results.getValue("relationship", i)).get("typ") == "def"){
+								if(results.getValue("relRef", i) != null) 
+								{
+									defRefs += "" + (String) results.getValue("relRef", i);
+									if(results.getValue("relFBrf", i) != null)
+									{
+										defRefs += "; <a href=\"flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >FlyBase: "
+												+ (String) results.getValue("relFBrf", i) + "</a>";
+									}
+									if(results.getValue("relPMID", i) != null)
+									{
+										defRefs += "; <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + (String) results.getValue("relPMID", i) + "\" target=\"_blank\" >PMID: "
+												+ (String) results.getValue("relPMID", i) + "</a>";
+									}
+									if(results.getValue("relDOI", i) != null)
+									{
+										defRefs += "; <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >doi: "
+												+ (String) results.getValue("relPMID", i) + "</a>";
+									}
+									defRefs += "<br/>";
+								}
+							}else{
+								// relationships and refs:
+								if ((String) ((Map) results.getValue("relationship", i)).get("__type__") == "Related"){
+									if (((Map) results.getValue("relationship", i)).get("label") != null){
+										relat += (String) ((Map) results.getValue("relationship", i)).get("label") + " ";
+									}
+									if(results.getValue("relName", i) != null) 
+									{
+										if(results.getValue("relId", i) != null)
+										{
+											relat += "<a href=\"#\" instancepath=\"" + (String) results.getValue("relId", i) + "\">" + (String) results.getValue("relName", i) + "</a> ";
+										}else{
+											relat +=(String) results.getValue("relName", i) + " ";
+										}
+									}
+									if(results.getValue("relRef", i) != null) 
+									{
+										relat += "(" + (String) results.getValue("relRef", i);
+										if(results.getValue("relFBrf", i) != null)
+										{
+											relat += "; <a href=\"flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >FlyBase: "
+													+ (String) results.getValue("relFBrf", i) + "</a>";
+										}
+										if(results.getValue("relPMID", i) != null)
+										{
+											relat += "; <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + (String) results.getValue("relPMID", i) + "\" target=\"_blank\" >PMID: "
+													+ (String) results.getValue("relPMID", i) + "</a>";
+										}
+										if(results.getValue("relDOI", i) != null)
+										{
+											relat += "; <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >doi: "
+													+ (String) results.getValue("relPMID", i) + "</a>";
+										}
+										relat += ")";
+									}
+									relat += "<br/>";
+								}
+							}
+						}
 						i++;
 					}
 				}
 				synonymsValue.setHtml(synonymLinks);
 				synonyms.getInitialValues().put(htmlType, synonymsValue);
+				defReferencesValue.setHtml(defRefs);
+				defReferences.getInitialValues().put(htmlType, defReferencesValue);
+				relationshipsValue.setHtml(relat);
+				relationships.getInitialValues().put(htmlType, relationshipsValue);
 			}
 			
 
