@@ -114,7 +114,7 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 							if(results.getValue("relDOI", i) != null)
 							{
 								synonymLinks += "; <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >doi: "
-										+ (String) results.getValue("relPMID", i) + "</a>";
+										+ (String) results.getValue("relDOI", i) + "</a>";
 							}
 							synonymLinks += ")";
 						}
@@ -139,7 +139,7 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 								if(results.getValue("relDOI", i) != null)
 								{
 									defRefs += "; <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >doi: "
-											+ (String) results.getValue("relPMID", i) + "</a>";
+											+ (String) results.getValue("relDOI", i) + "</a>";
 								}
 								defRefs += "<br/>";
 							}
