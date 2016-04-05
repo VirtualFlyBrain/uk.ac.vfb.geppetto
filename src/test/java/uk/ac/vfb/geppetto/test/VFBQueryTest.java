@@ -132,7 +132,6 @@ public class VFBQueryTest
 //		resource.save(null);
 		
 		
-		
 		System.out.println(GeppettoSerializer.serializeToJSON(model, true));
 
 	}

@@ -32,6 +32,10 @@
  *******************************************************************************/
 package uk.ac.vfb.geppetto;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.geppetto.core.datasources.GeppettoDataSourceException;
 import org.geppetto.core.datasources.IQueryProcessor;
 import org.geppetto.core.features.IFeature;
@@ -67,136 +71,35 @@ public class AddImportTypesQueryProcessor implements IQueryProcessor
 
 		try
 		{
-			System.out.println(results);
-			//Matteo START
-
+			
 			// retrieving the metadatatype
 			CompositeType metadataType = (CompositeType) ModelUtility.getTypeFromLibrary(variable.getId() + "_metadata", dataSource.getTargetLibrary());
 			
 			Type htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
 			
-			//append to metadataType
-//			Variable newVar = VariablesFactory.eINSTANCE.createVariable();
-//			newVar.setId("testAddVar");
-//			newVar.getTypes().add(geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE));
-//			geppettoModelAccess.addVariableToType(newVar,metadataType);
+			String tempExamp = "{\"examples\":[";
+			String tempId="";
+			String tempThumb="";
+			String tempName="";
 			
-			//Matteo END
-//			
-//			//retrieving the main type for the variable
-//			CompositeType type = (CompositeType) variable.getAnonymousTypes().get(0);
-//			
-//			Variable metaDataVar = VariablesFactory.eINSTANCE.createVariable();
-//			CompositeType metaData = TypesFactory.eINSTANCE.createCompositeType();
-//			metaDataVar.getTypes().add(metaData);
-//			metaDataVar.setId(variable.getId()+"_metaDataVar");
-//			metaData.setId(variable.getId()+"_metadata");
-//
-//			Type textType = geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE);
-//			Type htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
-//			String descriptionRef = "";
-//			
-//			// set meta id:
-//			Variable metaID = VariablesFactory.eINSTANCE.createVariable();
-//			metaID.setId("id");
-//			metaID.setName("ID");
-//			metaID.getTypes().add(metaData);
-//			metaData.getVariables().add(metaID);
-//			HTML metaIdValue = ValuesFactory.eINSTANCE.createHTML();
-//			String idLink = "<a href=\"#\" instancepath=\"" + (String) results.getValue("id", 0) + "\">" + (String) results.getValue("id", 0) + "</a>"; 
-//			metaIdValue.setHtml(idLink);
-//
-//			htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
-//			metaID.getInitialValues().put(htmlType, metaIdValue);
-//			
-//			// set meta label/name:
-//			Variable label = VariablesFactory.eINSTANCE.createVariable();
-//			label.setId("label");
-//			label.setName("Name");
-//			label.getTypes().add(metaData);
-//			metaData.getVariables().add(label);
-//			HTML labelValue = ValuesFactory.eINSTANCE.createHTML();
-//			String labelLink = "<a href=\"#\" instancepath=\"" + (String) results.getValue("id", 0) + "\">" + (String) results.getValue("name", 0) + "</a>"; 
-//			labelValue.setHtml(labelLink);
-//
-//			htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
-//			label.getInitialValues().put(htmlType, labelValue);
-//			
-//			// set synonyms:
-//			if (results.getValue("synonyms", 0) != null){
-//				Variable synonyms = VariablesFactory.eINSTANCE.createVariable();
-//				synonyms.setId("synonyms");
-//				synonyms.setName("Alternative names");
-//				synonyms.getTypes().add(metaData);
-//				metaData.getVariables().add(synonyms);
-//				HTML synonymsValue = ValuesFactory.eINSTANCE.createHTML();
-//				
-//				String synonymLinks = "";
-//				System.out.println(results.getValue("relationship", 0));
-//				if (results.getValue("relationship", 0) != null){
-//					int i = 0;
-//					while (results.getValue("relationship", i) != null){
-//						System.out.println(results.getValue("relationship", i));
-//						if ((String) ((Map) results.getValue("relationship", i)).get("synonym") != null){
-//							System.out.println((String) ((Map) results.getValue("relationship", i)).get("synonym"));
-//							synonymLinks += "<a href=\"#\" instancepath=\"" + (String) results.getValue("id", 0) + "\">" + (String) ((Map) results.getValue("relationship", i)).get("synonym") + "</a>";
-//							if (((Map) results.getValue("relationship", i)).get("scope") != null){
-//								synonymLinks += " [synonym scope: \'" + (String) ((Map) results.getValue("relationship", i)).get("scope") + "\']";
-//							}
-//							if (results.getValue("relRef", i) != null){
-//								synonymLinks += " (" + (String) results.getValue("relRef", i);
-//								if (results.getValue("relFBrf", i) != null){
-//									synonymLinks += "; <a href=\"flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >FlyBase: " + (String) results.getValue("relFBrf", i) + "</a>"; 
-//								}
-//								if (results.getValue("relPMID", i) != null){
-//									synonymLinks += "; <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + (String) results.getValue("relPMID", i) + "\" target=\"_blank\" >PMID: " + (String) results.getValue("relPMID", i) + "</a>"; 
-//								}
-//								if (results.getValue("relDOI", i) != null){
-//									synonymLinks += "; <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >doi: " + (String) results.getValue("relPMID", i) + "</a>"; 
-//								}
-//								synonymLinks += ")";
-//							}
-//							synonymLinks += "<br/>";
-//						}
-//						i++;
-//					}
-//				}
-//				synonymsValue.setHtml(synonymLinks);
-//	
-//				htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
-//				synonyms.getInitialValues().put(htmlType, synonymsValue);
-//			}
-//						
-//			// set description:
-//			if (results.getValue("description", 0) != null){
-//				Variable description = VariablesFactory.eINSTANCE.createVariable();
-//				description.setId("description");
-//				description.setName("Description");
-//				description.getTypes().add(metaData);
-//				metaData.getVariables().add(description);
-//				Text descriptionValue = ValuesFactory.eINSTANCE.createText();
-//				descriptionValue.setText((String) ((List<String>) results.getValue("description", 0)).get(0));
-//	
-//				textType = geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE);
-//				description.getInitialValues().put(textType, descriptionValue);
-//			}
-//			
-//			// set comment:
-//			if (results.getValue("comment", 0) != null){
-//				Variable comment = VariablesFactory.eINSTANCE.createVariable();
-//				comment.setId("comment");
-//				comment.setName("Notes");
-//				comment.getTypes().add(metaData);
-//				metaData.getVariables().add(comment);
-//				Text commentValue = ValuesFactory.eINSTANCE.createText();
-//				commentValue.setText((String) ((List<String>) results.getValue("comment", 0)).get(0));
-//				
-//				textType = geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE);
-//				comment.getInitialValues().put(textType, commentValue);	
-//			}
-//			
-//			type.getVariables().add(metaDataVar);
-//			geppettoModelAccess.addTypeToLibrary(metaData, dataSource.getTargetLibrary());
+			int i = 0;
+			while(results.getValue("exId", i) != null){
+				tempId = (String) results.getValue("exId", i);
+				tempThumb="SERVER_ROOT/appdata/vfb/VFB/i/" + tempId.substring(4,8) + "/" + tempId.substring(8) + "/volume.png"; 
+				tempName=(String) results.getValue("exName", i);
+				tempExamp += "\"id\":\"" + tempId + "\",\"name\":\"" + tempName + "\",\"image\":\"" + tempThumb + "\"";
+			}
+			tempExamp += "]}";
+			
+			//append to metadataType
+			if (tempExamp != "{\"examples\":[]}"){
+				Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
+				exampleVar.setId("examples");
+				exampleVar.setName("Examples");
+				exampleVar.getTypes().add(geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE));
+				geppettoModelAccess.addVariableToType(exampleVar,metadataType);
+			}
+			
 		}
 		catch(GeppettoVisitingException e)
 		{
