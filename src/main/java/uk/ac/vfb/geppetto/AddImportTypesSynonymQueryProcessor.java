@@ -93,16 +93,16 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 
 				// set Definition refs:
 				Variable defReferences = VariablesFactory.eINSTANCE.createVariable();
-				defReferences.setId("synonyms");
-				defReferences.setName("Alternative names");
+				defReferences.setId("references");
+				defReferences.setName("Definition References");
 				defReferences.getTypes().add(htmlType);
 				geppettoModelAccess.addVariableToType(defReferences,metadataType);
 				HTML defReferencesValue = ValuesFactory.eINSTANCE.createHTML();
 				
 				// set Relationships and refs:
 				Variable relationships = VariablesFactory.eINSTANCE.createVariable();
-				relationships.setId("synonyms");
-				relationships.setName("Alternative names");
+				relationships.setId("relationships");
+				relationships.setName("Relationships");
 				relationships.getTypes().add(htmlType);
 				geppettoModelAccess.addVariableToType(relationships,metadataType);
 				HTML relationshipsValue = ValuesFactory.eINSTANCE.createHTML();
