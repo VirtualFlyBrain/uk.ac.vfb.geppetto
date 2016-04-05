@@ -88,6 +88,7 @@ public class AddImportTypesQueryProcessor implements IQueryProcessor
 				tempThumb="SERVER_ROOT/appdata/vfb/VFB/i/" + tempId.substring(4,8) + "/" + tempId.substring(8) + "/volume.png"; 
 				tempName=(String) results.getValue("exName", i);
 				tempExamp += "\"id\":\"" + tempId + "\",\"name\":\"" + tempName + "\",\"image\":\"" + tempThumb + "\"";
+				i++;
 			}
 			tempExamp += "]}";
 			
