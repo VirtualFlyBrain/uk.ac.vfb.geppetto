@@ -32,10 +32,6 @@
  *******************************************************************************/
 package uk.ac.vfb.geppetto;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.geppetto.core.datasources.GeppettoDataSourceException;
 import org.geppetto.core.datasources.IQueryProcessor;
 import org.geppetto.core.features.IFeature;
@@ -50,6 +46,11 @@ import org.geppetto.model.types.Type;
 import org.geppetto.model.types.TypesPackage;
 import org.geppetto.model.util.GeppettoVisitingException;
 import org.geppetto.model.util.ModelUtility;
+import org.geppetto.model.values.ArrayElement;
+import org.geppetto.model.values.ArrayValue;
+import org.geppetto.model.values.Image;
+import org.geppetto.model.values.ImageFormat;
+import org.geppetto.model.values.ValuesFactory;
 import org.geppetto.model.variables.Variable;
 import org.geppetto.model.variables.VariablesFactory;
 
@@ -71,36 +72,48 @@ public class AddImportTypesQueryProcessor implements IQueryProcessor
 
 		try
 		{
-			
+
 			// retrieving the metadatatype
 			CompositeType metadataType = (CompositeType) ModelUtility.getTypeFromLibrary(variable.getId() + "_metadata", dataSource.getTargetLibrary());
-			
+
 			Type htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
-			
+
 			String tempExamp = "{\"examples\":[";
-			String tempId="";
-			String tempThumb="";
-			String tempName="";
-			
+			String tempId = "";
+			String tempThumb = "";
+			String tempName = "";
+
 			int i = 0;
-			while(results.getValue("exId", i) != null){
+			while(results.getValue("exId", i) != null)
+			{
 				tempId = (String) results.getValue("exId", i);
-				tempThumb="SERVER_ROOT/appdata/vfb/VFB/i/" + tempId.substring(4,8) + "/" + tempId.substring(8) + "/volume.png"; 
-				tempName=(String) results.getValue("exName", i);
+				tempThumb = "SERVER_ROOT/appdata/vfb/VFB/i/" + tempId.substring(4, 8) + "/" + tempId.substring(8) + "/volume.png";
+				tempName = (String) results.getValue("exName", i);
 				tempExamp += "\"id\":\"" + tempId + "\",\"name\":\"" + tempName + "\",\"image\":\"" + tempThumb + "\"";
 				i++;
 			}
 			tempExamp += "]}";
-			
-			//append to metadataType
-			if (tempExamp != "{\"examples\":[]}"){
+
+			// append to metadataType
+			if(tempExamp != "{\"examples\":[]}")
+			{
 				Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
 				exampleVar.setId("examples");
 				exampleVar.setName("Examples");
-				exampleVar.getTypes().add(geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE));
-				geppettoModelAccess.addVariableToType(exampleVar,metadataType);
+				exampleVar.getTypes().add(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE));
+				geppettoModelAccess.addVariableToType(exampleVar, metadataType);
+				ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
+
+				int ii = 0;
+				addImage("http://vfbdev.inf.ed.ac.uk/data/VFB/i/0000/3124/thumbnail.png", "Image 1", "id", images, ii++);
+				addImage("http://vfbdev.inf.ed.ac.uk/data/VFB/i/0000/3231/thumbnail.png", "Image 2", "id", images, ii++);
+				addImage("http://vfbdev.inf.ed.ac.uk/data/VFB/i/0000/3246/thumbnail.png", "Image 3", "id", images, ii++);
+				addImage("http://vfbdev.inf.ed.ac.uk/data/VFB/i/0000/2014/thumbnail.png", "Image 4", "id", images, ii++);
+				addImage("http://vfbdev.inf.ed.ac.uk/data/VFB/i/0000/3357/thumbnail.png", "Image 5", "id", images, ii++);
+
+				exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), images);
 			}
-			
+
 		}
 		catch(GeppettoVisitingException e)
 		{
@@ -108,6 +121,24 @@ public class AddImportTypesQueryProcessor implements IQueryProcessor
 		}
 
 		return results;
+	}
+
+	/**
+	 * @param data
+	 * @param name
+	 * @param images
+	 * @param i
+	 */
+	private void addImage(String data, String name, String reference, ArrayValue images, int i)
+	{
+		Image image = ValuesFactory.eINSTANCE.createImage();
+		image.setName(name);
+		image.setData(data);
+		image.setReference(reference);
+		image.setFormat(ImageFormat.PNG);
+		ArrayElement element = ValuesFactory.eINSTANCE.createArrayElement();
+		element.setIndex(i);
+		images.getElements().add(element);
 	}
 
 	@Override

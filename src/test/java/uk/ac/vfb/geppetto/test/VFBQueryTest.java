@@ -33,9 +33,15 @@
 package uk.ac.vfb.geppetto.test;
 
 import java.io.IOException;
+import java.util.Map;
 
 import junit.framework.Assert;
 
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.datasources.GeppettoDataSourceException;
 import org.geppetto.core.manager.SharedLibraryManager;
@@ -45,6 +51,7 @@ import org.geppetto.core.model.GeppettoSerializer;
 import org.geppetto.core.services.registry.ApplicationListenerBean;
 import org.geppetto.datasources.Neo4jDataSourceService;
 import org.geppetto.model.GeppettoModel;
+import org.geppetto.model.GeppettoPackage;
 import org.geppetto.model.util.GeppettoVisitingException;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -121,15 +128,15 @@ public class VFBQueryTest
 		dataSource.fetchVariable("FBbt_00100219");
 		
 //		// Initialize the factory and the resource set
-//		GeppettoPackage.eINSTANCE.eClass();
-//		Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
-//		Map<String, Object> m = reg.getExtensionToFactoryMap();
-//		m.put("xmi", new XMIResourceFactoryImpl()); // sets the factory for the XMI type
-//		ResourceSet resSet = new ResourceSetImpl();
-//
-//		Resource resource = resSet.createResource(URI.createURI("./src/test/resources/fetchedVariable.xmi"));
-//		resource.getContents().add(v);
-//		resource.save(null);
+		GeppettoPackage.eINSTANCE.eClass();
+		Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
+		Map<String, Object> m = reg.getExtensionToFactoryMap();
+		m.put("xmi", new XMIResourceFactoryImpl()); // sets the factory for the XMI type
+		ResourceSet resSet = new ResourceSetImpl();
+
+		Resource resource = resSet.createResource(URI.createURI("./src/test/resources/fetchedVariable.xmi"));
+		resource.getContents().add(model);
+		resource.save(null);
 		
 		
 		System.out.println(GeppettoSerializer.serializeToJSON(model, true));
