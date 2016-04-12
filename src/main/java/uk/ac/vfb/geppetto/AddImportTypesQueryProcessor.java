@@ -72,48 +72,32 @@ public class AddImportTypesQueryProcessor implements IQueryProcessor
 
 		try
 		{
-
 			// retrieving the metadatatype
 			CompositeType metadataType = (CompositeType) ModelUtility.getTypeFromLibrary(variable.getId() + "_metadata", dataSource.getTargetLibrary());
 
 			Type htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
 
-			String tempExamp = "{\"examples\":[";
 			String tempId = "";
 			String tempThumb = "";
 			String tempName = "";
 
 			int i = 0;
+			Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
+			exampleVar.setId("examples");
+			exampleVar.setName("Examples");
+			exampleVar.getTypes().add(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE));
+			geppettoModelAccess.addVariableToType(exampleVar, metadataType);
+			ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
 			while(results.getValue("exId", i) != null)
 			{
 				tempId = (String) results.getValue("exId", i);
 				tempThumb = "SERVER_ROOT/appdata/vfb/VFB/i/" + tempId.substring(4, 8) + "/" + tempId.substring(8) + "/volume.png";
 				tempName = (String) results.getValue("exName", i);
-				tempExamp += "\"id\":\"" + tempId + "\",\"name\":\"" + tempName + "\",\"image\":\"" + tempThumb + "\"";
+				addImage(tempThumb, tempName, tempId, images, i);
 				i++;
 			}
-			tempExamp += "]}";
-
-			// append to metadataType
-			if(tempExamp != "{\"examples\":[]}")
-			{
-				Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
-				exampleVar.setId("examples");
-				exampleVar.setName("Examples");
-				exampleVar.getTypes().add(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE));
-				geppettoModelAccess.addVariableToType(exampleVar, metadataType);
-				ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
-
-				int ii = 0;
-				addImage("http://vfbdev.inf.ed.ac.uk/data/VFB/i/0000/3124/thumbnail.png", "Image 1", "id", images, ii++);
-				addImage("http://vfbdev.inf.ed.ac.uk/data/VFB/i/0000/3231/thumbnail.png", "Image 2", "id", images, ii++);
-				addImage("http://vfbdev.inf.ed.ac.uk/data/VFB/i/0000/3246/thumbnail.png", "Image 3", "id", images, ii++);
-				addImage("http://vfbdev.inf.ed.ac.uk/data/VFB/i/0000/2014/thumbnail.png", "Image 4", "id", images, ii++);
-				addImage("http://vfbdev.inf.ed.ac.uk/data/VFB/i/0000/3357/thumbnail.png", "Image 5", "id", images, ii++);
-
-				exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), images);
-			}
-
+			exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), images);
+			
 		}
 		catch(GeppettoVisitingException e)
 		{
