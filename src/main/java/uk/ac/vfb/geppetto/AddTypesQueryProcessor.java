@@ -72,7 +72,7 @@ public class AddTypesQueryProcessor implements IQueryProcessor
 	public QueryResults process(ProcessQuery query, DataSource dataSource, Variable variable, QueryResults results, GeppettoModelAccess geppettoModelAccess) throws GeppettoDataSourceException
 	{
 		
-		System.out.println("Creating Metadata...");
+		System.out.println("Creating Metadata for " + variable.getId() + "...");
 		
 		geppettoModelAccess.setObjectAttribute(variable, GeppettoPackage.Literals.NODE__NAME, results.getValue("name", 0));
 		CompositeType type = TypesFactory.eINSTANCE.createCompositeType();
