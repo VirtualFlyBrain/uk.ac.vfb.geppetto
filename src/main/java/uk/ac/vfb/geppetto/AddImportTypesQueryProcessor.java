@@ -91,7 +91,7 @@ public class AddImportTypesQueryProcessor implements IQueryProcessor
 			while(results.getValue("exId", i) != null)
 			{
 				tempId = (String) results.getValue("exId", i);
-				tempThumb = "SERVER_ROOT/appdata/vfb/VFB/i/" + tempId.substring(4, 8) + "/" + tempId.substring(8) + "/volume.png";
+				tempThumb = "http://www.virtualflybrain.org/data/VFB/i/" + tempId.substring(4, 8) + "/" + tempId.substring(8) + "/volume.png";
 				tempName = (String) results.getValue("exName", i);
 				System.out.println("Adding Image: " + tempId + " " + tempName + " " + tempThumb);
 				addImage(tempThumb, tempName, tempId, images, i);
