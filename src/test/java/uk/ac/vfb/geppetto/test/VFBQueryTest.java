@@ -64,6 +64,7 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
 import uk.ac.vfb.geppetto.AddImportTypesQueryProcessor;
 import uk.ac.vfb.geppetto.AddImportTypesSynonymQueryProcessor;
 import uk.ac.vfb.geppetto.AddTypesQueryProcessor;
+import uk.ac.vfb.geppetto.AddImportTypesThumbnailQueryProcessor;
 
 /**
  * @author matteocantarelli
@@ -93,6 +94,10 @@ public class VFBQueryTest
 		context.registerBeanDefinition("vfbImportTypesSynonymQueryProcessor", queryProcessorImportTypesSynonymBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.vfbImportTypesSynonymQueryProcessor", queryProcessorImportTypesSynonymBeanDefinition);
 		
+		BeanDefinition queryProcessorImportTypesThumbnailBeanDefinition = new RootBeanDefinition(AddImportTypesThumbnailQueryProcessor.class);
+		context.registerBeanDefinition("vfbImportTypesThumbnailQueryProcessor", queryProcessorImportTypesThumbnailBeanDefinition);
+		context.registerBeanDefinition("scopedTarget.vfbImportTypesThumbnailQueryProcessor", queryProcessorImportTypesThumbnailBeanDefinition);
+		
 		ContextRefreshedEvent event = new ContextRefreshedEvent(context);
 		ApplicationListenerBean listener = new ApplicationListenerBean();
 		listener.onApplicationEvent(event);
@@ -102,6 +107,8 @@ public class VFBQueryTest
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbImportTypesQueryProcessor"));
 		retrievedContext = ApplicationListenerBean.getApplicationContext("vfbImportTypesSynonymQueryProcessor");
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbImportTypesSynonymQueryProcessor"));
+		retrievedContext = ApplicationListenerBean.getApplicationContext("vfbImportTypesThumbnailQueryProcessor");
+		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbImportTypesThumbnailQueryProcessor"));
 		
 	}
 
@@ -127,6 +134,12 @@ public class VFBQueryTest
 		
 		dataSource.fetchVariable("FBbt_00100219");
 		
+		System.out.println(GeppettoSerializer.serializeToJSON(model, true));
+		
+		dataSource.fetchVariable("VFB_00000001");
+		
+		System.out.println(GeppettoSerializer.serializeToJSON(model, true));
+		
 //		// Initialize the factory and the resource set
 		GeppettoPackage.eINSTANCE.eClass();
 		Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
@@ -137,9 +150,6 @@ public class VFBQueryTest
 		Resource resource = resSet.createResource(URI.createURI("./src/test/resources/fetchedVariable.xmi"));
 		resource.getContents().add(model);
 		resource.save(null);
-		
-		
-		System.out.println(GeppettoSerializer.serializeToJSON(model, true));
 
 	}
 

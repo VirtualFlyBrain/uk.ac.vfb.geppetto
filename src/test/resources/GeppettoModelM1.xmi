@@ -121,6 +121,14 @@
         <matchingCriteria
             type="//@libraries.3/@types.1 //@libraries.3/@types.6"/>
       </queryChain>
+      <queryChain
+          xsi:type="gep:ProcessQuery"
+          label="Add Thumbnail for VFB Individuals"
+          description="Add Thumbnail for VFB Individuals"
+          queryProcessorId="vfbImportTypesThumbnailQueryProcessor">
+        <matchingCriteria
+            type="//@libraries.3/@types.0 //@libraries.3/@types.6"/>
+      </queryChain>
     </fetchVariableQuery>
   </dataSources>
 </gep:GeppettoModel>

@@ -32,6 +32,9 @@
  *******************************************************************************/
 package uk.ac.vfb.geppetto;
 
+import java.util.List;
+import java.util.Map;
+
 import org.geppetto.core.datasources.GeppettoDataSourceException;
 import org.geppetto.core.datasources.IQueryProcessor;
 import org.geppetto.core.features.IFeature;
@@ -43,11 +46,13 @@ import org.geppetto.model.ProcessQuery;
 import org.geppetto.model.QueryResults;
 import org.geppetto.model.types.CompositeType;
 import org.geppetto.model.types.Type;
+import org.geppetto.model.types.TypesFactory;
 import org.geppetto.model.types.TypesPackage;
 import org.geppetto.model.util.GeppettoVisitingException;
 import org.geppetto.model.util.ModelUtility;
-import org.geppetto.model.values.ArrayElement;
 import org.geppetto.model.values.ArrayValue;
+import org.geppetto.model.values.HTML;
+import org.geppetto.model.values.Text;
 import org.geppetto.model.values.Image;
 import org.geppetto.model.values.ImageFormat;
 import org.geppetto.model.values.ValuesFactory;
@@ -55,10 +60,10 @@ import org.geppetto.model.variables.Variable;
 import org.geppetto.model.variables.VariablesFactory;
 
 /**
- * @author matteocantarelli
+ * @author robertcourt
  *
  */
-public class AddImportTypesQueryProcessor implements IQueryProcessor
+public class AddImportTypesThumbnailQueryProcessor implements IQueryProcessor
 {
 
 	/*
@@ -72,62 +77,42 @@ public class AddImportTypesQueryProcessor implements IQueryProcessor
 
 		try
 		{
+
 			// retrieving the metadatatype
 			CompositeType metadataType = (CompositeType) ModelUtility.getTypeFromLibrary(variable.getId() + "_metadata", dataSource.getTargetLibrary());
 
-			System.out.println("Processing Examples...");
+			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
 			
-			if (results.getValue("exId", 0) != null) {
+			System.out.println("Processing Thumbnails...");
 			
-				String tempId = "";
-				String tempThumb = "";
-				String tempName = "";
-	
-				int i = 0;
-				Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
-				exampleVar.setId("examples");
-				exampleVar.setName("Examples");
-				exampleVar.getTypes().add(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE));
-				geppettoModelAccess.addVariableToType(exampleVar, metadataType);
-				ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
-				while(results.getValue("exId", i) != null)
-				{
-					tempId = (String) results.getValue("exId", i);
-					tempThumb = "http://www.virtualflybrain.org/data/VFB/i/" + tempId.substring(4, 8) + "/" + tempId.substring(8) + "/thumbnail.png";
-					tempName = (String) results.getValue("exName", i);
-					System.out.println("Adding Example Image: " + tempId + " " + tempName + " " + tempThumb);
-					addImage(tempThumb, tempName, tempId, images, i);
-					i++;
-				}
-				exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), images);
-				
-			}	
+			// set individual thumbnail:
+			if (variable.getId().startsWith("VFB_")){
+				Variable thumbnailVar = VariablesFactory.eINSTANCE.createVariable();
+				thumbnailVar.setId("thumbnail");
+				thumbnailVar.setName("Thumbnail");
+				thumbnailVar.getTypes().add(imageType);
+				geppettoModelAccess.addVariableToType(thumbnailVar, metadataType);
+				String tempThumb = "http://www.virtualflybrain.org/data/VFB/i/" + variable.getId().substring(4, 8) + "/" + variable.getId().substring(8) + "/thumbnail.png";
+				Image thumbnailValue = ValuesFactory.eINSTANCE.createImage();
+				thumbnailValue.setName(variable.getName());
+				thumbnailValue.setData(tempThumb);
+				thumbnailValue.setReference(variable.getId());
+				thumbnailValue.setFormat(ImageFormat.PNG);
+				thumbnailVar.getInitialValues().put(imageType, thumbnailValue);
+			}
+			
 		}
 		catch(GeppettoVisitingException e)
 		{
+			System.out.println(e);
 			throw new GeppettoDataSourceException(e);
+		}
+		catch(Exception e)
+		{
+			System.out.println(e);
 		}
 
 		return results;
-	}
-
-	/**
-	 * @param data
-	 * @param name
-	 * @param images
-	 * @param i
-	 */
-	private void addImage(String data, String name, String reference, ArrayValue images, int i)
-	{
-		Image image = ValuesFactory.eINSTANCE.createImage();
-		image.setName(name);
-		image.setData(data);
-		image.setReference(reference);
-		image.setFormat(ImageFormat.PNG);
-		ArrayElement element = ValuesFactory.eINSTANCE.createArrayElement();
-		element.setIndex(i);
-		element.setInitialValue(image);
-		images.getElements().add(element);
 	}
 
 	@Override

@@ -80,6 +80,8 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 
 			Type htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
 			
+			System.out.println("Processing Items...");
+			
 			// running through returned items - references.
 			if(results.getValue("relationship", 0) != null)
 			{
