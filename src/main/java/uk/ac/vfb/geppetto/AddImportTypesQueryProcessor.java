@@ -123,6 +123,7 @@ public class AddImportTypesQueryProcessor implements IQueryProcessor
 		image.setFormat(ImageFormat.PNG);
 		ArrayElement element = ValuesFactory.eINSTANCE.createArrayElement();
 		element.setIndex(i);
+		element.setInitialValue(image);
 		images.getElements().add(element);
 	}
 
