@@ -111,6 +111,7 @@ public class AddImportTypesImageQueryProcessor implements IQueryProcessor
 					System.out.println("Adding OBJ...");
 					tempFile = localForID(variable.getId()) + "volume.obj";
 					// TODO add OBJ
+					
 				}
 				tempFile = remoteForID(variable.getId()) + "volume.swc";
 				if (checkURL(tempFile)){
