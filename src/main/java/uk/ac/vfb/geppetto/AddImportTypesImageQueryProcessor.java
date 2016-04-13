@@ -65,7 +65,7 @@ import org.geppetto.model.variables.VariablesFactory;
  * @author robertcourt
  *
  */
-public class AddImportTypesThumbnailQueryProcessor implements IQueryProcessor
+public class AddImportTypesImageQueryProcessor implements IQueryProcessor
 {
 
 	/*
@@ -85,12 +85,14 @@ public class AddImportTypesThumbnailQueryProcessor implements IQueryProcessor
 
 			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
 			
-			System.out.println("Processing Thumbnails...");
+			System.out.println("Processing Images...");
 			
-			// set individual thumbnail:
+			// set VFB individual images:
 			if (variable.getId().startsWith("VFB_")){
-				String tempThumb = "http://www.virtualflybrain.org/data/VFB/i/" + variable.getId().substring(4, 8) + "/" + variable.getId().substring(8) + "/thumbnail.png";
-				if (checkURL(tempThumb)){
+				// set individual thumbnail:
+				String tempFile = "http://www.virtualflybrain.org/data/VFB/i/" + variable.getId().substring(4, 8) + "/" + variable.getId().substring(8) + "/thumbnail.png";
+				if (checkURL(tempFile)){
+					System.out.println("Adding Thumbnail...");
 					Variable thumbnailVar = VariablesFactory.eINSTANCE.createVariable();
 					thumbnailVar.setId("thumbnail");
 					thumbnailVar.setName("Thumbnail");
@@ -98,10 +100,31 @@ public class AddImportTypesThumbnailQueryProcessor implements IQueryProcessor
 					geppettoModelAccess.addVariableToType(thumbnailVar, metadataType);
 					Image thumbnailValue = ValuesFactory.eINSTANCE.createImage();
 					thumbnailValue.setName(variable.getName());
-					thumbnailValue.setData(tempThumb);
+					thumbnailValue.setData(tempFile);
 					thumbnailValue.setReference(variable.getId());
 					thumbnailValue.setFormat(ImageFormat.PNG);
 					thumbnailVar.getInitialValues().put(imageType, thumbnailValue);
+				}
+				// set image types:
+				tempFile = "http://www.virtualflybrain.org/data/VFB/i/" + variable.getId().substring(4, 8) + "/" + variable.getId().substring(8) + "/volume.obj";
+				if (checkURL(tempFile)){
+					System.out.println("Adding OBJ...");
+					// TODO add OBJ
+				}
+				tempFile = "http://www.virtualflybrain.org/data/VFB/i/" + variable.getId().substring(4, 8) + "/" + variable.getId().substring(8) + "/volume.swc";
+				if (checkURL(tempFile)){
+					System.out.println("Adding SWC...");
+					// TODO add SWC
+				}
+				tempFile = "http://www.virtualflybrain.org/data/VFB/i/" + variable.getId().substring(4, 8) + "/" + variable.getId().substring(8) + "/volume.nrrd";
+				if (checkURL(tempFile)){
+					System.out.println("Adding NRRD...");
+					// TODO add NRRD download
+				}
+				tempFile = "http://www.virtualflybrain.org/data/VFB/i/" + variable.getId().substring(4, 8) + "/" + variable.getId().substring(8) + "/volume.wlz";
+				if (checkURL(tempFile)){
+					System.out.println("Adding Woolz...");
+					// TODO add 2D/woolz
 				}
 			}
 			
