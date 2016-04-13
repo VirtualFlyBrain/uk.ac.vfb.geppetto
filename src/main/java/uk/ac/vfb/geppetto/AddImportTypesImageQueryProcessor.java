@@ -106,24 +106,27 @@ public class AddImportTypesImageQueryProcessor implements IQueryProcessor
 					thumbnailVar.getInitialValues().put(imageType, thumbnailValue);
 				}
 				// set image types:
-				tempFile = "http://www.virtualflybrain.org/data/VFB/i/" + variable.getId().substring(4, 8) + "/" + variable.getId().substring(8) + "/volume.obj";
+				tempFile = remoteForID(variable.getId()) + "volume.obj";
 				if (checkURL(tempFile)){
 					System.out.println("Adding OBJ...");
+					tempFile = localForID(variable.getId()) + "volume.obj";
 					// TODO add OBJ
 				}
-				tempFile = "http://www.virtualflybrain.org/data/VFB/i/" + variable.getId().substring(4, 8) + "/" + variable.getId().substring(8) + "/volume.swc";
+				tempFile = remoteForID(variable.getId()) + "volume.swc";
 				if (checkURL(tempFile)){
 					System.out.println("Adding SWC...");
+					tempFile = localForID(variable.getId()) + "volume.swc";
 					// TODO add SWC
 				}
-				tempFile = "http://www.virtualflybrain.org/data/VFB/i/" + variable.getId().substring(4, 8) + "/" + variable.getId().substring(8) + "/volume.nrrd";
+				tempFile = remoteForID(variable.getId()) + "volume.nrrd";
 				if (checkURL(tempFile)){
 					System.out.println("Adding NRRD...");
 					// TODO add NRRD download
 				}
-				tempFile = "http://www.virtualflybrain.org/data/VFB/i/" + variable.getId().substring(4, 8) + "/" + variable.getId().substring(8) + "/volume.wlz";
+				tempFile = remoteForID(variable.getId()) + "volume.wlz";
 				if (checkURL(tempFile)){
 					System.out.println("Adding Woolz...");
+					tempFile = localForID(variable.getId()).replace("SERVER_ROOT/vfb/", "/disk/data/VFB/IMAGE_DATA/") + "volume.wlz";
 					// TODO add 2D/woolz
 				}
 			}
@@ -141,6 +144,19 @@ public class AddImportTypesImageQueryProcessor implements IQueryProcessor
 
 		return results;
 	}
+	/**
+	 * @param id
+	 */
+	private String remoteForID(String id){
+		return "http://www.virtualflybrain.org/data/VFB/i/" + id.substring(4, 8) + "/" + id.substring(8) + "/";
+	}
+	/**
+	 * @param id
+	 */
+	private String localForID(String id){
+		return "SERVER_ROOT/vfb/VFB/i/" + id.substring(4, 8) + "/" + id.substring(8) + "/";
+	}
+	
 	/**
 	 * @param urlString
 	 */
