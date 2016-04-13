@@ -81,6 +81,9 @@ public class AddImportTypesImageQueryProcessor implements IQueryProcessor
 
 			// retrieving the metadatatype
 			CompositeType metadataType = (CompositeType) ModelUtility.getTypeFromLibrary(variable.getId() + "_metadata", dataSource.getTargetLibrary());
+			
+			// retrieving the composite type for new importType variables 
+			CompositeType type = (CompositeType) variable.getAnonymousTypes().get(0);
 
 			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
 			
@@ -112,9 +115,13 @@ public class AddImportTypesImageQueryProcessor implements IQueryProcessor
 					Variable objVar = VariablesFactory.eINSTANCE.createVariable();
 					ImportType objImportType=TypesFactory.eINSTANCE.createImportType();
 					objImportType.setUrl(tempFile);
+					objImportType.setId(variable.getId()+"_obj");
 					objImportType.setModelInterpreterId("objModelInterpreterService");
 					objVar.getTypes().add(objImportType);
 					getLibraryFor(dataSource,"obj").getTypes().add(objImportType);
+					objVar.setId(variable.getId()+"_obj");
+					objVar.setName("3D Volume");
+					type.getVariables().add(objVar);
 				}
 				tempFile = remoteForID(variable.getId()) + "volume.swc";
 				if (checkURL(tempFile)){
@@ -123,9 +130,13 @@ public class AddImportTypesImageQueryProcessor implements IQueryProcessor
 					Variable swcVar = VariablesFactory.eINSTANCE.createVariable();
 					ImportType swcImportType=TypesFactory.eINSTANCE.createImportType();
 					swcImportType.setUrl(tempFile);
+					swcImportType.setId(variable.getId()+"_swc");
 					swcImportType.setModelInterpreterId("swcModelInterpreterService");
 					swcVar.getTypes().add(swcImportType);
 					getLibraryFor(dataSource,"swc").getTypes().add(swcImportType);
+					swcVar.setName("3D Skeleton");
+					swcVar.setId(variable.getId()+"_swc");
+					type.getVariables().add(swcVar);
 				}
 				tempFile = remoteForID(variable.getId()) + "volume.nrrd";
 				if (checkURL(tempFile)){

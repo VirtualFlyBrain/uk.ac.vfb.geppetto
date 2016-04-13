@@ -98,8 +98,10 @@ public class AddTypesQueryProcessor implements IQueryProcessor
 		metaDataVar.setId("metaDataVar");
 		CompositeType metaData = TypesFactory.eINSTANCE.createCompositeType();
 		metaDataVar.getTypes().add(metaData);
-		metaDataVar.setId(variable.getId() + "_metaDataVar");
+		metaDataVar.setId(variable.getId() + "_meta");
 		metaData.setId(variable.getId() + "_metadata");
+		metaData.setName("Info");
+		metaDataVar.setName("Info");
 		
 		try {
 			Type textType = geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE);
