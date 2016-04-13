@@ -108,21 +108,23 @@ public class AddImportTypesImageQueryProcessor implements IQueryProcessor
 				if (checkURL(tempFile)){
 					System.out.println("Adding OBJ...");
 					tempFile = localForID(variable.getId()) + "volume.obj";
-					//the OBJ is not metadata we add it to the same place where we have the metadata hanging
-					CompositeType type = (CompositeType) variable.getTypes().get(0);
 					Variable objVar = VariablesFactory.eINSTANCE.createVariable();
 					ImportType objImportType=TypesFactory.eINSTANCE.createImportType();
 					objImportType.setUrl(tempFile);
 					objImportType.setModelInterpreterId("objModelInterpreterService");
 					objVar.getTypes().add(objImportType);
 					getLibraryFor(dataSource,"obj").getTypes().add(objImportType);
-					
 				}
 				tempFile = remoteForID(variable.getId()) + "volume.swc";
 				if (checkURL(tempFile)){
 					System.out.println("Adding SWC...");
 					tempFile = localForID(variable.getId()) + "volume.swc";
-					// TODO add SWC
+					Variable swcVar = VariablesFactory.eINSTANCE.createVariable();
+					ImportType swcImportType=TypesFactory.eINSTANCE.createImportType();
+					swcImportType.setUrl(tempFile);
+					swcImportType.setModelInterpreterId("swcModelInterpreterService");
+					swcVar.getTypes().add(swcImportType);
+					getLibraryFor(dataSource,"swc").getTypes().add(swcImportType);
 				}
 				tempFile = remoteForID(variable.getId()) + "volume.nrrd";
 				if (checkURL(tempFile)){
