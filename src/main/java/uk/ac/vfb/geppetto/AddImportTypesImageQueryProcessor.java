@@ -34,8 +34,6 @@ package uk.ac.vfb.geppetto;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
-import java.util.Map;
 
 import org.geppetto.core.datasources.GeppettoDataSourceException;
 import org.geppetto.core.datasources.IQueryProcessor;
@@ -44,17 +42,17 @@ import org.geppetto.core.model.GeppettoModelAccess;
 import org.geppetto.core.services.GeppettoFeature;
 import org.geppetto.core.services.registry.ServicesRegistry;
 import org.geppetto.model.DataSource;
+import org.geppetto.model.DataSourceLibraryConfiguration;
+import org.geppetto.model.GeppettoLibrary;
 import org.geppetto.model.ProcessQuery;
 import org.geppetto.model.QueryResults;
 import org.geppetto.model.types.CompositeType;
+import org.geppetto.model.types.ImportType;
 import org.geppetto.model.types.Type;
 import org.geppetto.model.types.TypesFactory;
 import org.geppetto.model.types.TypesPackage;
 import org.geppetto.model.util.GeppettoVisitingException;
 import org.geppetto.model.util.ModelUtility;
-import org.geppetto.model.values.ArrayValue;
-import org.geppetto.model.values.HTML;
-import org.geppetto.model.values.Text;
 import org.geppetto.model.values.Image;
 import org.geppetto.model.values.ImageFormat;
 import org.geppetto.model.values.ValuesFactory;
@@ -110,7 +108,14 @@ public class AddImportTypesImageQueryProcessor implements IQueryProcessor
 				if (checkURL(tempFile)){
 					System.out.println("Adding OBJ...");
 					tempFile = localForID(variable.getId()) + "volume.obj";
-					// TODO add OBJ
+					//the OBJ is not metadata we add it to the same place where we have the metadata hanging
+					CompositeType type = (CompositeType) variable.getTypes().get(0);
+					Variable objVar = VariablesFactory.eINSTANCE.createVariable();
+					ImportType objImportType=TypesFactory.eINSTANCE.createImportType();
+					objImportType.setUrl(tempFile);
+					objImportType.setModelInterpreterId("objModelInterpreterService");
+					objVar.getTypes().add(objImportType);
+					getLibraryFor(dataSource,"obj").getTypes().add(objImportType);
 					
 				}
 				tempFile = remoteForID(variable.getId()) + "volume.swc";
@@ -144,6 +149,22 @@ public class AddImportTypesImageQueryProcessor implements IQueryProcessor
 		}
 
 		return results;
+	}
+	
+	/**
+	 * @param dataSource
+	 * @param format
+	 * @return
+	 */
+	private GeppettoLibrary getLibraryFor(DataSource dataSource, String format)
+	{
+		for(DataSourceLibraryConfiguration lc: dataSource.getLibraryConfigurations()){
+			if(lc.getFormat().equals(format))
+			{
+				return lc.getLibrary();
+			}
+		}
+		return null;
 	}
 	/**
 	 * @param id
