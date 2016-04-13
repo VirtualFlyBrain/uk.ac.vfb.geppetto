@@ -32,6 +32,8 @@
  *******************************************************************************/
 package uk.ac.vfb.geppetto;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -87,18 +89,20 @@ public class AddImportTypesThumbnailQueryProcessor implements IQueryProcessor
 			
 			// set individual thumbnail:
 			if (variable.getId().startsWith("VFB_")){
-				Variable thumbnailVar = VariablesFactory.eINSTANCE.createVariable();
-				thumbnailVar.setId("thumbnail");
-				thumbnailVar.setName("Thumbnail");
-				thumbnailVar.getTypes().add(imageType);
-				geppettoModelAccess.addVariableToType(thumbnailVar, metadataType);
 				String tempThumb = "http://www.virtualflybrain.org/data/VFB/i/" + variable.getId().substring(4, 8) + "/" + variable.getId().substring(8) + "/thumbnail.png";
-				Image thumbnailValue = ValuesFactory.eINSTANCE.createImage();
-				thumbnailValue.setName(variable.getName());
-				thumbnailValue.setData(tempThumb);
-				thumbnailValue.setReference(variable.getId());
-				thumbnailValue.setFormat(ImageFormat.PNG);
-				thumbnailVar.getInitialValues().put(imageType, thumbnailValue);
+				if (checkURL(tempThumb)){
+					Variable thumbnailVar = VariablesFactory.eINSTANCE.createVariable();
+					thumbnailVar.setId("thumbnail");
+					thumbnailVar.setName("Thumbnail");
+					thumbnailVar.getTypes().add(imageType);
+					geppettoModelAccess.addVariableToType(thumbnailVar, metadataType);
+					Image thumbnailValue = ValuesFactory.eINSTANCE.createImage();
+					thumbnailValue.setName(variable.getName());
+					thumbnailValue.setData(tempThumb);
+					thumbnailValue.setReference(variable.getId());
+					thumbnailValue.setFormat(ImageFormat.PNG);
+					thumbnailVar.getInitialValues().put(imageType, thumbnailValue);
+				}
 			}
 			
 		}
@@ -114,7 +118,22 @@ public class AddImportTypesThumbnailQueryProcessor implements IQueryProcessor
 
 		return results;
 	}
-
+	/**
+	 * @param urlString
+	 */
+	private boolean checkURL(String urlString){
+		try{
+			URL url = new URL(urlString);
+			HttpURLConnection huc =  (HttpURLConnection)  url.openConnection();
+			huc.setRequestMethod("HEAD");
+			huc.setInstanceFollowRedirects(false);
+			return (huc.getResponseCode() == HttpURLConnection.HTTP_OK);
+		}catch(Exception e){
+			System.out.println("Error checking url (" + urlString + ") " + e.toString());
+			return false;
+		}
+	}
+	
 	@Override
 	public void registerGeppettoService() throws Exception
 	{

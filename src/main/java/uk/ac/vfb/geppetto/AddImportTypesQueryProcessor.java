@@ -32,6 +32,9 @@
  *******************************************************************************/
 package uk.ac.vfb.geppetto;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import org.geppetto.core.datasources.GeppettoDataSourceException;
 import org.geppetto.core.datasources.IQueryProcessor;
 import org.geppetto.core.features.IFeature;
@@ -96,11 +99,12 @@ public class AddImportTypesQueryProcessor implements IQueryProcessor
 					tempThumb = "http://www.virtualflybrain.org/data/VFB/i/" + tempId.substring(4, 8) + "/" + tempId.substring(8) + "/thumbnail.png";
 					tempName = (String) results.getValue("exName", i);
 					System.out.println("Adding Example Image: " + tempId + " " + tempName + " " + tempThumb);
-					addImage(tempThumb, tempName, tempId, images, i);
-					i++;
+					if (checkURL(tempThumb)){
+						addImage(tempThumb, tempName, tempId, images, i);
+						i++;
+					}
 				}
 				exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), images);
-				
 			}	
 		}
 		catch(GeppettoVisitingException e)
@@ -129,7 +133,22 @@ public class AddImportTypesQueryProcessor implements IQueryProcessor
 		element.setInitialValue(image);
 		images.getElements().add(element);
 	}
-
+	/**
+	 * @param urlString
+	 */
+	private boolean checkURL(String urlString){
+		try{
+			URL url = new URL(urlString);
+			HttpURLConnection huc =  (HttpURLConnection)  url.openConnection();
+			huc.setRequestMethod("HEAD");
+			huc.setInstanceFollowRedirects(false);
+			return (huc.getResponseCode() == HttpURLConnection.HTTP_OK);
+		}catch(Exception e){
+			System.out.println("Error checking url (" + urlString + ") " + e.toString());
+			return false;
+		}
+	}
+	
 	@Override
 	public void registerGeppettoService() throws Exception
 	{
