@@ -11,24 +11,31 @@
        						http://www.springframework.org/schema/aop/spring-aop-3.1.xsd">
 
 
-	<osgi:service id="VFBAddImportTypesQueryProcessorExporter" ref="vfbAddImportTypesSynonymQueryProcessor"
+	<osgi:service id="VFBImportTypesThumbnailQueryProcessorExporter" ref="vfbImportTypesThumbnailQueryProcessor"
 		interface="org.geppetto.core.datasources.IQueryProcessor">
 	</osgi:service>
-	<bean id="vfbAddImportTypesSynonymQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.AddImportTypesSynonymQueryProcessor">
+	<bean id="vfbImportTypesThumbnailQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.AddImportTypesImageQueryProcessor">
 	<aop:scoped-proxy proxy-target-class="false"/>
 	</bean>
 	
-	<osgi:service id="VFBAddImportTypesQueryProcessorExporter" ref="vfbAddImportTypesQueryProcessor"
+	<osgi:service id="VFBAddImportTypesQueryProcessorExporter" ref="vfbImportTypesSynonymQueryProcessor"
 		interface="org.geppetto.core.datasources.IQueryProcessor">
 	</osgi:service>
-	<bean id="vfbAddImportTypesQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.AddImportTypesQueryProcessor">
+	<bean id="vfbImportTypesSynonymQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.AddImportTypesSynonymQueryProcessor">
 	<aop:scoped-proxy proxy-target-class="false"/>
 	</bean>
 	
-	<osgi:service id="VFBAddTypesQueryProcessorExporter" ref="vfbAddTypesQueryProcessor"
+	<osgi:service id="VFBAddImportTypesQueryProcessorExporter" ref="vfbImportTypesQueryProcessor"
 		interface="org.geppetto.core.datasources.IQueryProcessor">
 	</osgi:service>
-	<bean id="vfbAddTypesQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.AddTypesQueryProcessor">
+	<bean id="vfbImportTypesQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.AddImportTypesQueryProcessor">
+	<aop:scoped-proxy proxy-target-class="false"/>
+	</bean>
+	
+	<osgi:service id="VFBAddTypesQueryProcessorExporter" ref="vfbTypesQueryProcessor"
+		interface="org.geppetto.core.datasources.IQueryProcessor">
+	</osgi:service>
+	<bean id="vfbTypesQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.AddTypesQueryProcessor">
 	<aop:scoped-proxy proxy-target-class="false"/>
 	</bean>
 	
