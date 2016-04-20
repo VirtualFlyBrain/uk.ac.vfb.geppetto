@@ -91,15 +91,15 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor {
                         if (((Map) results.getValue("relationship", i)).get("scope") != null) {
                             temp = (String) ((Map) results.getValue("relationship", i)).get("scope");
                             if (temp == "EXACT") {
-                                synonymLinks += "<i class=\"fa-li fa fa-bullseye\" title=\"synonym scope: " + temp + "\" aria-hidden=\"true\"></i>";
+                                synonymLinks += "<i class=\"popup-icon fa fa-bullseye\" title=\"synonym scope: " + temp + "\" aria-hidden=\"true\"></i>";
                             } else if (temp == "BROAD") {
-                                synonymLinks += "<i class=\"fa-li fa fa-expand\" title=\"synonym scope: " + temp + "\" aria-hidden=\"true\"></i>";
+                                synonymLinks += "<i class=\"popup-icon fa fa-expand\" title=\"synonym scope: " + temp + "\" aria-hidden=\"true\"></i>";
                             } else if (temp == "NARROW") {
-                                synonymLinks += "<i class=\"fa-li fa fa-compress\" title=\"synonym scope: " + temp + "\" aria-hidden=\"true\"></i>";
+                                synonymLinks += "<i class=\"popup-icon fa fa-compress\" title=\"synonym scope: " + temp + "\" aria-hidden=\"true\"></i>";
                             } else if (temp == "RELATED") {
-                                synonymLinks += "<i class=\"fa-li fa fa-link\" title=\"synonym scope: " + temp + "\" aria-hidden=\"true\"></i>";
+                                synonymLinks += "<i class=\"popup-icon fa popup-iconnk\" title=\"synonym scope: " + temp + "\" aria-hidden=\"true\"></i>";
                             } else {
-                                synonymLinks += "<i class=\"fa-li fa fa-question\" title=\"synonym scope: " + temp + "\" aria-hidden=\"true\"></i>";
+                                synonymLinks += "<i class=\"popup-icon fa fa-question\" title=\"synonym scope: " + temp + "\" aria-hidden=\"true\"></i>";
                             }
                         }
                         synonymLinks += (String) ((Map) results.getValue("relationship", i)).get("synonym") + "</a>";
