@@ -118,7 +118,7 @@ public class AddImportTypesImageQueryProcessor implements IQueryProcessor
 					objImportType.setId(variable.getId()+"_obj");
 					objImportType.setModelInterpreterId("objModelInterpreterService");
 					objVar.getTypes().add(objImportType);
-					getLibraryFor(dataSource,"obj").getTypes().add(objImportType);
+					geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource,"obj"));
 					objVar.setId(variable.getId()+"_obj");
 					objVar.setName("3D Volume");
 					type.getVariables().add(objVar);
@@ -133,7 +133,7 @@ public class AddImportTypesImageQueryProcessor implements IQueryProcessor
 					swcImportType.setId(variable.getId()+"_swc");
 					swcImportType.setModelInterpreterId("swcModelInterpreterService");
 					swcVar.getTypes().add(swcImportType);
-					getLibraryFor(dataSource,"swc").getTypes().add(swcImportType);
+					geppettoModelAccess.addTypeToLibrary(swcImportType, getLibraryFor(dataSource,"swc"));
 					swcVar.setName("3D Skeleton");
 					swcVar.setId(variable.getId()+"_swc");
 					type.getVariables().add(swcVar);
