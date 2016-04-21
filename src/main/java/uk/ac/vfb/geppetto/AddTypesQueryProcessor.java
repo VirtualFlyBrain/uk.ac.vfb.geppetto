@@ -94,6 +94,11 @@ public class AddTypesQueryProcessor implements IQueryProcessor
 		}
 		
 //		Extract initial metadata
+		
+//		Check if Variable already exists
+//		TODO check if existing and get or ...
+		
+//		Create new Variable
 		Variable metaDataVar = VariablesFactory.eINSTANCE.createVariable();
 		metaDataVar.setId("metaDataVar");
 		CompositeType metaData = TypesFactory.eINSTANCE.createCompositeType();
