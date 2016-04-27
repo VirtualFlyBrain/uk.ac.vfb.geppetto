@@ -131,7 +131,7 @@ public class AddImportTypesImageQueryProcessor implements IQueryProcessor
 					ImportType swcImportType=TypesFactory.eINSTANCE.createImportType();
 					swcImportType.setUrl(tempFile);
 					swcImportType.setId(variable.getId()+"_swc");
-					swcImportType.setModelInterpreterId("swcModelInterpreterService");
+					swcImportType.setModelInterpreterId("swcModelInterpreter");
 					swcVar.getTypes().add(swcImportType);
 					geppettoModelAccess.addTypeToLibrary(swcImportType, getLibraryFor(dataSource,"swc"));
 					swcVar.setName("3D Skeleton");
