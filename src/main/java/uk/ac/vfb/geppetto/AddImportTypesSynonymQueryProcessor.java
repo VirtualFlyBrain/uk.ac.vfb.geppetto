@@ -160,17 +160,17 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 								defRefs += "" + (String) results.getValue("relRef", i);
 								if(results.getValue("relFBrf", i) != null)
 								{
-									defRefs += "; <a href=\"flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >FlyBase: "
+									defRefs += " [<a href=\"flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >FlyBase:"
 											+ (String) results.getValue("relFBrf", i) + "</a>";
 								}
 								if(results.getValue("relPMID", i) != null)
 								{
-									defRefs += "; <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + (String) results.getValue("relPMID", i) + "\" target=\"_blank\" >PMID: "
+									defRefs += "; <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + (String) results.getValue("relPMID", i) + "\" target=\"_blank\" >PMID:"
 											+ (String) results.getValue("relPMID", i) + "</a>";
 								}
 								if(results.getValue("relDOI", i) != null)
 								{
-									defRefs += "; <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >doi: " + (String) results.getValue("relDOI", i)
+									defRefs += "; <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >doi:" + (String) results.getValue("relDOI", i)
 											+ "</a>";
 								}
 								defRefs += "<br/>";
@@ -198,23 +198,23 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 								}
 								if(results.getValue("relRef", i) != null)
 								{
-									relat += "(" + (String) results.getValue("relRef", i);
+									relat += "(" + (String) results.getValue("relRef", i) + ") [";
 									if(results.getValue("relFBrf", i) != null)
 									{
-										relat += "; <a href=\"flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >FlyBase: "
+										relat += "<a href=\"flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >FlyBase:"
 												+ (String) results.getValue("relFBrf", i) + "</a>";
 									}
 									if(results.getValue("relPMID", i) != null)
 									{
-										relat += "; <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + (String) results.getValue("relPMID", i) + "\" target=\"_blank\" >PMID: "
+										relat += "; <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + (String) results.getValue("relPMID", i) + "\" target=\"_blank\" >PMID:"
 												+ (String) results.getValue("relPMID", i) + "</a>";
 									}
 									if(results.getValue("relDOI", i) != null)
 									{
-										relat += "; <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >doi: " + (String) results.getValue("relDOI", i)
+										relat += "; <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >doi:" + (String) results.getValue("relDOI", i)
 												+ "</a>";
 									}
-									relat += ")";
+									relat += "]";
 								}
 								relat += "<br/>";
 							}
