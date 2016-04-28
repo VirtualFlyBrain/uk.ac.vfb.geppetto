@@ -133,7 +133,7 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 							synonymLinks += " (" + (String) results.getValue("relRef", i);
 							if(results.getValue("relFBrf", i) != null)
 							{
-								synonymLinks += ") [<a href=\"flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >FlyBase:"
+								synonymLinks += ") [<a href=\"http://flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >FlyBase:"
 										+ (String) results.getValue("relFBrf", i) + "</a>";
 							}
 							if(results.getValue("relPMID", i) != null)
@@ -160,7 +160,7 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 								defRefs += "" + (String) results.getValue("relRef", i);
 								if(results.getValue("relFBrf", i) != null)
 								{
-									defRefs += " [<a href=\"flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >FlyBase:"
+									defRefs += " [<a href=\"http://flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >FlyBase:"
 											+ (String) results.getValue("relFBrf", i) + "</a>";
 								}
 								if(results.getValue("relPMID", i) != null)
@@ -201,7 +201,7 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 									relat += "(" + (String) results.getValue("relRef", i) + ") [";
 									if(results.getValue("relFBrf", i) != null)
 									{
-										relat += "<a href=\"flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >FlyBase:"
+										relat += "<a href=\"http://flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >FlyBase:"
 												+ (String) results.getValue("relFBrf", i) + "</a>";
 									}
 									if(results.getValue("relPMID", i) != null)
