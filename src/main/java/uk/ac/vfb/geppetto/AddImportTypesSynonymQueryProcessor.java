@@ -133,20 +133,20 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 							synonymLinks += " (" + (String) results.getValue("relRef", i);
 							if(results.getValue("relFBrf", i) != null)
 							{
-								synonymLinks += "; <a href=\"flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >FlyBase: "
+								synonymLinks += ") [<a href=\"flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >FlyBase:"
 										+ (String) results.getValue("relFBrf", i) + "</a>";
 							}
 							if(results.getValue("relPMID", i) != null)
 							{
-								synonymLinks += "; <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + (String) results.getValue("relPMID", i) + "\" target=\"_blank\" >PMID: "
+								synonymLinks += "; <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + (String) results.getValue("relPMID", i) + "\" target=\"_blank\" >PMID:"
 										+ (String) results.getValue("relPMID", i) + "</a>";
 							}
 							if(results.getValue("relDOI", i) != null)
 							{
-								synonymLinks += "; <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >doi: " + (String) results.getValue("relDOI", i)
+								synonymLinks += "; <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >doi:" + (String) results.getValue("relDOI", i)
 										+ "</a>";
 							}
-							synonymLinks += ")";
+							synonymLinks += "]";
 						}
 						synonymLinks += "<br/>";
 					}
