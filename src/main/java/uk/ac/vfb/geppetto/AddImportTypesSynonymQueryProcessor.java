@@ -183,14 +183,14 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 							{
 								if(((Map) results.getValue("relationship", i)).get("label") != null)
 								{
-									relat += (String) ((Map) results.getValue("relationship", i)).get("label") + " ";
+									temp = ((String) ((Map) results.getValue("relationship", i)).get("label")).replace("_"," ");
+									relat += temp.substring(0, 1).toUpperCase() + temp.substring(1) + " ";
 								}
 								if(results.getValue("relName", i) != null)
 								{
 									if(results.getValue("relId", i) != null)
 									{
-										temp = ((String) results.getValue("relName", i)).replace("_"," ");
-										relat += "<a href=\"#\" instancepath=\"" + (String) results.getValue("relId", i) + "\">" + temp.substring(0, 1).toUpperCase() + temp.substring(1) + "</a> ";
+										relat += "<a href=\"#\" instancepath=\"" + (String) results.getValue("relId", i) + "\">" + (String) results.getValue("relName", i) + "</a> ";
 									}
 									else
 									{
