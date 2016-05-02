@@ -153,7 +153,7 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 					else
 					{
 						// definition refs:
-						if((String) ((Map) results.getValue("relationship", i)).get("typ") == "def")
+						if("def".equals((String) ((Map) results.getValue("relationship", i)).get("typ")))
 						{
 							if(results.getValue("relRef", i) != null)
 							{
@@ -179,7 +179,7 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 						else
 						{
 							// relationships and refs:
-							if((String) ((Map) results.getValue("relationship", i)).get("__type__") == "Related")
+							if("Related".equals((String) ((Map) results.getValue("relationship", i)).get("__type__")))
 							{
 								if(((Map) results.getValue("relationship", i)).get("label") != null)
 								{
@@ -226,6 +226,7 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 				// set Synonyms with any related references:
 				if(synonymLinks != "")
 				{
+					System.out.println("Synonyms:\n" + synonymLinks);
 					Variable synonyms = VariablesFactory.eINSTANCE.createVariable();
 					synonyms.setId("synonyms");
 					synonyms.setName("Alternative names");
@@ -239,6 +240,7 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 				// set Definition references:
 				if(defRefs != "")
 				{
+					System.out.println("References:\n" + defRefs);
 					Variable defReferences = VariablesFactory.eINSTANCE.createVariable();
 					defReferences.setId("references");
 					defReferences.setName("Definition References");
@@ -252,6 +254,7 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 				// set Relationships with any related references:
 				if(relat != "")
 				{
+					System.out.println("Relationships:\n" + relat);
 					Variable relationships = VariablesFactory.eINSTANCE.createVariable();
 					relationships.setId("relationships");
 					relationships.setName("Relationships");
