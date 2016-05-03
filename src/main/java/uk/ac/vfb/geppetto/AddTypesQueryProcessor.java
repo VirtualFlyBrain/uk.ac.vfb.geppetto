@@ -183,7 +183,7 @@ public class AddTypesQueryProcessor implements IQueryProcessor
 					extLink = "<a href=\"http://flybase.org/cgi-bin/cvreport.html?rel=is_a&id=" + ((String) results.getValue("id", 0)).replace("_", ":") + "\" target=\"_blank\" title=\"FlyBase\" ><img src=\"http://flybase.org/favicon\" height=20 alt=\"FlyBase\" style=\"border: orange;border-style: solid;\" /></a>";
 					break;
 				case "VFB_":
-					extLink = "<a href=\"http://neurolex.org/wiki/" + ((String) results.getValue("id", 0)).replace("_", ":") + "\" target=\"_blank\" title=\"NeuroLex\" ><img src=\"http://neurolex.org/favicon.ico\" height=20 alt=\"NeuroLex\" style=\"border: orange;border-style: solid;\" /></a>";
+					extLink = "<a href=\"http://neurolex.org/wiki/" + (String) results.getValue("id", 0) + "\" target=\"_blank\" title=\"NeuroLex\" ><img src=\"http://neurolex.org/favicon.ico\" height=20 alt=\"NeuroLex\" style=\"border: orange;border-style: solid;\" /></a>";
 					break;
 				default:
 					break;
