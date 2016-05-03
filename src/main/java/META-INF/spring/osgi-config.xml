@@ -25,7 +25,7 @@
 	<aop:scoped-proxy proxy-target-class="false"/>
 	</bean>
 	
-	<osgi:service id="VFBAddImportTypesQueryProcessorExporter" ref="vfbImportTypesRelatedQueryProcessor"
+	<osgi:service id="VFBAddImportTypesRelatedQueryProcessorExporter" ref="vfbImportTypesRelatedQueryProcessor"
 		interface="org.geppetto.core.datasources.IQueryProcessor">
 	</osgi:service>
 	<bean id="vfbImportTypesRelatedQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.AddImportTypesRelatedQueryProcessor">
