@@ -32,6 +32,8 @@
  *******************************************************************************/
 package uk.ac.vfb.geppetto;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Map;
 
 import org.geppetto.core.datasources.GeppettoDataSourceException;
@@ -48,7 +50,11 @@ import org.geppetto.model.types.Type;
 import org.geppetto.model.types.TypesPackage;
 import org.geppetto.model.util.GeppettoVisitingException;
 import org.geppetto.model.util.ModelUtility;
+import org.geppetto.model.values.ArrayElement;
+import org.geppetto.model.values.ArrayValue;
 import org.geppetto.model.values.HTML;
+import org.geppetto.model.values.Image;
+import org.geppetto.model.values.ImageFormat;
 import org.geppetto.model.values.ValuesFactory;
 import org.geppetto.model.variables.Variable;
 import org.geppetto.model.variables.VariablesFactory;
@@ -150,6 +156,40 @@ public class AddImportTypesRelatedQueryProcessor implements IQueryProcessor
 					relationshipsValue.setHtml(relat);
 					relationships.getInitialValues().put(htmlType, relationshipsValue);
 				}
+				
+				if ("<a href=\"#\" instancepath=\"VFB_10000005\">cluster</a><br/>".equals(typeLink)){
+					i = 0;
+					String tempId = "";
+					String tempThumb = "";
+					String tempName = "";
+		
+					int j = 0;
+					Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
+					exampleVar.setId("examples");
+					exampleVar.setName("Members");
+					exampleVar.getTypes().add(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE));
+					geppettoModelAccess.addVariableToType(exampleVar, metadataType);
+					ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
+					while(results.getValue("relationship", i) != null)
+					{ 
+						if("has_member".equals((String) ((Map) results.getValue("relationship", i)).get("label")))
+						{
+							if(results.getValue("relName", i) != null)
+							{
+								tempId = (String) results.getValue("relId", i);
+								tempThumb = "http://www.virtualflybrain.org/data/VFB/i/" + tempId.substring(4, 8) + "/" + tempId.substring(8) + "/thumbnail.png";
+								tempName = (String) results.getValue("relName", i);
+								System.out.println("Adding Cluster Image: " + tempId + " " + tempName + " " + tempThumb);
+								if (checkURL(tempThumb)){
+									addImage(tempThumb, tempName, tempId, images, j);
+									j++;
+								}
+							}
+						}
+						i++;
+					}
+					exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), images);
+				}
 			}
 
 		}
@@ -166,6 +206,40 @@ public class AddImportTypesRelatedQueryProcessor implements IQueryProcessor
 		return results;
 	}
 
+	/**
+	 * @param data
+	 * @param name
+	 * @param images
+	 * @param i
+	 */
+	private void addImage(String data, String name, String reference, ArrayValue images, int i)
+	{
+		Image image = ValuesFactory.eINSTANCE.createImage();
+		image.setName(name);
+		image.setData(data);
+		image.setReference(reference);
+		image.setFormat(ImageFormat.PNG);
+		ArrayElement element = ValuesFactory.eINSTANCE.createArrayElement();
+		element.setIndex(i);
+		element.setInitialValue(image);
+		images.getElements().add(element);
+	}
+	/**
+	 * @param urlString
+	 */
+	private boolean checkURL(String urlString){
+		try{
+			URL url = new URL(urlString);
+			HttpURLConnection huc =  (HttpURLConnection)  url.openConnection();
+			huc.setRequestMethod("HEAD");
+			huc.setInstanceFollowRedirects(false);
+			return (huc.getResponseCode() == HttpURLConnection.HTTP_OK);
+		}catch(Exception e){
+			System.out.println("Error checking url (" + urlString + ") " + e.toString());
+			return false;
+		}
+	}
+	
 	@Override
 	public void registerGeppettoService() throws Exception
 	{
