@@ -63,7 +63,7 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 	private enum SynonymIcons
 	{
 
-		EXACT("fa-bullseye"), BROAD("fa-expand"), NARROW("fa-link"), DEFAULT("fa-question");
+		EXACT("fa-bullseye"), BROAD("fa-expand"), NARROW("fa-compress"), DEFAULT("fa-question");
 
 		private SynonymIcons(final String text)
 		{
