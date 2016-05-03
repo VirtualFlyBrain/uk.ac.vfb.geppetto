@@ -169,7 +169,7 @@ public class AddTypesQueryProcessor implements IQueryProcessor
 			Variable external = VariablesFactory.eINSTANCE.createVariable();
 			external.setId("external");
 			external.setName("External Links");
-			external.getTypes().add(textType);
+			external.getTypes().add(htmlType);
 			metaData.getVariables().add(external);
 			
 			HTML externalValue = ValuesFactory.eINSTANCE.createHTML();
