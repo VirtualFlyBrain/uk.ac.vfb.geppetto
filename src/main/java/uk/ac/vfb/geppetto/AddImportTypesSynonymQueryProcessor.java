@@ -130,10 +130,10 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 						synonymLinks += (String) ((Map) results.getValue("relationship", i)).get("synonym") + "</a>";
 						if(results.getValue("relRef", i) != null)
 						{
-							synonymLinks += " (" + (String) results.getValue("relRef", i);
+							synonymLinks += " (" + (String) results.getValue("relRef", i) + ")";
 							if(results.getValue("relFBrf", i) != null)
 							{
-								synonymLinks += ") <a href=\"http://flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >"
+								synonymLinks += " <a href=\"http://flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >"
 										+ "<i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:"+(String) results.getValue("relFBrf", i)+"\" aria-hidden=\"true\"></i></a>";
 							}
 							if(results.getValue("relPMID", i) != null)
@@ -157,21 +157,21 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 						{
 							if(results.getValue("relRef", i) != null)
 							{
-								defRefs += "" + (String) results.getValue("relRef", i);
+								defRefs += (String) results.getValue("relRef", i);
 								if(results.getValue("relFBrf", i) != null)
 								{
-									defRefs += " [<a href=\"http://flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >"
+									defRefs += " <a href=\"http://flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >"
 											+ "<i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:"+(String) results.getValue("relFBrf", i)+"\" aria-hidden=\"true\"></i></a>";
 								}
 								if(results.getValue("relPMID", i) != null)
 								{
-									defRefs += "; <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + (String) results.getValue("relPMID", i) + "\" target=\"_blank\" >"
+									defRefs += " <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + (String) results.getValue("relPMID", i) + "\" target=\"_blank\" >"
 											+ "<i class=\"popup-icon-link gpt-pubmed\" title=\"PMID:"+(String) results.getValue("relPMID", i)+"\" aria-hidden=\"true\"></i></a>";
 								}
 								if(results.getValue("relDOI", i) != null)
 								{
-									defRefs += "; <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >"
-										+ "<i class=\"popup-icon-link gpt-doi\" title=\"doi:"+(String) results.getValue("relDOI", i)+"\" aria-hidden=\"true\"></i></a>]";
+									defRefs += " <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >"
+										+ "<i class=\"popup-icon-link gpt-doi\" title=\"doi:"+(String) results.getValue("relDOI", i)+"\" aria-hidden=\"true\"></i></a>";
 								}
 								defRefs += "<br/>";
 							}
@@ -199,23 +199,22 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 								}
 								if(results.getValue("relRef", i) != null)
 								{
-									relat += "(" + (String) results.getValue("relRef", i) + ") [";
+									relat += "(" + (String) results.getValue("relRef", i) + ")";
 									if(results.getValue("relFBrf", i) != null)
 									{
-										relat += "<a href=\"http://flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >"
+										relat += " <a href=\"http://flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >"
 												+ "<i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:"+(String) results.getValue("relFBrf", i)+"\" aria-hidden=\"true\"></i></a>";
 									}
 									if(results.getValue("relPMID", i) != null)
 									{
-										relat += "; <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + (String) results.getValue("relPMID", i) + "\" target=\"_blank\" >"
+										relat += " <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + (String) results.getValue("relPMID", i) + "\" target=\"_blank\" >"
 												+ "<i class=\"popup-icon-link gpt-pubmed\" title=\"PMID:"+(String) results.getValue("relPMID", i)+"\" aria-hidden=\"true\"></i></a>";
 									}
 									if(results.getValue("relDOI", i) != null)
 									{
-										relat += "; <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >"
+										relat += " <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >"
 												+ "<i class=\"popup-icon-link gpt-doi\" title=\"doi:"+(String) results.getValue("relDOI", i)+"\" aria-hidden=\"true\"></i>";
 									}
-									relat += "]";
 								}
 								relat += "<br/>";
 							}
