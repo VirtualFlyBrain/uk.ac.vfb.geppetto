@@ -123,7 +123,7 @@ public class AddImportTypesRelatedQueryProcessor implements IQueryProcessor
 					i++;
 				}
 
-				// set Synonyms with any related references:
+				// set parent Type:
 				if(typeLink != "")
 				{
 					System.out.println("Type:\n" + typeLink);
