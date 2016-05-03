@@ -164,36 +164,41 @@ public class AddTypesQueryProcessor implements IQueryProcessor
 				comment.getInitialValues().put(textType, commentValue);
 			}
 			
-			
 //			External Links:
-			Variable external = VariablesFactory.eINSTANCE.createVariable();
-			external.setId("external");
-			external.setName("External Links");
-			external.getTypes().add(htmlType);
-			metaData.getVariables().add(external);
-			
-			HTML externalValue = ValuesFactory.eINSTANCE.createHTML();
-			String extLink = "";
-			
-			switch (((String) results.getValue("id", 0)).substring(0, 4)) {
-				case "FBal":
-					extLink = "<a href=\"http://flybase.org/reports/" + (String) results.getValue("id", 0) + "\" target=\"_blank\" title=\"FlyBase\" ><img src=\"http://flybase.org/favicon\" height=20 alt=\"FlyBase\" style=\"border: orange;border-style: solid;\" /></a>";
-//					Add Allele as supertype
-					type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Allele", dependenciesLibrary));
-					break;
-				case "FBbt":
-					extLink = "<a href=\"http://flybase.org/cgi-bin/cvreport.html?rel=is_a&id=" + ((String) results.getValue("id", 0)).replace("_", ":") + "\" target=\"_blank\" title=\"FlyBase\" ><img src=\"http://flybase.org/favicon\" height=20 alt=\"FlyBase\" style=\"border: orange;border-style: solid;\" /></a> ";
-					extLink += "<a href=\"http://neurolex.org/wiki/" + (String) results.getValue("id", 0) + "\" target=\"_blank\" title=\"NeuroLex\" ><img src=\"http://neurolex.org/favicon.ico\" height=20 alt=\"NeuroLex\" style=\"border: orange;border-style: solid;\" /></a>";
-					break;
-				default:
-					extLink = "<br/>";
-					break;
+			if (((String) results.getValue("id", 0)).contains("VFB"))
+			{
+				Variable external = VariablesFactory.eINSTANCE.createVariable();
+				external.setId("external");
+				external.setName("External Links");
+				external.getTypes().add(htmlType);
+				metaData.getVariables().add(external);
+				
+				HTML externalValue = ValuesFactory.eINSTANCE.createHTML();
+				String extLink = "";
+				
+				switch (((String) results.getValue("id", 0)).substring(0, 3)) {
+					case "FBa":
+						extLink = "<a href=\"http://flybase.org/reports/" + (String) results.getValue("id", 0) + "\" target=\"_blank\" title=\"FlyBase\" ><img src=\"http://flybase.org/favicon\" height=20 alt=\"FlyBase\" style=\"border: orange;border-style: solid;\" /></a>";
+	//					Add Allele as supertype
+						type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Allele", dependenciesLibrary));
+						break;
+					case "FBb":
+						extLink = "<a href=\"http://flybase.org/cgi-bin/cvreport.html?rel=is_a&id=" + ((String) results.getValue("id", 0)).replace("_", ":") + "\" target=\"_blank\" title=\"FlyBase\" ><img src=\"http://flybase.org/favicon\" height=20 alt=\"FlyBase\" style=\"border: orange;border-style: solid;\" /></a> ";
+						extLink += "<a href=\"http://neurolex.org/wiki/" + (String) results.getValue("id", 0) + "\" target=\"_blank\" title=\"NeuroLex\" ><img src=\"http://neurolex.org/favicon.ico\" height=20 alt=\"NeuroLex\" style=\"border: orange;border-style: solid;\" /></a>";
+						break;
+					case "GO_":
+						extLink = "<a href=\"http://amigo.geneontology.org/amigo/term/GO:0061527" + ((String) results.getValue("id", 0)).replace("_", ":") + "\" target=\"_blank\" title=\"FlyBase\" >GO</a>";
+						break;
+					default:
+						extLink = "<br/>";
+						break;
+				}
+				
+				externalValue.setHtml(extLink);
+	
+				htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
+				external.getInitialValues().put(htmlType, externalValue);
 			}
-			
-			externalValue.setHtml(extLink);
-
-			htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
-			external.getInitialValues().put(htmlType, externalValue);
 			
 			type.getVariables().add(metaDataVar);
 			geppettoModelAccess.addTypeToLibrary(metaData, dataSource.getTargetLibrary());
