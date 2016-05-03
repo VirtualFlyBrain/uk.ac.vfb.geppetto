@@ -163,7 +163,37 @@ public class AddTypesQueryProcessor implements IQueryProcessor
 				commentValue.setText((String) ((List<String>) results.getValue("comment", 0)).get(0));
 				comment.getInitialValues().put(textType, commentValue);
 			}
+			
+			
+//			External Links:
+			Variable external = VariablesFactory.eINSTANCE.createVariable();
+			external.setId("external");
+			external.setName("External Links");
+			external.getTypes().add(textType);
+			metaData.getVariables().add(external);
+			
+			HTML externalValue = ValuesFactory.eINSTANCE.createHTML();
+			String extLink = "";
+			
+			switch (((String) results.getValue("id", 0)).substring(0, 4)) {
+				case "FBal":
+					extLink = "<a href=\"http://flybase.org/reports/" + (String) results.getValue("id", 0) + "\" target=\"_blank\" title=\"FlyBase\" ><img src=\"http://flybase.org/favicon\" height=10 alt=\"FlyBase\"/></a>";
+					break;
+				case "FBbt":
+					extLink = "<a href=\"http://flybase.org/cgi-bin/cvreport.html?rel=is_a&id=" + ((String) results.getValue("id", 0)).replace("_", ":") + "\" target=\"_blank\" title=\"FlyBase\" ><img src=\"http://flybase.org/favicon\" height=10 alt=\"FlyBase\"/></a>";
+					break;
+				case "VFB_":
+					extLink = "<a href=\"http://neurolex.org/wiki/" + ((String) results.getValue("id", 0)).replace("_", ":") + "\" target=\"_blank\" title=\"NeuroLex\" ><img src=\"http://neurolex.org/favicon.ico\" height=10 alt=\"NeuroLex\"/></a>";
+					break;
+				default:
+					break;
+			}
+			
+			externalValue.setHtml(extLink);
 
+			htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
+			external.getInitialValues().put(htmlType, externalValue);
+			
 			type.getVariables().add(metaDataVar);
 			geppettoModelAccess.addTypeToLibrary(metaData, dataSource.getTargetLibrary());
 			
