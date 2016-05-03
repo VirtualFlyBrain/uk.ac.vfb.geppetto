@@ -182,6 +182,11 @@ public class AddTypesQueryProcessor implements IQueryProcessor
 	//					Add Allele as supertype
 						type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Allele", dependenciesLibrary));
 						break;
+					case "FBt":
+						extLink = "<a href=\"http://flybase.org/reports/" + (String) results.getValue("id", 0) + "\" target=\"_blank\" title=\"FlyBase\" ><i class=\"popup-icon-link gpt-fly\" title=\"FlyBase: "+(String) results.getValue("id", 0)+"\" aria-hidden=\"true\"></i></a></a>";
+	//					Add Transgene as supertype
+						type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Transgene", dependenciesLibrary));
+						break;
 					case "FBb":
 						extLink = "<a href=\"http://flybase.org/cgi-bin/cvreport.html?rel=is_a&id=" + ((String) results.getValue("id", 0)).replace("_", ":") + "\" target=\"_blank\" title=\"FlyBase\" ><i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:"+(String) results.getValue("id", 0)+"\" aria-hidden=\"true\"></i></a></a> ";
 						extLink += "<a href=\"http://neurolex.org/wiki/" + (String) results.getValue("id", 0) + "\" target=\"_blank\" title=\"NeuroLex\" >NeuroLex</a>";
