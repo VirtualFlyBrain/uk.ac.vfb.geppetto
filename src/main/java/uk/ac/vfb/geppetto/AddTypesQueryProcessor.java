@@ -165,7 +165,7 @@ public class AddTypesQueryProcessor implements IQueryProcessor
 			}
 			
 //			External Links:
-			if (((String) results.getValue("id", 0)).contains("VFB"))
+			if (!((String) results.getValue("id", 0)).contains("VFB"))
 			{
 				Variable external = VariablesFactory.eINSTANCE.createVariable();
 				external.setId("external");
