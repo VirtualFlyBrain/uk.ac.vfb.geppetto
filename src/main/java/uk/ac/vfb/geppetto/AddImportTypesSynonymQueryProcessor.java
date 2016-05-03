@@ -134,17 +134,17 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 							if(results.getValue("relFBrf", i) != null)
 							{
 								synonymLinks += ") <a href=\"http://flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >"
-										+ "<i class=\"popup-icon-link gpt-fly\" title=\""+(String) results.getValue("relFBrf", i)+"\" aria-hidden=\"true\"></i></a>";
+										+ "<i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:"+(String) results.getValue("relFBrf", i)+"\" aria-hidden=\"true\"></i></a>";
 							}
 							if(results.getValue("relPMID", i) != null)
 							{
 								synonymLinks += " <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + (String) results.getValue("relPMID", i) + "\" target=\"_blank\" >"
-										+ "<i class=\"popup-icon-link gpt-pubmed\" title=\""+(String) results.getValue("relPMID", i)+"\" aria-hidden=\"true\"></i></a>";
+										+ "<i class=\"popup-icon-link gpt-pubmed\" title=\"PMID:"+(String) results.getValue("relPMID", i)+"\" aria-hidden=\"true\"></i></a>";
 							}
 							if(results.getValue("relDOI", i) != null)
 							{
 								synonymLinks += " <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >"
-										+ "<i class=\"popup-icon-link gpt-doi\" title=\""+(String) results.getValue("relDOI", i)+"\" aria-hidden=\"true\"></i></a>";
+										+ "<i class=\"popup-icon-link gpt-doi\" title=\"doi:"+(String) results.getValue("relDOI", i)+"\" aria-hidden=\"true\"></i></a>";
 							}
 
 						}
@@ -160,18 +160,18 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 								defRefs += "" + (String) results.getValue("relRef", i);
 								if(results.getValue("relFBrf", i) != null)
 								{
-									defRefs += " [<a href=\"http://flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >FlyBase:"
-											+ (String) results.getValue("relFBrf", i) + "</a>";
+									defRefs += " [<a href=\"http://flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >"
+											+ "<i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:"+(String) results.getValue("relFBrf", i)+"\" aria-hidden=\"true\"></i></a>";
 								}
 								if(results.getValue("relPMID", i) != null)
 								{
-									defRefs += "; <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + (String) results.getValue("relPMID", i) + "\" target=\"_blank\" >PMID:"
-											+ (String) results.getValue("relPMID", i) + "</a>";
+									defRefs += "; <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + (String) results.getValue("relPMID", i) + "\" target=\"_blank\" >"
+											+ "<i class=\"popup-icon-link gpt-pubmed\" title=\"PMID:"+(String) results.getValue("relPMID", i)+"\" aria-hidden=\"true\"></i></a>";
 								}
 								if(results.getValue("relDOI", i) != null)
 								{
-									defRefs += "; <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >doi:" + (String) results.getValue("relDOI", i)
-											+ "</a>]";
+									defRefs += "; <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >"
+										+ "<i class=\"popup-icon-link gpt-doi\" title=\"doi:"+(String) results.getValue("relDOI", i)+"\" aria-hidden=\"true\"></i></a>]";
 								}
 								defRefs += "<br/>";
 							}
@@ -202,18 +202,18 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 									relat += "(" + (String) results.getValue("relRef", i) + ") [";
 									if(results.getValue("relFBrf", i) != null)
 									{
-										relat += "<a href=\"http://flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >FlyBase:"
-												+ (String) results.getValue("relFBrf", i) + "</a>";
+										relat += "<a href=\"http://flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >"
+												+ "<i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:"+(String) results.getValue("relFBrf", i)+"\" aria-hidden=\"true\"></i></a>";
 									}
 									if(results.getValue("relPMID", i) != null)
 									{
-										relat += "; <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + (String) results.getValue("relPMID", i) + "\" target=\"_blank\" >PMID:"
-												+ (String) results.getValue("relPMID", i) + "</a>";
+										relat += "; <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + (String) results.getValue("relPMID", i) + "\" target=\"_blank\" >"
+												+ "<i class=\"popup-icon-link gpt-pubmed\" title=\"PMID:"+(String) results.getValue("relPMID", i)+"\" aria-hidden=\"true\"></i></a>";
 									}
 									if(results.getValue("relDOI", i) != null)
 									{
-										relat += "; <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >doi:" + (String) results.getValue("relDOI", i)
-												+ "</a>";
+										relat += "; <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >"
+												+ "<i class=\"popup-icon-link gpt-doi\" title=\"doi:"+(String) results.getValue("relDOI", i)+"\" aria-hidden=\"true\"></i>";
 									}
 									relat += "]";
 								}
