@@ -54,6 +54,7 @@ import org.geppetto.model.types.TypesPackage;
 import org.geppetto.model.types.VisualType;
 import org.geppetto.model.util.GeppettoVisitingException;
 import org.geppetto.model.util.ModelUtility;
+import org.geppetto.model.values.HTML;
 import org.geppetto.model.values.Image;
 import org.geppetto.model.values.ImageFormat;
 import org.geppetto.model.values.ValuesFactory;
@@ -86,6 +87,7 @@ public class AddImportTypesImageQueryProcessor implements IQueryProcessor
 			CompositeType type = (CompositeType) variable.getAnonymousTypes().get(0);
 
 			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
+			Type htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
 			
 			System.out.println("Processing Images...");
 			
@@ -141,6 +143,18 @@ public class AddImportTypesImageQueryProcessor implements IQueryProcessor
 				tempFile = remoteForID(variable.getId()) + "volume.nrrd";
 				if (checkURL(tempFile)){
 					System.out.println("Adding NRRD...");
+					Variable downloads = VariablesFactory.eINSTANCE.createVariable();
+					downloads.setId("downloads");
+					downloads.setName("Downloads");
+					downloads.getTypes().add(htmlType);
+					geppettoModelAccess.addVariableToType(downloads, metadataType);
+					
+					HTML downloadValue = ValuesFactory.eINSTANCE.createHTML();
+					String downloadLink = "Aligned Image: ​<a download=\"" + (String) variable.getId() + ".nrrd\" href=\"" + tempFile + "\">" + (String) variable.getId() + ".nrrd</a><br/>​​​​​​​​​​​​​​​​​​​​​​​​​​​";
+					downloadLink += "Note: see licensing section for reuse and attribution info.";
+					
+					downloadValue.setHtml(downloadLink);
+					downloads.getInitialValues().put(htmlType, downloadValue);
 					// TODO add NRRD download
 				}
 				tempFile = remoteForID(variable.getId()) + "volume.wlz";
