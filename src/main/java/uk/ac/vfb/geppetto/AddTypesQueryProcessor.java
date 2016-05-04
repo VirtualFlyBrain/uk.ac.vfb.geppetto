@@ -187,12 +187,17 @@ public class AddTypesQueryProcessor implements IQueryProcessor
 	//					Add Transgene as supertype
 						type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Transgene", dependenciesLibrary));
 						break;
+					case "FBg":
+						extLink = "<a href=\"http://flybase.org/reports/" + (String) results.getValue("id", 0) + "\" target=\"_blank\" title=\"FlyBase\" ><i class=\"popup-icon-link gpt-fly\" title=\"FlyBase: "+(String) results.getValue("id", 0)+"\" aria-hidden=\"true\"></i></a></a>";
+	//					Add Allele as supertype
+						type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Gene", dependenciesLibrary));
+						break;
 					case "FBb":
 						extLink = "<a href=\"http://flybase.org/cgi-bin/cvreport.html?rel=is_a&id=" + ((String) results.getValue("id", 0)).replace("_", ":") + "\" target=\"_blank\" title=\"FlyBase\" ><i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:"+(String) results.getValue("id", 0)+"\" aria-hidden=\"true\"></i></a></a> ";
 						extLink += "<a href=\"http://neurolex.org/wiki/" + (String) results.getValue("id", 0) + "\" target=\"_blank\" title=\"NeuroLex\" ><i class=\"popup-icon-link gpt-neurolex\" title=\"NeuroLex:"+(String) results.getValue("id", 0)+"\" aria-hidden=\"true\"></i></a>";
 						break;
 					case "GO_":
-						extLink = "<a href=\"http://amigo.geneontology.org/amigo/term/GO:0061527" + ((String) results.getValue("id", 0)).replace("_", ":") + "\" target=\"_blank\" title=\"FlyBase\" >GO</a>";
+						extLink = "<a href=\"http://amigo.geneontology.org/amigo/term/GO:0061527" + ((String) results.getValue("id", 0)).replace("_", ":") + "\" target=\"_blank\" title=\"FlyBase\" ><i class=\"popup-icon-link gpt-geneontology\" title=\"GeneOntology:"+(String) results.getValue("id", 0)+"\" aria-hidden=\"true\"></i></a>";
 						break;
 					default:
 						extLink = "<br/>";
