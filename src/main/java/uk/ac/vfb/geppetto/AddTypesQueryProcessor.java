@@ -106,7 +106,7 @@ public class AddTypesQueryProcessor implements IQueryProcessor
 		metaDataVar.setId(variable.getId() + "_meta");
 		metaData.setId(variable.getId() + "_metadata");
 		metaData.setName("Info");
-		metaDataVar.setName("Info");
+		metaDataVar.setName(variable.getName());
 		
 		try {
 			Type textType = geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE);
