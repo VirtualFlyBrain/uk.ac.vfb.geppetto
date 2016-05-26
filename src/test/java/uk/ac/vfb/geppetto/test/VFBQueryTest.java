@@ -130,7 +130,7 @@ public class VFBQueryTest
 	@Test
 	public void testFetchVariable() throws GeppettoDataSourceException, GeppettoInitializationException, GeppettoVisitingException, IOException
 	{
-		GeppettoModel model = GeppettoModelReader.readGeppettoModel(VFBQueryTest.class.getClassLoader().getResource("GeppettoModelM1.xmi"));
+		GeppettoModel model = GeppettoModelReader.readGeppettoModel(VFBQueryTest.class.getClassLoader().getResource("OntologyTest/GeppettoModelM1.xmi"));
         model.getLibraries().add(SharedLibraryManager.getSharedCommonLibrary());
         
 		GeppettoModelAccess geppettoModelAccess = new GeppettoModelAccess(model);
