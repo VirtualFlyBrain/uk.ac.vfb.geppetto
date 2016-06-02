@@ -95,7 +95,7 @@ public class AddImportTypesRelatedQueryProcessor implements IQueryProcessor
 				int i = 0;
 				while(results.getValue("relationship", i) != null)
 				{ 
-					if("type".equals((String) ((Map) results.getValue("relationship", i)).get("label")) || "SUBCLASSOF".equals((String) ((Map) results.getValue("relationship", i)).get("type")))
+					if("type".equals((String) ((Map) results.getValue("relationship", i)).get("label")) || "is a".equals((String) ((Map) results.getValue("relationship", i)).get("label")))
 					{ // parent type:
 						typeLink += "<a href=\"#\" instancepath=\"" + (String) results.getValue("relId", i) + "\">";
 						typeLink += (String) results.getValue("relName", i) + "</a>";
