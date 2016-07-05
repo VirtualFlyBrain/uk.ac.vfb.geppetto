@@ -7,7 +7,7 @@
             "id": 1,
             "name": "Only morphology, no simulation",
             "status": "COMPLETED",
-            description : "VFB Sample",
+            "description": "VFB Sample",
             "lastModified":"1436102517799",
             "script": "/projects/VFB/script.js",
             "aspectConfigurations": []
