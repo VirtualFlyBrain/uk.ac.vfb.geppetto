@@ -89,6 +89,8 @@ public class AddTypesQueryProcessor implements IQueryProcessor
                     type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
                 }
             }
+        }else{
+            type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Orphan", dependenciesLibrary));
         }
 		
 //		Extract initial metadata
@@ -135,7 +137,6 @@ public class AddTypesQueryProcessor implements IQueryProcessor
 				labelLink = "<a href=\"#\" instancepath=\"" + (String) variable.getId() + "\">" + (String) results.getValue("name", 0) + "</a>";
 			}else{
 				labelLink = "<a href=\"#\" instancepath=\"" + (String) variable.getId() + "\">" + (String) variable.getName() + "</a>";
-				type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Orphan", dependenciesLibrary));
 			}
 			labelValue.setHtml(labelLink);
 
