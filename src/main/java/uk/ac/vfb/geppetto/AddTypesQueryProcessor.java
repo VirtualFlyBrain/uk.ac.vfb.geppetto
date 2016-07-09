@@ -119,7 +119,7 @@ public class AddTypesQueryProcessor implements IQueryProcessor
 			metaID.getTypes().add(htmlType);
 			metaData.getVariables().add(metaID);
 			HTML metaIdValue = ValuesFactory.eINSTANCE.createHTML();
-			String idLink = "<a href=\"#\" instancepath=\"" + (String) results.getValue("id", 0) + "\">" + (String) results.getValue("id", 0) + "</a>";
+			String idLink = "<a href=\"#\" instancepath=\"" + (String) variable.getId() + "\">" + (String) variable.getId() + "</a>";
 			metaIdValue.setHtml(idLink);
 
 			htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
@@ -132,7 +132,12 @@ public class AddTypesQueryProcessor implements IQueryProcessor
 			label.getTypes().add(htmlType);
 			metaData.getVariables().add(label);
 			HTML labelValue = ValuesFactory.eINSTANCE.createHTML();
-			String labelLink = "<a href=\"#\" instancepath=\"" + (String) results.getValue("id", 0) + "\">" + (String) results.getValue("name", 0) + "</a>";
+			if (results.getValue("name", 0) != null) {
+				String labelLink = "<a href=\"#\" instancepath=\"" + (String) variable.getId() + "\">" + (String) results.getValue("name", 0) + "</a>";
+			}else{
+				String labelLink = "<a href=\"#\" instancepath=\"" + (String) variable.getId() + "\">" + (String) variable.getName() + "</a>";
+				type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Orphan", dependenciesLibrary));
+			}
 			labelValue.setHtml(labelLink);
 
 			htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
@@ -165,7 +170,7 @@ public class AddTypesQueryProcessor implements IQueryProcessor
 			}
 			
 //			External Links:
-			if (!((String) results.getValue("id", 0)).contains("VFB"))
+			if (!((String) variable.getId()).contains("VFB"))
 			{
 				Variable external = VariablesFactory.eINSTANCE.createVariable();
 				external.setId("external");

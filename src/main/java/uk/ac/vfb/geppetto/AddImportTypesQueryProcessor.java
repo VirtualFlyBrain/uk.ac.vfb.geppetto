@@ -79,20 +79,24 @@ public class AddImportTypesQueryProcessor implements IQueryProcessor
 			CompositeType metadataType = (CompositeType) ModelUtility.getTypeFromLibrary(variable.getId() + "_metadata", dataSource.getTargetLibrary());
 
 			System.out.println("Processing Examples...");
+
+            String tempId = "";
+            String tempThumb = "";
+            String tempName = "";
+
+            int i = 0;
+
+            Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
+            exampleVar.setId("examples");
+            exampleVar.setName("Examples");
+            exampleVar.getTypes().add(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE));
+            geppettoModelAccess.addVariableToType(exampleVar, metadataType);
+            ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
 			
 			if (results.getValue("exId", 0) != null) {
-			
-				String tempId = "";
-				String tempThumb = "";
-				String tempName = "";
-	
-				int i = 0;
-				Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
-				exampleVar.setId("examples");
-				exampleVar.setName("Examples");
-				exampleVar.getTypes().add(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE));
-				geppettoModelAccess.addVariableToType(exampleVar, metadataType);
-				ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
+
+                i=0;
+
 				while(results.getValue("exId", i) != null)
 				{
 					tempId = (String) results.getValue("exId", i);
@@ -105,7 +109,43 @@ public class AddImportTypesQueryProcessor implements IQueryProcessor
 					}
 				}
 				exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), images);
-			}	
+			} else if (variable.getId().contains("VFBd_")){
+
+                i=0;
+
+                tempId = (String) variable.getId();
+                tempThumb = "http://www.virtualflybrain.org/data/VFB/t/" + tempId.substring(5, 9) + "/" + tempId.substring(9) + "/thumbnail.png";
+                tempName = (String) variable.getId();
+                System.out.println("Adding Example Image: " + tempId + " " + tempName + " " + tempThumb);
+                if (checkURL(tempThumb)){
+                    addImage(tempThumb, tempName, tempId, images, i);
+                }
+				exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), images);
+			} else if (variable.getId().contains("VFB_a")){
+
+                i=0;
+
+                tempId = (String) variable.getId();
+                tempThumb = "http://www.virtualflybrain.org/data/VFB/i/" + tempId.substring(4, 8) + "/" + tempId.substring(8) + "/thumbnail.png";
+                tempName = (String) variable.getId();
+                System.out.println("Adding Example Image: " + tempId + " " + tempName + " " + tempThumb);
+                if (checkURL(tempThumb)){
+                    addImage(tempThumb, tempName, tempId, images, i);
+                }
+                exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), images);
+            } else if (variable.getId().contains("VFB_td")){
+
+                i=0;
+
+                tempId = (String) variable.getId();
+                tempThumb = "http://www.virtualflybrain.org/data/VFB/i/" + tempId.substring(4, 8) + "/" + tempId.substring(8) + "/thumbnail.png";
+                tempName = (String) variable.getId();
+                System.out.println("Adding Example Image: " + tempId + " " + tempName + " " + tempThumb);
+                if (checkURL(tempThumb)){
+                    addImage(tempThumb, tempName, tempId, images, i);
+                }
+                exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), images);
+            }
 		}
 		catch(GeppettoVisitingException e)
 		{
