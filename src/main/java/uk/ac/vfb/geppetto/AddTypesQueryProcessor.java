@@ -132,10 +132,11 @@ public class AddTypesQueryProcessor implements IQueryProcessor
 			label.getTypes().add(htmlType);
 			metaData.getVariables().add(label);
 			HTML labelValue = ValuesFactory.eINSTANCE.createHTML();
-			if (results.getValue("name", 0) != null) {
-				String labelLink = "<a href=\"#\" instancepath=\"" + (String) variable.getId() + "\">" + (String) results.getValue("name", 0) + "</a>";
+            String labelLink = "";
+            if (results.getValue("name", 0) != null) {
+				labelLink = "<a href=\"#\" instancepath=\"" + (String) variable.getId() + "\">" + (String) results.getValue("name", 0) + "</a>";
 			}else{
-				String labelLink = "<a href=\"#\" instancepath=\"" + (String) variable.getId() + "\">" + (String) variable.getName() + "</a>";
+				labelLink = "<a href=\"#\" instancepath=\"" + (String) variable.getId() + "\">" + (String) variable.getName() + "</a>";
 				type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Orphan", dependenciesLibrary));
 			}
 			labelValue.setHtml(labelLink);
