@@ -80,18 +80,17 @@ public class AddTypesQueryProcessor implements IQueryProcessor
 		variable.getAnonymousTypes().add(type);
 
 		// add supertypes
+        if (results.getValue("supertypes", 0) != null) {
+            List<String> supertypes = (List<String>) results.getValue("supertypes", 0);
 
-		List<String> supertypes = (List<String>) results.getValue("supertypes", 0);
+            List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
 
-		List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
-
-		for(String supertype : supertypes)
-		{
-			if(!supertype.startsWith("_"))
-			{ // ignore supertypes starting with _
-				type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
-			}
-		}
+            for (String supertype : supertypes) {
+                if (!supertype.startsWith("_")) { // ignore supertypes starting with _
+                    type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
+                }
+            }
+        }
 		
 //		Extract initial metadata
 		
