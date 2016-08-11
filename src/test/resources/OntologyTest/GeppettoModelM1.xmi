@@ -154,7 +154,19 @@
         xsi:type="gep:SimpleQuery"
         label="Neurons"
         description="Neurons with some part here"
-        query="type=subeq&query=%3Chttp://purl.obolibrary.org/obo/FBbt_00005106%3E%20that%20%3Chttp://purl.obolibrary.org/obo/RO_0002131%3E%20some%20%3Chttp://purl.obolibrary.org/obo/FBbt_00003748%3E&ontology=VFB_Ind"
+        query="type=subeq&query=%3Chttp://purl.obolibrary.org/obo/FBbt_00005106%3E%20that%20%3Chttp://purl.obolibrary.org/obo/RO_0002131%3E%20some%20%3Chttp://purl.obolibrary.org/obo/$ID%3E&ontology=VFB_Ind"
+        countQuery=""/>
+    <queries
+        xsi:type="gep:SimpleQuery"
+        label="Neurons Synaptic"
+        description="Neurons with synaptic terminals here"
+        query="type=subeq&query=%3Chttp://purl.obolibrary.org/obo/FBbt_00005106%3E%20that%20%3Chttp://purl.obolibrary.org/obo/RO_0002130%3E%20some%20%3Chttp://purl.obolibrary.org/obo/$ID%3E&ontology=VFB_Ind"
+        countQuery=""/>
+    <queries
+        xsi:type="gep:SimpleQuery"
+        label="Neurons Presynaptic"
+        description="Neurons with presynaptic terminals here"
+        query="type=subeq&query=%3Chttp://purl.obolibrary.org/obo/FBbt_00005106%3E%20that%20%3Chttp://purl.obolibrary.org/obo/RO_0002113%3E%20some%20%3Chttp://purl.obolibrary.org/obo/$ID%3E&ontology=VFB_Ind"
         countQuery=""/>
   </dataSources>
 </gep:GeppettoModel>
