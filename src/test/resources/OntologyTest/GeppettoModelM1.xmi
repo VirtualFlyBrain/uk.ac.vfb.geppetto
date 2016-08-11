@@ -168,5 +168,11 @@
         description="Neurons with presynaptic terminals here"
         query="type=subeq&amp;query=%3Chttp://purl.obolibrary.org/obo/FBbt_00005106%3E%20that%20%3Chttp://purl.obolibrary.org/obo/RO_0002113%3E%20some%20%3Chttp://purl.obolibrary.org/obo/$ID%3E&amp;ontology=VFB_Ind"
         countQuery=""/>
+    <queries
+        xsi:type="gep:SimpleQuery"
+        label="Neurons Postsynaptic"
+        description="Neurons with postsynaptic terminals here"
+        query="type=subeq&amp;query=%3Chttp://purl.obolibrary.org/obo/FBbt_00005106%3E%20that%20%3Chttp://purl.obolibrary.org/obo/RO_0002110%3E%20some%20%3Chttp://purl.obolibrary.org/obo/$ID%3E&amp;ontology=VFB_Ind"
+        countQuery=""/>
   </dataSources>
 </gep:GeppettoModel>
