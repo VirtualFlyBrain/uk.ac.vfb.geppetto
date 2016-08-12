@@ -62,6 +62,9 @@
     <types xsi:type="gep_1:SimpleType"		
         id="FBBI"		
         name="FlyBase Biological Imaging Methods"/>
+    <types xsi:type="gep_1:SimpleType"		
+        id="Root"		
+        name="Top Object"/>
   </libraries>
   <libraries
       id="vfbLibrary"
