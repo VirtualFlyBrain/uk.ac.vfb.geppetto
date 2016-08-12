@@ -41,6 +41,27 @@
     <types xsi:type="gep_1:SimpleType"		
         id="Orphan"		
         name="No Meta Data"/>
+    <types xsi:type="gep_1:SimpleType"		
+        id="Obsolete"		
+        name="Obsolete"/>
+    <types xsi:type="gep_1:SimpleType"		
+        id="Synaptic_neuropil_domain"		
+        name="Synaptic Neuropil Domain"/>
+    <types xsi:type="gep_1:SimpleType"		
+        id="Synaptic_neuropil_subdomain"		
+        name="Synaptic Neuropil Subdomain"/>
+    <types xsi:type="gep_1:SimpleType"		
+        id="Synaptic_neuropil_block"		
+        name="Synaptic Neuropil Block"/>
+    <types xsi:type="gep_1:SimpleType"		
+        id="FBDV"		
+        name="FlyBase Development CV"/>
+    <types xsi:type="gep_1:SimpleType"		
+        id="FBCV"		
+        name="FlyBase Controlled Vocabulary"/>
+    <types xsi:type="gep_1:SimpleType"		
+        id="FBBI"		
+        name="FlyBase Biological Imaging Methods"/>
   </libraries>
   <libraries
       id="vfbLibrary"
