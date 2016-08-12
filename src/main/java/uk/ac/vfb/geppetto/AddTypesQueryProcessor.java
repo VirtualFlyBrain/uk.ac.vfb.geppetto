@@ -87,6 +87,7 @@ public class AddTypesQueryProcessor implements IQueryProcessor
             for (String supertype : supertypes) {
                 if (!supertype.startsWith("_")) { // ignore supertypes starting with _
                     type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
+					System.out.println("Adding to SuperType: " + supertype);
                 }
             }
         }else{
