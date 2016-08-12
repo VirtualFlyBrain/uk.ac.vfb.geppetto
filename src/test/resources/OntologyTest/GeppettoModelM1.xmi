@@ -68,6 +68,9 @@
     <types xsi:type="gep_1:SimpleType"		
         id="pub"		
         name="Publication"/>
+    <types xsi:type="gep_1:SimpleType"		
+        id="Resource"		
+        name="Resource"/>
   </libraries>
   <libraries
       id="vfbLibrary"
