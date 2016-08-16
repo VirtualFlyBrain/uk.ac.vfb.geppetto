@@ -130,7 +130,7 @@ public class AddImportTypesRelatedQueryProcessor implements IQueryProcessor
 				}
 
 				// set parent Type:
-				if(typeLink != "")
+				if(!"".equals(typeLink))
 				{
 					System.out.println("Type:\n" + typeLink);
 					Variable type = VariablesFactory.eINSTANCE.createVariable();
@@ -144,7 +144,7 @@ public class AddImportTypesRelatedQueryProcessor implements IQueryProcessor
 				}
 
 				// set Relationships with any related references:
-				if(relat != "")
+				if(!"".equals(relat))
 				{
 					System.out.println("Relationships:\n" + relat);
 					Variable relationships = VariablesFactory.eINSTANCE.createVariable();
