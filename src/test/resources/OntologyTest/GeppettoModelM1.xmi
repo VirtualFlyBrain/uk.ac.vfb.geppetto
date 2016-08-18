@@ -3,8 +3,8 @@
     xmi:version="2.0"
     xmlns:xmi="http://www.omg.org/XMI"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:gep="https://raw.githubusercontent.com/openworm/org.geppetto.model/master/src/main/resources/geppettoModel.ecore"
-    xmlns:gep_1="https://raw.githubusercontent.com/openworm/org.geppetto.model/master/src/main/resources/geppettoModel.ecore#//types">
+    xmlns:gep="https://raw.githubusercontent.com/openworm/org.geppetto.model/development/src/main/resources/geppettoModel.ecore"
+    xmlns:gep_1="https://raw.githubusercontent.com/openworm/org.geppetto.model/development/src/main/resources/geppettoModel.ecore#//types">
   <libraries
       id="SWCLibrary"
       name="SWC"/>
@@ -33,11 +33,44 @@
         id="Clone"
         name="Clone"/>
     <types xsi:type="gep_1:SimpleType"
-        id="neuropil"
-        name="Neuropil"/>
+        id="Synaptic_neuropil"
+        name="Synaptic Neuropil"/>
     <types xsi:type="gep_1:SimpleType"
         id="VFB"
         name="Virtual Fly Brain"/>
+    <types xsi:type="gep_1:SimpleType"		
+        id="Orphan"		
+        name="No Meta Data"/>
+    <types xsi:type="gep_1:SimpleType"		
+        id="Obsolete"		
+        name="Obsolete"/>
+    <types xsi:type="gep_1:SimpleType"		
+        id="Synaptic_neuropil_domain"		
+        name="Synaptic Neuropil Domain"/>
+    <types xsi:type="gep_1:SimpleType"		
+        id="Synaptic_neuropil_subdomain"		
+        name="Synaptic Neuropil Subdomain"/>
+    <types xsi:type="gep_1:SimpleType"		
+        id="Synaptic_neuropil_block"		
+        name="Synaptic Neuropil Block"/>
+    <types xsi:type="gep_1:SimpleType"		
+        id="FBDV"		
+        name="FlyBase Development CV"/>
+    <types xsi:type="gep_1:SimpleType"		
+        id="FBCV"		
+        name="FlyBase Controlled Vocabulary"/>
+    <types xsi:type="gep_1:SimpleType"		
+        id="FBBI"		
+        name="FlyBase Biological Imaging Methods"/>
+    <types xsi:type="gep_1:SimpleType"		
+        id="Root"		
+        name="Top Object"/>
+    <types xsi:type="gep_1:SimpleType"		
+        id="pub"		
+        name="Publication"/>
+    <types xsi:type="gep_1:SimpleType"		
+        id="Resource"		
+        name="Resource"/>
   </libraries>
   <libraries
       id="vfbLibrary"
@@ -97,7 +130,7 @@
           xsi:type="gep:SimpleQuery"
           label="Fetch related and references for individuals"
           description="Fetch related and references for individuals"
-          query="MATCH (n:VFB:Individual { short_form: '$ID' } )-[r:INSTANCEOF|Related|has_reference]->(sc) RETURN r as relationship, sc.label as relName, sc.short_form as relId, sc.FlyBase as relFBrf"
+          query="MATCH (n:VFB:Individual { short_form: '$ID' } )-[r:INSTANCEOF|Related|has_reference]->(sc) RETURN r as relationship, sc.label as relName, sc.short_form as relId, sc.miniref as relRef, sc.FlyBase as relFBrf, sc.PMID as relPMID, sc.DOI as relDOI"
           countQuery="MATCH (n:VFB:Individual { short_form: '$ID' } )-[r:INSTANCEOF|Related|has_reference]->(sc) RETURN count(n) as count">
         <matchingCriteria
             type="//@libraries.3/@types.0"/>
@@ -138,17 +171,56 @@
     </fetchVariableQuery>
   </dataSources>
   <dataSources
-      id="amberOWLDataSourceService"
-      name="amberOWLDataSourceService"
-      dataSourceService="amberOWLDataSource"
-      url="http://vfbdev.inf.ed.ac.uk/aberowl/api/runQuery.groovy"
+      id="aberOWLDataSourceService"
+      name="aberOWLDataSourceService"
+      dataSourceService="aberOWLDataSource"
+      url="http://aber-owl.net/service/api/runQuery.groovy"
       dependenciesLibrary="//@libraries.3"
       targetLibrary="//@libraries.4">
     <queries
         xsi:type="gep:SimpleQuery"
         label="Part of"
         description="Part of"
-        query="type=subeq&amp;query=%3Chttp://purl.obolibrary.org/obo/BFO_0000050%3E%20some%20%3Chttp://purl.obolibrary.org/obo/$ID%3E&amp;ontology=VFB"
-        countQuery=""/>
+        query="type=subeq&amp;query=%3Chttp://purl.obolibrary.org/obo/BFO_0000050%3E%20some%20%3Chttp://purl.obolibrary.org/obo/$ID%3E&amp;ontology=VFB_Ind"
+        countQuery="">
+      <matchingCriteria
+          type="//@libraries.3/@types.1"/>
+    </queries>
+    <queries
+        xsi:type="gep:SimpleQuery"
+        label="Neurons"
+        description="Neurons with some part here"
+        query="type=subeq&amp;query=%3Chttp://purl.obolibrary.org/obo/FBbt_00005106%3E%20that%20%3Chttp://purl.obolibrary.org/obo/RO_0002131%3E%20some%20%3Chttp://purl.obolibrary.org/obo/$ID%3E&amp;ontology=VFB_Ind"
+        countQuery="">
+      <matchingCriteria
+          type="//@libraries.3/@types.1 //@libraries.3/@types.5"/>
+    </queries>
+    <queries
+        xsi:type="gep:SimpleQuery"
+        label="Neurons Synaptic"
+        description="Neurons with synaptic terminals here"
+        query="type=subeq&amp;query=%3Chttp://purl.obolibrary.org/obo/FBbt_00005106%3E%20that%20%3Chttp://purl.obolibrary.org/obo/RO_0002130%3E%20some%20%3Chttp://purl.obolibrary.org/obo/$ID%3E&amp;ontology=VFB_Ind"
+        countQuery="">
+      <matchingCriteria
+          type="//@libraries.3/@types.1 //@libraries.3/@types.5"/>
+    </queries>
+    <queries
+        xsi:type="gep:SimpleQuery"
+        label="Neurons Presynaptic"
+        description="Neurons with presynaptic terminals here"
+        query="type=subeq&amp;query=%3Chttp://purl.obolibrary.org/obo/FBbt_00005106%3E%20that%20%3Chttp://purl.obolibrary.org/obo/RO_0002113%3E%20some%20%3Chttp://purl.obolibrary.org/obo/$ID%3E&amp;ontology=VFB_Ind"
+        countQuery="">
+      <matchingCriteria
+          type="//@libraries.3/@types.1 //@libraries.3/@types.5"/>
+    </queries>
+    <queries
+        xsi:type="gep:SimpleQuery"
+        label="Neurons Postsynaptic"
+        description="Neurons with postsynaptic terminals here"
+        query="type=subeq&amp;query=%3Chttp://purl.obolibrary.org/obo/FBbt_00005106%3E%20that%20%3Chttp://purl.obolibrary.org/obo/RO_0002110%3E%20some%20%3Chttp://purl.obolibrary.org/obo/$ID%3E&amp;ontology=VFB_Ind"
+        countQuery="">
+      <matchingCriteria
+          type="//@libraries.3/@types.1 //@libraries.3/@types.5"/>
+    </queries>
   </dataSources>
 </gep:GeppettoModel>
