@@ -110,9 +110,9 @@ public class AddImportTypesImageQueryProcessor implements IQueryProcessor
 					thumbnailVar.getInitialValues().put(imageType, thumbnailValue);
 				}
 				// set image types:
-				tempFile = remoteForID(variable.getId()) + "volume.obj";
+				tempFile = remoteForID(variable.getId()) + "volume_man.obj"; // manually created obj rather than auto point cloud
 				if (checkURL(tempFile)){
-					System.out.println("Adding OBJ...");
+					System.out.println("Adding manual OBJ...");
 					tempFile = localForID(variable.getId()) + "volume.obj";
 					Variable objVar = VariablesFactory.eINSTANCE.createVariable();
 					ImportType objImportType=TypesFactory.eINSTANCE.createImportType();
@@ -124,6 +124,22 @@ public class AddImportTypesImageQueryProcessor implements IQueryProcessor
 					objVar.setId(variable.getId()+"_obj");
 					objVar.setName("3D Volume");
 					type.getVariables().add(objVar);
+				}else{
+					tempFile = remoteForID(variable.getId()) + "volume.obj";
+					if (checkURL(tempFile)){
+						System.out.println("Adding OBJ...");
+						tempFile = localForID(variable.getId()) + "volume.obj";
+						Variable objVar = VariablesFactory.eINSTANCE.createVariable();
+						ImportType objImportType=TypesFactory.eINSTANCE.createImportType();
+						objImportType.setUrl(tempFile);
+						objImportType.setId(variable.getId()+"_obj");
+						objImportType.setModelInterpreterId("objModelInterpreterService");
+						objVar.getTypes().add(objImportType);
+						geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource,"obj"));
+						objVar.setId(variable.getId()+"_obj");
+						objVar.setName("3D Volume");
+						type.getVariables().add(objVar);
+					}
 				}
 				tempFile = remoteForID(variable.getId()) + "volume.swc";
 				if (checkURL(tempFile)){
