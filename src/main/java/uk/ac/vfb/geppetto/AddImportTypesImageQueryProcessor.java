@@ -113,7 +113,7 @@ public class AddImportTypesImageQueryProcessor implements IQueryProcessor
 				tempFile = remoteForID(variable.getId()) + "volume_man.obj"; // manually created obj rather than auto point cloud
 				if (checkURL(tempFile)){
 					System.out.println("Adding manual OBJ...");
-					tempFile = localForID(variable.getId()) + "volume.obj";
+					tempFile = localForID(variable.getId()) + "volume_man.obj";
 					Variable objVar = VariablesFactory.eINSTANCE.createVariable();
 					ImportType objImportType=TypesFactory.eINSTANCE.createImportType();
 					objImportType.setUrl(tempFile);
