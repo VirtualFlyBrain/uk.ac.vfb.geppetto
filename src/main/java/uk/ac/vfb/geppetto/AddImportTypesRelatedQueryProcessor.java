@@ -37,14 +37,11 @@ import java.net.URL;
 import java.util.Map;
 
 import org.geppetto.core.datasources.GeppettoDataSourceException;
-import org.geppetto.core.datasources.IQueryProcessor;
-import org.geppetto.core.features.IFeature;
 import org.geppetto.core.model.GeppettoModelAccess;
-import org.geppetto.core.services.GeppettoFeature;
-import org.geppetto.core.services.registry.ServicesRegistry;
-import org.geppetto.model.DataSource;
-import org.geppetto.model.ProcessQuery;
-import org.geppetto.model.QueryResults;
+import org.geppetto.datasources.AQueryProcessor;
+import org.geppetto.model.datasources.DataSource;
+import org.geppetto.model.datasources.ProcessQuery;
+import org.geppetto.model.datasources.QueryResults;
 import org.geppetto.model.types.CompositeType;
 import org.geppetto.model.types.Type;
 import org.geppetto.model.types.TypesPackage;
@@ -63,7 +60,7 @@ import org.geppetto.model.variables.VariablesFactory;
  * @author robertcourt
  *
  */
-public class AddImportTypesRelatedQueryProcessor implements IQueryProcessor
+public class AddImportTypesRelatedQueryProcessor extends AQueryProcessor
 {
 	/*
 	 * (non-Javadoc)
@@ -94,7 +91,7 @@ public class AddImportTypesRelatedQueryProcessor implements IQueryProcessor
 
 				int i = 0;
 				while(results.getValue("relationship", i) != null)
-				{ 
+				{
 					if("type".equals((String) ((Map) results.getValue("relationship", i)).get("label")) || "is a".equals((String) ((Map) results.getValue("relationship", i)).get("label")))
 					{ // parent type:
 						typeLink += "<a href=\"#\" instancepath=\"" + (String) results.getValue("relId", i) + "\">";
@@ -106,7 +103,7 @@ public class AddImportTypesRelatedQueryProcessor implements IQueryProcessor
 						// relationships:
 						if(((Map) results.getValue("relationship", i)).get("label") != null)
 						{
-							temp = ((String) ((Map) results.getValue("relationship", i)).get("label")).replace("_"," ");
+							temp = ((String) ((Map) results.getValue("relationship", i)).get("label")).replace("_", " ");
 							relat += temp.substring(0, 1).toUpperCase() + temp.substring(1) + " ";
 						}
 						if(results.getValue("relName", i) != null)
@@ -122,7 +119,8 @@ public class AddImportTypesRelatedQueryProcessor implements IQueryProcessor
 						}
 						if(results.getValue("relFBrf", i) != null)
 						{
-							relat += "[<a href=\"http://flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >FlyBase:" + (String) results.getValue("relFBrf", i) + "</a>]";
+							relat += "[<a href=\"http://flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >FlyBase:" + (String) results.getValue("relFBrf", i)
+									+ "</a>]";
 						}
 						relat += "<br/>";
 					}
@@ -156,13 +154,14 @@ public class AddImportTypesRelatedQueryProcessor implements IQueryProcessor
 					relationshipsValue.setHtml(relat);
 					relationships.getInitialValues().put(htmlType, relationshipsValue);
 				}
-				
-				if ("<a href=\"#\" instancepath=\"VFB_10000005\">cluster</a><br/>".equals(typeLink)){
+
+				if("<a href=\"#\" instancepath=\"VFB_10000005\">cluster</a><br/>".equals(typeLink))
+				{
 					i = 0;
 					String tempId = "";
 					String tempThumb = "";
 					String tempName = "";
-		
+
 					int j = 0;
 					Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
 					exampleVar.setId("examples");
@@ -171,7 +170,7 @@ public class AddImportTypesRelatedQueryProcessor implements IQueryProcessor
 					geppettoModelAccess.addVariableToType(exampleVar, metadataType);
 					ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
 					while(results.getValue("relationship", i) != null)
-					{ 
+					{
 						if("has_member".equals((String) ((Map) results.getValue("relationship", i)).get("label")))
 						{
 							if(results.getValue("relName", i) != null)
@@ -180,7 +179,8 @@ public class AddImportTypesRelatedQueryProcessor implements IQueryProcessor
 								tempThumb = "http://www.virtualflybrain.org/data/VFB/i/" + tempId.substring(4, 8) + "/" + tempId.substring(8) + "/thumbnail.png";
 								tempName = (String) results.getValue("relName", i);
 								System.out.println("Adding Cluster Image: " + tempId + " " + tempName + " " + tempThumb);
-								if (checkURL(tempThumb)){
+								if(checkURL(tempThumb))
+								{
 									addImage(tempThumb, tempName, tempId, images, j);
 									j++;
 								}
@@ -224,44 +224,25 @@ public class AddImportTypesRelatedQueryProcessor implements IQueryProcessor
 		element.setInitialValue(image);
 		images.getElements().add(element);
 	}
+
 	/**
 	 * @param urlString
 	 */
-	private boolean checkURL(String urlString){
-		try{
+	private boolean checkURL(String urlString)
+	{
+		try
+		{
 			URL url = new URL(urlString);
-			HttpURLConnection huc =  (HttpURLConnection)  url.openConnection();
+			HttpURLConnection huc = (HttpURLConnection) url.openConnection();
 			huc.setRequestMethod("HEAD");
 			huc.setInstanceFollowRedirects(false);
 			return (huc.getResponseCode() == HttpURLConnection.HTTP_OK);
-		}catch(Exception e){
+		}
+		catch(Exception e)
+		{
 			System.out.println("Error checking url (" + urlString + ") " + e.toString());
 			return false;
 		}
-	}
-	
-	@Override
-	public void registerGeppettoService() throws Exception
-	{
-		ServicesRegistry.registerQueryProcessorService(this);
-	}
-
-	@Override
-	public boolean isSupported(GeppettoFeature feature)
-	{
-		return false;
-	}
-
-	@Override
-	public IFeature getFeature(GeppettoFeature feature)
-	{
-		return null;
-	}
-
-	@Override
-	public void addFeature(IFeature feature)
-	{
-
 	}
 
 }

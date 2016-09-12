@@ -36,16 +36,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.geppetto.core.datasources.GeppettoDataSourceException;
-import org.geppetto.core.datasources.IQueryProcessor;
-import org.geppetto.core.features.IFeature;
 import org.geppetto.core.model.GeppettoModelAccess;
-import org.geppetto.core.services.GeppettoFeature;
-import org.geppetto.core.services.registry.ServicesRegistry;
-import org.geppetto.model.DataSource;
-import org.geppetto.model.ProcessQuery;
-import org.geppetto.model.QueryResults;
+import org.geppetto.datasources.AQueryProcessor;
+import org.geppetto.model.datasources.DataSource;
+import org.geppetto.model.datasources.ProcessQuery;
+import org.geppetto.model.datasources.QueryResults;
 import org.geppetto.model.types.CompositeType;
-import org.geppetto.model.types.Type;
 import org.geppetto.model.types.TypesPackage;
 import org.geppetto.model.util.GeppettoVisitingException;
 import org.geppetto.model.util.ModelUtility;
@@ -61,7 +57,7 @@ import org.geppetto.model.variables.VariablesFactory;
  * @author matteocantarelli
  *
  */
-public class AddImportTypesQueryProcessor implements IQueryProcessor
+public class AddImportTypesQueryProcessor extends AQueryProcessor
 {
 
 	/*
@@ -80,22 +76,23 @@ public class AddImportTypesQueryProcessor implements IQueryProcessor
 
 			System.out.println("Processing Examples...");
 
-            String tempId = "";
-            String tempThumb = "";
-            String tempName = "";
+			String tempId = "";
+			String tempThumb = "";
+			String tempName = "";
 
-            int i = 0;
+			int i = 0;
 
-            Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
-            exampleVar.setId("examples");
-            exampleVar.setName("Examples");
-            exampleVar.getTypes().add(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE));
-            geppettoModelAccess.addVariableToType(exampleVar, metadataType);
-            ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
-			
-			if (results.getValue("exId", 0) != null) {
+			Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
+			exampleVar.setId("examples");
+			exampleVar.setName("Examples");
+			exampleVar.getTypes().add(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE));
+			geppettoModelAccess.addVariableToType(exampleVar, metadataType);
+			ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
 
-                i=0;
+			if(results.getValue("exId", 0) != null)
+			{
+
+				i = 0;
 
 				while(results.getValue("exId", i) != null)
 				{
@@ -103,49 +100,59 @@ public class AddImportTypesQueryProcessor implements IQueryProcessor
 					tempThumb = "http://www.virtualflybrain.org/data/VFB/i/" + tempId.substring(4, 8) + "/" + tempId.substring(8) + "/thumbnail.png";
 					tempName = (String) results.getValue("exName", i);
 					System.out.println("Adding Example Image: " + tempId + " " + tempName + " " + tempThumb);
-					if (checkURL(tempThumb)){
+					if(checkURL(tempThumb))
+					{
 						addImage(tempThumb, tempName, tempId, images, i);
 						i++;
 					}
 				}
 				exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), images);
-			} else if (variable.getId().contains("VFBd_")){
+			}
+			else if(variable.getId().contains("VFBd_"))
+			{
 
-                i=0;
+				i = 0;
 
-                tempId = (String) variable.getId();
-                tempThumb = "http://www.virtualflybrain.org/data/VFB/t/" + tempId.substring(5, 9) + "/" + tempId.substring(9) + "/thumbnail.png";
-                tempName = (String) variable.getId();
-                System.out.println("Adding Example Image: " + tempId + " " + tempName + " " + tempThumb);
-                if (checkURL(tempThumb)){
-                    addImage(tempThumb, tempName, tempId, images, i);
-                }
+				tempId = (String) variable.getId();
+				tempThumb = "http://www.virtualflybrain.org/data/VFB/t/" + tempId.substring(5, 9) + "/" + tempId.substring(9) + "/thumbnail.png";
+				tempName = (String) variable.getId();
+				System.out.println("Adding Example Image: " + tempId + " " + tempName + " " + tempThumb);
+				if(checkURL(tempThumb))
+				{
+					addImage(tempThumb, tempName, tempId, images, i);
+				}
 				exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), images);
-			} else if (variable.getId().contains("VFB_a")){
+			}
+			else if(variable.getId().contains("VFB_a"))
+			{
 
-                i=0;
+				i = 0;
 
-                tempId = (String) variable.getId();
-                tempThumb = "http://www.virtualflybrain.org/data/VFB/i/" + tempId.substring(4, 8) + "/" + tempId.substring(8) + "/thumbnail.png";
-                tempName = (String) variable.getId();
-                System.out.println("Adding Example Image: " + tempId + " " + tempName + " " + tempThumb);
-                if (checkURL(tempThumb)){
-                    addImage(tempThumb, tempName, tempId, images, i);
-                }
-                exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), images);
-            } else if (variable.getId().contains("VFB_td")){
+				tempId = (String) variable.getId();
+				tempThumb = "http://www.virtualflybrain.org/data/VFB/i/" + tempId.substring(4, 8) + "/" + tempId.substring(8) + "/thumbnail.png";
+				tempName = (String) variable.getId();
+				System.out.println("Adding Example Image: " + tempId + " " + tempName + " " + tempThumb);
+				if(checkURL(tempThumb))
+				{
+					addImage(tempThumb, tempName, tempId, images, i);
+				}
+				exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), images);
+			}
+			else if(variable.getId().contains("VFB_td"))
+			{
 
-                i=0;
+				i = 0;
 
-                tempId = (String) variable.getId();
-                tempThumb = "http://www.virtualflybrain.org/data/VFB/i/" + tempId.substring(4, 8) + "/" + tempId.substring(8) + "/thumbnail.png";
-                tempName = (String) variable.getId();
-                System.out.println("Adding Example Image: " + tempId + " " + tempName + " " + tempThumb);
-                if (checkURL(tempThumb)){
-                    addImage(tempThumb, tempName, tempId, images, i);
-                }
-                exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), images);
-            }
+				tempId = (String) variable.getId();
+				tempThumb = "http://www.virtualflybrain.org/data/VFB/i/" + tempId.substring(4, 8) + "/" + tempId.substring(8) + "/thumbnail.png";
+				tempName = (String) variable.getId();
+				System.out.println("Adding Example Image: " + tempId + " " + tempName + " " + tempThumb);
+				if(checkURL(tempThumb))
+				{
+					addImage(tempThumb, tempName, tempId, images, i);
+				}
+				exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), images);
+			}
 		}
 		catch(GeppettoVisitingException e)
 		{
@@ -173,44 +180,25 @@ public class AddImportTypesQueryProcessor implements IQueryProcessor
 		element.setInitialValue(image);
 		images.getElements().add(element);
 	}
+
 	/**
 	 * @param urlString
 	 */
-	private boolean checkURL(String urlString){
-		try{
+	private boolean checkURL(String urlString)
+	{
+		try
+		{
 			URL url = new URL(urlString);
-			HttpURLConnection huc =  (HttpURLConnection)  url.openConnection();
+			HttpURLConnection huc = (HttpURLConnection) url.openConnection();
 			huc.setRequestMethod("HEAD");
 			huc.setInstanceFollowRedirects(false);
 			return (huc.getResponseCode() == HttpURLConnection.HTTP_OK);
-		}catch(Exception e){
+		}
+		catch(Exception e)
+		{
 			System.out.println("Error checking url (" + urlString + ") " + e.toString());
 			return false;
 		}
-	}
-	
-	@Override
-	public void registerGeppettoService() throws Exception
-	{
-		ServicesRegistry.registerQueryProcessorService(this);
-	}
-
-	@Override
-	public boolean isSupported(GeppettoFeature feature)
-	{
-		return false;
-	}
-
-	@Override
-	public IFeature getFeature(GeppettoFeature feature)
-	{
-		return null;
-	}
-
-	@Override
-	public void addFeature(IFeature feature)
-	{
-
 	}
 
 }

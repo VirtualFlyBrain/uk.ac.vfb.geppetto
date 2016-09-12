@@ -32,29 +32,30 @@
  *******************************************************************************/
 package uk.ac.vfb.geppetto;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.geppetto.core.datasources.GeppettoDataSourceException;
-import org.geppetto.core.datasources.IQueryProcessor;
-import org.geppetto.core.features.IFeature;
 import org.geppetto.core.model.GeppettoModelAccess;
-import org.geppetto.core.services.GeppettoFeature;
-import org.geppetto.core.services.registry.ServicesRegistry;
-import org.geppetto.model.AQueryResult;
-import org.geppetto.model.DataSource;
-import org.geppetto.model.GeppettoFactory;
-import org.geppetto.model.ProcessQuery;
-import org.geppetto.model.QueryResult;
-import org.geppetto.model.QueryResults;
-import org.geppetto.model.SerializableQueryResult;
+import org.geppetto.datasources.AQueryProcessor;
+import org.geppetto.model.datasources.AQueryResult;
+import org.geppetto.model.datasources.DataSource;
+import org.geppetto.model.datasources.DatasourcesFactory;
+import org.geppetto.model.datasources.ProcessQuery;
+import org.geppetto.model.datasources.QueryResult;
+import org.geppetto.model.datasources.QueryResults;
+import org.geppetto.model.datasources.SerializableQueryResult;
 import org.geppetto.model.variables.Variable;
 
 /**
  * @author matteocantarelli
  *
  */
-public class VFBAberOWLQueryProcessor implements IQueryProcessor
+public class VFBAberOWLQueryProcessor extends AQueryProcessor
 {
+
+	private Map<String, Object> processingOutputMap = new HashMap<String, Object>();
 
 	/*
 	 * (non-Javadoc)
@@ -64,48 +65,31 @@ public class VFBAberOWLQueryProcessor implements IQueryProcessor
 	@Override
 	public QueryResults process(ProcessQuery query, DataSource dataSource, Variable variable, QueryResults results, GeppettoModelAccess geppettoModelAccess) throws GeppettoDataSourceException
 	{
-		QueryResults processedResults=GeppettoFactory.eINSTANCE.createQueryResults();
-		int idIndex=results.getHeader().indexOf("remainder");
-		int descirptionIndex=results.getHeader().indexOf("definition");
-		int nameIndex=results.getHeader().indexOf("label");
+		QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
+		int idIndex = results.getHeader().indexOf("remainder");
+		int descirptionIndex = results.getHeader().indexOf("definition");
+		int nameIndex = results.getHeader().indexOf("label");
 
 		processedResults.getHeader().add("ID");
 		processedResults.getHeader().add("Name");
 		processedResults.getHeader().add("Definition");
-		
-		for(AQueryResult result:results.getResults()){
-			SerializableQueryResult processedResult=GeppettoFactory.eINSTANCE.createSerializableQueryResult();
-			processedResult.getValues().add(((QueryResult)result).getValues().get(idIndex).toString());
-			processedResult.getValues().add(((List<String>)((QueryResult)result).getValues().get(nameIndex)).get(0));
-			processedResult.getValues().add(((QueryResult)result).getValues().get(descirptionIndex).toString());
+
+		for(AQueryResult result : results.getResults())
+		{
+			SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
+			processedResult.getValues().add(((QueryResult) result).getValues().get(idIndex).toString());
+			processedResult.getValues().add(((List<String>) ((QueryResult) result).getValues().get(nameIndex)).get(0));
+			processedResult.getValues().add(((QueryResult) result).getValues().get(descirptionIndex).toString());
 			processedResults.getResults().add(processedResult);
 		}
-		
+
 		return processedResults;
 	}
 
 	@Override
-	public void registerGeppettoService() throws Exception
+	public Map<String, Object> getProcessingOutputMap()
 	{
-		ServicesRegistry.registerQueryProcessorService(this);
-	}
-
-	@Override
-	public boolean isSupported(GeppettoFeature feature)
-	{
-		return false;
-	}
-
-	@Override
-	public IFeature getFeature(GeppettoFeature feature)
-	{
-		return null;
-	}
-
-	@Override
-	public void addFeature(IFeature feature)
-	{
-
+		return processingOutputMap;
 	}
 
 }
