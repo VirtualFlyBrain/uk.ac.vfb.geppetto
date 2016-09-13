@@ -32,6 +32,7 @@
  *******************************************************************************/
 package uk.ac.vfb.geppetto;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,14 +75,19 @@ public class VFBAberOWLQueryProcessor extends AQueryProcessor
 		processedResults.getHeader().add("Name");
 		processedResults.getHeader().add("Definition");
 
+		List<String> ids=new ArrayList<String>();
 		for(AQueryResult result : results.getResults())
 		{
 			SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 			processedResult.getValues().add(((QueryResult) result).getValues().get(idIndex).toString());
-			processedResult.getValues().add(((List<String>) ((QueryResult) result).getValues().get(nameIndex)).get(0));
+			String id=((List<String>) ((QueryResult) result).getValues().get(nameIndex)).get(0);
+			processedResult.getValues().add(id);
+			ids.add(id);
 			processedResult.getValues().add(((QueryResult) result).getValues().get(descirptionIndex).toString());
 			processedResults.getResults().add(processedResult);
 		}
+		
+		processingOutputMap.put("ARRAY_ID_RESULTS",ids);
 
 		return processedResults;
 	}
