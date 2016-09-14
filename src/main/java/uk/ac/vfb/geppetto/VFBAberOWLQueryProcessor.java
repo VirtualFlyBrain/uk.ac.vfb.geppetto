@@ -79,10 +79,11 @@ public class VFBAberOWLQueryProcessor extends AQueryProcessor
 		for(AQueryResult result : results.getResults())
 		{
 			SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
-			processedResult.getValues().add(((QueryResult) result).getValues().get(idIndex).toString());
-			String id=((List<String>) ((QueryResult) result).getValues().get(nameIndex)).get(0);
+			String id=((QueryResult) result).getValues().get(idIndex).toString();
 			processedResult.getValues().add(id);
-			ids.add(id);
+			
+			processedResult.getValues().add(((List<String>) ((QueryResult) result).getValues().get(nameIndex)).get(0));
+			ids.add("'"+id+"'");
 			processedResult.getValues().add(((QueryResult) result).getValues().get(descirptionIndex).toString());
 			processedResults.getResults().add(processedResult);
 		}

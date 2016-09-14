@@ -33,13 +33,7 @@
 package uk.ac.vfb.geppetto.test;
 
 import java.io.IOException;
-import java.util.Map;
 
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.datasources.GeppettoDataSourceException;
 import org.geppetto.core.manager.SharedLibraryManager;
@@ -47,13 +41,14 @@ import org.geppetto.core.model.GeppettoModelAccess;
 import org.geppetto.core.model.GeppettoModelReader;
 import org.geppetto.core.model.GeppettoSerializer;
 import org.geppetto.core.services.registry.ApplicationListenerBean;
-import org.geppetto.datasources.TestDataSourceService;
-import org.geppetto.datasources.TestQueryProcessor;
 import org.geppetto.datasources.aberowl.AberOWLDataSourceService;
 import org.geppetto.datasources.neo4j.Neo4jDataSourceService;
 import org.geppetto.model.GeppettoModel;
-import org.geppetto.model.GeppettoPackage;
+import org.geppetto.model.datasources.Query;
+import org.geppetto.model.datasources.QueryResults;
+import org.geppetto.model.util.GeppettoModelException;
 import org.geppetto.model.util.GeppettoVisitingException;
+import org.geppetto.model.variables.Variable;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -68,12 +63,14 @@ import uk.ac.vfb.geppetto.AddImportTypesQueryProcessor;
 import uk.ac.vfb.geppetto.AddImportTypesRelatedQueryProcessor;
 import uk.ac.vfb.geppetto.AddImportTypesSynonymQueryProcessor;
 import uk.ac.vfb.geppetto.AddTypesQueryProcessor;
+import uk.ac.vfb.geppetto.CreateImagesForQueryResultsQueryProcessor;
+import uk.ac.vfb.geppetto.VFBAberOWLQueryProcessor;
 
 /**
  * @author matteocantarelli
  *
  */
-public class VFBQueryTest
+public class CrossDataSourceVFBQueryTest
 {
 
 	/**
@@ -103,8 +100,15 @@ public class VFBQueryTest
 		BeanDefinition queryProcessorImportTypesThumbnailBeanDefinition = new RootBeanDefinition(AddImportTypesImageQueryProcessor.class);
 		context.registerBeanDefinition("vfbImportTypesThumbnailQueryProcessor", queryProcessorImportTypesThumbnailBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.vfbImportTypesThumbnailQueryProcessor", queryProcessorImportTypesThumbnailBeanDefinition);
-		
-		
+
+		BeanDefinition aberOWLQueryProcessorBeanDefinition = new RootBeanDefinition(VFBAberOWLQueryProcessor.class);
+		context.registerBeanDefinition("vfbAberOWLQueryProcessor", aberOWLQueryProcessorBeanDefinition);
+		context.registerBeanDefinition("scopedTarget.vfbAberOWLQueryProcessor", aberOWLQueryProcessorBeanDefinition);
+
+		BeanDefinition createImagesForQueryBeanDefinition = new RootBeanDefinition(CreateImagesForQueryResultsQueryProcessor.class);
+		context.registerBeanDefinition("vfbCreateImagesForQueryResultsQueryProcessor", createImagesForQueryBeanDefinition);
+		context.registerBeanDefinition("scopedTarget.vfbCreateImagesForQueryResultsQueryProcessor", createImagesForQueryBeanDefinition);
+
 		BeanDefinition neo4jDataSourceBeanDefinition = new RootBeanDefinition(Neo4jDataSourceService.class);
 		context.registerBeanDefinition("neo4jDataSource", neo4jDataSourceBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.neo4jDataSource", neo4jDataSourceBeanDefinition);
@@ -112,7 +116,7 @@ public class VFBQueryTest
 		BeanDefinition aberOWLDataSourceBeanDefinition = new RootBeanDefinition(AberOWLDataSourceService.class);
 		context.registerBeanDefinition("aberOWLDataSource", aberOWLDataSourceBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.aberOWLDataSource", aberOWLDataSourceBeanDefinition);
-
+		
 		ContextRefreshedEvent event = new ContextRefreshedEvent(context);
 		ApplicationListenerBean listener = new ApplicationListenerBean();
 		listener.onApplicationEvent(event);
@@ -126,49 +130,34 @@ public class VFBQueryTest
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbImportTypesRelatedQueryProcessor"));
 		retrievedContext = ApplicationListenerBean.getApplicationContext("vfbImportTypesThumbnailQueryProcessor");
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbImportTypesThumbnailQueryProcessor"));
+		retrievedContext = ApplicationListenerBean.getApplicationContext("vfbAberOWLQueryProcessor");
+		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbAberOWLQueryProcessor"));
+		retrievedContext = ApplicationListenerBean.getApplicationContext("vfbCreateImagesForQueryResultsQueryProcessor");
+		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbCreateImagesForQueryResultsQueryProcessor"));
 
 	}
-
-	/**
-	 * Test method for {@link org.geppetto.datasources.neo4j.Neo4jDataSourceService#fetchVariable(java.lang.String)}.
-	 * 
-	 * @throws GeppettoDataSourceException
-	 * @throws GeppettoInitializationException
-	 * @throws GeppettoVisitingException
-	 * @throws IOException
-	 */
-	@Test
-	public void testFetchVariable() throws GeppettoDataSourceException, GeppettoInitializationException, GeppettoVisitingException, IOException
-	{
-		GeppettoModel model = GeppettoModelReader.readGeppettoModel(VFBQueryTest.class.getClassLoader().getResource("OntologyTest/GeppettoModelM1.xmi"));
-		model.getLibraries().add(SharedLibraryManager.getSharedCommonLibrary());
-
-		GeppettoModelAccess geppettoModelAccess = new GeppettoModelAccess(model);
-		Neo4jDataSourceService dataSource = new Neo4jDataSourceService();
-		dataSource.initialize(model.getDataSources().get(0), geppettoModelAccess);
-
-		System.out.println(GeppettoSerializer.serializeToJSON(model, true));
-
-		dataSource.fetchVariable("FBbt_00100219");
-
-		System.out.println(GeppettoSerializer.serializeToJSON(model, true));
-
-		dataSource.fetchVariable("VFB_00000001");
-
-		System.out.println(GeppettoSerializer.serializeToJSON(model, true));
-
-		// // Initialize the factory and the resource set
-		GeppettoPackage.eINSTANCE.eClass();
-		Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
-		Map<String, Object> m = reg.getExtensionToFactoryMap();
-		m.put("xmi", new XMIResourceFactoryImpl()); // sets the factory for the XMI type
-		ResourceSet resSet = new ResourceSetImpl();
-
-		Resource resource = resSet.createResource(URI.createURI("./src/test/resources/fetchedVariable.xmi"));
-		resource.getContents().add(model);
-		resource.save(null);
-
-	}
-
 	
+	@Test
+	public void testRunQuery() throws GeppettoInitializationException, GeppettoVisitingException, GeppettoDataSourceException, GeppettoModelException, IOException{
+		
+		 GeppettoModel model = GeppettoModelReader.readGeppettoModel(VFBQueryTest.class.getClassLoader().getResource("OntologyTest/GeppettoModelM1.xmi"));
+		 model.getLibraries().add(SharedLibraryManager.getSharedCommonLibrary());
+		
+		 GeppettoModelAccess geppettoModelAccess = new GeppettoModelAccess(model);
+		
+		 Neo4jDataSourceService neo4JDataSource = new Neo4jDataSourceService();
+		 neo4JDataSource.initialize(model.getDataSources().get(0), geppettoModelAccess);
+		 
+		 AberOWLDataSourceService aberDataSource = new AberOWLDataSourceService();
+		 aberDataSource.initialize(model.getDataSources().get(1), geppettoModelAccess);
+		
+		 neo4JDataSource.fetchVariable("FBbt_00003748");
+		 
+		 Variable variable = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
+		 
+		 QueryResults results =  aberDataSource.execute(model.getQueries().get(0), variable, null);
+
+		 System.out.println(GeppettoSerializer.serializeToJSON(results, true));
+		 
+	}
 }

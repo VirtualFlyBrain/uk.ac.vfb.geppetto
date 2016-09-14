@@ -18,9 +18,6 @@
 	<aop:scoped-proxy proxy-target-class="false"/>
 	</bean>
 	
-	
-	
-	
 	<osgi:service id="VFBCreateImagesForQueryResultsQueryProcessorExporter" ref="vfbCreateImagesForQueryResultsQueryProcessor"
 		interface="org.geppetto.core.datasources.IQueryProcessor">
 	</osgi:service>

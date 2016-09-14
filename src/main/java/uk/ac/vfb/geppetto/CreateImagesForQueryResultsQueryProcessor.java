@@ -34,22 +34,22 @@ package uk.ac.vfb.geppetto;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 
 import org.geppetto.core.datasources.GeppettoDataSourceException;
 import org.geppetto.core.model.GeppettoModelAccess;
+import org.geppetto.core.model.GeppettoSerializer;
 import org.geppetto.datasources.AQueryProcessor;
 import org.geppetto.model.datasources.DataSource;
+import org.geppetto.model.datasources.DatasourcesFactory;
 import org.geppetto.model.datasources.ProcessQuery;
 import org.geppetto.model.datasources.QueryResults;
-import org.geppetto.model.types.CompositeType;
-import org.geppetto.model.types.Type;
+import org.geppetto.model.datasources.SerializableQueryResult;
 import org.geppetto.model.types.TypesPackage;
 import org.geppetto.model.util.GeppettoVisitingException;
-import org.geppetto.model.util.ModelUtility;
 import org.geppetto.model.values.ArrayElement;
 import org.geppetto.model.values.ArrayValue;
-import org.geppetto.model.values.HTML;
 import org.geppetto.model.values.Image;
 import org.geppetto.model.values.ImageFormat;
 import org.geppetto.model.values.ValuesFactory;
@@ -72,48 +72,53 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 	{
 		try
 		{
-
-			// retrieving the metadatatype
-			CompositeType metadataType = (CompositeType) ModelUtility.getTypeFromLibrary(variable.getId() + "_metadata", dataSource.getTargetLibrary());
-
-
-
-			System.out.println("Processing Items...");
-
 			int i = 0;
-
-			String tempId = "";
-			String tempThumb = "";
-			String tempName = "";
-
-			int j = 0;
-			Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
-			exampleVar.setId("images");
-			exampleVar.setName("Images");
-			exampleVar.getTypes().add(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE));
-			geppettoModelAccess.addVariableToType(exampleVar, metadataType);
-			ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
-			while(results.getValue("relationship", i) != null)
+			QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
+			processedResults.getHeader().add("ID");
+			processedResults.getHeader().add("Images");
+			while(results.getValue("inds", i) != null)
 			{
-				if("has_member".equals((String) ((Map) results.getValue("relationship", i)).get("label")))
+				List<Object> currentObjects = (List<Object>) results.getValue("inds", i);
+				SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
+				String id = (String) results.getValue("class_Id", i);
+				processedResult.getValues().add(id);
+
+				Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
+				exampleVar.setId("images");
+				exampleVar.setName("Images");
+
+				exampleVar.getTypes().add(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE));
+				ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
+
+				for(int j = 0; j < currentObjects.size(); j++)
 				{
-					if(results.getValue("relName", i) != null)
+					Map<String, Object> currentObject = (Map<String, Object>) currentObjects.get(j);
+					String tempId = (String) currentObject.get("image_id");
+					if(tempId != null)
 					{
-						tempId = (String) results.getValue("relId", i);
-						tempThumb = "http://www.virtualflybrain.org/data/VFB/i/" + tempId.substring(4, 8) + "/" + tempId.substring(8) + "/thumbnail.png";
-						tempName = (String) results.getValue("relName", i);
-						System.out.println("Adding Cluster Image: " + tempId + " " + tempName + " " + tempThumb);
+						String tempThumb = (String) currentObject.get("image_thumb");
+						String tempName = (String) currentObject.get("image_name");
 						if(checkURL(tempThumb))
 						{
 							addImage(tempThumb, tempName, tempId, images, j);
-							j++;
 						}
 					}
 				}
+				if(!images.getElements().isEmpty())
+				{
+					exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), images);
+					processedResult.getValues().add(GeppettoSerializer.serializeToJSON(exampleVar));
+				}
+				else
+				{
+					processedResult.getValues().add("");
+				}
+
+				processedResults.getResults().add(processedResult);
+
 				i++;
 			}
-			exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), images);
-
+			return processedResults;
 		}
 		catch(GeppettoVisitingException e)
 		{
