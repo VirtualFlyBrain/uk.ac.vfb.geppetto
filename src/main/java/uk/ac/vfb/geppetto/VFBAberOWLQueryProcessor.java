@@ -66,6 +66,10 @@ public class VFBAberOWLQueryProcessor extends AQueryProcessor
 	@Override
 	public QueryResults process(ProcessQuery query, DataSource dataSource, Variable variable, QueryResults results, GeppettoModelAccess geppettoModelAccess) throws GeppettoDataSourceException
 	{
+		if(results == null)
+		{
+			throw new GeppettoDataSourceException("Results input to " + query.getName() + "is null");
+		}
 		QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
 		int idIndex = results.getHeader().indexOf("remainder");
 		int descirptionIndex = results.getHeader().indexOf("definition");
@@ -75,20 +79,20 @@ public class VFBAberOWLQueryProcessor extends AQueryProcessor
 		processedResults.getHeader().add("Name");
 		processedResults.getHeader().add("Definition");
 
-		List<String> ids=new ArrayList<String>();
+		List<String> ids = new ArrayList<String>();
 		for(AQueryResult result : results.getResults())
 		{
 			SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
-			String id=((QueryResult) result).getValues().get(idIndex).toString();
+			String id = ((QueryResult) result).getValues().get(idIndex).toString();
 			processedResult.getValues().add(id);
-			
+
 			processedResult.getValues().add(((List<String>) ((QueryResult) result).getValues().get(nameIndex)).get(0));
-			ids.add("'"+id+"'");
+			ids.add("'" + id + "'");
 			processedResult.getValues().add(((QueryResult) result).getValues().get(descirptionIndex).toString());
 			processedResults.getResults().add(processedResult);
 		}
-		
-		processingOutputMap.put("ARRAY_ID_RESULTS",ids);
+
+		processingOutputMap.put("ARRAY_ID_RESULTS", ids);
 
 		return processedResults;
 	}

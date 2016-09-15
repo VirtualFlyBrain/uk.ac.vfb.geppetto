@@ -44,7 +44,6 @@ import org.geppetto.core.services.registry.ApplicationListenerBean;
 import org.geppetto.datasources.aberowl.AberOWLDataSourceService;
 import org.geppetto.datasources.neo4j.Neo4jDataSourceService;
 import org.geppetto.model.GeppettoModel;
-import org.geppetto.model.datasources.Query;
 import org.geppetto.model.datasources.QueryResults;
 import org.geppetto.model.util.GeppettoModelException;
 import org.geppetto.model.util.GeppettoVisitingException;
@@ -112,11 +111,11 @@ public class CrossDataSourceVFBQueryTest
 		BeanDefinition neo4jDataSourceBeanDefinition = new RootBeanDefinition(Neo4jDataSourceService.class);
 		context.registerBeanDefinition("neo4jDataSource", neo4jDataSourceBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.neo4jDataSource", neo4jDataSourceBeanDefinition);
-		
+
 		BeanDefinition aberOWLDataSourceBeanDefinition = new RootBeanDefinition(AberOWLDataSourceService.class);
 		context.registerBeanDefinition("aberOWLDataSource", aberOWLDataSourceBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.aberOWLDataSource", aberOWLDataSourceBeanDefinition);
-		
+
 		ContextRefreshedEvent event = new ContextRefreshedEvent(context);
 		ApplicationListenerBean listener = new ApplicationListenerBean();
 		listener.onApplicationEvent(event);
@@ -136,28 +135,43 @@ public class CrossDataSourceVFBQueryTest
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbCreateImagesForQueryResultsQueryProcessor"));
 
 	}
-	
-	@Test
-	public void testRunQuery() throws GeppettoInitializationException, GeppettoVisitingException, GeppettoDataSourceException, GeppettoModelException, IOException{
-		
-		 GeppettoModel model = GeppettoModelReader.readGeppettoModel(VFBQueryTest.class.getClassLoader().getResource("OntologyTest/GeppettoModelM1.xmi"));
-		 model.getLibraries().add(SharedLibraryManager.getSharedCommonLibrary());
-		
-		 GeppettoModelAccess geppettoModelAccess = new GeppettoModelAccess(model);
-		
-		 Neo4jDataSourceService neo4JDataSource = new Neo4jDataSourceService();
-		 neo4JDataSource.initialize(model.getDataSources().get(0), geppettoModelAccess);
-		 
-		 AberOWLDataSourceService aberDataSource = new AberOWLDataSourceService();
-		 aberDataSource.initialize(model.getDataSources().get(1), geppettoModelAccess);
-		
-		 neo4JDataSource.fetchVariable("FBbt_00003748");
-		 
-		 Variable variable = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
-		 
-		 QueryResults results =  aberDataSource.execute(model.getQueries().get(0), variable, null);
 
-		 System.out.println(GeppettoSerializer.serializeToJSON(results, true));
-		 
+	@Test
+	public void testRunQuery() throws GeppettoInitializationException, GeppettoVisitingException, GeppettoDataSourceException, GeppettoModelException, IOException
+	{
+
+		GeppettoModel model = GeppettoModelReader.readGeppettoModel(VFBQueryTest.class.getClassLoader().getResource("OntologyTest/GeppettoModelM1.xmi"));
+		model.getLibraries().add(SharedLibraryManager.getSharedCommonLibrary());
+
+		GeppettoModelAccess geppettoModelAccess = new GeppettoModelAccess(model);
+
+		Neo4jDataSourceService neo4JDataSource = new Neo4jDataSourceService();
+		neo4JDataSource.initialize(model.getDataSources().get(0), geppettoModelAccess);
+
+		AberOWLDataSourceService aberDataSource = new AberOWLDataSourceService();
+		aberDataSource.initialize(model.getDataSources().get(1), geppettoModelAccess);
+
+		neo4JDataSource.fetchVariable("FBbt_00003748");
+
+		Variable variable = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
+
+		int count = aberDataSource.getNumberOfResults(model.getQueries().get(0), variable);
+		Assert.assertEquals(84, count);
+
+		long time = System.currentTimeMillis();
+
+		QueryResults results = aberDataSource.execute(model.getQueries().get(0), variable);
+
+		// It should be cached
+		Assert.assertTrue(System.currentTimeMillis() - time < 100);
+
+		Assert.assertEquals("ID", results.getHeader().get(0));
+		Assert.assertEquals("Name", results.getHeader().get(1));
+		Assert.assertEquals("Definition", results.getHeader().get(2));
+		Assert.assertEquals("Images", results.getHeader().get(3));
+		Assert.assertEquals(84, results.getResults().size());
+
+		System.out.println(GeppettoSerializer.serializeToJSON(results, true));
+
 	}
 }
