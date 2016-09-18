@@ -56,7 +56,7 @@
         name="Synaptic Neuropil Block"/>
     <types xsi:type="gep_1:SimpleType"
         id="FBDV"
-        name="FlyBase query CV"/>
+        name="FlyBase Development CV"/>
     <types xsi:type="gep_1:SimpleType"
         id="FBCV"
         name="FlyBase Controlled Vocabulary"/>
