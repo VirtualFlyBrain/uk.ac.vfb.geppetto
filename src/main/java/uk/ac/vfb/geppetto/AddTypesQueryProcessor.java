@@ -113,6 +113,27 @@ public class AddTypesQueryProcessor implements IQueryProcessor
 			Type textType = geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE);
 			Type htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
 			
+			
+			// set meta label/name:
+			Variable label = VariablesFactory.eINSTANCE.createVariable();
+			label.setId("label");
+			label.setName("Name");
+			label.getTypes().add(htmlType);
+			metaData.getVariables().add(label);
+			HTML labelValue = ValuesFactory.eINSTANCE.createHTML();
+            		String labelLink = "";
+            		if (results.getValue("name", 0) != null) {
+				labelLink = "<a href=\"#\" instancepath=\"" + (String) variable.getId() + "\">" + (String) results.getValue("name", 0) + "</a>";
+			}else{
+				labelLink = "<a href=\"#\" instancepath=\"" + (String) variable.getId() + "\">" + (String) variable.getName() + "</a>";
+			}
+			labelLink = "<h1>" + labelLink + "</h1>";
+			labelValue.setHtml(labelLink);
+
+			htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
+			label.getInitialValues().put(htmlType, labelValue);
+			
+			
 			// set meta id:
 			Variable metaID = VariablesFactory.eINSTANCE.createVariable();
 			metaID.setId("id");
@@ -125,24 +146,6 @@ public class AddTypesQueryProcessor implements IQueryProcessor
 
 			htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
 			metaID.getInitialValues().put(htmlType, metaIdValue);
-
-			// set meta label/name:
-			Variable label = VariablesFactory.eINSTANCE.createVariable();
-			label.setId("label");
-			label.setName("Name");
-			label.getTypes().add(htmlType);
-			metaData.getVariables().add(label);
-			HTML labelValue = ValuesFactory.eINSTANCE.createHTML();
-            String labelLink = "";
-            if (results.getValue("name", 0) != null) {
-				labelLink = "<a href=\"#\" instancepath=\"" + (String) variable.getId() + "\">" + (String) results.getValue("name", 0) + "</a>";
-			}else{
-				labelLink = "<a href=\"#\" instancepath=\"" + (String) variable.getId() + "\">" + (String) variable.getName() + "</a>";
-			}
-			labelValue.setHtml(labelLink);
-
-			htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
-			label.getInitialValues().put(htmlType, labelValue);
 			
 			// set description:
 			if(results.getValue("description", 0) != null)
