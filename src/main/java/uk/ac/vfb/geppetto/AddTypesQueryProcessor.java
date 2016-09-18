@@ -116,19 +116,6 @@ public class AddTypesQueryProcessor extends AQueryProcessor
 			Type textType = geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE);
 			Type htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
 
-			// set meta id:
-			Variable metaID = VariablesFactory.eINSTANCE.createVariable();
-			metaID.setId("id");
-			metaID.setName("ID");
-			metaID.getTypes().add(htmlType);
-			metaData.getVariables().add(metaID);
-			HTML metaIdValue = ValuesFactory.eINSTANCE.createHTML();
-			String idLink = "<a href=\"#\" instancepath=\"" + (String) variable.getId() + "\">" + (String) variable.getId() + "</a>";
-			metaIdValue.setHtml(idLink);
-
-			htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
-			metaID.getInitialValues().put(htmlType, metaIdValue);
-
 			// set meta label/name:
 			Variable label = VariablesFactory.eINSTANCE.createVariable();
 			label.setId("label");
@@ -145,10 +132,24 @@ public class AddTypesQueryProcessor extends AQueryProcessor
 			{
 				labelLink = "<a href=\"#\" instancepath=\"" + (String) variable.getId() + "\">" + (String) variable.getName() + "</a>";
 			}
+			labelLink = "<h1>" + labelLink + "</h1>";
 			labelValue.setHtml(labelLink);
 
 			htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
 			label.getInitialValues().put(htmlType, labelValue);
+
+			// set meta id:
+			Variable metaID = VariablesFactory.eINSTANCE.createVariable();
+			metaID.setId("id");
+			metaID.setName("ID");
+			metaID.getTypes().add(htmlType);
+			metaData.getVariables().add(metaID);
+			HTML metaIdValue = ValuesFactory.eINSTANCE.createHTML();
+			String idLink = "<a href=\"#\" instancepath=\"" + (String) variable.getId() + "\">" + (String) variable.getId() + "</a>";
+			metaIdValue.setHtml(idLink);
+
+			htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
+			metaID.getInitialValues().put(htmlType, metaIdValue);
 
 			// set description:
 			if(results.getValue("description", 0) != null)
