@@ -47,8 +47,6 @@ import org.geppetto.core.model.GeppettoModelAccess;
 import org.geppetto.core.model.GeppettoModelReader;
 import org.geppetto.core.model.GeppettoSerializer;
 import org.geppetto.core.services.registry.ApplicationListenerBean;
-import org.geppetto.datasources.TestDataSourceService;
-import org.geppetto.datasources.TestQueryProcessor;
 import org.geppetto.datasources.aberowl.AberOWLDataSourceService;
 import org.geppetto.datasources.neo4j.Neo4jDataSourceService;
 import org.geppetto.model.GeppettoModel;
