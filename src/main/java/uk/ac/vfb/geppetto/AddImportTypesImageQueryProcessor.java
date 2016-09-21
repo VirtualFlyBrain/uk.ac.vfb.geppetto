@@ -275,7 +275,7 @@ public class AddImportTypesImageQueryProcessor extends AQueryProcessor
 					external.setId("external");
 					external.setName("External Links");
 					external.getTypes().add(htmlType);
-					metaData.getVariables().add(external);
+					geppettoModelAccess.addVariableToType(external, metadataType);
 	
 					HTML externalValue = ValuesFactory.eINSTANCE.createHTML();
 					String extLink = "";
