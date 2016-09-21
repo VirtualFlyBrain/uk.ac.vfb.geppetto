@@ -271,6 +271,7 @@ public class AddImportTypesImageQueryProcessor extends AQueryProcessor
 				// External Links:
 			    	if(!((String) variable.getId()).contains("VFB"))
 			    	{
+			    		List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
 					Variable external = VariablesFactory.eINSTANCE.createVariable();
 					external.setId("external");
 					external.setName("External Links");
