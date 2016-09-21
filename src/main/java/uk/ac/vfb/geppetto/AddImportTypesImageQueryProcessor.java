@@ -35,6 +35,8 @@ package uk.ac.vfb.geppetto;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import java.util.List;
+
 import org.geppetto.core.datasources.GeppettoDataSourceException;
 import org.geppetto.core.model.GeppettoModelAccess;
 import org.geppetto.datasources.AQueryProcessor;
