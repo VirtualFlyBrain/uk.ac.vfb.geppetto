@@ -100,7 +100,7 @@ public class AddImportTypesQueryProcessor extends AQueryProcessor
 				while(results.getValue("exId", i) != null && j < 6)
 				{
 					tempSpace = (String) results.getValue("exTemp", i);
-					System.out.println("Example for template " + tempSpace);
+					System.out.println("Example for template " + tempSpace + (String) results.getValue("exId", i) + (String) results.getValue("exThumb", i) + (String) results.getValue("exName", i));
 //					 TODO: remove once links to alternative template space can be handled.
 					if (tempSpace == null || tempSpace.equals("VFB_00017894"))
 					{
