@@ -183,6 +183,14 @@
         <matchingCriteria
             type="//@libraries.3/@types.0"/>
       </queryChain>
+      <queryChain
+           xsi:type="gep_2:ProcessQuery"
+           name="External Links"
+           description="Add External Links for Classes"
+           queryProcessorId="vfbImportTypesExtLinkQueryProcessor">
+         <matchingCriteria
+             type="//@libraries.3/@types.1"/>
+       </queryChain>
     </fetchVariableQuery>
   </dataSources>
   <dataSources

@@ -17,6 +17,13 @@
 	<bean id="vfbImportTypesThumbnailQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.AddImportTypesThumbnailQueryProcessor">
 	<aop:scoped-proxy proxy-target-class="false"/>
 	</bean>
+
+	<osgi:service id="VFBImportTypesExtLinkQueryProcessorExporter" ref="vfbImportTypesExtLinkQueryProcessor"
+				  interface="org.geppetto.core.datasources.IQueryProcessor">
+	</osgi:service>
+	<bean id="vfbImportTypesExtLinkQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.AddImportTypesExtLinkQueryProcessor">
+		<aop:scoped-proxy proxy-target-class="false"/>
+	</bean>
 	
 	<osgi:service id="VFBCreateImagesForQueryResultsQueryProcessorExporter" ref="vfbCreateImagesForQueryResultsQueryProcessor"
 		interface="org.geppetto.core.datasources.IQueryProcessor">
