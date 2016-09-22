@@ -81,6 +81,7 @@ public class AddImportTypesQueryProcessor extends AQueryProcessor
 			String tempName = "";
 
 			int i = 0;
+			int j = 0;
 
 			Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
 			exampleVar.setId("examples");
@@ -93,18 +94,23 @@ public class AddImportTypesQueryProcessor extends AQueryProcessor
 			{
 
 				i = 0;
+				j = 0;
 
-				while(results.getValue("exId", i) != null)
+				while(results.getValue("exId", i) != null && j < 6)
 				{
-					tempId = (String) results.getValue("exId", i);
-					tempThumb = "http://www.virtualflybrain.org/data/VFB/i/" + tempId.substring(4, 8) + "/" + tempId.substring(8) + "/thumbnail.png";
-					tempName = (String) results.getValue("exName", i);
-					System.out.println("Adding Example Image: " + tempId + " " + tempName + " " + tempThumb);
-					if(checkURL(tempThumb))
-					{
-						addImage(tempThumb, tempName, tempId, images, i);
-						i++;
+					tempSpace = (String) results.getValue("exTemp", i);
+					if (tempSpace == window.templateSpace) { // TODO: remove once links to alternative template space can be handled.
+						tempId = (String) results.getValue("exId", i);
+						tempThumb = (String) results.getValue("exThumb", i);
+						tempThumb = "http://www.virtualflybrain.org/data/" + tempThumb;
+						tempName = (String) results.getValue("exName", i);
+						System.out.println("Adding Example Image: " + tempId + " " + tempName + " " + tempThumb);
+						if (checkURL(tempThumb)) {
+							addImage(tempThumb, tempName, tempId, images, j);
+							j++;
+						}
 					}
+					i++;
 				}
 				exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), images);
 			}
