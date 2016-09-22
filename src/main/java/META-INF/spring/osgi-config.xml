@@ -14,7 +14,7 @@
 	<osgi:service id="VFBImportTypesThumbnailQueryProcessorExporter" ref="vfbImportTypesThumbnailQueryProcessor"
 		interface="org.geppetto.core.datasources.IQueryProcessor">
 	</osgi:service>
-	<bean id="vfbImportTypesThumbnailQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.AddImportTypesImageQueryProcessor">
+	<bean id="vfbImportTypesThumbnailQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.AddImportTypesThumbnailQueryProcessor">
 	<aop:scoped-proxy proxy-target-class="false"/>
 	</bean>
 	
