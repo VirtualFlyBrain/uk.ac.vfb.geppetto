@@ -76,13 +76,13 @@ public class AddImportTypesQueryProcessor extends AQueryProcessor
 
 			System.out.println("Processing Examples...");
 
-			String tempId = "";
-			String tempThumb = "";
-			String tempName = "";
-			String tempSpace = "";
+			String tempId;
+			String tempThumb;
+			String tempName;
+			String tempSpace;
 
-			int i = 0;
-			int j = 0;
+			int i;
+			int j;
 
 			Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
 			exampleVar.setId("examples");
