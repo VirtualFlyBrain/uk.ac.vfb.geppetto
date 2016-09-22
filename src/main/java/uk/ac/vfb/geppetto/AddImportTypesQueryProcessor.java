@@ -100,13 +100,16 @@ public class AddImportTypesQueryProcessor extends AQueryProcessor
 				while(results.getValue("exId", i) != null && j < 6)
 				{
 					tempSpace = (String) results.getValue("exTemp", i);
-					if (tempSpace.equals("VFB_00017894")) { // TODO: remove once links to alternative template space can be handled.
+//					 TODO: remove once links to alternative template space can be handled.
+					if (tempSpace.equals("VFB_00017894"))
+					{
 						tempId = (String) results.getValue("exId", i);
 						tempThumb = (String) results.getValue("exThumb", i);
 						tempThumb = "http://www.virtualflybrain.org/data/" + tempThumb;
 						tempName = (String) results.getValue("exName", i);
 						System.out.println("Adding Example Image: " + tempId + " " + tempName + " " + tempThumb);
-						if (checkURL(tempThumb)) {
+						if (checkURL(tempThumb))
+						{
 							addImage(tempThumb, tempName, tempId, images, j);
 							j++;
 						}
