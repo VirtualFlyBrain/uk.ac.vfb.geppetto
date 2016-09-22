@@ -63,7 +63,7 @@ import org.geppetto.model.variables.VariablesFactory;
  * @author robertcourt
  *
  */
-public class AddImportTypesImageQueryProcessor extends AQueryProcessor
+public class vfbImportTypesThumbnailQueryProcessor extends AQueryProcessor
 {
 
 	/*
