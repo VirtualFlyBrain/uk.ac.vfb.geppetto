@@ -147,7 +147,7 @@ public class CrossDataSourceVFBQueryTest
 	public void testRunQuery() throws GeppettoInitializationException, GeppettoVisitingException, GeppettoDataSourceException, GeppettoModelException, IOException
 	{
 
-		GeppettoModel model = GeppettoModelReader.readGeppettoModel(VFBQueryTest.class.getClassLoader().getResource("OntologyTest/GeppettoModelM1.xmi"));
+		GeppettoModel model = GeppettoModelReader.readGeppettoModel(VFBQueryTest.class.getClassLoader().getResource("VFBModel/GeppettoModelVFB.xmi"));
 		model.getLibraries().add(SharedLibraryManager.getSharedCommonLibrary());
 
 		GeppettoModelAccess geppettoModelAccess = new GeppettoModelAccess(model);

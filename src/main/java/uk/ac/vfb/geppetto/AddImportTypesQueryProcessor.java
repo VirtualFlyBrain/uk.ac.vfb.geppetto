@@ -108,51 +108,6 @@ public class AddImportTypesQueryProcessor extends AQueryProcessor
 				}
 				exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), images);
 			}
-			else if(variable.getId().contains("VFBd_"))
-			{
-
-				i = 0;
-
-				tempId = (String) variable.getId();
-				tempThumb = "http://www.virtualflybrain.org/data/VFB/t/" + tempId.substring(5, 9) + "/" + tempId.substring(9) + "/thumbnail.png";
-				tempName = (String) variable.getId();
-				System.out.println("Adding Example Image: " + tempId + " " + tempName + " " + tempThumb);
-				if(checkURL(tempThumb))
-				{
-					addImage(tempThumb, tempName, tempId, images, i);
-				}
-				exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), images);
-			}
-			else if(variable.getId().contains("VFB_a"))
-			{
-
-				i = 0;
-
-				tempId = (String) variable.getId();
-				tempThumb = "http://www.virtualflybrain.org/data/VFB/i/" + tempId.substring(4, 8) + "/" + tempId.substring(8) + "/thumbnail.png";
-				tempName = (String) variable.getId();
-				System.out.println("Adding Example Image: " + tempId + " " + tempName + " " + tempThumb);
-				if(checkURL(tempThumb))
-				{
-					addImage(tempThumb, tempName, tempId, images, i);
-				}
-				exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), images);
-			}
-			else if(variable.getId().contains("VFB_td"))
-			{
-
-				i = 0;
-
-				tempId = (String) variable.getId();
-				tempThumb = "http://www.virtualflybrain.org/data/VFB/i/" + tempId.substring(4, 8) + "/" + tempId.substring(8) + "/thumbnail.png";
-				tempName = (String) variable.getId();
-				System.out.println("Adding Example Image: " + tempId + " " + tempName + " " + tempThumb);
-				if(checkURL(tempThumb))
-				{
-					addImage(tempThumb, tempName, tempId, images, i);
-				}
-				exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), images);
-			}
 		}
 		catch(GeppettoVisitingException e)
 		{
