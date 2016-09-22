@@ -118,6 +118,7 @@ public class AddImportTypesQueryProcessor extends AQueryProcessor
 		}
 		catch(GeppettoVisitingException e)
 		{
+			System.out.println(e);
 			throw new GeppettoDataSourceException(e);
 		}
 
