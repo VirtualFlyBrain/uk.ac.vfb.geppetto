@@ -188,149 +188,63 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 					// TODO add 2D/woolz
 				}
 			}
-			else if(variable.getId().startsWith("VFBd_"))
+			else // External Links:
 			{
-				String tempFile = "http://www.virtualflybrain.org/data/VFB/t/" + variable.getId().substring(5, 8) + "/domain" + variable.getId().substring(8) + ".png";
-				if(checkURL(tempFile))
-				{
-					System.out.println("Adding Thumbnail...");
-					Variable thumbnailVar = VariablesFactory.eINSTANCE.createVariable();
-					thumbnailVar.setId("thumbnail");
-					thumbnailVar.setName("Thumbnail");
-					thumbnailVar.getTypes().add(imageType);
-					geppettoModelAccess.addVariableToType(thumbnailVar, metadataType);
-					Image thumbnailValue = ValuesFactory.eINSTANCE.createImage();
-					thumbnailValue.setName(variable.getName());
-					thumbnailValue.setData(tempFile);
-					thumbnailValue.setReference(variable.getId());
-					thumbnailValue.setFormat(ImageFormat.PNG);
-					thumbnailVar.getInitialValues().put(imageType, thumbnailValue);
-				}
-				// set image types:
-				tempFile = tempFile.replace(".png", ".obj");
-				if(checkURL(tempFile))
-				{
-					System.out.println("Adding OBJ...");
-					tempFile = localForID(variable.getId()) + "volume.obj";
-					Variable objVar = VariablesFactory.eINSTANCE.createVariable();
-					ImportType objImportType = TypesFactory.eINSTANCE.createImportType();
-					objImportType.setUrl(tempFile);
-					objImportType.setId(variable.getId() + "_obj");
-					objImportType.setModelInterpreterId("objModelInterpreterService");
-					objVar.getTypes().add(objImportType);
-					geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
-					objVar.setId(variable.getId() + "_obj");
-					objVar.setName("3D Volume");
-					type.getVariables().add(objVar);
-				}
-				tempFile = tempFile.replace(".obj", ".swc");
-				if(checkURL(tempFile))
-				{
-					System.out.println("Adding SWC...");
-					tempFile = localForID(variable.getId()) + "volume.swc";
-					Variable swcVar = VariablesFactory.eINSTANCE.createVariable();
-					ImportType swcImportType = TypesFactory.eINSTANCE.createImportType();
-					swcImportType.setUrl(tempFile);
-					swcImportType.setId(variable.getId() + "_swc");
-					swcImportType.setModelInterpreterId("swcModelInterpreter");
-					swcVar.getTypes().add(swcImportType);
-					geppettoModelAccess.addTypeToLibrary(swcImportType, getLibraryFor(dataSource, "swc"));
-					swcVar.setName("3D Skeleton");
-					swcVar.setId(variable.getId() + "_swc");
-					type.getVariables().add(swcVar);
-				}
-				tempFile = tempFile.replace(".swc", ".nrrd");
-				;
-				if(checkURL(tempFile))
-				{
-					System.out.println("Adding NRRD...");
-					Variable downloads = VariablesFactory.eINSTANCE.createVariable();
-					downloads.setId("downloads");
-					downloads.setName("Downloads");
-					downloads.getTypes().add(htmlType);
-					geppettoModelAccess.addVariableToType(downloads, metadataType);
+				List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
+				Variable external = VariablesFactory.eINSTANCE.createVariable();
+				external.setId("external");
+				external.setName("External Links");
+				external.getTypes().add(htmlType);
+				geppettoModelAccess.addVariableToType(external, metadataType);
 
-					HTML downloadValue = ValuesFactory.eINSTANCE.createHTML();
-					String downloadLink = "Aligned Image: ​<a download=\"" + (String) variable.getId() + ".nrrd\" href=\"" + tempFile + "\">" + (String) variable.getId()
-							+ ".nrrd</a><br/>​​​​​​​​​​​​​​​​​​​​​​​​​​​";
-					downloadLink += "Note: see licensing section for reuse and attribution info.";
+				HTML externalValue = ValuesFactory.eINSTANCE.createHTML();
+				String extLink = "";
 
-					downloadValue.setHtml(downloadLink);
-					downloads.getInitialValues().put(htmlType, downloadValue);
-					// TODO add NRRD download
-				}
-				tempFile = tempFile.replace(".nrrd", ".wlz");
-				;
-				if(checkURL(tempFile))
+				switch(((String) results.getValue("id", 0)).substring(0, 3))
 				{
-					System.out.println("Adding Woolz...");
-					tempFile = localForID(variable.getId()).replace("SERVER_ROOT/vfb/", "/disk/data/VFB/IMAGE_DATA/") + "volume.wlz";
-					// TODO add 2D/woolz
-				}
+					case "FBa":
+						extLink = "<a href=\"http://flybase.org/reports/" + (String) results.getValue("id", 0)
+								+ "\" target=\"_blank\" title=\"FlyBase\" ><i class=\"popup-icon-link gpt-fly\" title=\"FlyBase: " + (String) results.getValue("id", 0)
+								+ "\" aria-hidden=\"true\"></i></a></a>";
+						// Add Allele as supertype
+						type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Allele", dependenciesLibrary));
+						break;
+					case "FBt":
+						extLink = "<a href=\"http://flybase.org/reports/" + (String) results.getValue("id", 0)
+								+ "\" target=\"_blank\" title=\"FlyBase\" ><i class=\"popup-icon-link gpt-fly\" title=\"FlyBase: " + (String) results.getValue("id", 0)
+								+ "\" aria-hidden=\"true\"></i></a></a>";
+						// Add Transgene as supertype
+						type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Transgene", dependenciesLibrary));
+						break;
+					case "FBg":
+						extLink = "<a href=\"http://flybase.org/reports/" + (String) results.getValue("id", 0)
+								+ "\" target=\"_blank\" title=\"FlyBase\" ><i class=\"popup-icon-link gpt-fly\" title=\"FlyBase: " + (String) results.getValue("id", 0)
+								+ "\" aria-hidden=\"true\"></i></a></a>";
+						// Add Allele as supertype
+						type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Gene", dependenciesLibrary));
+						break;
+					case "FBb":
+						extLink = "<a href=\"http://flybase.org/cgi-bin/cvreport.html?rel=is_a&id=" + ((String) results.getValue("id", 0)).replace("_", ":")
+								+ "\" target=\"_blank\" title=\"FlyBase\" ><i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:" + (String) results.getValue("id", 0)
+								+ "\" aria-hidden=\"true\"></i></a></a> ";
+						extLink += "<a href=\"http://neurolex.org/wiki/" + (String) results.getValue("id", 0)
+								+ "\" target=\"_blank\" title=\"NeuroLex\" ><i class=\"popup-icon-link gpt-neurolex\" title=\"NeuroLex:" + (String) results.getValue("id", 0)
+								+ "\" aria-hidden=\"true\"></i></a>";
+						break;
+					case "GO_":
+						extLink = "<a href=\"http://amigo.geneontology.org/amigo/term/GO:0061527" + ((String) results.getValue("id", 0)).replace("_", ":")
+								+ "\" target=\"_blank\" title=\"FlyBase\" ><i class=\"popup-icon-link gpt-geneontology\" title=\"GeneOntology:" + (String) results.getValue("id", 0)
+								+ "\" aria-hidden=\"true\"></i></a>";
+						break;
+					default:
+						extLink = "<br/>";
+						break;
+				} 
+				externalValue.setHtml(extLink);
+
+				htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
+				external.getInitialValues().put(htmlType, externalValue);
 			}
-			else
-			{
-				// External Links:
-			    	if(!((String) variable.getId()).contains("VFB"))
-			    	{
-			    		List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
-					Variable external = VariablesFactory.eINSTANCE.createVariable();
-					external.setId("external");
-					external.setName("External Links");
-					external.getTypes().add(htmlType);
-					geppettoModelAccess.addVariableToType(external, metadataType);
-	
-					HTML externalValue = ValuesFactory.eINSTANCE.createHTML();
-					String extLink = "";
-	
-					switch(((String) results.getValue("id", 0)).substring(0, 3))
-					{
-						case "FBa":
-							extLink = "<a href=\"http://flybase.org/reports/" + (String) results.getValue("id", 0)
-									+ "\" target=\"_blank\" title=\"FlyBase\" ><i class=\"popup-icon-link gpt-fly\" title=\"FlyBase: " + (String) results.getValue("id", 0)
-									+ "\" aria-hidden=\"true\"></i></a></a>";
-							// Add Allele as supertype
-							type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Allele", dependenciesLibrary));
-							break;
-						case "FBt":
-							extLink = "<a href=\"http://flybase.org/reports/" + (String) results.getValue("id", 0)
-									+ "\" target=\"_blank\" title=\"FlyBase\" ><i class=\"popup-icon-link gpt-fly\" title=\"FlyBase: " + (String) results.getValue("id", 0)
-									+ "\" aria-hidden=\"true\"></i></a></a>";
-							// Add Transgene as supertype
-							type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Transgene", dependenciesLibrary));
-							break;
-						case "FBg":
-							extLink = "<a href=\"http://flybase.org/reports/" + (String) results.getValue("id", 0)
-									+ "\" target=\"_blank\" title=\"FlyBase\" ><i class=\"popup-icon-link gpt-fly\" title=\"FlyBase: " + (String) results.getValue("id", 0)
-									+ "\" aria-hidden=\"true\"></i></a></a>";
-							// Add Allele as supertype
-							type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Gene", dependenciesLibrary));
-							break;
-						case "FBb":
-							extLink = "<a href=\"http://flybase.org/cgi-bin/cvreport.html?rel=is_a&id=" + ((String) results.getValue("id", 0)).replace("_", ":")
-									+ "\" target=\"_blank\" title=\"FlyBase\" ><i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:" + (String) results.getValue("id", 0)
-									+ "\" aria-hidden=\"true\"></i></a></a> ";
-							extLink += "<a href=\"http://neurolex.org/wiki/" + (String) results.getValue("id", 0)
-									+ "\" target=\"_blank\" title=\"NeuroLex\" ><i class=\"popup-icon-link gpt-neurolex\" title=\"NeuroLex:" + (String) results.getValue("id", 0)
-									+ "\" aria-hidden=\"true\"></i></a>";
-							break;
-						case "GO_":
-							extLink = "<a href=\"http://amigo.geneontology.org/amigo/term/GO:0061527" + ((String) results.getValue("id", 0)).replace("_", ":")
-									+ "\" target=\"_blank\" title=\"FlyBase\" ><i class=\"popup-icon-link gpt-geneontology\" title=\"GeneOntology:" + (String) results.getValue("id", 0)
-									+ "\" aria-hidden=\"true\"></i></a>";
-							break;
-						default:
-							extLink = "<br/>";
-							break;
-					}
-	
-					externalValue.setHtml(extLink);
-	
-					htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
-					external.getInitialValues().put(htmlType, externalValue);
-				}
-			}
-			
 		}
 		catch(GeppettoVisitingException e)
 		{
@@ -341,7 +255,6 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 		{
 			System.out.println(e);
 		}
-
 		return results;
 	}
 
