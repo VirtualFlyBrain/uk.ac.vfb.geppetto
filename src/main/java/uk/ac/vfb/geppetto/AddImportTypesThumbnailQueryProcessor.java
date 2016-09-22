@@ -90,10 +90,11 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 			System.out.println("Processing Images...");
 
 			// set VFB individual images:
-			if(variable.getId().startsWith("VFB_"))
+			if(results.getValue("imageDir", 0) != null)
 			{
 				// set individual thumbnail:
-				String tempFile = "http://www.virtualflybrain.org/data/VFB/i/" + variable.getId().substring(4, 8) + "/" + variable.getId().substring(8) + "/thumbnail.png";
+				String tempFolder = (String) results.getValue("imageDir", 0);
+				String tempFile = remoteFolder(tempFolder) + "thumbnail.png";
 				if(checkURL(tempFile))
 				{
 					System.out.println("Adding Thumbnail...");
@@ -110,11 +111,11 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 					thumbnailVar.getInitialValues().put(imageType, thumbnailValue);
 				}
 				// set image types:
-				tempFile = remoteForID(variable.getId()) + "volume_man.obj"; // manually created obj rather than auto point cloud
+				tempFile = remoteFolder(tempFolder) + "volume_man.obj"; // manually created obj rather than auto point cloud
 				if(checkURL(tempFile))
 				{
 					System.out.println("Adding manual OBJ...");
-					tempFile = localForID(variable.getId()) + "volume_man.obj";
+					tempFile = localFolder(tempFolder) + "volume_man.obj";
 					Variable objVar = VariablesFactory.eINSTANCE.createVariable();
 					ImportType objImportType = TypesFactory.eINSTANCE.createImportType();
 					objImportType.setUrl(tempFile);
@@ -128,11 +129,11 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 				}
 				else
 				{
-					tempFile = remoteForID(variable.getId()) + "volume.obj";
+					tempFile = remoteFolder(tempFolder) + "volume.obj";
 					if(checkURL(tempFile))
 					{
 						System.out.println("Adding OBJ...");
-						tempFile = localForID(variable.getId()) + "volume.obj";
+						tempFile = localFolder(tempFolder) + "volume.obj";
 						Variable objVar = VariablesFactory.eINSTANCE.createVariable();
 						ImportType objImportType = TypesFactory.eINSTANCE.createImportType();
 						objImportType.setUrl(tempFile);
@@ -145,11 +146,11 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 						type.getVariables().add(objVar);
 					}
 				}
-				tempFile = remoteForID(variable.getId()) + "volume.swc";
+				tempFile = remoteFolder(tempFolder) + "volume.swc";
 				if(checkURL(tempFile))
 				{
 					System.out.println("Adding SWC...");
-					tempFile = localForID(variable.getId()) + "volume.swc";
+					tempFile = localFolder(tempFolder) + "volume.swc";
 					Variable swcVar = VariablesFactory.eINSTANCE.createVariable();
 					ImportType swcImportType = TypesFactory.eINSTANCE.createImportType();
 					swcImportType.setUrl(tempFile);
@@ -161,7 +162,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 					swcVar.setId(variable.getId() + "_swc");
 					type.getVariables().add(swcVar);
 				}
-				tempFile = remoteForID(variable.getId()) + "volume.nrrd";
+				tempFile = remoteFolder(tempFolder) + "volume.nrrd";
 				if(checkURL(tempFile))
 				{
 					System.out.println("Adding NRRD...");
@@ -172,20 +173,34 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 					geppettoModelAccess.addVariableToType(downloads, metadataType);
 
 					HTML downloadValue = ValuesFactory.eINSTANCE.createHTML();
-					String downloadLink = "Aligned Image: ​<a download=\"" + (String) variable.getId() + ".nrrd\" href=\"" + tempFile + "\">" + (String) variable.getId()
-							+ ".nrrd</a><br/>​​​​​​​​​​​​​​​​​​​​​​​​​​​";
-					downloadLink += "Note: see licensing section for reuse and attribution info.";
+					String downloadLink = "Aligned Image: ​<a download=\"" + (String) variable.getId() + ".nrrd\" href=\"" + tempFile + "\">" + (String) variable.getId() + ".nrrd</a><br/>​​​​​​​​​​​​​​​​​​​​​​​​​​​";
+					downloadLink += "Note: see licensing section for reuse and attribution info."; // TODO: pull licensing from neo4j
 
 					downloadValue.setHtml(downloadLink);
 					downloads.getInitialValues().put(htmlType, downloadValue);
-					// TODO add NRRD download
+					// TODO: add NRRD download
 				}
-				tempFile = remoteForID(variable.getId()) + "volume.wlz";
+				tempFile = remoteFolder(tempFolder) + "volume.wlz";
 				if(checkURL(tempFile))
 				{
 					System.out.println("Adding Woolz...");
-					tempFile = localForID(variable.getId()).replace("SERVER_ROOT/vfb/", "/disk/data/VFB/IMAGE_DATA/") + "volume.wlz";
-					// TODO add 2D/woolz
+					tempFile = localFolder(tempFolder).replace("SERVER_ROOT/vfb/", "/disk/data/VFB/IMAGE_DATA/") + "volume.wlz";
+					// TODO: add 2D/woolz
+				}
+				if (results.getValue("tempId", 0) != null)
+				{
+					System.out.println("Adding Template Space...");
+					Variable tempVar = VariablesFactory.eINSTANCE.createVariable();
+					tempVar.setId("template");
+					tempVar.setName("Template Space");
+					tempVar.getTypes().add(htmlType);
+					geppettoModelAccess.addVariableToType(tempVar, metadataType);
+
+					HTML tempValue = ValuesFactory.eINSTANCE.createHTML();
+					String tempLink = "<a href=\"#\" instancepath=\"" + (String) results.getValue("tempId", 0) + "\">" + (String) results.getValue("tempName", 0) + "</a>";
+
+					tempValue.setHtml(tempLink);
+					tempVar.getInitialValues().put(htmlType, tempValue);
 				}
 			}
 		}
@@ -232,6 +247,22 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 	private String localForID(String id)
 	{
 		return "SERVER_ROOT/vfb/VFB/i/" + id.substring(4, 8) + "/" + id.substring(8) + "/";
+	}
+
+	/**
+	 * @param id
+	 */
+	private String remoteFolder(String folder)
+	{
+		return "http://www.virtualflybrain.org/data/" + folder;
+	}
+
+	/**
+	 * @param id
+	 */
+	private String localFolder(String folder)
+	{
+		return "SERVER_ROOT/vfb/" + folder;
 	}
 
 	/**
