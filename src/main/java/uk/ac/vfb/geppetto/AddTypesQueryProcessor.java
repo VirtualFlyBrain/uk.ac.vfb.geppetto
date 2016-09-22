@@ -77,6 +77,7 @@ public class AddTypesQueryProcessor extends AQueryProcessor
 		variable.getAnonymousTypes().add(type);
 
 		// add supertypes
+		boolean template = false;
 		List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
 		if(results.getValue("supertypes", 0) != null)
 		{
@@ -88,6 +89,10 @@ public class AddTypesQueryProcessor extends AQueryProcessor
 				{ // ignore supertypes starting with _
 					type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
 					System.out.println("Adding to SuperType: " + supertype);
+				}
+				if(supertype.equals("Template"))
+				{
+					template = true;
 				}
 			}
 		}

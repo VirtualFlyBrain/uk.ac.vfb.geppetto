@@ -79,6 +79,7 @@ public class AddImportTypesQueryProcessor extends AQueryProcessor
 			String tempId = "";
 			String tempThumb = "";
 			String tempName = "";
+			String tempSpace = "";
 
 			int i = 0;
 			int j = 0;
@@ -99,7 +100,7 @@ public class AddImportTypesQueryProcessor extends AQueryProcessor
 				while(results.getValue("exId", i) != null && j < 6)
 				{
 					tempSpace = (String) results.getValue("exTemp", i);
-					if (tempSpace == window.templateSpace) { // TODO: remove once links to alternative template space can be handled.
+					if (tempSpace.equals("VFB_00017894")) { // TODO: remove once links to alternative template space can be handled.
 						tempId = (String) results.getValue("exId", i);
 						tempThumb = (String) results.getValue("exThumb", i);
 						tempThumb = "http://www.virtualflybrain.org/data/" + tempThumb;
