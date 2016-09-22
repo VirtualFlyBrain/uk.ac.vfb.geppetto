@@ -61,7 +61,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 
-import uk.ac.vfb.geppetto.AddImportTypesImageQueryProcessor;
+import uk.ac.vfb.geppetto.AddImportTypesThumbnailQueryProcessor;
 import uk.ac.vfb.geppetto.AddImportTypesQueryProcessor;
 import uk.ac.vfb.geppetto.AddImportTypesRelatedQueryProcessor;
 import uk.ac.vfb.geppetto.AddImportTypesSynonymQueryProcessor;
@@ -98,7 +98,7 @@ public class VFBQueryTest
 		context.registerBeanDefinition("vfbImportTypesRelatedQueryProcessor", queryProcessorImportTypesRelatedBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.vfbImportTypesRelatedQueryProcessor", queryProcessorImportTypesRelatedBeanDefinition);
 
-		BeanDefinition queryProcessorImportTypesThumbnailBeanDefinition = new RootBeanDefinition(AddImportTypesImageQueryProcessor.class);
+		BeanDefinition queryProcessorImportTypesThumbnailBeanDefinition = new RootBeanDefinition(AddImportTypesThumbnailQueryProcessor.class);
 		context.registerBeanDefinition("vfbImportTypesThumbnailQueryProcessor", queryProcessorImportTypesThumbnailBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.vfbImportTypesThumbnailQueryProcessor", queryProcessorImportTypesThumbnailBeanDefinition);
 		
