@@ -102,40 +102,40 @@ public class AddImportTypesExtLinkQueryProcessor extends AQueryProcessor
 				HTML externalValue = ValuesFactory.eINSTANCE.createHTML();
 				String extLink = "";
 
-				switch(((String) results.getValue("id", 0)).substring(0, 3))
+				switch(((String) variable.getId()).substring(0, 3))
 				{
 					case "FBa":
-						extLink = "<a href=\"http://flybase.org/reports/" + (String) results.getValue("id", 0)
-								+ "\" target=\"_blank\" title=\"FlyBase\" ><i class=\"popup-icon-link gpt-fly\" title=\"FlyBase: " + (String) results.getValue("id", 0)
+						extLink = "<a href=\"http://flybase.org/reports/" + (String) variable.getId()
+								+ "\" target=\"_blank\" title=\"FlyBase\" ><i class=\"popup-icon-link gpt-fly\" title=\"FlyBase: " + (String) variable.getId()
 								+ "\" aria-hidden=\"true\"></i></a></a>";
 						// Add Allele as supertype
 						type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Allele", dependenciesLibrary));
 						break;
 					case "FBt":
-						extLink = "<a href=\"http://flybase.org/reports/" + (String) results.getValue("id", 0)
-								+ "\" target=\"_blank\" title=\"FlyBase\" ><i class=\"popup-icon-link gpt-fly\" title=\"FlyBase: " + (String) results.getValue("id", 0)
+						extLink = "<a href=\"http://flybase.org/reports/" + (String) variable.getId()
+								+ "\" target=\"_blank\" title=\"FlyBase\" ><i class=\"popup-icon-link gpt-fly\" title=\"FlyBase: " + (String) variable.getId()
 								+ "\" aria-hidden=\"true\"></i></a></a>";
 						// Add Transgene as supertype
 						type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Transgene", dependenciesLibrary));
 						break;
 					case "FBg":
-						extLink = "<a href=\"http://flybase.org/reports/" + (String) results.getValue("id", 0)
-								+ "\" target=\"_blank\" title=\"FlyBase\" ><i class=\"popup-icon-link gpt-fly\" title=\"FlyBase: " + (String) results.getValue("id", 0)
+						extLink = "<a href=\"http://flybase.org/reports/" + (String) variable.getId()
+								+ "\" target=\"_blank\" title=\"FlyBase\" ><i class=\"popup-icon-link gpt-fly\" title=\"FlyBase: " + (String) variable.getId()
 								+ "\" aria-hidden=\"true\"></i></a></a>";
 						// Add Allele as supertype
 						type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Gene", dependenciesLibrary));
 						break;
 					case "FBb":
-						extLink = "<a href=\"http://flybase.org/cgi-bin/cvreport.html?rel=is_a&id=" + ((String) results.getValue("id", 0)).replace("_", ":")
-								+ "\" target=\"_blank\" title=\"FlyBase\" ><i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:" + (String) results.getValue("id", 0)
+						extLink = "<a href=\"http://flybase.org/cgi-bin/cvreport.html?rel=is_a&id=" + ((String) variable.getId()).replace("_", ":")
+								+ "\" target=\"_blank\" title=\"FlyBase\" ><i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:" + (String) variable.getId()
 								+ "\" aria-hidden=\"true\"></i></a></a> ";
-						extLink += "<a href=\"http://neurolex.org/wiki/" + (String) results.getValue("id", 0)
-								+ "\" target=\"_blank\" title=\"NeuroLex\" ><i class=\"popup-icon-link gpt-neurolex\" title=\"NeuroLex:" + (String) results.getValue("id", 0)
+						extLink += "<a href=\"http://neurolex.org/wiki/" + (String) variable.getId()
+								+ "\" target=\"_blank\" title=\"NeuroLex\" ><i class=\"popup-icon-link gpt-neurolex\" title=\"NeuroLex:" + (String) variable.getId()
 								+ "\" aria-hidden=\"true\"></i></a>";
 						break;
 					case "GO_":
-						extLink = "<a href=\"http://amigo.geneontology.org/amigo/term/GO:0061527" + ((String) results.getValue("id", 0)).replace("_", ":")
-								+ "\" target=\"_blank\" title=\"FlyBase\" ><i class=\"popup-icon-link gpt-geneontology\" title=\"GeneOntology:" + (String) results.getValue("id", 0)
+						extLink = "<a href=\"http://amigo.geneontology.org/amigo/term/GO:0061527" + ((String) variable.getId()).replace("_", ":")
+								+ "\" target=\"_blank\" title=\"FlyBase\" ><i class=\"popup-icon-link gpt-geneontology\" title=\"GeneOntology:" + (String) variable.getId()
 								+ "\" aria-hidden=\"true\"></i></a>";
 						break;
 					default:
