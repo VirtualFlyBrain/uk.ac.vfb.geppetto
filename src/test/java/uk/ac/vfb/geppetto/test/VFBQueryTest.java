@@ -63,6 +63,7 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
 
 import uk.ac.vfb.geppetto.AddImportTypesThumbnailQueryProcessor;
 import uk.ac.vfb.geppetto.AddImportTypesExtLinkQueryProcessor;
+import uk.ac.vfb.geppetto.AddImportTypesRefsQueryProcessor;
 import uk.ac.vfb.geppetto.AddImportTypesQueryProcessor;
 import uk.ac.vfb.geppetto.AddImportTypesRelatedQueryProcessor;
 import uk.ac.vfb.geppetto.AddImportTypesSynonymQueryProcessor;
@@ -107,6 +108,10 @@ public class VFBQueryTest
 		context.registerBeanDefinition("vfbImportTypesExtLinkQueryProcessor", queryProcessorImportTypesExtLinkBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.vfbImportTypesExtLinkQueryProcessor", queryProcessorImportTypesExtLinkBeanDefinition);
 
+		BeanDefinition queryProcessorImportTypesRefsBeanDefinition = new RootBeanDefinition(AddImportTypesRefsQueryProcessor.class);
+		context.registerBeanDefinition("vfbImportTypesRefsQueryProcessor", queryProcessorImportTypesRefsBeanDefinition);
+		context.registerBeanDefinition("scopedTarget.vfbImportTypesRefsQueryProcessor", queryProcessorImportTypesRefsBeanDefinition);
+
 		BeanDefinition neo4jDataSourceBeanDefinition = new RootBeanDefinition(Neo4jDataSourceService.class);
 		context.registerBeanDefinition("neo4jDataSource", neo4jDataSourceBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.neo4jDataSource", neo4jDataSourceBeanDefinition);
@@ -130,7 +135,8 @@ public class VFBQueryTest
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbImportTypesThumbnailQueryProcessor"));
 		retrievedContext = ApplicationListenerBean.getApplicationContext("vfbImportTypesExtLinkQueryProcessor");
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbImportTypesExtLinkQueryProcessor"));
-
+		retrievedContext = ApplicationListenerBean.getApplicationContext("vfbImportTypesRefsQueryProcessor");
+		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbImportTypesRefsQueryProcessor"));
 	}
 
 	/**
