@@ -71,24 +71,26 @@ public class AddImportTypesRefsQueryProcessor extends AQueryProcessor {
             System.out.println("Processing References...");
 
             // References:
-            Variable bibVar = VariablesFactory.eINSTANCE.createVariable();
-            bibVar.setId("bibliography");
-            bibVar.setName("Bibliography");
-            bibVar.getTypes().add(htmlType);
-            geppettoModelAccess.addVariableToType(bibVar, metadataType);
+            if (results.getValue("bib", 0) != null) {
+                Variable bibVar = VariablesFactory.eINSTANCE.createVariable();
+                bibVar.setId("bibliography");
+                bibVar.setName("Bibliography");
+                bibVar.getTypes().add(htmlType);
+                geppettoModelAccess.addVariableToType(bibVar, metadataType);
 
-            HTML bibValue = ValuesFactory.eINSTANCE.createHTML();
-            int i = 0;
-            String bibLink = "";
-            String bibText;
-            while (results.getValue("bib", i) != null) {
-                bibText = (String) results.getValue("bib", i);
-                System.out.println(bibText);
-                bibLink = bibLink + bibText + "<br/>";
-                i++;
+                HTML bibValue = ValuesFactory.eINSTANCE.createHTML();
+                int i = 0;
+                String bibLink = "";
+                String bibText;
+                while (results.getValue("bib", i) != null) {
+                    bibText = (String) results.getValue("bib", i);
+                    System.out.println(bibText);
+                    bibLink = bibLink + bibText + "<br/>";
+                    i++;
+                }
+                bibValue.setHtml(bibLink);
+                bibVar.getInitialValues().put(htmlType, bibValue);
             }
-            bibValue.setHtml(bibLink);
-            bibVar.getInitialValues().put(htmlType, bibValue);
         } catch (GeppettoVisitingException e) {
             System.out.println(e);
             throw new GeppettoDataSourceException(e);
