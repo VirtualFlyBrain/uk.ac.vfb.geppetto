@@ -233,18 +233,18 @@ public class AddImportTypesSynonymQueryProcessor extends AQueryProcessor
 					i++;
 				}
 
-				// set parent Type:
-				if(typeLink != "")
+				// set Definition references:
+				if(defRefs != "")
 				{
-					System.out.println("Type:\n" + typeLink);
-					Variable type = VariablesFactory.eINSTANCE.createVariable();
-					type.setId("type");
-					type.setName("Type");
-					type.getTypes().add(htmlType);
-					geppettoModelAccess.addVariableToType(type, metadataType);
-					HTML typeValue = ValuesFactory.eINSTANCE.createHTML();
-					typeValue.setHtml(typeLink);
-					type.getInitialValues().put(htmlType, typeValue);
+					System.out.println("References:\n" + defRefs);
+					Variable defReferences = VariablesFactory.eINSTANCE.createVariable();
+					defReferences.setId("references");
+					defReferences.setName("Description References");
+					defReferences.getTypes().add(htmlType);
+					geppettoModelAccess.addVariableToType(defReferences, metadataType);
+					HTML defReferencesValue = ValuesFactory.eINSTANCE.createHTML();
+					defReferencesValue.setHtml(defRefs);
+					defReferences.getInitialValues().put(htmlType, defReferencesValue);
 				}
 
 				// set Synonyms with any related references:
@@ -261,18 +261,18 @@ public class AddImportTypesSynonymQueryProcessor extends AQueryProcessor
 					synonyms.getInitialValues().put(htmlType, synonymsValue);
 				}
 
-				// set Definition references:
-				if(defRefs != "")
+				// set parent Type:
+				if(typeLink != "")
 				{
-					System.out.println("References:\n" + defRefs);
-					Variable defReferences = VariablesFactory.eINSTANCE.createVariable();
-					defReferences.setId("references");
-					defReferences.setName("Definition References");
-					defReferences.getTypes().add(htmlType);
-					geppettoModelAccess.addVariableToType(defReferences, metadataType);
-					HTML defReferencesValue = ValuesFactory.eINSTANCE.createHTML();
-					defReferencesValue.setHtml(defRefs);
-					defReferences.getInitialValues().put(htmlType, defReferencesValue);
+					System.out.println("Type:\n" + typeLink);
+					Variable type = VariablesFactory.eINSTANCE.createVariable();
+					type.setId("type");
+					type.setName("Type");
+					type.getTypes().add(htmlType);
+					geppettoModelAccess.addVariableToType(type, metadataType);
+					HTML typeValue = ValuesFactory.eINSTANCE.createHTML();
+					typeValue.setHtml(typeLink);
+					type.getInitialValues().put(htmlType, typeValue);
 				}
 
 				// set Relationships with any related references:
