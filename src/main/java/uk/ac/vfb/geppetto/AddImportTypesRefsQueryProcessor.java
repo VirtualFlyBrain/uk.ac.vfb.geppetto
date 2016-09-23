@@ -71,19 +71,21 @@ public class AddImportTypesRefsQueryProcessor extends AQueryProcessor {
             System.out.println("Processing References...");
 
             // References:
-            int i = 0;
-            while (results.getValue("bib", i) != null) {
-                Variable bibVar = VariablesFactory.eINSTANCE.createVariable();
-                bibVar.setId("bibliography");
-                bibVar.setName("Bibliography");
-                bibVar.getTypes().add(htmlType);
-                geppettoModelAccess.addVariableToType(bibVar, metadataType);
+            Variable bibVar = VariablesFactory.eINSTANCE.createVariable();
+            bibVar.setId("bibliography");
+            bibVar.setName("Bibliography");
+            bibVar.getTypes().add(htmlType);
+            geppettoModelAccess.addVariableToType(bibVar, metadataType);
 
-                HTML bibValue = ValuesFactory.eINSTANCE.createHTML();
-                String bibLink = (String) results.getValue("bib", i);
-                bibValue.setHtml(bibLink);
-                bibVar.getInitialValues().put(htmlType, bibValue);
+            HTML bibValue = ValuesFactory.eINSTANCE.createHTML();
+            int i = 0;
+            String bibLink = "";
+            while (results.getValue("bib", i) != null) {
+                bibLink = bibLink + ((String) results.getValue("bib", i)) + "<br/>";
+                i++;
             }
+            bibValue.setHtml(bibLink);
+            bibVar.getInitialValues().put(htmlType, bibValue);
         } catch (GeppettoVisitingException e) {
             System.out.println(e);
             throw new GeppettoDataSourceException(e);
