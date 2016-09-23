@@ -80,8 +80,11 @@ public class AddImportTypesRefsQueryProcessor extends AQueryProcessor {
             HTML bibValue = ValuesFactory.eINSTANCE.createHTML();
             int i = 0;
             String bibLink = "";
+            String bibText;
             while (results.getValue("bib", i) != null) {
-                bibLink = bibLink + ((String) results.getValue("bib", i)) + "<br/>";
+                bibText = (String) results.getValue("bib", i);
+                System.out.println(bibText);
+                bibLink = bibLink + bibText + "<br/>";
                 i++;
             }
             bibValue.setHtml(bibLink);
