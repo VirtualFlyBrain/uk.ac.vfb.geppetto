@@ -83,7 +83,7 @@
       id="vfbLibrary"
       name="VFB"/>
   <dataSources
-      id="neo4jDataSource"
+      id="neo4JDataSourceService"
       name="neo4j Data Source"
       dataSourceService="neo4jDataSource"
       url="http://vfbdev.inf.ed.ac.uk/neo4jdb/data/transaction"
