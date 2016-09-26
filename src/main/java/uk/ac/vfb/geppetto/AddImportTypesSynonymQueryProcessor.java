@@ -182,7 +182,7 @@ public class AddImportTypesSynonymQueryProcessor extends AQueryProcessor
 							else if(results.getValue("relLink", i) != null)
 							{
 								defRefs += " <a href=\"http:" + (String) results.getValue("relLink", i) + "\" target=\"_blank\" >";
-								defRefs += (String) results.getValue("relLink", i) + "</a>";
+								defRefs += ((String) results.getValue("relLink", i)).replaceAll("//","").replaceAll("http:","") + "</a>";
 								defRefs += "<br/>";
 							}
 						}
