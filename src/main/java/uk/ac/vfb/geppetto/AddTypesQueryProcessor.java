@@ -203,7 +203,7 @@ public class AddTypesQueryProcessor extends AQueryProcessor
 	{
 		try
 		{
-			text = text.replaceAll("([F,V,G].*)[:,_]([0-9]*)","<a href=\"#\" instancepath=\"$1_$2\">$1_$2</a>");
+			text = text.replaceAll("([F,V,G].*)[:,_](\\d{5}[0-9]*\\b)","<a href=\"#\" instancepath=\"$1_$2\">$1_$2</a>");
 			return text;
 		}
 		catch(Exception e)
