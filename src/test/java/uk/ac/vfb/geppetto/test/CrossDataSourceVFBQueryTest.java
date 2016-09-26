@@ -61,7 +61,6 @@ import uk.ac.vfb.geppetto.AddImportTypesThumbnailQueryProcessor;
 import uk.ac.vfb.geppetto.AddImportTypesExtLinkQueryProcessor;
 import uk.ac.vfb.geppetto.AddImportTypesRefsQueryProcessor;
 import uk.ac.vfb.geppetto.AddImportTypesQueryProcessor;
-import uk.ac.vfb.geppetto.AddImportTypesRelatedQueryProcessor;
 import uk.ac.vfb.geppetto.AddImportTypesSynonymQueryProcessor;
 import uk.ac.vfb.geppetto.AddTypesQueryProcessor;
 import uk.ac.vfb.geppetto.CreateImagesForQueryResultsQueryProcessor;
@@ -93,10 +92,6 @@ public class CrossDataSourceVFBQueryTest
 		BeanDefinition queryProcessorImportTypesSynonymBeanDefinition = new RootBeanDefinition(AddImportTypesSynonymQueryProcessor.class);
 		context.registerBeanDefinition("vfbImportTypesSynonymQueryProcessor", queryProcessorImportTypesSynonymBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.vfbImportTypesSynonymQueryProcessor", queryProcessorImportTypesSynonymBeanDefinition);
-
-		BeanDefinition queryProcessorImportTypesRelatedBeanDefinition = new RootBeanDefinition(AddImportTypesRelatedQueryProcessor.class);
-		context.registerBeanDefinition("vfbImportTypesRelatedQueryProcessor", queryProcessorImportTypesRelatedBeanDefinition);
-		context.registerBeanDefinition("scopedTarget.vfbImportTypesRelatedQueryProcessor", queryProcessorImportTypesRelatedBeanDefinition);
 
 		BeanDefinition queryProcessorImportTypesThumbnailBeanDefinition = new RootBeanDefinition(AddImportTypesThumbnailQueryProcessor.class);
 		context.registerBeanDefinition("vfbImportTypesThumbnailQueryProcessor", queryProcessorImportTypesThumbnailBeanDefinition);
@@ -135,8 +130,6 @@ public class CrossDataSourceVFBQueryTest
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbImportTypesQueryProcessor"));
 		retrievedContext = ApplicationListenerBean.getApplicationContext("vfbImportTypesSynonymQueryProcessor");
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbImportTypesSynonymQueryProcessor"));
-		retrievedContext = ApplicationListenerBean.getApplicationContext("vfbImportTypesRelatedQueryProcessor");
-		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbImportTypesRelatedQueryProcessor"));
 		retrievedContext = ApplicationListenerBean.getApplicationContext("vfbImportTypesThumbnailQueryProcessor");
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbImportTypesThumbnailQueryProcessor"));
 		retrievedContext = ApplicationListenerBean.getApplicationContext("vfbImportTypesExtLinkQueryProcessor");

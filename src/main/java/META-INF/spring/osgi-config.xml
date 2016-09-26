@@ -45,14 +45,7 @@
 	<bean id="vfbImportTypesSynonymQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.AddImportTypesSynonymQueryProcessor">
 	<aop:scoped-proxy proxy-target-class="false"/>
 	</bean>
-	
-	<osgi:service id="VFBAddImportTypesQueryProcessorExporter" ref="vfbImportTypesRelatedQueryProcessor"
-		interface="org.geppetto.core.datasources.IQueryProcessor">
-	</osgi:service>
-	<bean id="vfbImportTypesRelatedQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.AddImportTypesRelatedQueryProcessor">
-	<aop:scoped-proxy proxy-target-class="false"/>
-	</bean>
-	
+
 	<osgi:service id="VFBAddImportTypesQueryProcessorExporter" ref="vfbImportTypesQueryProcessor"
 		interface="org.geppetto.core.datasources.IQueryProcessor">
 	</osgi:service>

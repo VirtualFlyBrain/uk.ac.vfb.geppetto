@@ -165,7 +165,9 @@ public class AddTypesQueryProcessor extends AQueryProcessor
 				description.getTypes().add(textType);
 				metaData.getVariables().add(description);
 				Text descriptionValue = ValuesFactory.eINSTANCE.createText();
-				descriptionValue.setText((String) ((List<String>) results.getValue("description", 0)).get(0));
+				String desc = ((List<String>) results.getValue("description", 0)).get(0);
+				desc = highlightLinks(desc);
+				descriptionValue.setText(desc);
 				description.getInitialValues().put(textType, descriptionValue);
 			}
 
@@ -178,7 +180,7 @@ public class AddTypesQueryProcessor extends AQueryProcessor
 				comment.getTypes().add(textType);
 				metaData.getVariables().add(comment);
 				Text commentValue = ValuesFactory.eINSTANCE.createText();
-				commentValue.setText((String) ((List<String>) results.getValue("comment", 0)).get(0));
+				commentValue.setText(highlightLinks(((List<String>) results.getValue("comment", 0)).get(0)));
 				comment.getInitialValues().put(textType, commentValue);
 			}
 
@@ -192,6 +194,23 @@ public class AddTypesQueryProcessor extends AQueryProcessor
 		}
 
 		return results;
+	}
+
+	/**
+	 * @param text
+	 */
+	private String highlightLinks(String text)
+	{
+		try
+		{
+			text = text.replaceAll("([F,V,G].*)[:,_]([0-9]*)","<a href=\"#\" instancepath=\"$1_$2\">$1_$2</a>");
+			return text;
+		}
+		catch(Exception e)
+		{
+			System.out.println("Error highlighting links in (" + text + ") " + e.toString());
+			return text;
+		}
 	}
 
 }

@@ -179,6 +179,12 @@ public class AddImportTypesSynonymQueryProcessor extends AQueryProcessor
 								}
 								defRefs += "<br/>";
 							}
+							else if(results.getValue("relLink", i) != null)
+							{
+								defRefs += " <a href=\"http:" + (String) results.getValue("relLink", i) + "\" target=\"_blank\" >";
+								defRefs += (String) results.getValue("relLink", i) + "</a>";
+								defRefs += "<br/>";
+							}
 						}
 						else
 						{
