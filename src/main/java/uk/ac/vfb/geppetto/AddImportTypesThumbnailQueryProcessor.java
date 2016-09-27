@@ -201,6 +201,12 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 
 					tempValue.setHtml(tempLink);
 					tempVar.getInitialValues().put(htmlType, tempValue);
+
+					// Add template ID as supertype:
+
+					List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
+					type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType((String) results.getValue("tempId", 0), dependenciesLibrary));
+					System.out.println("Adding to SuperType: " + supertype);
 				}
 			}
 		}
