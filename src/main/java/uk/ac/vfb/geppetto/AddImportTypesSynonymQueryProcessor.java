@@ -234,13 +234,45 @@ public class AddImportTypesSynonymQueryProcessor extends AQueryProcessor
 								typeLink += (String) results.getValue("relName", i) + "</a>";
 								typeLink += "<br/>";
 							}
+							else if("type".equals((String) ((Map) results.getValue("relationship", i)).get("label")) || "is a".equals((String) ((Map) results.getValue("relationship", i)).get("label")))
+							{ // parent type:
+								typeLink += "<a href=\"#\" instancepath=\"" + (String) results.getValue("relId", i) + "\">";
+								typeLink += (String) results.getValue("relName", i) + "</a>";
+								typeLink += "<br/>";
+							}
+							else
+							{
+								// relationships:
+								if(((Map) results.getValue("relationship", i)).get("label") != null)
+								{
+									temp = ((String) ((Map) results.getValue("relationship", i)).get("label")).replace("_", " ");
+									relat += temp.substring(0, 1).toUpperCase() + temp.substring(1) + " ";
+								}
+								if(results.getValue("relName", i) != null)
+								{
+									if(results.getValue("relId", i) != null)
+									{
+										relat += "<a href=\"#\" instancepath=\"" + (String) results.getValue("relId", i) + "\">" + (String) results.getValue("relName", i) + "</a> ";
+									}
+									else
+									{
+										relat += (String) results.getValue("relName", i) + " ";
+									}
+								}
+								if(results.getValue("relFBrf", i) != null)
+								{
+									relat += "[<a href=\"http://flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >FlyBase:" + (String) results.getValue("relFBrf", i)
+											+ "</a>]";
+								}
+								relat += "<br/>";
+							}
 						}
 					}
 					i++;
 				}
 
 				// set Definition references:
-				if(defRefs != "")
+				if(!"".equals(defRefs))
 				{
 					System.out.println("References:\n" + defRefs);
 					Variable defReferences = VariablesFactory.eINSTANCE.createVariable();
@@ -254,7 +286,7 @@ public class AddImportTypesSynonymQueryProcessor extends AQueryProcessor
 				}
 
 				// set Synonyms with any related references:
-				if(synonymLinks != "")
+				if(!"".equals(synonymLinks))
 				{
 					System.out.println("Synonyms:\n" + synonymLinks);
 					Variable synonyms = VariablesFactory.eINSTANCE.createVariable();
@@ -268,7 +300,7 @@ public class AddImportTypesSynonymQueryProcessor extends AQueryProcessor
 				}
 
 				// set parent Type:
-				if(typeLink != "")
+				if(!"".equals(typeLink))
 				{
 					System.out.println("Type:\n" + typeLink);
 					Variable type = VariablesFactory.eINSTANCE.createVariable();
@@ -282,7 +314,7 @@ public class AddImportTypesSynonymQueryProcessor extends AQueryProcessor
 				}
 
 				// set Relationships with any related references:
-				if(relat != "")
+				if(!"".equals(relat))
 				{
 					System.out.println("Relationships:\n" + relat);
 					Variable relationships = VariablesFactory.eINSTANCE.createVariable();
