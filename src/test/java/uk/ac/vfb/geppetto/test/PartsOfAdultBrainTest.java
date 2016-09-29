@@ -70,7 +70,7 @@ import uk.ac.vfb.geppetto.VFBAberOWLQueryProcessor;
  * @author matteocantarelli
  *
  */
-public class CrossDataSourceVFBQueryTest
+public class PartsOfAdultBrainTest
 {
 
 	/**
@@ -158,12 +158,12 @@ public class CrossDataSourceVFBQueryTest
 		AberOWLDataSourceService aberDataSource = new AberOWLDataSourceService();
 		aberDataSource.initialize(model.getDataSources().get(1), geppettoModelAccess);
 
-		neo4JDataSource.fetchVariable("FBbt_00003748");
+		neo4JDataSource.fetchVariable("FBbt_00003624");
 
-		Variable variable = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
+		Variable variable = geppettoModelAccess.getPointer("FBbt_00003624").getElements().get(0).getVariable();
 
 		int count = aberDataSource.getNumberOfResults(model.getQueries().get(0), variable);
-		Assert.assertEquals(84, count);
+		Assert.assertEquals(1467, count);
 
 		QueryResults results = aberDataSource.execute(model.getQueries().get(0), variable);
 
@@ -171,9 +171,9 @@ public class CrossDataSourceVFBQueryTest
 		Assert.assertEquals("Name", results.getHeader().get(1));
 		Assert.assertEquals("Definition", results.getHeader().get(2));
 		Assert.assertEquals("Images", results.getHeader().get(3));
-		Assert.assertEquals(84, results.getResults().size());
+		Assert.assertEquals(1467, results.getResults().size());
 
-		System.out.println(GeppettoSerializer.serializeToJSON(results, true));
+		
 
 	}
 }

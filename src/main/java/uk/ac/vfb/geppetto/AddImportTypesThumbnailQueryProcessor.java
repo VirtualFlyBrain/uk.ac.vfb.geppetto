@@ -206,7 +206,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 
 					List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
 					type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType((String) results.getValue("tempId", 0), dependenciesLibrary));
-					System.out.println("Adding to SuperType: " + supertype);
+					System.out.println("Adding to SuperType: " + type.getSuperType().get(0));
 				}
 			}
 		}

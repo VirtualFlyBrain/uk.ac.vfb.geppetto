@@ -62,6 +62,8 @@ import org.geppetto.model.variables.VariablesFactory;
  */
 public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 {
+	private int count=0;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -98,10 +100,8 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 					{
 						String tempThumb = (String) currentObject.get("image_thumb");
 						String tempName = (String) currentObject.get("image_name");
-						if(checkURL(tempThumb))
-						{
-							addImage(tempThumb, tempName, tempId, images, j);
-						}
+						addImage(tempThumb, tempName, tempId, images, j);
+						
 					}
 				}
 				if(!images.getElements().isEmpty())
@@ -141,6 +141,7 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 	 */
 	private void addImage(String data, String name, String reference, ArrayValue images, int i)
 	{
+		System.out.println("Adding image "+ count++ + " "+name);
 		Image image = ValuesFactory.eINSTANCE.createImage();
 		image.setName(name);
 		image.setData(data);
@@ -152,24 +153,6 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 		images.getElements().add(element);
 	}
 
-	/**
-	 * @param urlString
-	 */
-	private boolean checkURL(String urlString)
-	{
-		try
-		{
-			URL url = new URL(urlString);
-			HttpURLConnection huc = (HttpURLConnection) url.openConnection();
-			huc.setRequestMethod("HEAD");
-			huc.setInstanceFollowRedirects(false);
-			return (huc.getResponseCode() == HttpURLConnection.HTTP_OK);
-		}
-		catch(Exception e)
-		{
-			System.out.println("Error checking url (" + urlString + ") " + e.toString());
-			return false;
-		}
-	}
+	
 
 }
