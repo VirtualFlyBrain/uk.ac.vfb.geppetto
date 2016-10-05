@@ -33,7 +33,6 @@
 package uk.ac.vfb.geppetto.test;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
@@ -42,12 +41,13 @@ import org.geppetto.core.datasources.GeppettoDataSourceException;
 import org.geppetto.core.manager.SharedLibraryManager;
 import org.geppetto.core.model.GeppettoModelAccess;
 import org.geppetto.core.model.GeppettoModelReader;
+import org.geppetto.core.model.GeppettoSerializer;
 import org.geppetto.core.services.registry.ApplicationListenerBean;
 import org.geppetto.datasources.aberowl.AberOWLDataSourceService;
 import org.geppetto.datasources.neo4j.Neo4jDataSourceService;
 import org.geppetto.model.GeppettoModel;
+import org.geppetto.model.datasources.BooleanOperator;
 import org.geppetto.model.datasources.DatasourcesFactory;
-import org.geppetto.model.datasources.Query;
 import org.geppetto.model.datasources.QueryResults;
 import org.geppetto.model.datasources.RunnableQuery;
 import org.geppetto.model.util.GeppettoModelException;
@@ -75,7 +75,7 @@ import uk.ac.vfb.geppetto.VFBAberOWLQueryProcessor;
  * @author matteocantarelli
  *
  */
-public class PartsOfAdultBrainTest
+public class MultipleQueriesVFBQueryTest
 {
 
 	/**
@@ -149,7 +149,7 @@ public class PartsOfAdultBrainTest
 	}
 
 	@Test
-	public void testRunQuery() throws GeppettoInitializationException, GeppettoVisitingException, GeppettoDataSourceException, GeppettoModelException, IOException
+	public void testANDedQueries() throws GeppettoInitializationException, GeppettoVisitingException, GeppettoDataSourceException, GeppettoModelException, IOException
 	{
 
 		GeppettoModel model = GeppettoModelReader.readGeppettoModel(VFBQueryTest.class.getClassLoader().getResource("VFBModel/GeppettoModelVFB.xmi"));
@@ -163,33 +163,88 @@ public class PartsOfAdultBrainTest
 		AberOWLDataSourceService aberDataSource = new AberOWLDataSourceService();
 		aberDataSource.initialize(model.getDataSources().get(1), geppettoModelAccess);
 
-		neo4JDataSource.fetchVariable("FBbt_00003624");
+		neo4JDataSource.fetchVariable("FBbt_00003748");
+		neo4JDataSource.fetchVariable("FBbt_00045048");
 
-		Variable variable = geppettoModelAccess.getPointer("FBbt_00003624").getElements().get(0).getVariable();
+		Variable variable1 = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
+		Variable variable2 = geppettoModelAccess.getPointer("FBbt_00045048").getElements().get(0).getVariable();
 
-		int count = aberDataSource.getNumberOfResults(getRunnableQueries(model.getQueries().get(0), variable));
-		Assert.assertEquals(1467, count);
+		EList<RunnableQuery> runnableQueriesEMF = new BasicEList<RunnableQuery>();
 
-		QueryResults results = aberDataSource.execute(getRunnableQueries(model.getQueries().get(0), variable));
+		RunnableQuery rqEMF1 = DatasourcesFactory.eINSTANCE.createRunnableQuery();
+		rqEMF1.setQueryPath(model.getQueries().get(0).getPath());
+		rqEMF1.setTargetVariablePath(variable1.getPath());
+		runnableQueriesEMF.add(rqEMF1);
+		
+		RunnableQuery rqEMF2 = DatasourcesFactory.eINSTANCE.createRunnableQuery();
+		rqEMF2.setQueryPath(model.getQueries().get(2).getPath());
+		rqEMF2.setTargetVariablePath(variable2.getPath());
+		runnableQueriesEMF.add(rqEMF2);
+
+		
+		int count = aberDataSource.getNumberOfResults(runnableQueriesEMF);
+		Assert.assertEquals(124, count);
+
+		QueryResults results = aberDataSource.execute(runnableQueriesEMF);
 
 		Assert.assertEquals("ID", results.getHeader().get(0));
 		Assert.assertEquals("Name", results.getHeader().get(1));
 		Assert.assertEquals("Definition", results.getHeader().get(2));
 		Assert.assertEquals("Images", results.getHeader().get(3));
-		Assert.assertEquals(1467, results.getResults().size());
+		Assert.assertEquals(124, results.getResults().size());
+
+		System.out.println(GeppettoSerializer.serializeToJSON(results, true));
 
 	}
 
-	private List<RunnableQuery> getRunnableQueries(Query query, Variable variable)
+	@Test
+	public void testNANDedQueries() throws GeppettoInitializationException, GeppettoVisitingException, GeppettoDataSourceException, GeppettoModelException, IOException
 	{
+
+		GeppettoModel model = GeppettoModelReader.readGeppettoModel(VFBQueryTest.class.getClassLoader().getResource("VFBModel/GeppettoModelVFB.xmi"));
+		model.getLibraries().add(SharedLibraryManager.getSharedCommonLibrary());
+
+		GeppettoModelAccess geppettoModelAccess = new GeppettoModelAccess(model);
+
+		Neo4jDataSourceService neo4JDataSource = new Neo4jDataSourceService();
+		neo4JDataSource.initialize(model.getDataSources().get(0), geppettoModelAccess);
+
+		AberOWLDataSourceService aberDataSource = new AberOWLDataSourceService();
+		aberDataSource.initialize(model.getDataSources().get(1), geppettoModelAccess);
+
+		neo4JDataSource.fetchVariable("FBbt_00003748");
+		neo4JDataSource.fetchVariable("FBbt_00045048");
+
+		Variable variable1 = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
+		Variable variable2 = geppettoModelAccess.getPointer("FBbt_00045048").getElements().get(0).getVariable();
+
 		EList<RunnableQuery> runnableQueriesEMF = new BasicEList<RunnableQuery>();
 
-		RunnableQuery rqEMF = DatasourcesFactory.eINSTANCE.createRunnableQuery();
-		rqEMF.setQueryPath(query.getPath());
-		rqEMF.setTargetVariablePath(variable.getPath());
-		runnableQueriesEMF.add(rqEMF);
+		RunnableQuery rqEMF1 = DatasourcesFactory.eINSTANCE.createRunnableQuery();
+		rqEMF1.setQueryPath(model.getQueries().get(0).getPath());
+		rqEMF1.setTargetVariablePath(variable1.getPath());
+		runnableQueriesEMF.add(rqEMF1);
+		
+		RunnableQuery rqEMF2 = DatasourcesFactory.eINSTANCE.createRunnableQuery();
+		rqEMF2.setQueryPath(model.getQueries().get(2).getPath());
+		rqEMF2.setTargetVariablePath(variable2.getPath());
+		rqEMF2.setBooleanOperator(BooleanOperator.NAND);
+		runnableQueriesEMF.add(rqEMF2);
+		
+		int count = aberDataSource.getNumberOfResults(runnableQueriesEMF);
+		Assert.assertEquals(84, count);
 
-		return runnableQueriesEMF;
+		QueryResults results = aberDataSource.execute(runnableQueriesEMF);
+
+		Assert.assertEquals("ID", results.getHeader().get(0));
+		Assert.assertEquals("Name", results.getHeader().get(1));
+		Assert.assertEquals("Definition", results.getHeader().get(2));
+		Assert.assertEquals("Images", results.getHeader().get(3));
+		Assert.assertEquals(84, results.getResults().size());
+
+		System.out.println(GeppettoSerializer.serializeToJSON(results, true));
+
 	}
+
 
 }

@@ -33,7 +33,10 @@
 package uk.ac.vfb.geppetto.test;
 
 import java.io.IOException;
+import java.util.List;
 
+import org.eclipse.emf.common.util.BasicEList;
+import org.eclipse.emf.common.util.EList;
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.datasources.GeppettoDataSourceException;
 import org.geppetto.core.manager.SharedLibraryManager;
@@ -44,7 +47,10 @@ import org.geppetto.core.services.registry.ApplicationListenerBean;
 import org.geppetto.datasources.aberowl.AberOWLDataSourceService;
 import org.geppetto.datasources.neo4j.Neo4jDataSourceService;
 import org.geppetto.model.GeppettoModel;
+import org.geppetto.model.datasources.DatasourcesFactory;
+import org.geppetto.model.datasources.Query;
 import org.geppetto.model.datasources.QueryResults;
+import org.geppetto.model.datasources.RunnableQuery;
 import org.geppetto.model.util.GeppettoModelException;
 import org.geppetto.model.util.GeppettoVisitingException;
 import org.geppetto.model.variables.Variable;
@@ -57,11 +63,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 
-import uk.ac.vfb.geppetto.AddImportTypesThumbnailQueryProcessor;
 import uk.ac.vfb.geppetto.AddImportTypesExtLinkQueryProcessor;
-import uk.ac.vfb.geppetto.AddImportTypesRefsQueryProcessor;
 import uk.ac.vfb.geppetto.AddImportTypesQueryProcessor;
+import uk.ac.vfb.geppetto.AddImportTypesRefsQueryProcessor;
 import uk.ac.vfb.geppetto.AddImportTypesSynonymQueryProcessor;
+import uk.ac.vfb.geppetto.AddImportTypesThumbnailQueryProcessor;
 import uk.ac.vfb.geppetto.AddTypesQueryProcessor;
 import uk.ac.vfb.geppetto.CreateImagesForQueryResultsQueryProcessor;
 import uk.ac.vfb.geppetto.VFBAberOWLQueryProcessor;
@@ -162,10 +168,10 @@ public class CrossDataSourceVFBQueryTest
 
 		Variable variable = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
 
-		int count = aberDataSource.getNumberOfResults(model.getQueries().get(0), variable);
+		int count = aberDataSource.getNumberOfResults(getRunnableQueries(model.getQueries().get(0), variable));
 		Assert.assertEquals(84, count);
 
-		QueryResults results = aberDataSource.execute(model.getQueries().get(0), variable);
+		QueryResults results = aberDataSource.execute(getRunnableQueries(model.getQueries().get(0), variable));
 
 		Assert.assertEquals("ID", results.getHeader().get(0));
 		Assert.assertEquals("Name", results.getHeader().get(1));
@@ -176,4 +182,17 @@ public class CrossDataSourceVFBQueryTest
 		System.out.println(GeppettoSerializer.serializeToJSON(results, true));
 
 	}
+
+	private List<RunnableQuery> getRunnableQueries(Query query, Variable variable)
+	{
+		EList<RunnableQuery> runnableQueriesEMF = new BasicEList<RunnableQuery>();
+
+		RunnableQuery rqEMF = DatasourcesFactory.eINSTANCE.createRunnableQuery();
+		rqEMF.setQueryPath(query.getPath());
+		rqEMF.setTargetVariablePath(variable.getPath());
+		runnableQueriesEMF.add(rqEMF);
+
+		return runnableQueriesEMF;
+	}
+
 }
