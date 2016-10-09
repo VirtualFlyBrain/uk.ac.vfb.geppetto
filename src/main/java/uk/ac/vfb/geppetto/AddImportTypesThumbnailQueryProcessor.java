@@ -34,7 +34,6 @@ package uk.ac.vfb.geppetto;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
-
 import java.util.List;
 
 import org.geppetto.core.datasources.GeppettoDataSourceException;
@@ -46,6 +45,7 @@ import org.geppetto.model.datasources.DataSourceLibraryConfiguration;
 import org.geppetto.model.datasources.ProcessQuery;
 import org.geppetto.model.datasources.QueryResults;
 import org.geppetto.model.types.CompositeType;
+import org.geppetto.model.types.ImageType;
 import org.geppetto.model.types.ImportType;
 import org.geppetto.model.types.Type;
 import org.geppetto.model.types.TypesFactory;
@@ -58,6 +58,8 @@ import org.geppetto.model.values.ImageFormat;
 import org.geppetto.model.values.ValuesFactory;
 import org.geppetto.model.variables.Variable;
 import org.geppetto.model.variables.VariablesFactory;
+
+import com.google.gson.Gson;
 
 /**
  * @author robertcourt
@@ -185,6 +187,16 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 				{
 					System.out.println("Adding Woolz...");
 					tempFile = localFolder(tempFolder).replace("SERVER_ROOT/vfb/", "/disk/data/VFB/IMAGE_DATA/") + "volume.wlz";
+					Variable slicesVar = VariablesFactory.eINSTANCE.createVariable();
+					ImageType slicesType = (ImageType) geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
+					Image slicesValue = ValuesFactory.eINSTANCE.createImage();
+					slicesValue.setData(new Gson().toJson(new IIPJSON(534,"server url",tempFile))); //TODO Robb update
+					slicesValue.setFormat(ImageFormat.IIP);
+					slicesValue.setReference(variable.getId());
+					slicesVar.setId(variable.getId() + "_slices");
+					slicesVar.setName("2D Slices");
+					slicesVar.getTypes().add(slicesType);
+					type.getVariables().add(slicesVar);
 					// TODO: add 2D/woolz
 				}
 				if (results.getValue("tempId", 0) != null)
@@ -223,6 +235,17 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 		return results;
 	}
 
+	private class IIPJSON{
+		public IIPJSON(int i, String string, String string2)
+		{
+			// TODO Auto-generated constructor stub
+		}
+		int indexNumber;
+		String serverUrl;
+		String fileLocation;
+
+	}
+	
 	/**
 	 * @param dataSource
 	 * @param format
