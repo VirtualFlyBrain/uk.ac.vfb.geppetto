@@ -194,7 +194,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 					slicesValue.setFormat(ImageFormat.IIP);
 					slicesValue.setReference(variable.getId());
 					slicesVar.setId(variable.getId() + "_slices");
-					slicesVar.setName("2D Slices");
+					slicesVar.setName(variable.getName());
 					slicesVar.getTypes().add(slicesType);
 					type.getVariables().add(slicesVar);
 					// TODO: add 2D/woolz
