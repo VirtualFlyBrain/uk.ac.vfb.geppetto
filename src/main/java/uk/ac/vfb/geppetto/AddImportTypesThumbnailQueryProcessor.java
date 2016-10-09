@@ -190,7 +190,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 					Variable slicesVar = VariablesFactory.eINSTANCE.createVariable();
 					ImageType slicesType = (ImageType) geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
 					Image slicesValue = ValuesFactory.eINSTANCE.createImage();
-					slicesValue.setData(new Gson().toJson(new IIPJSON(0,"http://vfbdev.inf.ed.ac.uk/fcgi/wlziipsrv.fcgi",tempFile))); //TODO Robb update
+					slicesValue.setData(new Gson().toJson(new IIPJSON(0,"http://vfbdev.inf.ed.ac.uk/fcgi/wlziipsrv.fcgi",tempFile)));
 					slicesValue.setFormat(ImageFormat.IIP);
 					slicesValue.setReference(variable.getId());
 					slicesVar.setId(variable.getId() + "_slices");
