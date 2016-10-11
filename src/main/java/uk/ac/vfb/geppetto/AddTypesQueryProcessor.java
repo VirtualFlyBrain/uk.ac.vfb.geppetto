@@ -35,12 +35,14 @@ package uk.ac.vfb.geppetto;
 import java.util.List;
 
 import org.geppetto.core.datasources.GeppettoDataSourceException;
+import org.geppetto.core.datasources.QueryChecker;
 import org.geppetto.core.model.GeppettoModelAccess;
 import org.geppetto.datasources.AQueryProcessor;
 import org.geppetto.model.GeppettoLibrary;
 import org.geppetto.model.GeppettoPackage;
 import org.geppetto.model.datasources.DataSource;
 import org.geppetto.model.datasources.ProcessQuery;
+import org.geppetto.model.datasources.Query;
 import org.geppetto.model.datasources.QueryResults;
 import org.geppetto.model.types.CompositeType;
 import org.geppetto.model.types.Type;
@@ -183,7 +185,6 @@ public class AddTypesQueryProcessor extends AQueryProcessor
 				commentValue.setText(highlightLinks(((List<String>) results.getValue("comment", 0)).get(0)));
 				comment.getInitialValues().put(textType, commentValue);
 			}
-
 			type.getVariables().add(metaDataVar);
 			geppettoModelAccess.addTypeToLibrary(metaData, dataSource.getTargetLibrary());
 
@@ -196,6 +197,7 @@ public class AddTypesQueryProcessor extends AQueryProcessor
 		return results;
 	}
 
+
 	/**
 	 * @param text
 	 */
@@ -203,7 +205,7 @@ public class AddTypesQueryProcessor extends AQueryProcessor
 	{
 		try
 		{
-			text = text.replaceAll("([F,V,G].*)[:,_](\\d{5}[0-9]*\\b)","<a href=\"#\" instancepath=\"$1_$2\">$1_$2</a>");
+			text = text.replaceAll("([F,V,G].*)[:,_](\\d{5}[0-9]*\\b)", "<a href=\"#\" instancepath=\"$1_$2\">$1_$2</a>");
 			return text;
 		}
 		catch(Exception e)

@@ -37,12 +37,14 @@ import java.net.URL;
 import java.util.List;
 
 import org.geppetto.core.datasources.GeppettoDataSourceException;
+import org.geppetto.core.datasources.QueryChecker;
 import org.geppetto.core.model.GeppettoModelAccess;
 import org.geppetto.datasources.AQueryProcessor;
 import org.geppetto.model.GeppettoLibrary;
 import org.geppetto.model.datasources.DataSource;
 import org.geppetto.model.datasources.DataSourceLibraryConfiguration;
 import org.geppetto.model.datasources.ProcessQuery;
+import org.geppetto.model.datasources.Query;
 import org.geppetto.model.datasources.QueryResults;
 import org.geppetto.model.types.CompositeType;
 import org.geppetto.model.types.ImageType;
@@ -76,10 +78,8 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 	@Override
 	public QueryResults process(ProcessQuery query, DataSource dataSource, Variable variable, QueryResults results, GeppettoModelAccess geppettoModelAccess) throws GeppettoDataSourceException
 	{
-
 		try
 		{
-
 			// retrieving the metadatatype
 			CompositeType metadataType = (CompositeType) ModelUtility.getTypeFromLibrary(variable.getId() + "_metadata", dataSource.getTargetLibrary());
 
@@ -88,6 +88,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 
 			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
 			Type htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
+			
 
 			System.out.println("Processing Images...");
 
@@ -236,16 +237,18 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 	}
 
 	private class IIPJSON{
-		public IIPJSON(int i, String string, String string2)
-		{
-			// TODO Auto-generated constructor stub
-		}
 		int indexNumber;
 		String serverUrl;
 		String fileLocation;
-
+		public IIPJSON(int indexNumber, String serverUrl, String fileLocation)
+		{
+			this.indexNumber=indexNumber;
+			this.fileLocation=fileLocation;
+			this.serverUrl=serverUrl;
+		}
 	}
 	
+
 	/**
 	 * @param dataSource
 	 * @param format

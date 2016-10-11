@@ -24,6 +24,13 @@
 	<bean id="vfbImportTypesExtLinkQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.AddImportTypesExtLinkQueryProcessor">
 		<aop:scoped-proxy proxy-target-class="false"/>
 	</bean>
+	
+	<osgi:service id="VFBAddQueriesToMetadataQueryProcessorExporter" ref="vfbAddQueriesToMetadataQueryProcessor"
+				  interface="org.geppetto.core.datasources.IQueryProcessor">
+	</osgi:service>
+	<bean id="vfbAddQueriesToMetadataQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.AddQueriesToMetadataQueryProcessor">
+		<aop:scoped-proxy proxy-target-class="false"/>
+	</bean>
 
 	<osgi:service id="VFBImportTypesRefsQueryProcessorExporter" ref="vfbImportTypesRefsQueryProcessor"
 				  interface="org.geppetto.core.datasources.IQueryProcessor">
