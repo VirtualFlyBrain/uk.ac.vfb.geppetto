@@ -195,7 +195,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 					slicesValue.setFormat(ImageFormat.IIP);
 					slicesValue.setReference(variable.getId());
 					slicesVar.setId(variable.getId() + "_slices");
-					slicesVar.setName('Stack Viewer Slices');
+					slicesVar.setName("Stack Viewer Slices");
 					slicesVar.getTypes().add(slicesType);
 					type.getVariables().add(slicesVar);
 					System.out.println(slicesVar);
