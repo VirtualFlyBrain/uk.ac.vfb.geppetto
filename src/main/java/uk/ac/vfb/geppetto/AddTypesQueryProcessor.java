@@ -139,7 +139,7 @@ public class AddTypesQueryProcessor extends AQueryProcessor
 			{
 				labelLink = "<a href=\"#\" instancepath=\"" + (String) variable.getId() + "\">" + (String) variable.getName() + "</a>";
 			}
-			labelLink = "<h2>" + labelLink + "</h2>";
+			labelLink = "<h4>" + labelLink + "</h4>";
 			labelValue.setHtml(labelLink);
 
 			htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
