@@ -197,6 +197,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 					slicesVar.setId(variable.getId() + "_slices");
 					slicesVar.setName(variable.getName());
 					slicesVar.getTypes().add(slicesType);
+					slicesVar.getInitialValues().put(slicesType, slicesValue);
 					type.getVariables().add(slicesVar);
 					// TODO: add 2D/woolz
 				}
