@@ -292,12 +292,13 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 	}
 
 	/**
-	 * @param id
-	 */
-	private String localFolder(String folder)
-	{
-		return "SERVER_ROOT/vfb/" + folder;
-	}
+     * @param id
+     */
+    private String localFolder(String folder)
+    {
+        return "http://vfbdev.inf.ed.ac.uk/data/" + folder;
+        //return "SERVER_ROOT/vfb/" + folder;
+    }
 
 	/**
 	 * @param urlString
