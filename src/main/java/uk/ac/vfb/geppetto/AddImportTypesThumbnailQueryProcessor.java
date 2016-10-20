@@ -187,7 +187,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 				if(checkURL(tempFile))
 				{
 					System.out.println("Adding Woolz...");
-					tempFile = localFolder(tempFolder).replace("SERVER_ROOT/vfb/", "/disk/data/VFB/IMAGE_DATA/") + "volume.wlz";
+					tempFile = localForID(variable.getId()).replace("SERVER_ROOT/vfb/", "/disk/data/VFB/IMAGE_DATA/") + "volume.wlz";
 					Variable slicesVar = VariablesFactory.eINSTANCE.createVariable();
 					ImageType slicesType = (ImageType) geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
 					Image slicesValue = ValuesFactory.eINSTANCE.createImage();
