@@ -97,7 +97,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 			{
 				// set individual thumbnail:
 				String tempFolder = (String) results.getValue("imageDir", 0);
-				String tempFile = remoteFolder(tempFolder) + "thumbnail.png";
+				String tempFile = remoteFolder(tempFolder) + "thumbnailT.png";
 				if(checkURL(tempFile))
 				{
 					System.out.println("Adding Thumbnail...");

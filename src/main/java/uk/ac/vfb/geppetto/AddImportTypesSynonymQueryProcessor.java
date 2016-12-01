@@ -348,7 +348,7 @@ public class AddImportTypesSynonymQueryProcessor extends AQueryProcessor
 							if(results.getValue("relName", i) != null)
 							{
 								tempId = (String) results.getValue("relId", i);
-								tempThumb = "http://www.virtualflybrain.org/data/VFB/i/" + tempId.substring(4, 8) + "/" + tempId.substring(8) + "/thumbnail.png";
+								tempThumb = "http://www.virtualflybrain.org/data/VFB/i/" + tempId.substring(4, 8) + "/" + tempId.substring(8) + "/thumbnailT.png";
 								tempName = (String) results.getValue("relName", i);
 								System.out.println("Adding Cluster Image: " + tempId + " " + tempName + " " + tempThumb);
 								if(checkURL(tempThumb))
