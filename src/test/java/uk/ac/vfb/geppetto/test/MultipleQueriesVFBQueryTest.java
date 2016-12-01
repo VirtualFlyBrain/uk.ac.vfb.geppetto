@@ -164,26 +164,26 @@ public class MultipleQueriesVFBQueryTest
 		aberDataSource.initialize(model.getDataSources().get(1), geppettoModelAccess);
 
 		neo4JDataSource.fetchVariable("FBbt_00003748");
-		neo4JDataSource.fetchVariable("FBbt_00045048");
+		neo4JDataSource.fetchVariable("FBbt_00003852");
 
 		Variable variable1 = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
-		Variable variable2 = geppettoModelAccess.getPointer("FBbt_00045048").getElements().get(0).getVariable();
+		Variable variable2 = geppettoModelAccess.getPointer("FBbt_00003852").getElements().get(0).getVariable();
 
 		EList<RunnableQuery> runnableQueriesEMF = new BasicEList<RunnableQuery>();
 
 		RunnableQuery rqEMF1 = DatasourcesFactory.eINSTANCE.createRunnableQuery();
-		rqEMF1.setQueryPath(model.getQueries().get(0).getPath());
+		rqEMF1.setQueryPath(model.getQueries().get(1).getPath());
 		rqEMF1.setTargetVariablePath(variable1.getPath());
 		runnableQueriesEMF.add(rqEMF1);
 		
 		RunnableQuery rqEMF2 = DatasourcesFactory.eINSTANCE.createRunnableQuery();
-		rqEMF2.setQueryPath(model.getQueries().get(2).getPath());
+		rqEMF2.setQueryPath(model.getQueries().get(1).getPath());
 		rqEMF2.setTargetVariablePath(variable2.getPath());
 		runnableQueriesEMF.add(rqEMF2);
 
 		
 		int count = aberDataSource.getNumberOfResults(runnableQueriesEMF);
-		Assert.assertEquals(124, count);
+		Assert.assertEquals(87, count);
 
 		QueryResults results = aberDataSource.execute(runnableQueriesEMF);
 
@@ -191,7 +191,7 @@ public class MultipleQueriesVFBQueryTest
 		Assert.assertEquals("Name", results.getHeader().get(1));
 		Assert.assertEquals("Definition", results.getHeader().get(2));
 		Assert.assertEquals("Images", results.getHeader().get(3));
-		Assert.assertEquals(124, results.getResults().size());
+		Assert.assertEquals(87, results.getResults().size());
 
 		System.out.println(GeppettoSerializer.serializeToJSON(results, true));
 
