@@ -178,7 +178,7 @@ public class AddTypesQueryProcessor extends AQueryProcessor
 			}
 
 			// set comment:
-			if(results.getValue("comment", 0) != null && !"".equals((String) results.getValue("comment", 0)))
+			if(results.getValue("comment", 0) != null)
 			{
 				Variable comment = VariablesFactory.eINSTANCE.createVariable();
 				comment.setId("comment");
