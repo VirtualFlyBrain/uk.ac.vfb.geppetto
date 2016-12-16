@@ -159,7 +159,7 @@ public class AddTypesQueryProcessor extends AQueryProcessor
 			metaID.getInitialValues().put(htmlType, metaIdValue);
 
 			// set description:
-			if(results.getValue("description", 0) != null)
+			if(results.getValue("description", 0) != null && !"".equals((String) results.getValue("description", 0)))
 			{
 				Variable description = VariablesFactory.eINSTANCE.createVariable();
 				description.setId("description");
@@ -174,7 +174,7 @@ public class AddTypesQueryProcessor extends AQueryProcessor
 			}
 
 			// set comment:
-			if(results.getValue("comment", 0) != null)
+			if(results.getValue("comment", 0) != null && !"".equals((String) results.getValue("comment", 0)))
 			{
 				Variable comment = VariablesFactory.eINSTANCE.createVariable();
 				comment.setId("comment");

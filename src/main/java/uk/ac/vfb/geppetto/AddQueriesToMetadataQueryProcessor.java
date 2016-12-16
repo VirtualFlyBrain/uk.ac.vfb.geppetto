@@ -90,7 +90,7 @@ public class AddQueriesToMetadataQueryProcessor extends AQueryProcessor
 			}
 			if(queryLinks.getHtml()==null)
 			{
-				queryLinks.setHtml("No direct queries available. <br/>Try queries for the " + metadata.getType().type.getValue().wrappedObj.value.html);
+				queryLinks.setHtml("No direct queries available. <br/>Try queries for the " + variable.getInitialValues().get("type"));
 			}
 
 		}
