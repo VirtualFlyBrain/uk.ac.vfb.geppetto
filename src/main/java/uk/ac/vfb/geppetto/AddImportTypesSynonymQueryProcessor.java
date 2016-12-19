@@ -112,7 +112,6 @@ public class AddImportTypesSynonymQueryProcessor extends AQueryProcessor
 				String typeLink = "";
 
 				int i = 0;
-				int t = 0;
 				while(results.getValue("relationship", i) != null)
 				{ // synonyms and refs:
 					if((String) ((Map) results.getValue("relationship", i)).get("synonym") != null)
@@ -234,14 +233,12 @@ public class AddImportTypesSynonymQueryProcessor extends AQueryProcessor
 								typeLink += "<a href=\"#\" instancepath=\"" + (String) results.getValue("relId", i) + "\">";
 								typeLink += (String) results.getValue("relName", i) + "</a>";
 								typeLink += "<br/>";
-								t = i;
 							}
 							else if("type".equals((String) ((Map) results.getValue("relationship", i)).get("label")) || "is a".equals((String) ((Map) results.getValue("relationship", i)).get("label")))
 							{ // parent type:
 								typeLink += "<a href=\"#\" instancepath=\"" + (String) results.getValue("relId", i) + "\">";
 								typeLink += (String) results.getValue("relName", i) + "</a>";
 								typeLink += "<br/>";
-								t = i;
 							}
 							else
 							{
@@ -314,14 +311,6 @@ public class AddImportTypesSynonymQueryProcessor extends AQueryProcessor
 					HTML typeValue = ValuesFactory.eINSTANCE.createHTML();
 					typeValue.setHtml(typeLink);
 					type.getInitialValues().put(htmlType, typeValue);
-
-					if (metadataType.description.getInitialValue().value.text == ""){
-						if ("type".equals((String) ((Map) results.getValue("relationship", t)).get("label"))){
-							metadataType.description.getInitialValue().value.text = variable.getName() + " is an exemplar of the " + (String) results.getValue("relName", t) + ". Click the link in the type section below for details for the " + (String) results.getValue("relName", t);
-						}else {
-							metadataType.description.getInitialValue().value.text = variable.getName() + " is a " + (String) results.getValue("relName", t) + ". Click the link in the type section below for details for the " + (String) results.getValue("relName", t);
-						}
-					}
 				}
 
 				// set Relationships with any related references:
