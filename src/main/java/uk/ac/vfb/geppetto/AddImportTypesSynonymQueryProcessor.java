@@ -315,11 +315,11 @@ public class AddImportTypesSynonymQueryProcessor extends AQueryProcessor
 					typeValue.setHtml(typeLink);
 					type.getInitialValues().put(htmlType, typeValue);
 
-					if (metadataType.getType().description.getInitialValue().value.text == ""){
+					if (metadataType.description.getInitialValue().value.text == ""){
 						if ("type".equals((String) ((Map) results.getValue("relationship", t)).get("label"))){
-							metadataType.getType().description.getInitialValue().value.text = variable.getName() + " is an exemplar of the " + (String) results.getValue("relName", t) + ". Click the link in the type section below for details for the " + (String) results.getValue("relName", t);
+							metadataType.description.getInitialValue().value.text = variable.getName() + " is an exemplar of the " + (String) results.getValue("relName", t) + ". Click the link in the type section below for details for the " + (String) results.getValue("relName", t);
 						}else {
-							metadataType.getType().description.getInitialValue().value.text = variable.getName() + " is a " + (String) results.getValue("relName", t) + ". Click the link in the type section below for details for the " + (String) results.getValue("relName", t);
+							metadataType.description.getInitialValue().value.text = variable.getName() + " is a " + (String) results.getValue("relName", t) + ". Click the link in the type section below for details for the " + (String) results.getValue("relName", t);
 						}
 					}
 				}
