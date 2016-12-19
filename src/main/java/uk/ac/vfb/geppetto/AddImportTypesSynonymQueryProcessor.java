@@ -314,6 +314,14 @@ public class AddImportTypesSynonymQueryProcessor extends AQueryProcessor
 					HTML typeValue = ValuesFactory.eINSTANCE.createHTML();
 					typeValue.setHtml(typeLink);
 					type.getInitialValues().put(htmlType, typeValue);
+
+					if (metadataType.getType().description.getInitialValue().value.text == ""){
+						if ("type".equals((String) ((Map) results.getValue("relationship", t)).get("label"))){
+							metadataType.getType().description.getInitialValue().value.text = variable.getName() + " is an exemplar of the " + (String) results.getValue("relName", t) + ". Click the link in the type section below for details for the " + (String) results.getValue("relName", t);
+						}else {
+							metadataType.getType().description.getInitialValue().value.text = variable.getName() + " is a " + (String) results.getValue("relName", t) + ". Click the link in the type section below for details for the " + (String) results.getValue("relName", t);
+						}
+					}
 				}
 
 				// set Relationships with any related references:
