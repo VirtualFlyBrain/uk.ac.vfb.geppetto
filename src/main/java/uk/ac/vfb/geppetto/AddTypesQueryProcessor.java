@@ -159,7 +159,6 @@ public class AddTypesQueryProcessor extends AQueryProcessor
 			metaID.getInitialValues().put(htmlType, metaIdValue);
 
 			// set description:
-			try{
 			if(results.getValue("description", 0) != null && !"".equals(((List<String>) results.getValue("description", 0)).get(0)))
 			{
 				Variable description = VariablesFactory.eINSTANCE.createVariable();
@@ -172,9 +171,6 @@ public class AddTypesQueryProcessor extends AQueryProcessor
 				desc = highlightLinks(desc);
 				descriptionValue.setText(desc);
 				description.getInitialValues().put(textType, descriptionValue);
-			}
-			} catch (ClassCastException e){
-				// unable to cast so don't use.
 			}
 
 			// set comment:
