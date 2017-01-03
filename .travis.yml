@@ -8,7 +8,11 @@ install:
     - git clone https://github.com/openworm/org.geppetto.core.git -b $TRAVIS_BRANCH
     - cd org.geppetto.core
     - mvn install
-    - cd ..    
+    - cd .. 
+    - git clone https://github.com/openworm/org.geppetto.datasource.git -b $TRAVIS_BRANCH
+    - cd org.geppetto.datasource
+    - mvn install
+    - cd .. 
 
     
     
