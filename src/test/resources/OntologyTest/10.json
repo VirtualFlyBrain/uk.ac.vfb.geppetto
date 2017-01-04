@@ -4,14 +4,14 @@
 	"name": "OntologyTest",
 	"geppettoModel": {
 		"id": 1,
-		"url": "/projects/OntologyTest/GeppettoModelM1.xmi",
+		"url": "/projects/VFBModel/GeppettoModelVFB.xmi",
 		"type": "GEPPETTO_PROJECT"
 	},
 	"experiments": [{
 		"id": 1,
 		"name": "OntologyTest",
 		"status": "DESIGN",
-		"description": "Ontology Test",
+		"description": "Ontology Test1",
 		"lastModified": "1436102517799",
 		"script": "/projects/OntologyTest/script.js",
 		"aspectConfigurations": []

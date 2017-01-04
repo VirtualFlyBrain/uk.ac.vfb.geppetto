@@ -37,14 +37,11 @@ import java.net.URL;
 import java.util.Map;
 
 import org.geppetto.core.datasources.GeppettoDataSourceException;
-import org.geppetto.core.datasources.IQueryProcessor;
-import org.geppetto.core.features.IFeature;
 import org.geppetto.core.model.GeppettoModelAccess;
-import org.geppetto.core.services.GeppettoFeature;
-import org.geppetto.core.services.registry.ServicesRegistry;
-import org.geppetto.model.DataSource;
-import org.geppetto.model.ProcessQuery;
-import org.geppetto.model.QueryResults;
+import org.geppetto.datasources.AQueryProcessor;
+import org.geppetto.model.datasources.DataSource;
+import org.geppetto.model.datasources.ProcessQuery;
+import org.geppetto.model.datasources.QueryResults;
 import org.geppetto.model.types.CompositeType;
 import org.geppetto.model.types.Type;
 import org.geppetto.model.types.TypesPackage;
@@ -63,7 +60,7 @@ import org.geppetto.model.variables.VariablesFactory;
  * @author robertcourt
  *
  */
-public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
+public class AddImportTypesSynonymQueryProcessor extends AQueryProcessor
 {
 
 	private enum SynonymIcons
@@ -141,17 +138,17 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 							if(results.getValue("relFBrf", i) != null)
 							{
 								synonymLinks += " <a href=\"http://flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >"
-										+ "<i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:"+(String) results.getValue("relFBrf", i)+"\" aria-hidden=\"true\"></i></a>";
+										+ "<i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:" + (String) results.getValue("relFBrf", i) + "\" aria-hidden=\"true\"></i></a>";
 							}
 							if(results.getValue("relPMID", i) != null)
 							{
 								synonymLinks += " <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + (String) results.getValue("relPMID", i) + "\" target=\"_blank\" >"
-										+ "<i class=\"popup-icon-link gpt-pubmed\" title=\"PMID:"+(String) results.getValue("relPMID", i)+"\" aria-hidden=\"true\"></i></a>";
+										+ "<i class=\"popup-icon-link gpt-pubmed\" title=\"PMID:" + (String) results.getValue("relPMID", i) + "\" aria-hidden=\"true\"></i></a>";
 							}
 							if(results.getValue("relDOI", i) != null)
 							{
 								synonymLinks += " <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >"
-										+ "<i class=\"popup-icon-link gpt-doi\" title=\"doi:"+(String) results.getValue("relDOI", i)+"\" aria-hidden=\"true\"></i></a>";
+										+ "<i class=\"popup-icon-link gpt-doi\" title=\"doi:" + (String) results.getValue("relDOI", i) + "\" aria-hidden=\"true\"></i></a>";
 							}
 
 						}
@@ -168,18 +165,24 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 								if(results.getValue("relFBrf", i) != null)
 								{
 									defRefs += " <a href=\"http://flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >"
-											+ "<i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:"+(String) results.getValue("relFBrf", i)+"\" aria-hidden=\"true\"></i></a>";
+											+ "<i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:" + (String) results.getValue("relFBrf", i) + "\" aria-hidden=\"true\"></i></a>";
 								}
 								if(results.getValue("relPMID", i) != null)
 								{
 									defRefs += " <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + (String) results.getValue("relPMID", i) + "\" target=\"_blank\" >"
-											+ "<i class=\"popup-icon-link gpt-pubmed\" title=\"PMID:"+(String) results.getValue("relPMID", i)+"\" aria-hidden=\"true\"></i></a>";
+											+ "<i class=\"popup-icon-link gpt-pubmed\" title=\"PMID:" + (String) results.getValue("relPMID", i) + "\" aria-hidden=\"true\"></i></a>";
 								}
 								if(results.getValue("relDOI", i) != null)
 								{
 									defRefs += " <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >"
-										+ "<i class=\"popup-icon-link gpt-doi\" title=\"doi:"+(String) results.getValue("relDOI", i)+"\" aria-hidden=\"true\"></i></a>";
+											+ "<i class=\"popup-icon-link gpt-doi\" title=\"doi:" + (String) results.getValue("relDOI", i) + "\" aria-hidden=\"true\"></i></a>";
 								}
+								defRefs += "<br/>";
+							}
+							else if(results.getValue("relLink", i) != null)
+							{
+								defRefs += " <a href=\"http:" + (String) results.getValue("relLink", i) + "\" target=\"_blank\" >";
+								defRefs += ((String) results.getValue("relLink", i)).replaceAll("//","").replaceAll("http:","") + "</a>";
 								defRefs += "<br/>";
 							}
 						}
@@ -190,7 +193,7 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 							{
 								if(((Map) results.getValue("relationship", i)).get("label") != null)
 								{
-									temp = ((String) ((Map) results.getValue("relationship", i)).get("label")).replace("_"," ");
+									temp = ((String) ((Map) results.getValue("relationship", i)).get("label")).replace("_", " ");
 									relat += temp.substring(0, 1).toUpperCase() + temp.substring(1) + " ";
 								}
 								if(results.getValue("relName", i) != null)
@@ -210,17 +213,17 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 									if(results.getValue("relFBrf", i) != null)
 									{
 										relat += " <a href=\"http://flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >"
-												+ "<i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:"+(String) results.getValue("relFBrf", i)+"\" aria-hidden=\"true\"></i></a>";
+												+ "<i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:" + (String) results.getValue("relFBrf", i) + "\" aria-hidden=\"true\"></i></a>";
 									}
 									if(results.getValue("relPMID", i) != null)
 									{
 										relat += " <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + (String) results.getValue("relPMID", i) + "\" target=\"_blank\" >"
-												+ "<i class=\"popup-icon-link gpt-pubmed\" title=\"PMID:"+(String) results.getValue("relPMID", i)+"\" aria-hidden=\"true\"></i></a>";
+												+ "<i class=\"popup-icon-link gpt-pubmed\" title=\"PMID:" + (String) results.getValue("relPMID", i) + "\" aria-hidden=\"true\"></i></a>";
 									}
 									if(results.getValue("relDOI", i) != null)
 									{
 										relat += " <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >"
-												+ "<i class=\"popup-icon-link gpt-doi\" title=\"doi:"+(String) results.getValue("relDOI", i)+"\" aria-hidden=\"true\"></i>";
+												+ "<i class=\"popup-icon-link gpt-doi\" title=\"doi:" + (String) results.getValue("relDOI", i) + "\" aria-hidden=\"true\"></i>";
 									}
 								}
 								relat += "<br/>";
@@ -231,28 +234,59 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 								typeLink += (String) results.getValue("relName", i) + "</a>";
 								typeLink += "<br/>";
 							}
+							else if("type".equals((String) ((Map) results.getValue("relationship", i)).get("label")) || "is a".equals((String) ((Map) results.getValue("relationship", i)).get("label")))
+							{ // parent type:
+								typeLink += "<a href=\"#\" instancepath=\"" + (String) results.getValue("relId", i) + "\">";
+								typeLink += (String) results.getValue("relName", i) + "</a>";
+								typeLink += "<br/>";
+							}
+							else
+							{
+								// relationships:
+								if(((Map) results.getValue("relationship", i)).get("label") != null)
+								{
+									temp = ((String) ((Map) results.getValue("relationship", i)).get("label")).replace("_", " ");
+									relat += temp.substring(0, 1).toUpperCase() + temp.substring(1) + " ";
+								}
+								if(results.getValue("relName", i) != null)
+								{
+									if(results.getValue("relId", i) != null)
+									{
+										relat += "<a href=\"#\" instancepath=\"" + (String) results.getValue("relId", i) + "\">" + (String) results.getValue("relName", i) + "</a> ";
+									}
+									else
+									{
+										relat += (String) results.getValue("relName", i) + " ";
+									}
+								}
+								if(results.getValue("relFBrf", i) != null)
+								{
+									relat += "[<a href=\"http://flybase.org/reports/" + (String) results.getValue("relFBrf", i) + "\" target=\"_blank\" >FlyBase:" + (String) results.getValue("relFBrf", i)
+											+ "</a>]";
+								}
+								relat += "<br/>";
+							}
 						}
 					}
 					i++;
 				}
 
-				
-				// set parent Type:
-				if(typeLink != "")
+				// set Definition references:
+				if(!"".equals(defRefs))
 				{
-					System.out.println("Type:\n" + typeLink);
-					Variable type = VariablesFactory.eINSTANCE.createVariable();
-					type.setId("type");
-					type.setName("Type");
-					type.getTypes().add(htmlType);
-					geppettoModelAccess.addVariableToType(type, metadataType);
-					HTML typeValue = ValuesFactory.eINSTANCE.createHTML();
-					typeValue.setHtml(typeLink);
-					type.getInitialValues().put(htmlType, typeValue);
+					System.out.println("References:\n" + defRefs);
+					Variable defReferences = VariablesFactory.eINSTANCE.createVariable();
+					defReferences.setId("references");
+					defReferences.setName("Description References");
+					defReferences.getTypes().add(htmlType);
+					geppettoModelAccess.addVariableToType(defReferences, metadataType);
+					HTML defReferencesValue = ValuesFactory.eINSTANCE.createHTML();
+					defReferencesValue.setHtml(defRefs);
+					defReferences.getInitialValues().put(htmlType, defReferencesValue);
 				}
-				
+
 				// set Synonyms with any related references:
-				if(synonymLinks != "")
+				if(!"".equals(synonymLinks))
 				{
 					System.out.println("Synonyms:\n" + synonymLinks);
 					Variable synonyms = VariablesFactory.eINSTANCE.createVariable();
@@ -265,22 +299,22 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 					synonyms.getInitialValues().put(htmlType, synonymsValue);
 				}
 
-				// set Definition references:
-				if(defRefs != "")
+				// set parent Type:
+				if(!"".equals(typeLink))
 				{
-					System.out.println("References:\n" + defRefs);
-					Variable defReferences = VariablesFactory.eINSTANCE.createVariable();
-					defReferences.setId("references");
-					defReferences.setName("Definition References");
-					defReferences.getTypes().add(htmlType);
-					geppettoModelAccess.addVariableToType(defReferences, metadataType);
-					HTML defReferencesValue = ValuesFactory.eINSTANCE.createHTML();
-					defReferencesValue.setHtml(defRefs);
-					defReferences.getInitialValues().put(htmlType, defReferencesValue);
+					System.out.println("Type:\n" + typeLink);
+					Variable type = VariablesFactory.eINSTANCE.createVariable();
+					type.setId("type");
+					type.setName("Type");
+					type.getTypes().add(htmlType);
+					geppettoModelAccess.addVariableToType(type, metadataType);
+					HTML typeValue = ValuesFactory.eINSTANCE.createHTML();
+					typeValue.setHtml(typeLink);
+					type.getInitialValues().put(htmlType, typeValue);
 				}
 
 				// set Relationships with any related references:
-				if(relat != "")
+				if(!"".equals(relat))
 				{
 					System.out.println("Relationships:\n" + relat);
 					Variable relationships = VariablesFactory.eINSTANCE.createVariable();
@@ -292,13 +326,14 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 					relationshipsValue.setHtml(relat);
 					relationships.getInitialValues().put(htmlType, relationshipsValue);
 				}
-				
-				if ("<a href=\"#\" instancepath=\"VFB_10000005\">cluster</a><br/>".equals(typeLink)){
+
+				if("<a href=\"#\" instancepath=\"VFB_10000005\">cluster</a><br/>".equals(typeLink))
+				{
 					i = 0;
 					String tempId = "";
 					String tempThumb = "";
 					String tempName = "";
-		
+
 					int j = 0;
 					Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
 					exampleVar.setId("examples");
@@ -307,16 +342,17 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 					geppettoModelAccess.addVariableToType(exampleVar, metadataType);
 					ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
 					while(results.getValue("relationship", i) != null)
-					{ 
+					{
 						if("has_member".equals((String) ((Map) results.getValue("relationship", i)).get("label")))
 						{
 							if(results.getValue("relName", i) != null)
 							{
 								tempId = (String) results.getValue("relId", i);
-								tempThumb = "http://www.virtualflybrain.org/data/VFB/i/" + tempId.substring(4, 8) + "/" + tempId.substring(8) + "/thumbnail.png";
+								tempThumb = "http://www.virtualflybrain.org/data/VFB/i/" + tempId.substring(4, 8) + "/" + tempId.substring(8) + "/thumbnailT.png";
 								tempName = (String) results.getValue("relName", i);
 								System.out.println("Adding Cluster Image: " + tempId + " " + tempName + " " + tempThumb);
-								if (checkURL(tempThumb)){
+								if(checkURL(tempThumb))
+								{
 									addImage(tempThumb, tempName, tempId, images, j);
 									j++;
 								}
@@ -326,7 +362,7 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 					}
 					exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), images);
 				}
-				
+
 			}
 
 		}
@@ -361,43 +397,25 @@ public class AddImportTypesSynonymQueryProcessor implements IQueryProcessor
 		element.setInitialValue(image);
 		images.getElements().add(element);
 	}
+
 	/**
 	 * @param urlString
 	 */
-	private boolean checkURL(String urlString){
-		try{
+	private boolean checkURL(String urlString)
+	{
+		try
+		{
 			URL url = new URL(urlString);
-			HttpURLConnection huc =  (HttpURLConnection)  url.openConnection();
+			HttpURLConnection huc = (HttpURLConnection) url.openConnection();
 			huc.setRequestMethod("HEAD");
 			huc.setInstanceFollowRedirects(false);
 			return (huc.getResponseCode() == HttpURLConnection.HTTP_OK);
-		}catch(Exception e){
+		}
+		catch(Exception e)
+		{
 			System.out.println("Error checking url (" + urlString + ") " + e.toString());
 			return false;
 		}
-	}
-	@Override
-	public void registerGeppettoService() throws Exception
-	{
-		ServicesRegistry.registerQueryProcessorService(this);
-	}
-
-	@Override
-	public boolean isSupported(GeppettoFeature feature)
-	{
-		return false;
-	}
-
-	@Override
-	public IFeature getFeature(GeppettoFeature feature)
-	{
-		return null;
-	}
-
-	@Override
-	public void addFeature(IFeature feature)
-	{
-
 	}
 
 }

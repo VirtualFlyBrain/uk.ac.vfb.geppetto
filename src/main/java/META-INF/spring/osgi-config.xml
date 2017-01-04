@@ -14,7 +14,35 @@
 	<osgi:service id="VFBImportTypesThumbnailQueryProcessorExporter" ref="vfbImportTypesThumbnailQueryProcessor"
 		interface="org.geppetto.core.datasources.IQueryProcessor">
 	</osgi:service>
-	<bean id="vfbImportTypesThumbnailQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.AddImportTypesImageQueryProcessor">
+	<bean id="vfbImportTypesThumbnailQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.AddImportTypesThumbnailQueryProcessor">
+	<aop:scoped-proxy proxy-target-class="false"/>
+	</bean>
+
+	<osgi:service id="VFBImportTypesExtLinkQueryProcessorExporter" ref="vfbImportTypesExtLinkQueryProcessor"
+				  interface="org.geppetto.core.datasources.IQueryProcessor">
+	</osgi:service>
+	<bean id="vfbImportTypesExtLinkQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.AddImportTypesExtLinkQueryProcessor">
+		<aop:scoped-proxy proxy-target-class="false"/>
+	</bean>
+	
+	<osgi:service id="VFBAddQueriesToMetadataQueryProcessorExporter" ref="vfbAddQueriesToMetadataQueryProcessor"
+				  interface="org.geppetto.core.datasources.IQueryProcessor">
+	</osgi:service>
+	<bean id="vfbAddQueriesToMetadataQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.AddQueriesToMetadataQueryProcessor">
+		<aop:scoped-proxy proxy-target-class="false"/>
+	</bean>
+
+	<osgi:service id="VFBImportTypesRefsQueryProcessorExporter" ref="vfbImportTypesRefsQueryProcessor"
+				  interface="org.geppetto.core.datasources.IQueryProcessor">
+	</osgi:service>
+	<bean id="vfbImportTypesRefsQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.AddImportTypesRefsQueryProcessor">
+		<aop:scoped-proxy proxy-target-class="false"/>
+	</bean>
+	
+	<osgi:service id="VFBCreateImagesForQueryResultsQueryProcessorExporter" ref="vfbCreateImagesForQueryResultsQueryProcessor"
+		interface="org.geppetto.core.datasources.IQueryProcessor">
+	</osgi:service>
+	<bean id="vfbCreateImagesForQueryResultsQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.CreateImagesForQueryResultsQueryProcessor">
 	<aop:scoped-proxy proxy-target-class="false"/>
 	</bean>
 	
@@ -24,14 +52,7 @@
 	<bean id="vfbImportTypesSynonymQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.AddImportTypesSynonymQueryProcessor">
 	<aop:scoped-proxy proxy-target-class="false"/>
 	</bean>
-	
-	<osgi:service id="VFBAddImportTypesQueryProcessorExporter" ref="vfbImportTypesRelatedQueryProcessor"
-		interface="org.geppetto.core.datasources.IQueryProcessor">
-	</osgi:service>
-	<bean id="vfbImportTypesRelatedQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.AddImportTypesRelatedQueryProcessor">
-	<aop:scoped-proxy proxy-target-class="false"/>
-	</bean>
-	
+
 	<osgi:service id="VFBAddImportTypesQueryProcessorExporter" ref="vfbImportTypesQueryProcessor"
 		interface="org.geppetto.core.datasources.IQueryProcessor">
 	</osgi:service>
@@ -43,6 +64,13 @@
 		interface="org.geppetto.core.datasources.IQueryProcessor">
 	</osgi:service>
 	<bean id="vfbTypesQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.AddTypesQueryProcessor">
+	<aop:scoped-proxy proxy-target-class="false"/>
+	</bean>
+	
+	<osgi:service id="VFBAberOWLQueryProcessorExporter" ref="vfbAberOWLQueryProcessor"
+		interface="org.geppetto.core.datasources.IQueryProcessor">
+	</osgi:service>
+	<bean id="vfbAberOWLQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.VFBAberOWLQueryProcessor">
 	<aop:scoped-proxy proxy-target-class="false"/>
 	</bean>
 	

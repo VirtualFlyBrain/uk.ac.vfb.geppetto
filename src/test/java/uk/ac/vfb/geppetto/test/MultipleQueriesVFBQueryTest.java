@@ -33,13 +33,9 @@
 package uk.ac.vfb.geppetto.test;
 
 import java.io.IOException;
-import java.util.Map;
 
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.eclipse.emf.common.util.BasicEList;
+import org.eclipse.emf.common.util.EList;
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.datasources.GeppettoDataSourceException;
 import org.geppetto.core.manager.SharedLibraryManager;
@@ -50,8 +46,13 @@ import org.geppetto.core.services.registry.ApplicationListenerBean;
 import org.geppetto.datasources.aberowl.AberOWLDataSourceService;
 import org.geppetto.datasources.neo4j.Neo4jDataSourceService;
 import org.geppetto.model.GeppettoModel;
-import org.geppetto.model.GeppettoPackage;
+import org.geppetto.model.datasources.BooleanOperator;
+import org.geppetto.model.datasources.DatasourcesFactory;
+import org.geppetto.model.datasources.QueryResults;
+import org.geppetto.model.datasources.RunnableQuery;
+import org.geppetto.model.util.GeppettoModelException;
 import org.geppetto.model.util.GeppettoVisitingException;
+import org.geppetto.model.variables.Variable;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -61,18 +62,20 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 
-import uk.ac.vfb.geppetto.AddImportTypesThumbnailQueryProcessor;
 import uk.ac.vfb.geppetto.AddImportTypesExtLinkQueryProcessor;
-import uk.ac.vfb.geppetto.AddImportTypesRefsQueryProcessor;
 import uk.ac.vfb.geppetto.AddImportTypesQueryProcessor;
+import uk.ac.vfb.geppetto.AddImportTypesRefsQueryProcessor;
 import uk.ac.vfb.geppetto.AddImportTypesSynonymQueryProcessor;
+import uk.ac.vfb.geppetto.AddImportTypesThumbnailQueryProcessor;
 import uk.ac.vfb.geppetto.AddTypesQueryProcessor;
+import uk.ac.vfb.geppetto.CreateImagesForQueryResultsQueryProcessor;
+import uk.ac.vfb.geppetto.VFBAberOWLQueryProcessor;
 
 /**
  * @author matteocantarelli
  *
  */
-public class VFBQueryTest
+public class MultipleQueriesVFBQueryTest
 {
 
 	/**
@@ -107,10 +110,18 @@ public class VFBQueryTest
 		context.registerBeanDefinition("vfbImportTypesRefsQueryProcessor", queryProcessorImportTypesRefsBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.vfbImportTypesRefsQueryProcessor", queryProcessorImportTypesRefsBeanDefinition);
 
+		BeanDefinition aberOWLQueryProcessorBeanDefinition = new RootBeanDefinition(VFBAberOWLQueryProcessor.class);
+		context.registerBeanDefinition("vfbAberOWLQueryProcessor", aberOWLQueryProcessorBeanDefinition);
+		context.registerBeanDefinition("scopedTarget.vfbAberOWLQueryProcessor", aberOWLQueryProcessorBeanDefinition);
+
+		BeanDefinition createImagesForQueryBeanDefinition = new RootBeanDefinition(CreateImagesForQueryResultsQueryProcessor.class);
+		context.registerBeanDefinition("vfbCreateImagesForQueryResultsQueryProcessor", createImagesForQueryBeanDefinition);
+		context.registerBeanDefinition("scopedTarget.vfbCreateImagesForQueryResultsQueryProcessor", createImagesForQueryBeanDefinition);
+
 		BeanDefinition neo4jDataSourceBeanDefinition = new RootBeanDefinition(Neo4jDataSourceService.class);
 		context.registerBeanDefinition("neo4jDataSource", neo4jDataSourceBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.neo4jDataSource", neo4jDataSourceBeanDefinition);
-		
+
 		BeanDefinition aberOWLDataSourceBeanDefinition = new RootBeanDefinition(AberOWLDataSourceService.class);
 		context.registerBeanDefinition("aberOWLDataSource", aberOWLDataSourceBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.aberOWLDataSource", aberOWLDataSourceBeanDefinition);
@@ -130,48 +141,110 @@ public class VFBQueryTest
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbImportTypesExtLinkQueryProcessor"));
 		retrievedContext = ApplicationListenerBean.getApplicationContext("vfbImportTypesRefsQueryProcessor");
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbImportTypesRefsQueryProcessor"));
+		retrievedContext = ApplicationListenerBean.getApplicationContext("vfbAberOWLQueryProcessor");
+		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbAberOWLQueryProcessor"));
+		retrievedContext = ApplicationListenerBean.getApplicationContext("vfbCreateImagesForQueryResultsQueryProcessor");
+		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbCreateImagesForQueryResultsQueryProcessor"));
+
 	}
 
-	/**
-	 * Test method for {@link org.geppetto.datasources.neo4j.Neo4jDataSourceService#fetchVariable(java.lang.String)}.
-	 * 
-	 * @throws GeppettoDataSourceException
-	 * @throws GeppettoInitializationException
-	 * @throws GeppettoVisitingException
-	 * @throws IOException
-	 */
 	@Test
-	public void testFetchVariable() throws GeppettoDataSourceException, GeppettoInitializationException, GeppettoVisitingException, IOException
+	public void testANDedQueries() throws GeppettoInitializationException, GeppettoVisitingException, GeppettoDataSourceException, GeppettoModelException, IOException
 	{
+
 		GeppettoModel model = GeppettoModelReader.readGeppettoModel(VFBQueryTest.class.getClassLoader().getResource("VFBModel/GeppettoModelVFB.xmi"));
 		model.getLibraries().add(SharedLibraryManager.getSharedCommonLibrary());
 
 		GeppettoModelAccess geppettoModelAccess = new GeppettoModelAccess(model);
-		Neo4jDataSourceService dataSource = new Neo4jDataSourceService();
-		dataSource.initialize(model.getDataSources().get(0), geppettoModelAccess);
 
-		System.out.println(GeppettoSerializer.serializeToJSON(model, true));
+		Neo4jDataSourceService neo4JDataSource = new Neo4jDataSourceService();
+		neo4JDataSource.initialize(model.getDataSources().get(0), geppettoModelAccess);
 
-		dataSource.fetchVariable("FBbt_00100219");
+		AberOWLDataSourceService aberDataSource = new AberOWLDataSourceService();
+		aberDataSource.initialize(model.getDataSources().get(1), geppettoModelAccess);
 
-		System.out.println(GeppettoSerializer.serializeToJSON(model, true));
+		neo4JDataSource.fetchVariable("FBbt_00003748");
+		neo4JDataSource.fetchVariable("FBbt_00003852");
 
-		dataSource.fetchVariable("VFB_00000001");
+		Variable variable1 = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
+		Variable variable2 = geppettoModelAccess.getPointer("FBbt_00003852").getElements().get(0).getVariable();
 
-		System.out.println(GeppettoSerializer.serializeToJSON(model, true));
+		EList<RunnableQuery> runnableQueriesEMF = new BasicEList<RunnableQuery>();
 
-		// // Initialize the factory and the resource set
-		GeppettoPackage.eINSTANCE.eClass();
-		Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
-		Map<String, Object> m = reg.getExtensionToFactoryMap();
-		m.put("xmi", new XMIResourceFactoryImpl()); // sets the factory for the XMI type
-		ResourceSet resSet = new ResourceSetImpl();
+		RunnableQuery rqEMF1 = DatasourcesFactory.eINSTANCE.createRunnableQuery();
+		rqEMF1.setQueryPath(model.getQueries().get(1).getPath());
+		rqEMF1.setTargetVariablePath(variable1.getPath());
+		runnableQueriesEMF.add(rqEMF1);
+		
+		RunnableQuery rqEMF2 = DatasourcesFactory.eINSTANCE.createRunnableQuery();
+		rqEMF2.setQueryPath(model.getQueries().get(1).getPath());
+		rqEMF2.setTargetVariablePath(variable2.getPath());
+		runnableQueriesEMF.add(rqEMF2);
 
-		Resource resource = resSet.createResource(URI.createURI("./src/test/resources/fetchedVariable.xmi"));
-		resource.getContents().add(model);
-		resource.save(null);
+		
+		int count = aberDataSource.getNumberOfResults(runnableQueriesEMF);
+		Assert.assertEquals(87, count);
+
+		QueryResults results = aberDataSource.execute(runnableQueriesEMF);
+
+		Assert.assertEquals("ID", results.getHeader().get(0));
+		Assert.assertEquals("Name", results.getHeader().get(1));
+		Assert.assertEquals("Definition", results.getHeader().get(2));
+		Assert.assertEquals("Images", results.getHeader().get(3));
+		Assert.assertEquals(87, results.getResults().size());
+
+		System.out.println(GeppettoSerializer.serializeToJSON(results, true));
 
 	}
 
-	
+	@Test
+	public void testNANDedQueries() throws GeppettoInitializationException, GeppettoVisitingException, GeppettoDataSourceException, GeppettoModelException, IOException
+	{
+
+		GeppettoModel model = GeppettoModelReader.readGeppettoModel(VFBQueryTest.class.getClassLoader().getResource("VFBModel/GeppettoModelVFB.xmi"));
+		model.getLibraries().add(SharedLibraryManager.getSharedCommonLibrary());
+
+		GeppettoModelAccess geppettoModelAccess = new GeppettoModelAccess(model);
+
+		Neo4jDataSourceService neo4JDataSource = new Neo4jDataSourceService();
+		neo4JDataSource.initialize(model.getDataSources().get(0), geppettoModelAccess);
+
+		AberOWLDataSourceService aberDataSource = new AberOWLDataSourceService();
+		aberDataSource.initialize(model.getDataSources().get(1), geppettoModelAccess);
+
+		neo4JDataSource.fetchVariable("FBbt_00003748");
+		neo4JDataSource.fetchVariable("FBbt_00045048");
+
+		Variable variable1 = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
+		Variable variable2 = geppettoModelAccess.getPointer("FBbt_00045048").getElements().get(0).getVariable();
+
+		EList<RunnableQuery> runnableQueriesEMF = new BasicEList<RunnableQuery>();
+
+		RunnableQuery rqEMF1 = DatasourcesFactory.eINSTANCE.createRunnableQuery();
+		rqEMF1.setQueryPath(model.getQueries().get(0).getPath());
+		rqEMF1.setTargetVariablePath(variable1.getPath());
+		runnableQueriesEMF.add(rqEMF1);
+		
+		RunnableQuery rqEMF2 = DatasourcesFactory.eINSTANCE.createRunnableQuery();
+		rqEMF2.setQueryPath(model.getQueries().get(2).getPath());
+		rqEMF2.setTargetVariablePath(variable2.getPath());
+		rqEMF2.setBooleanOperator(BooleanOperator.NAND);
+		runnableQueriesEMF.add(rqEMF2);
+		
+		int count = aberDataSource.getNumberOfResults(runnableQueriesEMF);
+		Assert.assertEquals(84, count);
+
+		QueryResults results = aberDataSource.execute(runnableQueriesEMF);
+
+		Assert.assertEquals("ID", results.getHeader().get(0));
+		Assert.assertEquals("Name", results.getHeader().get(1));
+		Assert.assertEquals("Definition", results.getHeader().get(2));
+		Assert.assertEquals("Images", results.getHeader().get(3));
+		Assert.assertEquals(84, results.getResults().size());
+
+		System.out.println(GeppettoSerializer.serializeToJSON(results, true));
+
+	}
+
+
 }
