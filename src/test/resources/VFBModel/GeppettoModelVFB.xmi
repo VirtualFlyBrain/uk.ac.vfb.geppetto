@@ -37,6 +37,9 @@
         id="Synaptic_neuropil"
         name="Synaptic Neuropil"/>
     <types xsi:type="gep_1:SimpleType"
+        id="Neuron_projection_bundle"
+        name="Neuron Projection Bundle"/>
+    <types xsi:type="gep_1:SimpleType"
         id="VFB"
         name="Virtual Fly Brain"/>
     <types xsi:type="gep_1:SimpleType"
@@ -368,6 +371,8 @@
       queryChain="//@dataSources.1/@queries.7 //@dataSources.1/@queries.0 //@dataSources.0/@queries.0">
     <matchingCriteria
         type="//@libraries.3/@types.1 //@libraries.3/@types.3"/>
+    <matchingCriteria
+        type="//@libraries.3/@types.1 //@libraries.3/@types.6"/>
   </queries>
   <queries xsi:type="gep_2:CompoundRefQuery"
       id="neuronssynaptic"
