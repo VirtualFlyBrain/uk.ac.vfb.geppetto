@@ -172,12 +172,12 @@ public class MultipleQueriesVFBQueryTest
 		EList<RunnableQuery> runnableQueriesEMF = new BasicEList<RunnableQuery>();
 
 		RunnableQuery rqEMF1 = DatasourcesFactory.eINSTANCE.createRunnableQuery();
-		rqEMF1.setQueryPath(model.getQueries().get(2).getPath());
+		rqEMF1.setQueryPath(model.getQueries().get(1).getPath());
 		rqEMF1.setTargetVariablePath(variable1.getPath());
 		runnableQueriesEMF.add(rqEMF1);
 		
 		RunnableQuery rqEMF2 = DatasourcesFactory.eINSTANCE.createRunnableQuery();
-		rqEMF2.setQueryPath(model.getQueries().get(2).getPath());
+		rqEMF2.setQueryPath(model.getQueries().get(1).getPath());
 		rqEMF2.setTargetVariablePath(variable2.getPath());
 		runnableQueriesEMF.add(rqEMF2);
 
