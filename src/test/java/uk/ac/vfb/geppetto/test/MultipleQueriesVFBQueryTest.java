@@ -171,7 +171,7 @@ public class MultipleQueriesVFBQueryTest
 		Map avQ = new HashMap();
 		int i = 0;
 		for(Query query:model.getQueries()){
-			String q=query.id.toString();
+			String q=(String) query.getId();
 			System.out.println("Query #" + Integer.toString(i) + ", id:" + q);
 			if(avQ.containsKey(q)){
 				System.out.println("Duplicate query id: " + q);
