@@ -218,7 +218,7 @@ public class MultipleQueriesVFBQueryTest
 	@Test
 	public void testNANDedQueries() throws GeppettoInitializationException, GeppettoVisitingException, GeppettoDataSourceException, GeppettoModelException, IOException
 	{
-
+		
 		GeppettoModel model = GeppettoModelReader.readGeppettoModel(VFBQueryTest.class.getClassLoader().getResource("VFBModel/GeppettoModelVFB.xmi"));
 		model.getLibraries().add(SharedLibraryManager.getSharedCommonLibrary());
 
@@ -230,6 +230,20 @@ public class MultipleQueriesVFBQueryTest
 		AberOWLDataSourceService aberDataSource = new AberOWLDataSourceService();
 		aberDataSource.initialize(model.getDataSources().get(1), geppettoModelAccess);
 
+		//Build list of available query indexs against ids:
+		Map avQ = new HashMap();
+		int i = 0;
+		for(Query query:model.getQueries()){
+			String q=(String) query.getId();
+			System.out.println("Query #" + Integer.toString(i) + ", id:" + q);
+			if(avQ.containsKey(q)){
+				System.out.println("Duplicate query id: " + q);
+			}else{
+				avQ.put(q, i);
+			}
+			i++;
+		}
+		
 		neo4JDataSource.fetchVariable("FBbt_00003852"); // Lobula - FBbt_00003852
 		neo4JDataSource.fetchVariable("FBbt_00003885"); // Lobula Plate - FBbt_00003885
 
