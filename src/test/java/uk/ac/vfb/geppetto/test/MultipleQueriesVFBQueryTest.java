@@ -61,6 +61,9 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.web.context.support.GenericWebApplicationContext;
+import java.util.HashMap;
+import java.util.Map;
+
 
 import uk.ac.vfb.geppetto.AddImportTypesExtLinkQueryProcessor;
 import uk.ac.vfb.geppetto.AddImportTypesQueryProcessor;
@@ -162,6 +165,18 @@ public class MultipleQueriesVFBQueryTest
 
 		AberOWLDataSourceService aberDataSource = new AberOWLDataSourceService();
 		aberDataSource.initialize(model.getDataSources().get(1), geppettoModelAccess);
+		
+		//Build list of available query indexs against ids:
+		Map avQ = new HashMap();
+		for(var i=0;model.getQueries().length;i++){
+			var q=model.getQueries()[i];
+			System.out.println("Query #" + i.toString() + ", id:" + q.id.toString());
+			if(avQ.containsKey(q.id)){
+				System.out.println("Duplicate query id: " + q.id.toString());
+			}else{
+				avQ.put(q.id, i);
+			}
+		}
 
 		neo4JDataSource.fetchVariable("FBbt_00003748");
 		neo4JDataSource.fetchVariable("FBbt_00003852");
