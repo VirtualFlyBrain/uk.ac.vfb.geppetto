@@ -180,7 +180,7 @@ public class CrossDataSourceVFBQueryTest
 			i++;
 		}
 
-		neo4JDataSource.fetchVariable("FBbt_00003748"); // Medulla -
+		neo4JDataSource.fetchVariable("FBbt_00003748"); // Medulla - FBbt_00003748
 
 		Variable variable = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
 
