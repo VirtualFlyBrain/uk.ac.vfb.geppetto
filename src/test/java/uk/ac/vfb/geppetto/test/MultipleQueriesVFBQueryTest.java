@@ -49,6 +49,7 @@ import org.geppetto.model.GeppettoModel;
 import org.geppetto.model.datasources.BooleanOperator;
 import org.geppetto.model.datasources.DatasourcesFactory;
 import org.geppetto.model.datasources.QueryResults;
+import org.geppetto.model.datasources.Query;
 import org.geppetto.model.datasources.RunnableQuery;
 import org.geppetto.model.util.GeppettoModelException;
 import org.geppetto.model.util.GeppettoVisitingException;
@@ -168,8 +169,8 @@ public class MultipleQueriesVFBQueryTest
 		
 		//Build list of available query indexs against ids:
 		Map avQ = new HashMap();
-		for(int i=0;model.getQueries().size();i++){
-			String q=model.getQueries()[i].id.toString();
+		for(Query query:model.getQueries()){
+			String q=query.id.toString();
 			System.out.println("Query #" + i.toString() + ", id:" + q);
 			if(avQ.containsKey(q)){
 				System.out.println("Duplicate query id: " + q);
