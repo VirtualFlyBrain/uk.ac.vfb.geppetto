@@ -93,7 +93,7 @@ public class VFBAberOWLQueryProcessor extends AQueryProcessor
 				processedResult.getValues().add(value == null ? "" : value.toString());
 				processedResults.getResults().add(processedResult);
 			} catch (ClassCastException e) {
-				System.out.println("Error handling aberOwl result: " + result.getEString());
+				System.out.println("Error handling aberOwl result: " + (String) result);
 				System.out.println("ClassCastException: " + e.getMessage());
 			}
 		}
