@@ -82,15 +82,20 @@ public class VFBAberOWLQueryProcessor extends AQueryProcessor
 		List<String> ids = new ArrayList<String>();
 		for(AQueryResult result : results.getResults())
 		{
-			SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
-			String id = ((QueryResult) result).getValues().get(idIndex).toString();
-			processedResult.getValues().add(id);
+			try{
+				SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
+				String id = ((QueryResult) result).getValues().get(idIndex).toString();
+				processedResult.getValues().add(id);
 
-			processedResult.getValues().add(((List<String>) ((QueryResult) result).getValues().get(nameIndex)).get(0));
-			ids.add("'" + id + "'");
-			Object value = ((QueryResult) result).getValues().get(descirptionIndex);
-			processedResult.getValues().add(value == null ? "" : value.toString());
-			processedResults.getResults().add(processedResult);
+				processedResult.getValues().add(((List<String>) ((QueryResult) result).getValues().get(nameIndex)).get(0));
+				ids.add("'" + id + "'");
+				Object value = ((QueryResult) result).getValues().get(descirptionIndex);
+				processedResult.getValues().add(value == null ? "" : value.toString());
+				processedResults.getResults().add(processedResult);
+			} catch (ClassCastException e) {
+				System.out.println("Error handling aberOwl result: " + (String) result);
+				System.out.println("ClassCastException: " + e.getMessage());
+			}
 		}
 
 		processingOutputMap.put("ARRAY_ID_RESULTS", ids);
