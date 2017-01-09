@@ -168,7 +168,7 @@ public class MultipleQueriesVFBQueryTest
 		
 		//Build list of available query indexs against ids:
 		Map avQ = new HashMap();
-		for(int i=0;model.getQueries().length;i++){
+		for(int i=0;model.getQueries().size();i++){
 			String q=model.getQueries()[i].id.toString();
 			System.out.println("Query #" + i.toString() + ", id:" + q);
 			if(avQ.containsKey(q)){
