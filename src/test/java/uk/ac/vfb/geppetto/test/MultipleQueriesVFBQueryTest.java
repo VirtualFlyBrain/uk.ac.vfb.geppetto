@@ -172,7 +172,7 @@ public class MultipleQueriesVFBQueryTest
 		int i = 0;
 		for(Query query:model.getQueries()){
 			String q=query.id.toString();
-			System.out.println("Query #" + i.toString() + ", id:" + q);
+			System.out.println("Query #" + Integer.toString(i) + ", id:" + q);
 			if(avQ.containsKey(q)){
 				System.out.println("Duplicate query id: " + q);
 			}else{
