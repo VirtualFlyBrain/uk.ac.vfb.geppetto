@@ -181,27 +181,27 @@ public class MultipleQueriesVFBQueryTest
 			i++;
 		}
 
-		neo4JDataSource.fetchVariable("FBbt_00003748");
-		neo4JDataSource.fetchVariable("FBbt_00003852");
+		neo4JDataSource.fetchVariable("FBbt_00003701"); //Optic Lobe - FBbt_00003701
+		neo4JDataSource.fetchVariable("FBbt_00003885"); //Lobula Plate - FBbt_00003885
 
-		Variable variable1 = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
-		Variable variable2 = geppettoModelAccess.getPointer("FBbt_00003852").getElements().get(0).getVariable();
+		Variable variable1 = geppettoModelAccess.getPointer("FBbt_00003701").getElements().get(0).getVariable();
+		Variable variable2 = geppettoModelAccess.getPointer("FBbt_00003885").getElements().get(0).getVariable();
 
 		EList<RunnableQuery> runnableQueriesEMF = new BasicEList<RunnableQuery>();
 
 		RunnableQuery rqEMF1 = DatasourcesFactory.eINSTANCE.createRunnableQuery();
-		rqEMF1.setQueryPath(model.getQueries().get(1).getPath());
+		rqEMF1.setQueryPath(model.getQueries().get(avQ['partsof']).getPath());
 		rqEMF1.setTargetVariablePath(variable1.getPath());
 		runnableQueriesEMF.add(rqEMF1);
 		
 		RunnableQuery rqEMF2 = DatasourcesFactory.eINSTANCE.createRunnableQuery();
-		rqEMF2.setQueryPath(model.getQueries().get(1).getPath());
+		rqEMF2.setQueryPath(model.getQueries().get(avQ['partsof']).getPath());
 		rqEMF2.setTargetVariablePath(variable2.getPath());
 		runnableQueriesEMF.add(rqEMF2);
 
 		
 		int count = aberDataSource.getNumberOfResults(runnableQueriesEMF);
-		Assert.assertEquals(87, count);
+		Assert.assertEquals(5, count);
 
 		QueryResults results = aberDataSource.execute(runnableQueriesEMF);
 
@@ -209,7 +209,7 @@ public class MultipleQueriesVFBQueryTest
 		Assert.assertEquals("Name", results.getHeader().get(1));
 		Assert.assertEquals("Definition", results.getHeader().get(2));
 		Assert.assertEquals("Images", results.getHeader().get(3));
-		Assert.assertEquals(87, results.getResults().size());
+		Assert.assertEquals(5, results.getResults().size());
 
 		System.out.println(GeppettoSerializer.serializeToJSON(results, true));
 
@@ -230,27 +230,27 @@ public class MultipleQueriesVFBQueryTest
 		AberOWLDataSourceService aberDataSource = new AberOWLDataSourceService();
 		aberDataSource.initialize(model.getDataSources().get(1), geppettoModelAccess);
 
-		neo4JDataSource.fetchVariable("FBbt_00003748");
-		neo4JDataSource.fetchVariable("FBbt_00045048");
+		neo4JDataSource.fetchVariable("FBbt_00003852"); // Lobula - FBbt_00003852
+		neo4JDataSource.fetchVariable("FBbt_00003885"); // Lobula Plate - FBbt_00003885
 
-		Variable variable1 = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
-		Variable variable2 = geppettoModelAccess.getPointer("FBbt_00045048").getElements().get(0).getVariable();
+		Variable variable1 = geppettoModelAccess.getPointer("FBbt_00003852").getElements().get(0).getVariable();
+		Variable variable2 = geppettoModelAccess.getPointer("FBbt_00003885").getElements().get(0).getVariable();
 
 		EList<RunnableQuery> runnableQueriesEMF = new BasicEList<RunnableQuery>();
 
 		RunnableQuery rqEMF1 = DatasourcesFactory.eINSTANCE.createRunnableQuery();
-		rqEMF1.setQueryPath(model.getQueries().get(0).getPath());
+		rqEMF1.setQueryPath(model.getQueries().get(avQ['partsof']).getPath());
 		rqEMF1.setTargetVariablePath(variable1.getPath());
 		runnableQueriesEMF.add(rqEMF1);
 		
 		RunnableQuery rqEMF2 = DatasourcesFactory.eINSTANCE.createRunnableQuery();
-		rqEMF2.setQueryPath(model.getQueries().get(2).getPath());
+		rqEMF2.setQueryPath(model.getQueries().get(avQ['partsof']).getPath());
 		rqEMF2.setTargetVariablePath(variable2.getPath());
 		rqEMF2.setBooleanOperator(BooleanOperator.NAND);
 		runnableQueriesEMF.add(rqEMF2);
 		
 		int count = aberDataSource.getNumberOfResults(runnableQueriesEMF);
-		Assert.assertEquals(84, count);
+		Assert.assertEquals(2, count);
 
 		QueryResults results = aberDataSource.execute(runnableQueriesEMF);
 
@@ -258,7 +258,7 @@ public class MultipleQueriesVFBQueryTest
 		Assert.assertEquals("Name", results.getHeader().get(1));
 		Assert.assertEquals("Definition", results.getHeader().get(2));
 		Assert.assertEquals("Images", results.getHeader().get(3));
-		Assert.assertEquals(84, results.getResults().size());
+		Assert.assertEquals(2, results.getResults().size());
 
 		System.out.println(GeppettoSerializer.serializeToJSON(results, true));
 
