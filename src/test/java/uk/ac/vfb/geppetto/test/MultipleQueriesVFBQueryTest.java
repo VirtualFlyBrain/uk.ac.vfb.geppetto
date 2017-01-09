@@ -169,6 +169,7 @@ public class MultipleQueriesVFBQueryTest
 		
 		//Build list of available query indexs against ids:
 		Map avQ = new HashMap();
+		int i = 0;
 		for(Query query:model.getQueries()){
 			String q=query.id.toString();
 			System.out.println("Query #" + i.toString() + ", id:" + q);
@@ -177,6 +178,7 @@ public class MultipleQueriesVFBQueryTest
 			}else{
 				avQ.put(q, i);
 			}
+			i++;
 		}
 
 		neo4JDataSource.fetchVariable("FBbt_00003748");
