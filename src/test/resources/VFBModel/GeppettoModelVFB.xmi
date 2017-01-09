@@ -290,7 +290,7 @@
         description="SubClasses of the $NAME"
         returnType="//@libraries.3/@types.1"
         query="type=subeq&amp;query=%3Chttp://purl.obolibrary.org/obo/$ID%3E&amp;ontology=VFB"
-        countQuery="">
+        countQuery=""/>
     <queries
         xsi:type="gep_2:SimpleQuery"
         name="Neurons"
