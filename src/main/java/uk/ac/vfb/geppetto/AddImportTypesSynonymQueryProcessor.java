@@ -329,6 +329,7 @@ public class AddImportTypesSynonymQueryProcessor extends AQueryProcessor
 
 				if("<a href=\"#\" instancepath=\"VFB_10000005\">cluster</a><br/>".equals(typeLink))
 				{
+					System.out.println("Cluster details:\n" + relat);
 					i = 0;
 					String tempId = "";
 					String tempThumb = "";
@@ -368,11 +369,13 @@ public class AddImportTypesSynonymQueryProcessor extends AQueryProcessor
 		}
 		catch(GeppettoVisitingException e)
 		{
+			System.out.println("GeppettoVisitingException in AddImportTypesSynonymQueryProcessor");
 			System.out.println(e);
 			throw new GeppettoDataSourceException(e);
 		}
 		catch(Exception e)
 		{
+			System.out.println("Exception in AddImportTypesSynonymQueryProcessor");
 			System.out.println(e);
 		}
 
