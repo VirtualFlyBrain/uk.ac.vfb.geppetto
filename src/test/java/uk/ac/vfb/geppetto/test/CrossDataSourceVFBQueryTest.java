@@ -167,7 +167,7 @@ public class CrossDataSourceVFBQueryTest
 		aberDataSource.initialize(model.getDataSources().get(1), geppettoModelAccess);
 
 		//Build list of available query indexs against ids:
-		Map avQ = new HashMap();
+		Map<String, Integer> avQ = new HashMap<String, Integer>();
 		int i = 0;
 		for(Query query:model.getQueries()){
 			String q=(String) query.getId();
