@@ -32,8 +32,6 @@
  *******************************************************************************/
 package uk.ac.vfb.geppetto.test;
 
-import java.io.IOException;
-
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
 import org.geppetto.core.common.GeppettoInitializationException;
@@ -46,6 +44,7 @@ import org.geppetto.core.services.registry.ApplicationListenerBean;
 import org.geppetto.datasources.aberowl.AberOWLDataSourceService;
 import org.geppetto.datasources.neo4j.Neo4jDataSourceService;
 import org.geppetto.model.GeppettoModel;
+import org.geppetto.model.datasources.Query;
 import org.geppetto.model.datasources.BooleanOperator;
 import org.geppetto.model.datasources.DatasourcesFactory;
 import org.geppetto.model.datasources.QueryResults;
@@ -61,15 +60,11 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.web.context.support.GenericWebApplicationContext;
+import uk.ac.vfb.geppetto.*;
 
-import uk.ac.vfb.geppetto.AddImportTypesExtLinkQueryProcessor;
-import uk.ac.vfb.geppetto.AddImportTypesQueryProcessor;
-import uk.ac.vfb.geppetto.AddImportTypesRefsQueryProcessor;
-import uk.ac.vfb.geppetto.AddImportTypesSynonymQueryProcessor;
-import uk.ac.vfb.geppetto.AddImportTypesThumbnailQueryProcessor;
-import uk.ac.vfb.geppetto.AddTypesQueryProcessor;
-import uk.ac.vfb.geppetto.CreateImagesForQueryResultsQueryProcessor;
-import uk.ac.vfb.geppetto.VFBAberOWLQueryProcessor;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author matteocantarelli
@@ -162,6 +157,20 @@ public class MultipleQueriesVFBQueryTest
 
 		AberOWLDataSourceService aberDataSource = new AberOWLDataSourceService();
 		aberDataSource.initialize(model.getDataSources().get(1), geppettoModelAccess);
+
+		//Build list of available query indexs against ids:
+		Map<String,Integer> avQ = new HashMap();
+		Integer i = 0;
+		for (Query query : model.getQueries()) {
+			String q = query.getId();
+			System.out.println("Query #" + Integer.toString(i) + ", id:" + q);
+			if (avQ.containsKey(q)) {
+				System.out.println("Duplicate query id: " + q);
+			} else {
+				avQ.put(q, i);
+			}
+			i++;
+		}
 
 		neo4JDataSource.fetchVariable("FBbt_00003748");
 		neo4JDataSource.fetchVariable("FBbt_00003852");
