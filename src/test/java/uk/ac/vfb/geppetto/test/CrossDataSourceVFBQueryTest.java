@@ -32,9 +32,6 @@
  *******************************************************************************/
 package uk.ac.vfb.geppetto.test;
 
-import java.io.IOException;
-import java.util.List;
-
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
 import org.geppetto.core.common.GeppettoInitializationException;
@@ -62,15 +59,12 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.web.context.support.GenericWebApplicationContext;
+import uk.ac.vfb.geppetto.*;
 
-import uk.ac.vfb.geppetto.AddImportTypesExtLinkQueryProcessor;
-import uk.ac.vfb.geppetto.AddImportTypesQueryProcessor;
-import uk.ac.vfb.geppetto.AddImportTypesRefsQueryProcessor;
-import uk.ac.vfb.geppetto.AddImportTypesSynonymQueryProcessor;
-import uk.ac.vfb.geppetto.AddImportTypesThumbnailQueryProcessor;
-import uk.ac.vfb.geppetto.AddTypesQueryProcessor;
-import uk.ac.vfb.geppetto.CreateImagesForQueryResultsQueryProcessor;
-import uk.ac.vfb.geppetto.VFBAberOWLQueryProcessor;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author matteocantarelli
@@ -164,14 +158,28 @@ public class CrossDataSourceVFBQueryTest
 		AberOWLDataSourceService aberDataSource = new AberOWLDataSourceService();
 		aberDataSource.initialize(model.getDataSources().get(1), geppettoModelAccess);
 
+		//Build list of available query indexs against ids:
+		Map<String,Integer> avQ = new HashMap();
+		Integer i = 0;
+		for (Query query : model.getQueries()) {
+			String q = query.getId();
+			System.out.println("Query #" + Integer.toString(i) + ", id:" + q);
+			if (avQ.containsKey(q)) {
+				System.out.println("Duplicate query id: " + q);
+			} else {
+				avQ.put(q, i);
+			}
+			i++;
+		}
+
 		neo4JDataSource.fetchVariable("FBbt_00003748");
 
 		Variable variable = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
 
-		int count = aberDataSource.getNumberOfResults(getRunnableQueries(model.getQueries().get(0), variable));
+		int count = aberDataSource.getNumberOfResults(getRunnableQueries(model.getQueries().get(avQ.get("partsof")), variable));
 		Assert.assertEquals(84, count);
 
-		QueryResults results = aberDataSource.execute(getRunnableQueries(model.getQueries().get(0), variable));
+		QueryResults results = aberDataSource.execute(getRunnableQueries(model.getQueries().get(avQ.get("partsof")), variable));
 
 		Assert.assertEquals("ID", results.getHeader().get(0));
 		Assert.assertEquals("Name", results.getHeader().get(1));
