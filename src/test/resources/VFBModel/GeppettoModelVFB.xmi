@@ -272,9 +272,20 @@
     <queries
         xsi:type="gep_2:SimpleQuery"
         name="Part of"
-        description="Part of"
+        description="Part of $NAME"
         query="type=subeq&amp;query=%3Chttp://purl.obolibrary.org/obo/BFO_0000050%3E%20some%20%3Chttp://purl.obolibrary.org/obo/$ID%3E&amp;ontology=VFB"
         countQuery="count=true&amp;type=subeq&amp;query=%3Chttp://purl.obolibrary.org/obo/BFO_0000050%3E%20some%20%3Chttp://purl.obolibrary.org/obo/$ID%3E&amp;ontology=VFB">
+      <matchingCriteria
+          type="//@libraries.3/@types.1"/>
+    </queries>
+    <queries
+        xsi:type="gep_2:SimpleQuery"
+        id="Overlaps"
+        name="Overlaps"
+        description="Overlaps $NAME"
+        returnType="//@libraries.3/@types.1"
+        query="type=subeq&amp;query=&lt;http://purl.obolibrary.org/obo/RO_0002131>%20some%20&lt;http://purl.obolibrary.org/obo/$ID>&amp;ontology=VFB"
+        countQuery="">
       <matchingCriteria
           type="//@libraries.3/@types.1"/>
     </queries>
@@ -327,7 +338,7 @@
       id="neuronssynaptic"
       name="Neurons Synaptic"
       description="Neurons with synaptic terminals in $NAME"
-      queryChain="//@dataSources.1/@queries.3 //@dataSources.1/@queries.0 //@dataSources.0/@queries.0">
+      queryChain="//@dataSources.1/@queries.4 //@dataSources.1/@queries.0 //@dataSources.0/@queries.0">
     <matchingCriteria
         type="//@libraries.3/@types.1 //@libraries.3/@types.5"/>
   </queries>
@@ -335,7 +346,7 @@
       id="neuronsparthere"
       name="Neurons with any part here"
       description="Neurons in/overlapping the $NAME"
-      queryChain="//@dataSources.1/@queries.2 //@dataSources.1/@queries.0 //@dataSources.0/@queries.0">
+      queryChain="//@dataSources.1/@queries.3 //@dataSources.1/@queries.0 //@dataSources.0/@queries.0">
     <matchingCriteria
         type="//@libraries.3/@types.1 //@libraries.3/@types.5"/>
   </queries>
@@ -343,7 +354,7 @@
       id="neuronspresynaptic"
       name="Neurons Presynaptic"
       description="Neurons with presynaptic terminals in $NAME"
-      queryChain="//@dataSources.1/@queries.4 //@dataSources.1/@queries.0 //@dataSources.0/@queries.0">
+      queryChain="//@dataSources.1/@queries.5 //@dataSources.1/@queries.0 //@dataSources.0/@queries.0">
     <matchingCriteria
         type="//@libraries.3/@types.1 //@libraries.3/@types.5"/>
   </queries>
@@ -351,7 +362,7 @@
       id="neuronspostsynaptic"
       name="Neurons Postsynaptic"
       description="Neurons with postsynaptic terminals in $NAME"
-      queryChain="//@dataSources.1/@queries.5 //@dataSources.1/@queries.0 //@dataSources.0/@queries.0">
+      queryChain="//@dataSources.1/@queries.6 //@dataSources.1/@queries.0 //@dataSources.0/@queries.0">
     <matchingCriteria
         type="//@libraries.3/@types.1 //@libraries.3/@types.5"/>
   </queries>
