@@ -64,6 +64,7 @@ public class VFBAberOWLidOnlyQueryProcessor extends AQueryProcessor
 		{
 			throw new GeppettoDataSourceException("Results input to " + query.getName() + "is null");
 		}
+		int idIndex = results.getHeader().indexOf("remainder");
 
 		List<String> ids = new ArrayList<String>();
 		for(AQueryResult result : results.getResults())
@@ -73,12 +74,8 @@ public class VFBAberOWLidOnlyQueryProcessor extends AQueryProcessor
 		}
 
 		processingOutputMap.put("ARRAY_ID_RESULTS", ids);
-	}
 
-	@Override
-	public Map<String, Object> getProcessingOutputMap()
-	{
-		return processingOutputMap;
+		return results;
 	}
 
 }
