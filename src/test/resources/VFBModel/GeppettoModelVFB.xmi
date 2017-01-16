@@ -325,6 +325,12 @@
       <matchingCriteria
           type="//@libraries.3/@types.1 //@libraries.3/@types.5"/>
     </queries>
+    <queries
+        xsi:type="gep_2:ProcessQuery"
+        id="owlPassIdListOnly"
+        name="Pass id list only"
+        description="Keep nothing slimply pass ids"
+        queryProcessorId="VFBAberOWLidOnlyQueryProcessor"/>
   </dataSources>
   <queries xsi:type="gep_2:CompoundRefQuery"
       id="partsof"
