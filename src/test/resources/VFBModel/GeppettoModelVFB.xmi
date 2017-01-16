@@ -331,6 +331,17 @@
         name="Pass id list only"
         description="Keep nothing slimply pass ids"
         queryProcessorId="VFBAberOWLidOnlyQueryProcessor"/>
+    <queries
+        xsi:type="gep_2:SimpleQuery"
+        id="AberNeuronClassesFasciculatingHere"
+        name="Neuron classes fasciculating here"
+        description="Neuron classes fasciculating here"
+        returnType="//@libraries.3/@types.1"
+        query="type=subeq&amp;query=&lt;http://purl.obolibrary.org/obo/FBbt_00005106>%20that%20&lt;http://purl.obolibrary.org/obo/RO_0002101>%20some%20&lt;http://purl.obolibrary.org/obo/$ID>&amp;ontology=VFB"
+        countQuery="count=true&amp;type=subeq&amp;query=&lt;http://purl.obolibrary.org/obo/FBbt_00005106>%20that%20&lt;http://purl.obolibrary.org/obo/RO_0002101>%20some%20&lt;http://purl.obolibrary.org/obo/$ID>&amp;ontology=VFB">
+      <matchingCriteria
+          type="//@libraries.3/@types.3 //@libraries.3/@types.1"/>
+    </queries>
   </dataSources>
   <queries xsi:type="gep_2:CompoundRefQuery"
       id="partsof"
