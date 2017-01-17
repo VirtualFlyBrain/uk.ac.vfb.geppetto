@@ -87,7 +87,7 @@ public class VFBAberOWLQueryProcessor extends AQueryProcessor
 			processedResult.getValues().add(id);
 
 			if ((((QueryResult) result).getValues().get(nameIndex)) instanceof String) {
-				processedResult.getValues().add((String) ((QueryResult) result).getValues().get(nameIndex));
+				processedResult.getValues().add(((QueryResult) result).getValues().get(nameIndex).toString());
 			}else{
 				processedResult.getValues().add(((List<String>) ((QueryResult) result).getValues().get(nameIndex)).get(0));
 			}
