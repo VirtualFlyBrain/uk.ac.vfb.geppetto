@@ -409,8 +409,9 @@
         type="//@libraries.3/@types.1 //@libraries.3/@types.3"/>
   </queries>
   <queries xsi:type="gep_2:CompoundRefQuery"
-      name="Images of neurons with some part in the $NAME (clustered by shape)"
-      description="Images of neurons with some part here (clustered)"
+      id="ImagesNeuronsClustered"
+      name="Images of neurons with some part here (clustered)"
+      description="Images of neurons with some part in the $NAME (clustered by shape)"
       returnType="//@libraries.3/@types.2"
       queryChain="//@dataSources.1/@queries.10 //@dataSources.1/@queries.0 //@dataSources.0/@queries.1">
     <matchingCriteria
