@@ -80,4 +80,10 @@ public class VFBAberOWLidOnlyQueryProcessor extends AQueryProcessor
 		return results;
 	}
 
+	@Override
+	public Map<String, Object> getProcessingOutputMap()
+	{
+		return processingOutputMap;
+	}
+
 }
