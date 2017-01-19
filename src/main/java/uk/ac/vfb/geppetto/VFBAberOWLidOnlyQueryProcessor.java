@@ -64,20 +64,27 @@ public class VFBAberOWLidOnlyQueryProcessor extends AQueryProcessor
 		{
 			throw new GeppettoDataSourceException("Results input to " + query.getName() + "is null");
 		}
-		int idIndex = results.getHeader().indexOf("remainder");
+        QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
+        int idIndex = results.getHeader().indexOf("remainder");
+
+        processedResults.getHeader().add("ID");
 
 		List<String> ids = new ArrayList<String>();
 		for(AQueryResult result : results.getResults())
 		{
-			String id = ((QueryResult) result).getValues().get(idIndex).toString();
+            SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
+
+            String id = ((QueryResult) result).getValues().get(idIndex).toString();
+            processedResult.getValues().add(id);
 			ids.add("'" + id + "'");
+            processedResults.getResults().add(processedResult);
 		}
 
 		processingOutputMap.put("ARRAY_ID_RESULTS", ids);
 
 		System.out.println("OWL query gave IDs: " + ids.toString());
 
-		return results;
+		return processedResults;
 	}
 
 	@Override
