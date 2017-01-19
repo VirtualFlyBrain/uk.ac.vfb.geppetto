@@ -75,6 +75,8 @@ public class VFBAberOWLidOnlyQueryProcessor extends AQueryProcessor
 
 		processingOutputMap.put("ARRAY_ID_RESULTS", ids);
 
+		System.out.println("OWL query gave IDs: " + ids.toString());
+
 		return results;
 	}
 
