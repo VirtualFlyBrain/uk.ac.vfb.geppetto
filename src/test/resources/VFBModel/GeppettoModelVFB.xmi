@@ -133,7 +133,7 @@
           xsi:type="gep_2:ProcessQuery"
           name="Process Images"
           returnType="//@libraries.3/@types.0"
-          queryProcessorId="CreateResultListForIndividualsForQueryResultsQueryProcessor"/>
+          queryProcessorId="vfbCreateResultListForIndividualsForQueryResultsQueryProcessor"/>
     </queries>
     <queries
         xsi:type="gep_2:CompoundQuery"

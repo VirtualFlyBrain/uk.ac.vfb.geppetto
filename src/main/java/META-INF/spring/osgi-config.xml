@@ -45,6 +45,13 @@
 	<bean id="vfbCreateImagesForQueryResultsQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.CreateImagesForQueryResultsQueryProcessor">
 	<aop:scoped-proxy proxy-target-class="false"/>
 	</bean>
+
+	<osgi:service id="VFBCreateResultListForIndividualsForQueryResultsQueryProcessor" ref="vfbCreateResultListForIndividualsForQueryResultsQueryProcessor"
+				  interface="org.geppetto.core.datasources.IQueryProcessor">
+	</osgi:service>
+	<bean id="vfbCreateResultListForIndividualsForQueryResultsQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.CreateResultListForIndividualsForQueryResultsQueryProcessor">
+		<aop:scoped-proxy proxy-target-class="false"/>
+	</bean>
 	
 	<osgi:service id="VFBAddImportTypesQueryProcessorExporter" ref="vfbImportTypesSynonymQueryProcessor"
 		interface="org.geppetto.core.datasources.IQueryProcessor">
