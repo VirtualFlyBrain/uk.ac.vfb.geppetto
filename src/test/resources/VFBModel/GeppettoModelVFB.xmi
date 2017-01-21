@@ -137,6 +137,23 @@
     </queries>
     <queries
         xsi:type="gep_2:CompoundQuery"
+        name="Get fellow cluster members"
+        description="">
+      <queryChain
+          xsi:type="gep_2:SimpleQuery"
+          id="GetFellowClusterMembers"
+          name="Get other cluster members"
+          description="$NAME's fellow cluster members"
+          query="MATCH (n:Neuron { short_form: '$ID' } )-[r1:Related {label:'member_of'}]->(c:Cluster)-[r2:Related {label:'has_member'}]->(i:Neuron) RETURN i.short_form as id, i.label as name, i.description[0] as def,  'http://www.virtualflybrain.org/data/'+substring(i.short_form,0,3)+'/i/'+substring(i.short_form,4,4)+'/'+substring(i.short_form,8,4)+'/thumbnailT.png' AS file"
+          countQuery="MATCH (n:Neuron { short_form: '$ID' } )-[r1:Related {label:'member_of'}]->(c:Cluster)-[r2:Related {label:'has_member'}]->(i:Neuron) RETURN count(i) as count"/>
+      <queryChain
+          xsi:type="gep_2:ProcessQuery"
+          name="Process Images"
+          returnType="//@libraries.3/@types.0"
+          queryProcessorId="vfbCreateResultListForIndividualsForQueryResultsQueryProcessor"/>
+    </queries>
+    <queries
+        xsi:type="gep_2:CompoundQuery"
         name="Get and process details from Neo4j for list of clusters"
         description=""
         runForCount="false">
@@ -413,6 +430,15 @@
     </queries>
   </dataSources>
   <queries xsi:type="gep_2:CompoundRefQuery"
+      id="FindFellowClustMembers"
+      name="Fellow Cluster Members"
+      description="Find similar neurons to $NAME"
+      returnType="//@libraries.3/@types.2"
+      queryChain="//@dataSources.0/@queries.2">
+    <matchingCriteria
+        type="//@libraries.3/@types.0 //@libraries.3/@types.2"/>
+  </queries>
+  <queries xsi:type="gep_2:CompoundRefQuery"
       id="partsof"
       name="Parts of"
       description="Subparts of the $NAME"
@@ -443,7 +469,7 @@
       name="Images of neurons with some part here (clustered)"
       description="Images of neurons with some part in the $NAME (clustered)"
       returnType="//@libraries.3/@types.2"
-      queryChain="//@dataSources.1/@queries.10 //@dataSources.1/@queries.7 //@dataSources.0/@queries.2">
+      queryChain="//@dataSources.1/@queries.10 //@dataSources.1/@queries.7 //@dataSources.0/@queries.3">
     <matchingCriteria
         type="//@libraries.3/@types.1 //@libraries.3/@types.5"/>
   </queries>
