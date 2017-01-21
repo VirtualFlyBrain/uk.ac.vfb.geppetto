@@ -82,8 +82,6 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 				String def = (String) results.getValue("def", i);
 				processedResult.getValues().add(def);
 
-				String file = (String) results.getValue("file", i);
-
 				Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
 				exampleVar.setId("images");
 				exampleVar.setName("Images");
@@ -91,8 +89,27 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 				exampleVar.getTypes().add(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE));
 				ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
 
-				addImage(file, name, id, images, 0);
+				//Check is single file or list of individuals
+				if (results.getValue("file", i) != null) {
 
+					String file = (String) results.getValue("file", i);
+
+					addImage(file, name, id, images, 0);
+
+				}else if (results.getValue("inds", i) != null){
+					List<Object> currentObjects = (List<Object>) results.getValue("inds", i);
+					for(int j = 0; j < currentObjects.size(); j++)
+					{
+						Map<String, Object> currentObject = (Map<String, Object>) currentObjects.get(j);
+						String tempId = (String) currentObject.get("image_id");
+						if(tempId != null)
+						{
+							String tempThumb = (String) currentObject.get("image_thumb");
+							String tempName = (String) currentObject.get("image_name");
+							addImage(tempThumb, tempName, tempId, images, j);
+						}
+					}
+				}
 
 				if(!images.getElements().isEmpty())
 				{
