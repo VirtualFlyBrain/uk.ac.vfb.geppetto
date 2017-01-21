@@ -400,6 +400,17 @@
       <matchingCriteria
           type="//@libraries.3/@types.5 //@libraries.3/@types.1"/>
     </queries>
+    <queries
+        xsi:type="gep_2:SimpleQuery"
+        id="ImagesOfNeuronsWithSomePartHere"
+        name="Images of neurons with some part here"
+        description="Images of neurons with some part here"
+        returnType="//@libraries.3/@types.2"
+        query="type=realize&amp;query=%3Chttp://purl.obolibrary.org/obo/FBbt_00005106%3E%20that%20%3Chttp://purl.obolibrary.org/obo/RO_0002131%3E%20some%20%3Chttp://purl.obolibrary.org/obo/$ID%3E&amp;ontology=VFB"
+        countQuery="">
+      <matchingCriteria
+          type="//@libraries.3/@types.5 //@libraries.3/@types.1"/>
+    </queries>
   </dataSources>
   <queries xsi:type="gep_2:CompoundRefQuery"
       id="partsof"
@@ -433,6 +444,15 @@
       description="Images of neurons with some part in the $NAME (clustered)"
       returnType="//@libraries.3/@types.2"
       queryChain="//@dataSources.1/@queries.10 //@dataSources.1/@queries.7 //@dataSources.0/@queries.2">
+    <matchingCriteria
+        type="//@libraries.3/@types.1 //@libraries.3/@types.5"/>
+  </queries>
+  <queries xsi:type="gep_2:CompoundRefQuery"
+      id="ImagesNeurons"
+      name="Images of neurons with some part here"
+      description="Images of neurons with some part in the $NAME"
+      returnType="//@libraries.3/@types.2"
+      queryChain="//@dataSources.1/@queries.11 //@dataSources.1/@queries.7 //@dataSources.0/@queries.1">
     <matchingCriteria
         type="//@libraries.3/@types.1 //@libraries.3/@types.5"/>
   </queries>
