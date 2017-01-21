@@ -145,7 +145,7 @@
           id="GetMetaForClustList"
           name="Get meta from Neo4j for clusters"
           description="Get images for cluster list"
-          query="MATCH(i:Individual)&lt;-[r:Related {label:'member_of'}]-(m:Individual) WHERE i.short_form IN $ARRAY_ID_RESULTS RETURN i.short_form as id, i.label as name, coalesce(i.description[0], 'A cluster with ' + count(m) + ' members consisting of: ' + str(extract(x IN collect(m) | x.label)) + ' Click on images on right for specific members.') as def, COLLECT (DISTINCT { image_name: m.label, image_id: m.short_form, image_thumb: 'http://www.virtualflybrain.org/data/'+substring(m.short_form,0,3)+'/i/'+substring(m.short_form,4,4)+'/'+substring(m.short_form,8,4)+'/thumbnailT.png', template_id: m.short_form}) AS inds"
+          query="MATCH(i:Individual)&lt;-[r:Related {label:'member_of'}]-(m:Individual) WHERE i.short_form IN $ARRAY_ID_RESULTS RETURN i.short_form as id, i.label as name, coalesce(i.description[0], 'An NBLAST derived cluster with ' + count(m) + ' members. Individual members are shown in the images column.' as def, COLLECT (DISTINCT { image_name: m.label, image_id: m.short_form, image_thumb: 'http://www.virtualflybrain.org/data/'+substring(m.short_form,0,3)+'/i/'+substring(m.short_form,4,4)+'/'+substring(m.short_form,8,4)+'/thumbnailT.png', template_id: m.short_form}) AS inds"
           countQuery="MATCH(i:Individual) WHERE i.short_form IN $ARRAY_ID_RESULTS RETURN count(i) as count"/>
       <queryChain
           xsi:type="gep_2:ProcessQuery"
