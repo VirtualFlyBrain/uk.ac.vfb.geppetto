@@ -66,6 +66,13 @@
 	<bean id="vfbImportTypesQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.AddImportTypesQueryProcessor">
 	<aop:scoped-proxy proxy-target-class="false"/>
 	</bean>
+
+    <osgi:service id="VFBPassRetunedIDtoNextQuery" ref="vfbPassReturnedIDtoNextQuery"
+                  interface="org.geppetto.core.datasources.IQueryProcessor">
+    </osgi:service>
+    <bean id="vfbPassReturnedIDtoNextQuery" scope="prototype" class="uk.ac.vfb.geppetto.VFBPassReturnedIDtoNextQuery">
+        <aop:scoped-proxy proxy-target-class="false"/>
+    </bean>
 	
 	<osgi:service id="VFBAddTypesQueryProcessorExporter" ref="vfbTypesQueryProcessor"
 		interface="org.geppetto.core.datasources.IQueryProcessor">
