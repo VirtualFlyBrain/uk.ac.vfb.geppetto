@@ -125,6 +125,7 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 
 				i++;
 			}
+            System.out.println("CreateResultListForIndividualsForQueryResultsQueryProcessor returning " + Integer.toString(i) + " rows");
 			return processedResults;
 		}
 		catch(GeppettoVisitingException e)
