@@ -159,7 +159,7 @@ public class AddTypesQueryProcessor extends AQueryProcessor
 			metaID.getInitialValues().put(htmlType, metaIdValue);
 
 			// set description:
-			if(results.getValue("description", 0) != null)
+			if(results.getValue("description", 0) != null && results.getValue("description", 0) != "." && results.getValue("description", 0) != "")
 			{
 				Variable description = VariablesFactory.eINSTANCE.createVariable();
 				description.setId("description");
