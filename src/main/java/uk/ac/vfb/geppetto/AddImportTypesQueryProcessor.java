@@ -85,8 +85,14 @@ public class AddImportTypesQueryProcessor extends AQueryProcessor
 			int j;
 
 			Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
-			exampleVar.setId("examples");
-			exampleVar.setName("Examples");
+			if (results.getValue("exId", 0) != null && variable.getId() == results.getValue("exId", 0))
+			{
+				exampleVar.setId("domains");
+				exampleVar.setName("Painted Domains");
+			}else {
+				exampleVar.setId("examples");
+				exampleVar.setName("Examples");
+			}
 			exampleVar.getTypes().add(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE));
 			geppettoModelAccess.addVariableToType(exampleVar, metadataType);
 			ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
@@ -96,11 +102,6 @@ public class AddImportTypesQueryProcessor extends AQueryProcessor
 
 				i = 0;
 				j = 0;
-
-				if (variable.getId() == results.getValue("exId", i))
-				{
-					exampleVar.setName("Painted Domains");
-				}
 
 				while(results.getValue("exId", i) != null)
 				{
