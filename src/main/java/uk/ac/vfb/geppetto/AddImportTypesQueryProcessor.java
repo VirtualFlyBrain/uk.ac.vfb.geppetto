@@ -97,7 +97,12 @@ public class AddImportTypesQueryProcessor extends AQueryProcessor
 				i = 0;
 				j = 0;
 
-				while(results.getValue("exId", i) != null && j < 6)
+				if (variable.getId() == results.getValue("exId", i))
+				{
+					exampleVar.setName("Painted Anatomy");
+				}
+
+				while(results.getValue("exId", i) != null)
 				{
 					tempSpace = (String) results.getValue("exTemp", i);
 					System.out.println("Example for template " + tempSpace + (String) results.getValue("exId", i) + (String) results.getValue("exThumb", i) + (String) results.getValue("exName", i));
