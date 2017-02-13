@@ -99,7 +99,7 @@ public class AddImportTypesQueryProcessor extends AQueryProcessor
 
 				if (variable.getId() == results.getValue("exId", i))
 				{
-					exampleVar.setName("Painted Anatomy");
+					exampleVar.setName("Painted Domains");
 				}
 
 				while(results.getValue("exId", i) != null)
