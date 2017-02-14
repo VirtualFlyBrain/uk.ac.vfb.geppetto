@@ -34,6 +34,7 @@ package uk.ac.vfb.geppetto;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 import org.geppetto.core.datasources.GeppettoDataSourceException;
 import org.geppetto.core.model.GeppettoModelAccess;
@@ -80,6 +81,8 @@ public class AddImportTypesQueryProcessor extends AQueryProcessor
 			String tempThumb;
 			String tempName;
 			String tempSpace;
+
+			List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
 
 			int i;
 			int j;
