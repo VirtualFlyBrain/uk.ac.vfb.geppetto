@@ -159,18 +159,21 @@ public class AddTypesQueryProcessor extends AQueryProcessor
 			metaID.getInitialValues().put(htmlType, metaIdValue);
 
 			// set description:
-			if(results.getValue("description", 0) != null && results.getValue("description", 0) != "." && results.getValue("description", 0) != "")
+			if(results.getValue("description", 0) != null)
 			{
-				Variable description = VariablesFactory.eINSTANCE.createVariable();
-				description.setId("description");
-				description.setName("Description");
-				description.getTypes().add(textType);
-				metaData.getVariables().add(description);
-				Text descriptionValue = ValuesFactory.eINSTANCE.createText();
 				String desc = ((List<String>) results.getValue("description", 0)).get(0);
-				desc = highlightLinks(desc);
-				descriptionValue.setText(desc);
-				description.getInitialValues().put(textType, descriptionValue);
+				if (desc != "." && desc != "")
+				{
+					Variable description = VariablesFactory.eINSTANCE.createVariable();
+					description.setId("description");
+					description.setName("Description");
+					description.getTypes().add(textType);
+					metaData.getVariables().add(description);
+					Text descriptionValue = ValuesFactory.eINSTANCE.createText();
+					desc = highlightLinks(desc);
+					descriptionValue.setText(desc);
+					description.getInitialValues().put(textType, descriptionValue);
+				}
 			}
 
 			// set comment:
