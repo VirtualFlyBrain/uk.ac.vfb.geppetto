@@ -39,6 +39,7 @@ import java.util.List;
 import org.geppetto.core.datasources.GeppettoDataSourceException;
 import org.geppetto.core.model.GeppettoModelAccess;
 import org.geppetto.datasources.AQueryProcessor;
+import org.geppetto.model.GeppettoLibrary;
 import org.geppetto.model.datasources.DataSource;
 import org.geppetto.model.datasources.ProcessQuery;
 import org.geppetto.model.datasources.QueryResults;
