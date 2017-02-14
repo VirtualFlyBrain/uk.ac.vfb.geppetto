@@ -89,9 +89,12 @@ public class AddImportTypesQueryProcessor extends AQueryProcessor
 			{
 				exampleVar.setId("domains");
 				exampleVar.setName("Painted Domains");
-			}else {
+			}
+			else
+			{
 				exampleVar.setId("examples");
 				exampleVar.setName("Examples");
+				metadataType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("hasExamples", dependenciesLibrary));
 			}
 			exampleVar.getTypes().add(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE));
 			geppettoModelAccess.addVariableToType(exampleVar, metadataType);
