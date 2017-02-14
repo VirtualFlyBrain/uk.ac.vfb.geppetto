@@ -187,11 +187,12 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 				if(checkURL(tempFile))
 				{
 					System.out.println("Adding Woolz...");
+					List<List<String>> domains = (List<List<String>>) results.getValue("domains", 0);
 					tempFile = localForID(variable.getId()).replace("SERVER_ROOT/vfb/", "/disk/data/VFB/IMAGE_DATA/") + "volume.wlz";
 					Variable slicesVar = VariablesFactory.eINSTANCE.createVariable();
 					ImageType slicesType = (ImageType) geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
 					Image slicesValue = ValuesFactory.eINSTANCE.createImage();
-					slicesValue.setData(new Gson().toJson(new IIPJSON(0,"http://vfbdev.inf.ed.ac.uk/fcgi/wlziipsrv.fcgi",tempFile)));
+					slicesValue.setData(new Gson().toJson(new IIPJSON(0,"http://vfbdev.inf.ed.ac.uk/fcgi/wlziipsrv.fcgi", tempFile, domains)));
 					slicesValue.setFormat(ImageFormat.IIP);
 					slicesValue.setReference(variable.getId());
 					slicesVar.setId(variable.getId() + "_slices");
@@ -241,11 +242,13 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 		int indexNumber;
 		String serverUrl;
 		String fileLocation;
-		public IIPJSON(int indexNumber, String serverUrl, String fileLocation)
+		List<List<String>> subDomains;
+		public IIPJSON(int indexNumber, String serverUrl, String fileLocation, List<List<String>> subDomains)
 		{
 			this.indexNumber=indexNumber;
 			this.fileLocation=fileLocation;
 			this.serverUrl=serverUrl;
+			this.subDomains=subDomains;
 		}
 	}
 	
