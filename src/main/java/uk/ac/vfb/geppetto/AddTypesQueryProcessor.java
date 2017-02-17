@@ -161,7 +161,7 @@ public class AddTypesQueryProcessor extends AQueryProcessor
 			// set description:
 			if(results.getValue("description", 0) != null)
 			{
-				String desc = ((List<String>) results.getValue("description", 0)).get(0);
+				String desc = (String) results.getValue("description", 0);
 				if (desc != "." && desc != "")
 				{
 					Variable description = VariablesFactory.eINSTANCE.createVariable();

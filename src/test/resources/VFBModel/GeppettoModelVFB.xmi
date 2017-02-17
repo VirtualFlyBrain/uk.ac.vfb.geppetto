@@ -260,7 +260,7 @@
           xsi:type="gep_2:SimpleQuery"
           name="Get id/name/superTypes/description/comment"
           description="Fetches essential details."
-          query="MATCH (n { short_form: '$ID' } ) RETURN n.label as name, n.short_form as id, n.description as description, n.`annotation-comment` as comment, labels(n) as supertypes LIMIT 1"
+          query="MATCH (n { short_form: '$ID' } ) with n OPTIONAL MATCH (n)-[r:INSTANCEOF|SUBCLASSOF]->(p:Class) with n,p, CASE type(r) WHEN 'INSTANCEOF' THEN 'An example' ELSE 'Is a subclass' END as t RETURN n.label as name, n.short_form as id, CASE n.description[0] WHEN '.' THEN t + ' of the ' + p.label + ': ' + p.description[0] ELSE n.description[0] END as description, n.`annotation-comment` as comment, labels(n) as supertypes LIMIT 1"
           countQuery="MATCH (n { short_form: '$ID' } ) RETURN count(n) as count"/>
       <queryChain
           xsi:type="gep_2:ProcessQuery"
