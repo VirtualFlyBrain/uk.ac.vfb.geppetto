@@ -184,7 +184,7 @@ public class PartsOfAdultBrainTest
 		Variable variable = geppettoModelAccess.getPointer("FBbt_00003624").getElements().get(0).getVariable();
 
 		int count = aberDataSource.getNumberOfResults(getRunnableQueries(model.getQueries().get(avQ.get("partsof")), variable));
-		Assert.assertEquals(1467, count);
+		Assert.assertEquals(1600, count);
 
 		QueryResults results = aberDataSource.execute(getRunnableQueries(model.getQueries().get(avQ.get("partsof")), variable));
 
