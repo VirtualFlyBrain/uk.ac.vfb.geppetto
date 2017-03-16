@@ -168,7 +168,7 @@ public class PartsOfAdultBrainTest
 		Variable variable = geppettoModelAccess.getPointer("FBbt_00003624").getElements().get(0).getVariable();
 
 		int count = aberDataSource.getNumberOfResults(getRunnableQueries(model.getQueries().get(0), variable));
-		Assert.assertEquals(1467, count);
+		Assert.assertEquals(1600, count);
 
 		QueryResults results = aberDataSource.execute(getRunnableQueries(model.getQueries().get(0), variable));
 
@@ -176,7 +176,7 @@ public class PartsOfAdultBrainTest
 		Assert.assertEquals("Name", results.getHeader().get(1));
 		Assert.assertEquals("Definition", results.getHeader().get(2));
 		Assert.assertEquals("Images", results.getHeader().get(3));
-		Assert.assertEquals(1467, results.getResults().size());
+		Assert.assertEquals(1600, results.getResults().size());
 
 	}
 
