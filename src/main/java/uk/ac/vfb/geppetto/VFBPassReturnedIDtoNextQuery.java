@@ -47,7 +47,7 @@ import java.util.Map;
  * @author matteocantarelli
  *
  */
-public class VFBAberOWLidOnlyQueryProcessor extends AQueryProcessor
+public class VFBPassReturnedIDtoNextQuery extends AQueryProcessor
 {
 
 	private Map<String, Object> processingOutputMap = new HashMap<String, Object>();
@@ -65,24 +65,12 @@ public class VFBAberOWLidOnlyQueryProcessor extends AQueryProcessor
 			throw new GeppettoDataSourceException("Results input to " + query.getName() + "is null");
 		}
         QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
-        int idIndex = results.getHeader().indexOf("remainder");
 
-        processedResults.getHeader().add("ID");
+		String id = (String) results.getValue("id", 0);
 
-		List<String> ids = new ArrayList<String>();
-		for(AQueryResult result : results.getResults())
-		{
-            SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
+		processingOutputMap.put("ID", id);
 
-            String id = ((QueryResult) result).getValues().get(idIndex).toString();
-            processedResult.getValues().add(id);
-			ids.add("'" + id + "'");
-            processedResults.getResults().add(processedResult);
-		}
-
-		processingOutputMap.put("ARRAY_ID_RESULTS", ids);
-
-		System.out.println("VFBAberOWLidOnlyQueryProcessor returning " + Integer.toString(ids.size()) + " rows");
+		System.out.println("VFBPassReturnedIDtoNextQuery returning " + id + " to next query");
 
 		return processedResults;
 	}

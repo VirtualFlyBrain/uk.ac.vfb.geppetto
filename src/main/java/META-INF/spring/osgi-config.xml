@@ -45,6 +45,13 @@
 	<bean id="vfbCreateImagesForQueryResultsQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.CreateImagesForQueryResultsQueryProcessor">
 	<aop:scoped-proxy proxy-target-class="false"/>
 	</bean>
+
+	<osgi:service id="VFBCreateResultListForIndividualsForQueryResultsQueryProcessor" ref="vfbCreateResultListForIndividualsForQueryResultsQueryProcessor"
+				  interface="org.geppetto.core.datasources.IQueryProcessor">
+	</osgi:service>
+	<bean id="vfbCreateResultListForIndividualsForQueryResultsQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.CreateResultListForIndividualsForQueryResultsQueryProcessor">
+		<aop:scoped-proxy proxy-target-class="false"/>
+	</bean>
 	
 	<osgi:service id="VFBAddImportTypesQueryProcessorExporter" ref="vfbImportTypesSynonymQueryProcessor"
 		interface="org.geppetto.core.datasources.IQueryProcessor">
@@ -59,6 +66,13 @@
 	<bean id="vfbImportTypesQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.AddImportTypesQueryProcessor">
 	<aop:scoped-proxy proxy-target-class="false"/>
 	</bean>
+
+    <osgi:service id="VFBPassRetunedIDtoNextQuery" ref="vfbPassReturnedIDtoNextQuery"
+                  interface="org.geppetto.core.datasources.IQueryProcessor">
+    </osgi:service>
+    <bean id="vfbPassReturnedIDtoNextQuery" scope="prototype" class="uk.ac.vfb.geppetto.VFBPassReturnedIDtoNextQuery">
+        <aop:scoped-proxy proxy-target-class="false"/>
+    </bean>
 	
 	<osgi:service id="VFBAddTypesQueryProcessorExporter" ref="vfbTypesQueryProcessor"
 		interface="org.geppetto.core.datasources.IQueryProcessor">
@@ -74,6 +88,15 @@
 	<aop:scoped-proxy proxy-target-class="false"/>
 	</bean>
 	
+	<osgi:service id="vfbAberOWLidOnlyQueryProcessorExporter" ref="vfbAberOWLidOnlyQueryProcessor"
+		interface="org.geppetto.core.datasources.IQueryProcessor">
+	</osgi:service>
+	<bean id="vfbAberOWLidOnlyQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.VFBAberOWLidOnlyQueryProcessor">
+	<aop:scoped-proxy proxy-target-class="false"/>
+	</bean>
+	
 	<bean id="eventListenerBean" class="org.geppetto.core.services.registry.ApplicationListenerBean" />
+	
+	
 	
 </beans>
