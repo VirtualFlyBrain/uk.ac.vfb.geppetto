@@ -161,16 +161,19 @@ public class AddTypesQueryProcessor extends AQueryProcessor
 			// set description:
 			if(results.getValue("description", 0) != null)
 			{
-				Variable description = VariablesFactory.eINSTANCE.createVariable();
-				description.setId("description");
-				description.setName("Description");
-				description.getTypes().add(textType);
-				metaData.getVariables().add(description);
-				Text descriptionValue = ValuesFactory.eINSTANCE.createText();
-				String desc = ((List<String>) results.getValue("description", 0)).get(0);
-				desc = highlightLinks(desc);
-				descriptionValue.setText(desc);
-				description.getInitialValues().put(textType, descriptionValue);
+				String desc = (String) results.getValue("description", 0);
+				if (desc != "." && desc != "")
+				{
+					Variable description = VariablesFactory.eINSTANCE.createVariable();
+					description.setId("description");
+					description.setName("Description");
+					description.getTypes().add(textType);
+					metaData.getVariables().add(description);
+					Text descriptionValue = ValuesFactory.eINSTANCE.createText();
+					desc = highlightLinks(desc);
+					descriptionValue.setText(desc);
+					description.getInitialValues().put(textType, descriptionValue);
+				}
 			}
 
 			// set comment:
@@ -205,7 +208,7 @@ public class AddTypesQueryProcessor extends AQueryProcessor
 	{
 		try
 		{
-			text = text.replaceAll("([F,V,G].*)[:,_](\\d{5}[0-9]*\\b)", "<a href=\"#\" instancepath=\"$1_$2\">$1_$2</a>");
+			text = text.replaceAll("([F,V,G][A-z]*)[:,_](\\d{5}[0-9]*\\b)", "<a href=\"#\" instancepath=\"$1_$2\">$1_$2</a>");
 			return text;
 		}
 		catch(Exception e)

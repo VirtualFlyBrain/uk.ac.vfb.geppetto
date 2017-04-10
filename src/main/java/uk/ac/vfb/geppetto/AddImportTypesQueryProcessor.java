@@ -34,10 +34,12 @@ package uk.ac.vfb.geppetto;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 import org.geppetto.core.datasources.GeppettoDataSourceException;
 import org.geppetto.core.model.GeppettoModelAccess;
 import org.geppetto.datasources.AQueryProcessor;
+import org.geppetto.model.GeppettoLibrary;
 import org.geppetto.model.datasources.DataSource;
 import org.geppetto.model.datasources.ProcessQuery;
 import org.geppetto.model.datasources.QueryResults;
@@ -81,12 +83,23 @@ public class AddImportTypesQueryProcessor extends AQueryProcessor
 			String tempName;
 			String tempSpace;
 
+			List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
+
 			int i;
 			int j;
 
 			Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
-			exampleVar.setId("examples");
-			exampleVar.setName("Examples");
+			if (results.getValue("exId", 0) != null && variable.getId() == results.getValue("exId", 0))
+			{
+				exampleVar.setId("domains");
+				exampleVar.setName("Painted Domains");
+			}
+			else
+			{
+				exampleVar.setId("examples");
+				exampleVar.setName("Examples");
+				metadataType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("hasExamples", dependenciesLibrary));
+			}
 			exampleVar.getTypes().add(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE));
 			geppettoModelAccess.addVariableToType(exampleVar, metadataType);
 			ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
@@ -97,23 +110,19 @@ public class AddImportTypesQueryProcessor extends AQueryProcessor
 				i = 0;
 				j = 0;
 
-				while(results.getValue("exId", i) != null && j < 6)
+				while(results.getValue("exId", i) != null)
 				{
 					tempSpace = (String) results.getValue("exTemp", i);
 					System.out.println("Example for template " + tempSpace + (String) results.getValue("exId", i) + (String) results.getValue("exThumb", i) + (String) results.getValue("exName", i));
-//					 TODO: remove once links to alternative template space can be handled.
-					if (tempSpace == null || tempSpace.equals("VFB_00017894"))
-					{
-						tempId = (String) results.getValue("exId", i);
-						tempThumb = (String) results.getValue("exThumb", i);
-						tempThumb = "http://www.virtualflybrain.org/data/" + tempThumb;
-						tempName = (String) results.getValue("exName", i);
-						System.out.println("Adding Example Image: " + tempId + " " + tempName + " " + tempThumb);
-						if (checkURL(tempThumb))
-						{
-							addImage(tempThumb, tempName, tempId, images, j);
-							j++;
-						}
+
+					tempId = (String) results.getValue("exId", i);
+					tempThumb = (String) results.getValue("exThumb", i);
+					tempThumb = "http://www.virtualflybrain.org/data/" + tempThumb;
+					tempName = (String) results.getValue("exName", i);
+					System.out.println("Adding Example Image: " + tempId + " " + tempName + " " + tempThumb);
+					if (checkURL(tempThumb)) {
+						addImage(tempThumb, tempName, tempId, images, j);
+						j++;
 					}
 					i++;
 				}

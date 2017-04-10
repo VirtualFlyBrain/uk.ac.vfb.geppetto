@@ -32,28 +32,22 @@
  *******************************************************************************/
 package uk.ac.vfb.geppetto;
 
+import org.geppetto.core.datasources.GeppettoDataSourceException;
+import org.geppetto.core.model.GeppettoModelAccess;
+import org.geppetto.datasources.AQueryProcessor;
+import org.geppetto.model.datasources.*;
+import org.geppetto.model.variables.Variable;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.geppetto.core.datasources.GeppettoDataSourceException;
-import org.geppetto.core.model.GeppettoModelAccess;
-import org.geppetto.datasources.AQueryProcessor;
-import org.geppetto.model.datasources.AQueryResult;
-import org.geppetto.model.datasources.DataSource;
-import org.geppetto.model.datasources.DatasourcesFactory;
-import org.geppetto.model.datasources.ProcessQuery;
-import org.geppetto.model.datasources.QueryResult;
-import org.geppetto.model.datasources.QueryResults;
-import org.geppetto.model.datasources.SerializableQueryResult;
-import org.geppetto.model.variables.Variable;
-
 /**
  * @author matteocantarelli
  *
  */
-public class VFBAberOWLQueryProcessor extends AQueryProcessor
+public class VFBPassReturnedIDtoNextQuery extends AQueryProcessor
 {
 
 	private Map<String, Object> processingOutputMap = new HashMap<String, Object>();
@@ -70,34 +64,13 @@ public class VFBAberOWLQueryProcessor extends AQueryProcessor
 		{
 			throw new GeppettoDataSourceException("Results input to " + query.getName() + "is null");
 		}
-		QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
-		int idIndex = results.getHeader().indexOf("remainder");
-		int descirptionIndex = results.getHeader().indexOf("definition");
-		int nameIndex = results.getHeader().indexOf("label");
+        QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
 
-		processedResults.getHeader().add("ID");
-		processedResults.getHeader().add("Name");
-		processedResults.getHeader().add("Definition");
+		String id = (String) results.getValue("id", 0);
 
-		List<String> ids = new ArrayList<String>();
-		for(AQueryResult result : results.getResults())
-		{
-			SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
-			String id = ((QueryResult) result).getValues().get(idIndex).toString();
-			processedResult.getValues().add(id);
+		processingOutputMap.put("ID", id);
 
-			if ((((QueryResult) result).getValues().get(nameIndex)) instanceof String) {
-				processedResult.getValues().add(((QueryResult) result).getValues().get(nameIndex).toString());
-			}else{
-				processedResult.getValues().add(((List<String>) ((QueryResult) result).getValues().get(nameIndex)).get(0));
-			}
-			ids.add("'" + id + "'");
-			Object value = ((QueryResult) result).getValues().get(descirptionIndex);
-			processedResult.getValues().add(value == null ? "" : value.toString());
-			processedResults.getResults().add(processedResult);
-		}
-
-		processingOutputMap.put("ARRAY_ID_RESULTS", ids);
+		System.out.println("VFBPassReturnedIDtoNextQuery returning " + id + " to next query");
 
 		return processedResults;
 	}
