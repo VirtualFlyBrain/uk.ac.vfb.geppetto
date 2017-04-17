@@ -310,7 +310,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 	{
 		try
 		{
-			urlString = urlString.relapce('https://','http://');
+			urlString = urlString.replace('https://','http://');
 			URL url = new URL(urlString);
 			HttpURLConnection huc = (HttpURLConnection) url.openConnection();
 			huc.setRequestMethod("HEAD");
