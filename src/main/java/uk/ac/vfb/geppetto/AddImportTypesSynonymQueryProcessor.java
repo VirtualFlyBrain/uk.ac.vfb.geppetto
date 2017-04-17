@@ -405,7 +405,7 @@ public class AddImportTypesSynonymQueryProcessor extends AQueryProcessor
 	{
 		try
 		{
-			urlString = urlString.replace('https://','http://');
+			urlString = urlString.replace("https://","http://");
 			URL url = new URL(urlString);
 			HttpURLConnection huc = (HttpURLConnection) url.openConnection();
 			huc.setRequestMethod("HEAD");
