@@ -117,7 +117,7 @@ public class AddImportTypesQueryProcessor extends AQueryProcessor
 
 					tempId = (String) results.getValue("exId", i);
 					tempThumb = (String) results.getValue("exThumb", i);
-					tempThumb = "http://www.virtualflybrain.org/data/" + tempThumb;
+					tempThumb = "https://data.virtualflybrain.org/" + tempThumb;
 					tempName = (String) results.getValue("exName", i);
 					System.out.println("Adding Example Image: " + tempId + " " + tempName + " " + tempThumb);
 					if (checkURL(tempThumb)) {
