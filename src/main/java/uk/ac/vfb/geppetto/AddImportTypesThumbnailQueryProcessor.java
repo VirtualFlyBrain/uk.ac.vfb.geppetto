@@ -5,7 +5,7 @@
  * http://openworm.org
  * 
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the MIT License
+ * are made available under the terms of the MIT License`
  * which accompanies this distribution, and is available at
  * http://opensource.org/licenses/MIT
  *
@@ -188,11 +188,11 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 				{
 					System.out.println("Adding Woolz...");
 					List<List<String>> domains = (List<List<String>>) results.getValue("domains", 0);
-					tempFile = localForID(variable.getId()).replace("//data.virtualflybrain.org/", "/disk/data/VFB/IMAGE_DATA/") + "volume.wlz";
+					tempFile = localForID(variable.getId()).replace("https://data.virtualflybrain.org/", "/disk/data/VFB/IMAGE_DATA/") + "volume.wlz";
 					Variable slicesVar = VariablesFactory.eINSTANCE.createVariable();
 					ImageType slicesType = (ImageType) geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
 					Image slicesValue = ValuesFactory.eINSTANCE.createImage();
-					slicesValue.setData(new Gson().toJson(new IIPJSON(0,"//www.virtualflybrain.org/fcgi/wlziipsrv.fcgi", tempFile, domains)));
+					slicesValue.setData(new Gson().toJson(new IIPJSON(0,"https://www.virtualflybrain.org/fcgi/wlziipsrv.fcgi", tempFile, domains)));
 					slicesValue.setFormat(ImageFormat.IIP);
 					slicesValue.setReference(variable.getId());
 					slicesVar.setId(variable.getId() + "_slices");
@@ -275,7 +275,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 	 */
 	private String remoteForID(String id)
 	{
-		return "//data.virtualflybrain.org/VFB/i/" + id.substring(4, 8) + "/" + id.substring(8) + "/";
+		return "https://data.virtualflybrain.org/VFB/i/" + id.substring(4, 8) + "/" + id.substring(8) + "/";
 	}
 
 	/**
@@ -283,7 +283,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 	 */
 	private String localForID(String id)
 	{
-		return "//data.virtualflybrain.org/VFB/i/" + id.substring(4, 8) + "/" + id.substring(8) + "/";
+		return "https://data.virtualflybrain.org/VFB/i/" + id.substring(4, 8) + "/" + id.substring(8) + "/";
 	}
 
 	/**
@@ -291,7 +291,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 	 */
 	private String remoteFolder(String folder)
 	{
-		return "//data.virtualflybrain.org/" + folder;
+		return "https://data.virtualflybrain.org/" + folder;
 	}
 
 	/**
@@ -299,7 +299,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
      */
     private String localFolder(String folder)
     {
-        return "//data.virtualflybrain.org/" + folder;
+        return "https://data.virtualflybrain.org/" + folder;
         //return "SERVER_ROOT/vfb/" + folder;
     }
 
