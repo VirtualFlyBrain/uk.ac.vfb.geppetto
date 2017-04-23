@@ -27,7 +27,7 @@ import org.geppetto.model.variables.VariablesFactory;
  * @author matteocantarelli
  *
  */
-public class AddTypesQueryProcessor extends AQueryProcessor
+public class VFBProcessTermInfo extends AQueryProcessor
 {
 
 	/*
