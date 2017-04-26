@@ -98,7 +98,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 				// set individual thumbnail:
 				String tempFolder = (String) results.getValue("imageDir", 0);
 				String tempFile = remoteFolder(tempFolder) + "thumbnailT.png";
-				if(checkURL(tempFile))
+				if(checkURL(tempFile.replace("https://","http://")))
 				{
 					System.out.println("Adding Thumbnail...");
 					Variable thumbnailVar = VariablesFactory.eINSTANCE.createVariable();
@@ -115,13 +115,13 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 				}
 				// set image types:
 				tempFile = remoteFolder(tempFolder) + "volume_man.obj"; // manually created obj rather than auto point cloud
-				if(checkURL(tempFile))
+				if(checkURL(tempFile.replace("https://","http://")))
 				{
 					System.out.println("Adding manual OBJ...");
 					tempFile = localFolder(tempFolder) + "volume_man.obj";
 					Variable objVar = VariablesFactory.eINSTANCE.createVariable();
 					ImportType objImportType = TypesFactory.eINSTANCE.createImportType();
-					objImportType.setUrl(tempFile);
+					objImportType.setUrl(tempFile.replace("https://","http://"));
 					objImportType.setId(variable.getId() + "_obj");
 					objImportType.setModelInterpreterId("objModelInterpreterService");
 					objVar.getTypes().add(objImportType);
@@ -133,13 +133,13 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 				else
 				{
 					tempFile = remoteFolder(tempFolder) + "volume.obj";
-					if(checkURL(tempFile))
+					if(checkURL(tempFile.replace("https://","http://")))
 					{
 						System.out.println("Adding OBJ...");
 						tempFile = localFolder(tempFolder) + "volume.obj";
 						Variable objVar = VariablesFactory.eINSTANCE.createVariable();
 						ImportType objImportType = TypesFactory.eINSTANCE.createImportType();
-						objImportType.setUrl(tempFile);
+						objImportType.setUrl(tempFile.replace("https://","http://"));
 						objImportType.setId(variable.getId() + "_obj");
 						objImportType.setModelInterpreterId("objModelInterpreterService");
 						objVar.getTypes().add(objImportType);
@@ -150,13 +150,13 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 					}
 				}
 				tempFile = remoteFolder(tempFolder) + "volume.swc";
-				if(checkURL(tempFile))
+				if(checkURL(tempFile.replace("https://","http://")))
 				{
 					System.out.println("Adding SWC...");
 					tempFile = localFolder(tempFolder) + "volume.swc";
 					Variable swcVar = VariablesFactory.eINSTANCE.createVariable();
 					ImportType swcImportType = TypesFactory.eINSTANCE.createImportType();
-					swcImportType.setUrl(tempFile);
+					swcImportType.setUrl(tempFile.replace("https://","http://"));
 					swcImportType.setId(variable.getId() + "_swc");
 					swcImportType.setModelInterpreterId("swcModelInterpreter");
 					swcVar.getTypes().add(swcImportType);
@@ -166,7 +166,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 					type.getVariables().add(swcVar);
 				}
 				tempFile = remoteFolder(tempFolder) + "volume.nrrd";
-				if(checkURL(tempFile))
+				if(checkURL(tempFile.replace("https://","http://")))
 				{
 					System.out.println("Adding NRRD...");
 					Variable downloads = VariablesFactory.eINSTANCE.createVariable();
@@ -184,7 +184,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 					// TODO: add NRRD download
 				}
 				tempFile = remoteFolder(tempFolder) + "volume.wlz";
-				if(checkURL(tempFile))
+				if(checkURL(tempFile.replace("https://","http://")))
 				{
 					System.out.println("Adding Woolz...");
 					List<List<String>> domains = (List<List<String>>) results.getValue("domains", 0);
@@ -207,7 +207,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 					System.out.println("Adding Template Space...");
 					Variable tempVar = VariablesFactory.eINSTANCE.createVariable();
 					tempVar.setId("template");
-					tempVar.setName("Template Space");
+					tempVar.setName("Aligned to");
 					tempVar.getTypes().add(htmlType);
 					geppettoModelAccess.addVariableToType(tempVar, metadataType);
 
