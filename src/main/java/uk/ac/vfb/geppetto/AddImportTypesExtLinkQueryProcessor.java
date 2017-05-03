@@ -200,7 +200,7 @@ public class AddImportTypesExtLinkQueryProcessor extends AQueryProcessor
 	{
 		try
 		{
-			urlString = urlString.replace("https://","http://");
+			urlString = urlString;
 			URL url = new URL(urlString);
 			HttpURLConnection huc = (HttpURLConnection) url.openConnection();
 			huc.setRequestMethod("HEAD");
