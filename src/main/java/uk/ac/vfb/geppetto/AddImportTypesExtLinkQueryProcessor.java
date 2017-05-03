@@ -182,7 +182,7 @@ public class AddImportTypesExtLinkQueryProcessor extends AQueryProcessor
 	 */
 	private String remoteForID(String id)
 	{
-		return "https://data.virtualflybrain.org/VFB/i/" + id.substring(4, 8) + "/" + id.substring(8) + "/";
+		return "https://data.virtualflybrain.org:5000/VFB/i/" + id.substring(4, 8) + "/" + id.substring(8) + "/";
 	}
 
 	/**
