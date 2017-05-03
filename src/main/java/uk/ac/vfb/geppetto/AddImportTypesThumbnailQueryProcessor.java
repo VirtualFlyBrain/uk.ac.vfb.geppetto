@@ -98,7 +98,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 				// set individual thumbnail:
 				String tempFolder = (String) results.getValue("imageDir", 0);
 				String tempFile = remoteFolder(tempFolder) + "thumbnailT.png";
-				if(checkURL(tempFile.replace("https://","http://")))
+				if(checkURL(tempFile))
 				{
 					System.out.println("Adding Thumbnail...");
 					Variable thumbnailVar = VariablesFactory.eINSTANCE.createVariable();
@@ -115,13 +115,13 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 				}
 				// set image types:
 				tempFile = remoteFolder(tempFolder) + "volume_man.obj"; // manually created obj rather than auto point cloud
-				if(checkURL(tempFile.replace("https://","http://")))
+				if(checkURL(tempFile))
 				{
 					System.out.println("Adding manual OBJ...");
 					tempFile = localFolder(tempFolder) + "volume_man.obj";
 					Variable objVar = VariablesFactory.eINSTANCE.createVariable();
 					ImportType objImportType = TypesFactory.eINSTANCE.createImportType();
-					objImportType.setUrl(tempFile.replace("https://","http://"));
+					objImportType.setUrl(tempFile);
 					objImportType.setId(variable.getId() + "_obj");
 					objImportType.setModelInterpreterId("objModelInterpreterService");
 					objVar.getTypes().add(objImportType);
@@ -133,13 +133,13 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 				else
 				{
 					tempFile = remoteFolder(tempFolder) + "volume.obj";
-					if(checkURL(tempFile.replace("https://","http://")))
+					if(checkURL(tempFile))
 					{
 						System.out.println("Adding OBJ...");
 						tempFile = localFolder(tempFolder) + "volume.obj";
 						Variable objVar = VariablesFactory.eINSTANCE.createVariable();
 						ImportType objImportType = TypesFactory.eINSTANCE.createImportType();
-						objImportType.setUrl(tempFile.replace("https://","http://"));
+						objImportType.setUrl(tempFile);
 						objImportType.setId(variable.getId() + "_obj");
 						objImportType.setModelInterpreterId("objModelInterpreterService");
 						objVar.getTypes().add(objImportType);
@@ -150,13 +150,13 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 					}
 				}
 				tempFile = remoteFolder(tempFolder) + "volume.swc";
-				if(checkURL(tempFile.replace("https://","http://")))
+				if(checkURL(tempFile))
 				{
 					System.out.println("Adding SWC...");
 					tempFile = localFolder(tempFolder) + "volume.swc";
 					Variable swcVar = VariablesFactory.eINSTANCE.createVariable();
 					ImportType swcImportType = TypesFactory.eINSTANCE.createImportType();
-					swcImportType.setUrl(tempFile.replace("https://","http://"));
+					swcImportType.setUrl(tempFile);
 					swcImportType.setId(variable.getId() + "_swc");
 					swcImportType.setModelInterpreterId("swcModelInterpreter");
 					swcVar.getTypes().add(swcImportType);
@@ -166,7 +166,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 					type.getVariables().add(swcVar);
 				}
 				tempFile = remoteFolder(tempFolder) + "volume.nrrd";
-				if(checkURL(tempFile.replace("https://","http://")))
+				if(checkURL(tempFile))
 				{
 					System.out.println("Adding NRRD...");
 					Variable downloads = VariablesFactory.eINSTANCE.createVariable();
@@ -184,11 +184,11 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 					// TODO: add NRRD download
 				}
 				tempFile = remoteFolder(tempFolder) + "volume.wlz";
-				if(checkURL(tempFile.replace("https://","http://")))
+				if(checkURL(tempFile))
 				{
 					System.out.println("Adding Woolz...");
 					List<List<String>> domains = (List<List<String>>) results.getValue("domains", 0);
-					tempFile = localForID(variable.getId()).replace("https://data.virtualflybrain.org/", "/disk/data/VFB/IMAGE_DATA/") + "volume.wlz";
+					tempFile = localForID(variable.getId()).replace("https://data.virtualflybrain.org:5000/", "/disk/data/VFB/IMAGE_DATA/") + "volume.wlz";
 					Variable slicesVar = VariablesFactory.eINSTANCE.createVariable();
 					ImageType slicesType = (ImageType) geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
 					Image slicesValue = ValuesFactory.eINSTANCE.createImage();
@@ -275,7 +275,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 	 */
 	private String remoteForID(String id)
 	{
-		return "https://data.virtualflybrain.org/VFB/i/" + id.substring(4, 8) + "/" + id.substring(8) + "/";
+		return "https://data.virtualflybrain.org:5000/VFB/i/" + id.substring(4, 8) + "/" + id.substring(8) + "/";
 	}
 
 	/**
@@ -283,7 +283,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 	 */
 	private String localForID(String id)
 	{
-		return "https://data.virtualflybrain.org/VFB/i/" + id.substring(4, 8) + "/" + id.substring(8) + "/";
+		return "https://data.virtualflybrain.org:5000/VFB/i/" + id.substring(4, 8) + "/" + id.substring(8) + "/";
 	}
 
 	/**
@@ -291,7 +291,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 	 */
 	private String remoteFolder(String folder)
 	{
-		return "https://data.virtualflybrain.org/" + folder;
+		return "https://data.virtualflybrain.org:5000/" + folder;
 	}
 
 	/**
@@ -299,7 +299,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
      */
     private String localFolder(String folder)
     {
-        return "https://data.virtualflybrain.org/" + folder;
+        return "https://data.virtualflybrain.org:5000/" + folder;
         //return "SERVER_ROOT/vfb/" + folder;
     }
 
@@ -310,7 +310,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 	{
 		try
 		{
-			urlString = urlString.replace("https://","http://");
+			urlString = urlString;
 			URL url = new URL(urlString);
 			HttpURLConnection huc = (HttpURLConnection) url.openConnection();
 			huc.setRequestMethod("HEAD");
