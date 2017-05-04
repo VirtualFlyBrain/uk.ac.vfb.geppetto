@@ -405,7 +405,7 @@ public class AddImportTypesSynonymQueryProcessor extends AQueryProcessor
 	{
 		try
 		{
-			urlString = urlString;
+			urlString = urlString.replace("https://data.virtualflybrain.org:5000/VFB","http://www.virtualflybrain.org/data/VFB");
 			URL url = new URL(urlString);
 			HttpURLConnection huc = (HttpURLConnection) url.openConnection();
 			huc.setRequestMethod("HEAD");
