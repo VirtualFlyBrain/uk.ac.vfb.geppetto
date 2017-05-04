@@ -348,7 +348,7 @@ public class AddImportTypesSynonymQueryProcessor extends AQueryProcessor
 							if(results.getValue("relName", i) != null)
 							{
 								tempId = (String) results.getValue("relId", i);
-								tempThumb = "https://data.virtualflybrain.org:5000/VFB/i/" + tempId.substring(4, 8) + "/" + tempId.substring(8) + "/thumbnailT.png";
+								tempThumb = "http://www.virtualflybrain.org/data/VFB/i/" + tempId.substring(4, 8) + "/" + tempId.substring(8) + "/thumbnailT.png";
 								tempName = (String) results.getValue("relName", i);
 								System.out.println("Adding Cluster Image: " + tempId + " " + tempName + " " + tempThumb);
 								if(checkURL(tempThumb))
@@ -405,7 +405,7 @@ public class AddImportTypesSynonymQueryProcessor extends AQueryProcessor
 	{
 		try
 		{
-			urlString = urlString.replace("https://data.virtualflybrain.org:5000/VFB","http://www.virtualflybrain.org/data/VFB");
+			urlString = urlString.replace("http://www.virtualflybrain.org/data/VFB","http://www.virtualflybrain.org/data/VFB");
 			URL url = new URL(urlString);
 			HttpURLConnection huc = (HttpURLConnection) url.openConnection();
 			huc.setRequestMethod("HEAD");

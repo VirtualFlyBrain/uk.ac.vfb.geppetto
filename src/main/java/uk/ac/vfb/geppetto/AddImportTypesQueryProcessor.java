@@ -117,7 +117,7 @@ public class AddImportTypesQueryProcessor extends AQueryProcessor
 
 					tempId = (String) results.getValue("exId", i);
 					tempThumb = (String) results.getValue("exThumb", i);
-					tempThumb = "https://data.virtualflybrain.org:5000/" + tempThumb;
+					tempThumb = "http://www.virtualflybrain.org/data/" + tempThumb;
 					tempName = (String) results.getValue("exName", i);
 					System.out.println("Adding Example Image: " + tempId + " " + tempName + " " + tempThumb);
 					if (checkURL(tempThumb)) {
@@ -164,7 +164,7 @@ public class AddImportTypesQueryProcessor extends AQueryProcessor
 	{
 		try
 		{
-			urlString = urlString.replace("https://data.virtualflybrain.org:5000/VFB","http://www.virtualflybrain.org/data/VFB");
+			urlString = urlString.replace("http://www.virtualflybrain.org/data/VFB","http://www.virtualflybrain.org/data/VFB");
 			URL url = new URL(urlString);
 			HttpURLConnection huc = (HttpURLConnection) url.openConnection();
 			huc.setRequestMethod("HEAD");

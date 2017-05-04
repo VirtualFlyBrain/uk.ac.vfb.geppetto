@@ -182,7 +182,7 @@ public class AddImportTypesExtLinkQueryProcessor extends AQueryProcessor
 	 */
 	private String remoteForID(String id)
 	{
-		return "https://data.virtualflybrain.org:5000/VFB/i/" + id.substring(4, 8) + "/" + id.substring(8) + "/";
+		return "http://www.virtualflybrain.org/data/VFB/i/" + id.substring(4, 8) + "/" + id.substring(8) + "/";
 	}
 
 	/**
@@ -200,7 +200,7 @@ public class AddImportTypesExtLinkQueryProcessor extends AQueryProcessor
 	{
 		try
 		{
-			urlString = urlString.replace("https://data.virtualflybrain.org:5000/VFB","http://www.virtualflybrain.org/data/VFB");
+			urlString = urlString.replace("http://www.virtualflybrain.org/data/VFB","http://www.virtualflybrain.org/data/VFB");
 			URL url = new URL(urlString);
 			HttpURLConnection huc = (HttpURLConnection) url.openConnection();
 			huc.setRequestMethod("HEAD");

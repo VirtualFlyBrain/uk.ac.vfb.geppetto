@@ -188,7 +188,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 				{
 					System.out.println("Adding Woolz...");
 					List<List<String>> domains = (List<List<String>>) results.getValue("domains", 0);
-					tempFile = localForID(variable.getId()).replace("https://data.virtualflybrain.org:5000/", "/disk/data/VFB/IMAGE_DATA/") + "volume.wlz";
+					tempFile = localForID(variable.getId()).replace("http://www.virtualflybrain.org/data/", "/disk/data/VFB/IMAGE_DATA/") + "volume.wlz";
 					Variable slicesVar = VariablesFactory.eINSTANCE.createVariable();
 					ImageType slicesType = (ImageType) geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
 					Image slicesValue = ValuesFactory.eINSTANCE.createImage();
@@ -275,7 +275,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 	 */
 	private String remoteForID(String id)
 	{
-		return "https://data.virtualflybrain.org:5000/VFB/i/" + id.substring(4, 8) + "/" + id.substring(8) + "/";
+		return "http://www.virtualflybrain.org/data/VFB/i/" + id.substring(4, 8) + "/" + id.substring(8) + "/";
 	}
 
 	/**
@@ -283,7 +283,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 	 */
 	private String localForID(String id)
 	{
-		return "https://data.virtualflybrain.org:5000/VFB/i/" + id.substring(4, 8) + "/" + id.substring(8) + "/";
+		return "http://www.virtualflybrain.org/data/VFB/i/" + id.substring(4, 8) + "/" + id.substring(8) + "/";
 	}
 
 	/**
@@ -291,7 +291,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 	 */
 	private String remoteFolder(String folder)
 	{
-		return "https://data.virtualflybrain.org:5000/" + folder;
+		return "http://www.virtualflybrain.org/data/" + folder;
 	}
 
 	/**
@@ -299,7 +299,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
      */
     private String localFolder(String folder)
     {
-        return "https://data.virtualflybrain.org:5000/" + folder;
+        return "http://www.virtualflybrain.org/data/" + folder;
         //return "SERVER_ROOT/vfb/" + folder;
     }
 
@@ -310,7 +310,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 	{
 		try
 		{
-			urlString = urlString.replace("https://data.virtualflybrain.org:5000/VFB","http://www.virtualflybrain.org/data/VFB");
+			urlString = urlString.replace("http://www.virtualflybrain.org/data/VFB","http://www.virtualflybrain.org/data/VFB");
 			URL url = new URL(urlString);
 			HttpURLConnection huc = (HttpURLConnection) url.openConnection();
 			huc.setRequestMethod("HEAD");
