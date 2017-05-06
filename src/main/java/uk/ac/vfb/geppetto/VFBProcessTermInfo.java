@@ -1,6 +1,7 @@
 package uk.ac.vfb.geppetto;
 
 import java.util.List;
+import org.json.simple.JSONObject;
 
 import org.geppetto.core.datasources.GeppettoDataSourceException;
 import org.geppetto.core.datasources.QueryChecker;
@@ -39,98 +40,165 @@ public class VFBProcessTermInfo extends AQueryProcessor
 	public QueryResults process(ProcessQuery query, DataSource dataSource, Variable variable, QueryResults results, GeppettoModelAccess geppettoModelAccess) throws GeppettoDataSourceException
 	{
 
-		System.out.println("Creating Metadata for " + variable.getId() + "...");
-
-		geppettoModelAccess.setObjectAttribute(variable, GeppettoPackage.Literals.NODE__NAME, results.getValue("name", 0));
-		CompositeType type = TypesFactory.eINSTANCE.createCompositeType();
-		type.setId(variable.getId());
-		variable.getAnonymousTypes().add(type);
-
-		// add supertypes
-		boolean template = false;
-		List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
-		if(results.getValue("supertypes", 0) != null)
-		{
-			List<String> supertypes = (List<String>) results.getValue("supertypes", 0);
-
-			for(String supertype : supertypes)
-			{
-				if(!supertype.startsWith("_"))
-				{ // ignore supertypes starting with _
-					type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
-					System.out.println("Adding to SuperType: " + supertype);
-				}
-				if(supertype.equals("Template"))
-				{
-					template = true;
-				}
-			}
-		}
-		else
-		{
-			type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Orphan", dependenciesLibrary));
-		}
-
-		// Extract initial metadata
-
-		// Check if Variable already exists
-		// TODO check if existing and get or ...
-
-		// Create new Variable
-		Variable metaDataVar = VariablesFactory.eINSTANCE.createVariable();
-		metaDataVar.setId("metaDataVar");
-		CompositeType metaData = TypesFactory.eINSTANCE.createCompositeType();
-		metaDataVar.getTypes().add(metaData);
-		metaDataVar.setId(variable.getId() + "_meta");
-		metaData.setId(variable.getId() + "_metadata");
-		metaData.setName("Info");
-		metaDataVar.setName(variable.getName());
-
+//		Generic Anatomy Term Info
+		String tempId = "";
+//		Name: fubar (fbbt_1234567) (all on one line)
+		String tempName = "";
+//		Alt_names: barfu (microref), BARFUS (microref) - comma separate (microrefs link down to ref list). Hover-over => scope
+		List<String> synonyms;
+//		Examples
+//		Types
+		String types = "";
+//		Relationships
+		String relationships = "";
+//		Queries
+		String querys = "";
+//		Description
+		String desc = "";
+//		References
+		String refs = "";
+//		Linkouts
+		String links = "";
+		
+		int i = 0;
+		
 		try
 		{
 			Type textType = geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE);
 			Type htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
+			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
+			
+			// Extract metadata
+			if(results.getValue("node", 0) != null){
+				Map<String, Object> resultNode = (Map<String, Object>) results.getValue("node", 0);
+				String labelLink = "";
+				if(resultNode.get("label") != null){
+					tempName = (String) resultNode.get("label");
+				}else if (resultNode.get("name") != null){
+					tempName = (String) resultNode.get("name");
+				}
+				if (resultNode.get("short_form") != null){
+					tempId = (String) resultNode.get("short_form");
+				}else{
+					tempId = variable.getId();
+				}
+				labelLink = "<a href=\"#\" instancepath=\"" + tempId + "\">" + tempName + "</a>";
+				labelLink = "<h4>" + labelLink + "</h4> (" + tempId + ")";
+				labelValue.setHtml(labelLink);
+				
+				
+				
+				System.out.println("Creating Metadata for " + tempName + "...");
 
-			// set meta label/name:
-			Variable label = VariablesFactory.eINSTANCE.createVariable();
-			label.setId("label");
-			label.setName("Name");
-			label.getTypes().add(htmlType);
-			metaData.getVariables().add(label);
-			HTML labelValue = ValuesFactory.eINSTANCE.createHTML();
-			String labelLink = "";
-			if(results.getValue("name", 0) != null)
-			{
-				labelLink = "<a href=\"#\" instancepath=\"" + (String) variable.getId() + "\">" + (String) results.getValue("name", 0) + "</a>";
-			}
-			else
-			{
-				labelLink = "<a href=\"#\" instancepath=\"" + (String) variable.getId() + "\">" + (String) variable.getName() + "</a>";
-			}
-			labelLink = "<h4>" + labelLink + "</h4>";
-			labelValue.setHtml(labelLink);
+				geppettoModelAccess.setObjectAttribute(variable, GeppettoPackage.Literals.NODE__NAME, tempName);
+				CompositeType type = TypesFactory.eINSTANCE.createCompositeType();
+				type.setId(variable.getId());
+				variable.getAnonymousTypes().add(type);
 
-			htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
-			label.getInitialValues().put(htmlType, labelValue);
+				// add supertypes
+				boolean template = false;
+				List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
+				if(results.getValue("labels", 0) != null)
+				{
+					List<String> supertypes = (List<String>) results.getValue("labels", 0);
 
-			// set meta id:
-			Variable metaID = VariablesFactory.eINSTANCE.createVariable();
-			metaID.setId("id");
-			metaID.setName("ID");
-			metaID.getTypes().add(htmlType);
-			metaData.getVariables().add(metaID);
-			HTML metaIdValue = ValuesFactory.eINSTANCE.createHTML();
-			String idLink = "<a href=\"#\" instancepath=\"" + (String) variable.getId() + "\">" + (String) variable.getId() + "</a>";
-			metaIdValue.setHtml(idLink);
+					for(String supertype : supertypes)
+					{
+						if(!supertype.startsWith("_"))
+						{ // ignore supertypes starting with _
+							type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
+							System.out.println("Adding to SuperType: " + supertype);
+						}
+						if(supertype.equals("Template"))
+						{
+							template = true;
+						}
+					}
+				}
+				else
+				{
+					type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Orphan", dependenciesLibrary));
+				}
 
-			htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
-			metaID.getInitialValues().put(htmlType, metaIdValue);
+				// Load initial metadata
 
-			// set description:
-			if(results.getValue("description", 0) != null)
-			{
-				String desc = (String) results.getValue("description", 0);
-				if (desc != "." && desc != "")
+				// Create new Variable
+				Variable metaDataVar = VariablesFactory.eINSTANCE.createVariable();
+				metaDataVar.setId("metaDataVar");
+				CompositeType metaData = TypesFactory.eINSTANCE.createCompositeType();
+				metaDataVar.getTypes().add(metaData);
+				metaDataVar.setId(variable.getId() + "_meta");
+				metaData.setId(variable.getId() + "_metadata");
+				metaData.setName("Info");
+				metaDataVar.setName(variable.getName());
+				
+				// set meta label/name:
+				Variable label = VariablesFactory.eINSTANCE.createVariable();
+				label.setId("label");
+				label.setName("Name");
+				label.getTypes().add(htmlType);
+				metaData.getVariables().add(label);
+				HTML labelValue = ValuesFactory.eINSTANCE.createHTML();
+				htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
+				label.getInitialValues().put(htmlType, labelValue);
+				
+				// get alt names
+				if(resultNode.get("synonym") != null)
+				{
+					synonyms = (List<String>) resultNode.get("synonym");
+				}
+				
+				
+				// get description:
+				if(resultNode.get("description") != null)
+				{
+					desc = ((List<String>) resultNode.get("description")).get(0);
+					if (desc == ".")
+					{
+						desc = "";
+					}
+				}
+				// get description comment:
+				if(resultNode.get("comment") != null) 
+				{
+					desc = desc + "<br><h5>Comment<h5><br>" + highlightLinks(((List<String>) resultNode.get("comment")).get(0));  
+				}
+				
+				
+				if(results.getValue("links", 0) != null)
+				{
+					List<Object> resultLinks = (List<Object>) results.getValue("links", 0);
+					String edge = "";
+					i = 0;
+					while(resultLinks.get(i) != null)
+					{ 
+						try{
+							Map<String, Object> resultLink = (Map<String, Object>) resultLinks.get(i);
+							edge = (String) resultLink.get("types");
+							switch (edge) {
+								case "INSTANCEOF":
+									if ( ((String) resultLink.get("start")) == "node"){
+										System.out.println("INSTANCEOF from node " + ((JSONObject) resultLinks).toString(4));
+									}else{
+										System.out.println("INSTANCEOF to node " + ((JSONObject) resultLinks).toString(4));
+									}
+								 default:
+									 System.out.println("Can't handle node link: " + ((JSONObject) resultLinks).toString(4));
+							}
+						}
+						catch (Exception e)
+						{
+							System.out.println("Error processing node links: " + e.getMessage());
+							System.out.println(((JSONObject) resultLinks).toString(4));
+						}
+						i++;
+					}
+				}
+				
+				
+				
+
+				if (desc != "")
 				{
 					Variable description = VariablesFactory.eINSTANCE.createVariable();
 					description.setId("description");
@@ -142,22 +210,23 @@ public class VFBProcessTermInfo extends AQueryProcessor
 					descriptionValue.setText(desc);
 					description.getInitialValues().put(textType, descriptionValue);
 				}
-			}
-
-			// set comment:
-			if(results.getValue("comment", 0) != null)
-			{
-				Variable comment = VariablesFactory.eINSTANCE.createVariable();
-				comment.setId("comment");
-				comment.setName("Notes");
-				comment.getTypes().add(textType);
-				metaData.getVariables().add(comment);
-				Text commentValue = ValuesFactory.eINSTANCE.createText();
-				commentValue.setText(highlightLinks(((List<String>) results.getValue("comment", 0)).get(0)));
-				comment.getInitialValues().put(textType, commentValue);
-			}
-			type.getVariables().add(metaDataVar);
-			geppettoModelAccess.addTypeToLibrary(metaData, dataSource.getTargetLibrary());
+				// set comment:
+				if(resultNode.get("comment") != null)
+				{
+					Variable comment = VariablesFactory.eINSTANCE.createVariable();
+					comment.setId("comment");
+					comment.setName("Notes");
+					comment.getTypes().add(textType);
+					metaData.getVariables().add(comment);
+					Text commentValue = ValuesFactory.eINSTANCE.createText();
+					commentValue.setText(highlightLinks(((List<String>) resultNode.get("comment")).get(0)));
+					comment.getInitialValues().put(textType, commentValue);
+				}
+				type.getVariables().add(metaDataVar);
+				geppettoModelAccess.addTypeToLibrary(metaData, dataSource.getTargetLibrary());
+				
+			}	
+			
 
 		}
 		catch(GeppettoVisitingException e)
@@ -184,6 +253,15 @@ public class VFBProcessTermInfo extends AQueryProcessor
 			System.out.println("Error highlighting links in (" + text + ") " + e.toString());
 			return text;
 		}
+	}
+	
+	private boolean contains(List<String> mylist, String search)
+	{
+		for(String str: myList) {
+		    if(str.trim().contains(search))
+		       return true;
+		}
+		return false;
 	}
 
 }
