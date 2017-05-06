@@ -2,6 +2,7 @@ package uk.ac.vfb.geppetto;
 
 import org.geppetto.core.datasources.GeppettoDataSourceException;
 import org.geppetto.core.model.GeppettoModelAccess;
+import org.geppetto.core.model.GeppettoSerializer;
 import org.geppetto.datasources.AQueryProcessor;
 import org.geppetto.model.GeppettoLibrary;
 import org.geppetto.model.GeppettoPackage;
@@ -18,13 +19,12 @@ import org.geppetto.model.values.Text;
 import org.geppetto.model.values.ValuesFactory;
 import org.geppetto.model.variables.Variable;
 import org.geppetto.model.variables.VariablesFactory;
-import org.json.simple.JSONObject;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * @author matteocantarelli
+ * @author RobertCourt
  */
 public class VFBProcessTermInfo extends AQueryProcessor {
 
@@ -79,7 +79,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 }
                 labelLink = "<a href=\"#\" instancepath=\"" + tempId + "\">" + tempName + "</a>";
                 labelLink = "<h4>" + labelLink + "</h4> (" + tempId + ")";
-                labelValue.setHtml(labelLink);
+
 
 
                 System.out.println("Creating Metadata for " + tempName + "...");
@@ -129,6 +129,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 HTML labelValue = ValuesFactory.eINSTANCE.createHTML();
                 htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
                 label.getInitialValues().put(htmlType, labelValue);
+                labelValue.setHtml(labelLink);
 
                 // get alt names
                 if (resultNode.get("synonym") != null) {
@@ -160,16 +161,16 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                             switch (edge) {
                                 case "INSTANCEOF":
                                     if (((String) resultLink.get("start")) == "node") {
-                                        System.out.println("INSTANCEOF from node " + ((JSONObject) resultLinks).toString(4));
+                                        System.out.println("INSTANCEOF from node " + GeppettoSerializer.serializeToJSON(resultLinks));
                                     } else {
-                                        System.out.println("INSTANCEOF to node " + ((JSONObject) resultLinks).toString(4));
+                                        System.out.println("INSTANCEOF to node " + GeppettoSerializer.serializeToJSON(resultLinks));
                                     }
                                 default:
-                                    System.out.println("Can't handle node link: " + ((JSONObject) resultLinks).toString(4));
+                                    System.out.println("Can't handle node link: " + GeppettoSerializer.serializeToJSON(resultLinks));
                             }
                         } catch (Exception e) {
                             System.out.println("Error processing node links: " + e.getMessage());
-                            System.out.println(((JSONObject) resultLinks).toString(4));
+                            System.out.println(GeppettoSerializer.serializeToJSON(resultLinks));
                         }
                         i++;
                     }
