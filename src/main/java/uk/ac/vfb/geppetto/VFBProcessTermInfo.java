@@ -21,6 +21,7 @@ import org.geppetto.model.variables.VariablesFactory;
 import org.json.simple.JSONObject;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author matteocantarelli
