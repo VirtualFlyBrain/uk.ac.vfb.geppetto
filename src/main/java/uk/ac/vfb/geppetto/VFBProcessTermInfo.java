@@ -57,6 +57,8 @@ public class VFBProcessTermInfo extends AQueryProcessor {
         String links = "";
 
         int i = 0;
+        
+        System.out.println("Creating Variable from " + String.valueOf(QueryResults));
 
         try {
             Type textType = geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE);
