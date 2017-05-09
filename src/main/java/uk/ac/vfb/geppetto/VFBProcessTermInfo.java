@@ -161,16 +161,16 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                             switch (edge) {
                                 case "INSTANCEOF":
                                     if (((String) resultLink.get("start")) == "node") {
-                                        System.out.println("INSTANCEOF from node " + GeppettoSerializer.serializeToJSON(resultLinks));
+                                        System.out.println("INSTANCEOF from node " + String.valueOf(resultLinks));
                                     } else {
-                                        System.out.println("INSTANCEOF to node " + GeppettoSerializer.serializeToJSON(resultLinks));
+                                        System.out.println("INSTANCEOF to node " + String.valueOf(resultLinks));
                                     }
                                 default:
-                                    System.out.println("Can't handle node link: " + GeppettoSerializer.serializeToJSON(resultLinks));
+                                    System.out.println("Can't handle node link: " + String.valueOf(resultLinks));
                             }
                         } catch (Exception e) {
                             System.out.println("Error processing node links: " + e.getMessage());
-                            System.out.println(GeppettoSerializer.serializeToJSON(resultLinks));
+                            System.out.println(String.valueOf(resultLinks));
                         }
                         i++;
                     }
