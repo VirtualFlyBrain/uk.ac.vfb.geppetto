@@ -43,6 +43,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 //		Alt_names: barfu (microref), BARFUS (microref) - comma separate (microrefs link down to ref list). Hover-over => scope
         List<String> synonyms;
 //		Examples
+        List<String> images = new ArrayList<>();
 //		Types
         String types = "";
 //		Relationships
@@ -156,19 +157,35 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     List<Object> resultLinks = (List<Object>) results.getValue("links", 0);
                     String edge = "";
                     i = 0;
-                    while (resultLinks.get(i) != null) {
+                    while (i < resultLinks.size()) {
                         try {
                             Map<String, Object> resultLink = (Map<String, Object>) resultLinks.get(i);
                             edge = (String) resultLink.get("types");
                             switch (edge) {
+                            	case "REFERSTO":
+                            		System.out.println("Ignoring Refers To data...");
                                 case "INSTANCEOF":
                                     if (((String) resultLink.get("start")) == "node") {
-                                        System.out.println("INSTANCEOF from node " + String.valueOf(resultLinks));
+                                    	if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label") == "type"){
+                                    		type += "<a href=\"#\" instancepath=\"" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
+                                    	}else{
+                                    		System.out.println("INSTANCEOF from node " + String.valueOf(resultLinks.get(i)));
+                                    	}
                                     } else {
-                                        System.out.println("INSTANCEOF to node " + String.valueOf(resultLinks));
+                                        System.out.println("INSTANCEOF to node " + String.valueOf(resultLinks.get(i)));
                                     }
+                                case "Related":
+                                	if (((String) resultLink.get("start")) == "node") {
+                                		System.out.println("Related from node " + String.valueOf(resultLinks.get(i)));
+                                	}else{
+                                		if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label") == "depicts"){
+                                			images.add( tempId + "," + tempName + "," + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri") + "," + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("short_form") );
+	                                	}else{
+	                                		System.out.println("Related to node " + String.valueOf(resultLinks.get(i)));
+	                                	}
+                                	}
                                 default:
-                                    System.out.println("Can't handle node link: " + String.valueOf(resultLinks));
+                                    System.out.println("Can't handle node link: " + String.valueOf(resultLinks.get(i)));
                             }
                         } catch (Exception e) {
                             System.out.println("Error processing node links: " + e.getMessage());
