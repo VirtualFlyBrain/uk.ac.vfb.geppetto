@@ -20,6 +20,7 @@ import org.geppetto.model.values.ValuesFactory;
 import org.geppetto.model.variables.Variable;
 import org.geppetto.model.variables.VariablesFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -167,7 +168,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                 case "INSTANCEOF":
                                     if (((String) resultLink.get("start")) == "node") {
                                     	if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label") == "type"){
-                                    		type += "<a href=\"#\" instancepath=\"" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
+                                    		types += "<a href=\"#\" instancepath=\"" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
                                     	}else{
                                     		System.out.println("INSTANCEOF from node " + String.valueOf(resultLinks.get(i)));
                                     	}
