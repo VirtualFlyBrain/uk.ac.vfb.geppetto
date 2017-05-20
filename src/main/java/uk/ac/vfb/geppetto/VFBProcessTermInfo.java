@@ -11,6 +11,7 @@ import org.geppetto.model.datasources.DataSourceLibraryConfiguration;
 import org.geppetto.model.datasources.ProcessQuery;
 import org.geppetto.model.datasources.QueryResults;
 import org.geppetto.model.types.CompositeType;
+import org.geppetto.model.types.ImageType;
 import org.geppetto.model.types.ImportType;
 import org.geppetto.model.types.Type;
 import org.geppetto.model.types.TypesFactory;
@@ -25,6 +26,8 @@ import org.geppetto.model.values.Text;
 import org.geppetto.model.values.ValuesFactory;
 import org.geppetto.model.variables.Variable;
 import org.geppetto.model.variables.VariablesFactory;
+
+import com.google.gson.Gson;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -55,6 +58,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 //		Examples
         ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
         String imageName = "Example";
+        String tempLink = "";
 //		Types
         String types = "";
 //		Relationships
@@ -254,7 +258,9 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         }
                                         break;
                                     case "SUBCLASSOF":
-                                        System.out.println("SUBCLASSOF to node " + String.valueOf(resultLinks.get(i)));
+                                    	edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
+                                        
+                                        System.out.println("SUBCLASSOF to node " + edgeLabel + " " + String.valueOf(resultLinks.get(i)));
                                         break;
                                     case "Related":
                                     	edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
@@ -275,7 +281,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                             						objImportType.setId(variable.getId() + "_obj");
                             						objImportType.setModelInterpreterId("objModelInterpreterService");
                             						objVar.getTypes().add(objImportType);
-                            						geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
+                            						type.getVariables().add(objVar);	
                             						objVar.setId(variable.getId() + "_obj");
                             						objVar.setName("3D Volume");
                             						type.getVariables().add(objVar);
@@ -288,11 +294,40 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                 					swcImportType.setId(variable.getId() + "_swc");
                                 					swcImportType.setModelInterpreterId("swcModelInterpreter");
                                 					swcVar.getTypes().add(swcImportType);
-                                					geppettoModelAccess.addTypeToLibrary(swcImportType, getLibraryFor(dataSource, "swc"));
+                                					type.getVariables().add(swcVar);
                                 					swcVar.setName("3D Skeleton");
                                 					swcVar.setId(variable.getId() + "_swc");
                                 					type.getVariables().add(swcVar);
                                             	}
+                                            	if(checkURL(edgeLabel + "/volume.wlz"))
+                                				{
+                                					System.out.println("Adding Woolz...");
+                                					List<List<String>> domains = (List<List<String>>) results.getValue("domains", 0);
+                                					Variable slicesVar = VariablesFactory.eINSTANCE.createVariable();
+                                					ImageType slicesType = (ImageType) geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
+                                					Image slicesValue = ValuesFactory.eINSTANCE.createImage();
+                                					slicesValue.setData(new Gson().toJson(new IIPJSON(0,"https://www.virtualflybrain.org/fcgi/wlziipsrv.fcgi", edgeLabel.replace("http://www.virtualflybrain.org/data/", "/disk/data/VFB/IMAGE_DATA/") + "/volume.wlz", domains)));
+                                					slicesValue.setFormat(ImageFormat.IIP);
+                                					slicesValue.setReference(variable.getId());
+                                					slicesVar.setId(variable.getId() + "_slices");
+                                					slicesVar.setName("Stack Viewer Slices");
+                                					slicesVar.getTypes().add(slicesType);
+                                					slicesVar.getInitialValues().put(slicesType, slicesValue);
+                                					type.getVariables().add(slicesVar);
+                                					System.out.println(slicesVar);
+                                				}
+                                				if (((Map<String, Object>) resultLinks.get(i)).get("tempIm") != null)
+                                				{
+                                					System.out.println("Adding Template Space...");
+                                					
+                                					tempLink = "<a href=\"#\" instancepath=\"" + (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("short_form") + "\">" + (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("label") + "</a>";
+
+                                					// Add template ID as supertype:
+
+                                					String supertype = (String) results.getValue("tempId", 0);
+                                					type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
+                                					System.out.println("Adding to SuperType: " + supertype);
+                                				}
                                             	if (checkURL(edgeLabel + "/volume.nrrd")){
                                             		System.out.println("Adding NRRD...");
                                 					downloadLink = "Aligned Image: ​<a download=\"" + (String) variable.getId() + ".nrrd\" href=\"" + edgeLabel + "/volume.nrrd" + "\">" + (String) variable.getId() + ".nrrd</a><br/>​​​​​​​​​​​​​​​​​​​​​​​​​​​";
@@ -412,7 +447,33 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 
                 // set references:
 
-
+                // set template space:
+                if (tempLink != "") {
+	                Variable tempVar = VariablesFactory.eINSTANCE.createVariable();
+					tempVar.setId("template");
+					tempVar.setName("Aligned to");
+					tempVar.getTypes().add(htmlType);
+					metaData.getVariables().add(tempVar);	
+					HTML tempValue = ValuesFactory.eINSTANCE.createHTML();
+					tempValue.setHtml(tempLink);
+					tempVar.getInitialValues().put(htmlType, tempValue);
+                }
+				
+                // set licensing:
+                
+                
+                // set downloads:
+                if (downloadLink != "") {
+                	Variable downloads = VariablesFactory.eINSTANCE.createVariable();
+					downloads.setId("downloads");
+					downloads.setName("Downloads");
+					downloads.getTypes().add(htmlType);
+					metaData.getVariables().add(downloads);	
+					HTML downloadValue = ValuesFactory.eINSTANCE.createHTML();
+					downloadValue.setHtml(downloadLink);
+					downloads.getInitialValues().put(htmlType, downloadValue);
+                }
+                
                 // set linkouts:
 
                 type.getVariables().add(metaDataVar);
@@ -444,6 +505,20 @@ public class VFBProcessTermInfo extends AQueryProcessor {
         }
     }
 
+    private class IIPJSON{
+		int indexNumber;
+		String serverUrl;
+		String fileLocation;
+		List<List<String>> subDomains;
+		public IIPJSON(int indexNumber, String serverUrl, String fileLocation, List<List<String>> subDomains)
+		{
+			this.indexNumber=indexNumber;
+			this.fileLocation=fileLocation;
+			this.serverUrl=serverUrl;
+			this.subDomains=subDomains;
+		}
+	}
+    
     private boolean contains(List<String> myList, String search) {
         for (String str : myList) {
             if (str.trim().contains(search)) return true;
