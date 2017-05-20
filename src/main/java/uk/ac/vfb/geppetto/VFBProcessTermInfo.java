@@ -221,7 +221,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 	                                    		if (synonyms.get(s).equals((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("synonym"))){
 	                                    			if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).containsKey("microref")){
 	                                    				synonyms.set(s, synonyms.get(s) + " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("microref")) + ")"); // TODO: add hyperlink
-	                                    			}else{
+	                                    			}else if (!"null".equals((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref"))){
 	                                    				synonyms.set(s, synonyms.get(s) + " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) + ")"); // TODO: add hyperlink
 		                                    		}
 	                                    		}
@@ -265,8 +265,10 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                     case "Related":
                                     	edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
                                         if ("depicts".equals(edgeLabel)) {
-                                            edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
-                                        	if (checkURL(edgeLabel + "/template.png")){
+                                            edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri"));
+                                        	//TODO: remove fix for old iri:
+                                            edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_"); 
+                                            if (checkURL(edgeLabel + "/template.png")){
                                         		addImage( edgeLabel + "/template.png", tempName, tempId, images, j);
                                             	j++;
                                         	}
@@ -382,6 +384,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                             }
                         } catch (Exception e) {
                         	System.out.println("Error processing node links: " + e.toString());
+                        	e.printStackTrace();
                         	System.out.println(String.valueOf(resultLinks));
                             System.out.println(String.valueOf(resultLinks.get(i)));
                             System.out.println(tempName + " (" + tempId + ")");
@@ -552,10 +555,12 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 		try
 		{
 			urlString = urlString.replace("https://","http://").replace(":5000", "");
+			System.out.println("Checking image: " + urlString);
 			URL url = new URL(urlString);
 			HttpURLConnection huc = (HttpURLConnection) url.openConnection();
 			huc.setRequestMethod("HEAD");
 			huc.setInstanceFollowRedirects(false);
+			System.out.println("Reponse: " + huc.getResponseCode());
 			return (huc.getResponseCode() == HttpURLConnection.HTTP_OK);
 		}
 		catch(Exception e)
