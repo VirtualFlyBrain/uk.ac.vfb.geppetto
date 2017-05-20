@@ -14,7 +14,11 @@ import org.geppetto.model.types.Type;
 import org.geppetto.model.types.TypesFactory;
 import org.geppetto.model.types.TypesPackage;
 import org.geppetto.model.util.GeppettoVisitingException;
+import org.geppetto.model.values.ArrayElement;
+import org.geppetto.model.values.ArrayValue;
 import org.geppetto.model.values.HTML;
+import org.geppetto.model.values.Image;
+import org.geppetto.model.values.ImageFormat;
 import org.geppetto.model.values.Text;
 import org.geppetto.model.values.ValuesFactory;
 import org.geppetto.model.variables.Variable;
@@ -44,7 +48,8 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 //		Alt_names: barfu (microref), BARFUS (microref) - comma separate (microrefs link down to ref list). Hover-over => scope
         List<String> synonyms;
 //		Examples
-        List<String> images = new ArrayList<>();
+        ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
+        String imageName = "Example";
 //		Types
         String types = "";
 //		Relationships
@@ -59,6 +64,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
         String links = "";
 
         int i = 0;
+        int j = 0;
         
         System.out.println("Creating Variable from " + String.valueOf(results));
 
@@ -158,6 +164,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     List<Object> resultLinks = (List<Object>) results.getValue("links", 0);
                     String edge = "";
                     i = 0;
+                    j = 0;
                     while (i < resultLinks.size()) {
                         try {
                             Map<String, Object> resultLink = (Map<String, Object>) resultLinks.get(i);
@@ -180,7 +187,11 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                 		System.out.println("Related from node " + String.valueOf(resultLinks.get(i)));
                                 	}else{
                                 		if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label") == "depicts"){
-                                			images.add( tempId + "," + tempName + "," + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri") + "," + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("short_form") );
+                                			addImage(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri") + "/template.png", tempName, tempId, images, j);
+                                			j++;
+                                			if (j > 1){
+                                				imageName = "Examples";
+                                			};
 	                                	}else{
 	                                		System.out.println("Related to node " + String.valueOf(resultLinks.get(i)));
 	                                	}
@@ -212,13 +223,23 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 if (resultNode.get("comment") != null) {
                     Variable comment = VariablesFactory.eINSTANCE.createVariable();
                     comment.setId("comment");
-                    comment.setName("Notes");
+                    comment.setName("Comments");
                     comment.getTypes().add(textType);
                     metaData.getVariables().add(comment);
                     Text commentValue = ValuesFactory.eINSTANCE.createText();
                     commentValue.setText(highlightLinks(((List<String>) resultNode.get("comment")).get(0)));
                     comment.getInitialValues().put(textType, commentValue);
                 }
+                // set examples:
+                if (j > 0){
+                	Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
+                	exampleVar.setId("examples");
+    				exampleVar.setName(imageName);
+    				exampleVar.getTypes().add(imageType);
+    				geppettoModelAccess.addVariableToType(exampleVar, metaData);
+    				exampleVar.getInitialValues().put(imageType, images);
+                }
+                
                 type.getVariables().add(metaDataVar);
                 geppettoModelAccess.addTypeToLibrary(metaData, dataSource.getTargetLibrary());
 
@@ -252,5 +273,24 @@ public class VFBProcessTermInfo extends AQueryProcessor {
         }
         return false;
     }
+    
+    /**
+	 * @param data
+	 * @param name
+	 * @param images
+	 * @param i
+	 */
+	private void addImage(String data, String name, String reference, ArrayValue images, int i)
+	{
+		Image image = ValuesFactory.eINSTANCE.createImage();
+		image.setName(name);
+		image.setData(data);
+		image.setReference(reference);
+		image.setFormat(ImageFormat.PNG);
+		ArrayElement element = ValuesFactory.eINSTANCE.createArrayElement();
+		element.setIndex(i);
+		element.setInitialValue(image);
+		images.getElements().add(element);
+	}
 
 }
