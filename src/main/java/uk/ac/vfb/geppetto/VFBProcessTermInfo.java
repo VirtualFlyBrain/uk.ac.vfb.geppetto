@@ -32,6 +32,7 @@ import com.google.gson.Gson;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.StringUtils;
@@ -59,6 +60,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
         ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
         String imageName = "Example";
         String tempLink = "";
+        List<List<String>> domains;
 //		Types
         String types = "";
 //		Relationships
@@ -265,7 +267,13 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                     case "Related":
                                     	edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
                                         if ("depicts".equals(edgeLabel)) {
-                                            edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri"));
+                                        	if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null){
+                                        		edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
+                                        		domains = (List<List<String>>) ((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("domains");
+                                        	}else{
+                                        		edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri"));
+                                        		domains = Arrays.asList(Arrays.asList(""));
+                                        	}
                                         	//TODO: remove fix for old iri:
                                             edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_"); 
                                             if (checkURL(edgeLabel + "/template.png")){
@@ -275,7 +283,20 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                             if (j > 1) {
                                             	imageName = "Examples";
                                             }else{
-                                            	if (checkURL(edgeLabel + "/volume.obj")){
+                                            	
+                                            	if (checkURL(edgeLabel + "/volume_man.obj")){
+                                            		System.out.println("Adding man OBJ...");
+                            						Variable objVar = VariablesFactory.eINSTANCE.createVariable();
+                            						ImportType objImportType = TypesFactory.eINSTANCE.createImportType();
+                            						objImportType.setUrl(edgeLabel + "volume_man.obj");
+                            						objImportType.setId(variable.getId() + "_obj");
+                            						objImportType.setModelInterpreterId("objModelInterpreterService");
+                            						objVar.getTypes().add(objImportType);	
+                            						geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
+                            						objVar.setId(variable.getId() + "_obj");
+                            						objVar.setName("3D Volume");
+                            						type.getVariables().add(objVar);
+                                            	}else if (checkURL(edgeLabel + "/volume.obj")){
                                             		System.out.println("Adding OBJ...");
                             						Variable objVar = VariablesFactory.eINSTANCE.createVariable();
                             						ImportType objImportType = TypesFactory.eINSTANCE.createImportType();
@@ -283,7 +304,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                             						objImportType.setId(variable.getId() + "_obj");
                             						objImportType.setModelInterpreterId("objModelInterpreterService");
                             						objVar.getTypes().add(objImportType);
-                            						type.getVariables().add(objVar);	
+                            						geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
                             						objVar.setId(variable.getId() + "_obj");
                             						objVar.setName("3D Volume");
                             						type.getVariables().add(objVar);
@@ -296,15 +317,14 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                 					swcImportType.setId(variable.getId() + "_swc");
                                 					swcImportType.setModelInterpreterId("swcModelInterpreter");
                                 					swcVar.getTypes().add(swcImportType);
-                                					type.getVariables().add(swcVar);
                                 					swcVar.setName("3D Skeleton");
+                                					geppettoModelAccess.addTypeToLibrary(swcImportType, getLibraryFor(dataSource, "swc"));
                                 					swcVar.setId(variable.getId() + "_swc");
                                 					type.getVariables().add(swcVar);
                                             	}
                                             	if(checkURL(edgeLabel + "/volume.wlz"))
                                 				{
                                 					System.out.println("Adding Woolz...");
-                                					List<List<String>> domains = (List<List<String>>) results.getValue("domains", 0);
                                 					Variable slicesVar = VariablesFactory.eINSTANCE.createVariable();
                                 					ImageType slicesType = (ImageType) geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
                                 					Image slicesValue = ValuesFactory.eINSTANCE.createImage();
@@ -400,8 +420,8 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 // set alt names:
                 if (synonyms.size() > 0){
                 	Variable synVar = VariablesFactory.eINSTANCE.createVariable();
-                	synVar.setId("description");
-                	synVar.setName("Description");
+                	synVar.setId("synonym");
+                	synVar.setName("Alternative Names");
                 	synVar.getTypes().add(htmlType);
                     metaData.getVariables().add(synVar);
                     HTML synValue = ValuesFactory.eINSTANCE.createHTML();
@@ -422,8 +442,8 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 // set types:
                 if (types != "") {
                     Variable typesVar = VariablesFactory.eINSTANCE.createVariable();
-                    typesVar.setId("description");
-                    typesVar.setName("Description");
+                    typesVar.setId("type");
+                    typesVar.setName("Type");
                     typesVar.getTypes().add(htmlType);
                     metaData.getVariables().add(typesVar);
                     HTML typesValue = ValuesFactory.eINSTANCE.createHTML();
@@ -559,9 +579,15 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 			URL url = new URL(urlString);
 			HttpURLConnection huc = (HttpURLConnection) url.openConnection();
 			huc.setRequestMethod("HEAD");
-			huc.setInstanceFollowRedirects(false);
-			System.out.println("Reponse: " + huc.getResponseCode());
-			return (huc.getResponseCode() == HttpURLConnection.HTTP_OK);
+			huc.setInstanceFollowRedirects(true);
+			int response = huc.getResponseCode();
+			System.out.println("Reponse: " + response);
+			if (response == HttpURLConnection.HTTP_OK) {
+				return true;
+			}else if (response == HttpURLConnection.HTTP_MOVED_TEMP || response == HttpURLConnection.HTTP_MOVED_PERM){
+				return checkURL(huc.getHeaderField("Location"));
+			}
+			return false;
 		}
 		catch(Exception e)
 		{
