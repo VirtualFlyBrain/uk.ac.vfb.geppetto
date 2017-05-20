@@ -7,9 +7,11 @@ import org.geppetto.datasources.AQueryProcessor;
 import org.geppetto.model.GeppettoLibrary;
 import org.geppetto.model.GeppettoPackage;
 import org.geppetto.model.datasources.DataSource;
+import org.geppetto.model.datasources.DataSourceLibraryConfiguration;
 import org.geppetto.model.datasources.ProcessQuery;
 import org.geppetto.model.datasources.QueryResults;
 import org.geppetto.model.types.CompositeType;
+import org.geppetto.model.types.ImportType;
 import org.geppetto.model.types.Type;
 import org.geppetto.model.types.TypesFactory;
 import org.geppetto.model.types.TypesPackage;
@@ -24,9 +26,12 @@ import org.geppetto.model.values.ValuesFactory;
 import org.geppetto.model.variables.Variable;
 import org.geppetto.model.variables.VariablesFactory;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * @author RobertCourt
@@ -46,7 +51,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 //		Name: fubar (fbbt_1234567) (all on one line)
         String tempName = "";
 //		Alt_names: barfu (microref), BARFUS (microref) - comma separate (microrefs link down to ref list). Hover-over => scope
-        List<String> synonyms;
+        List<String> synonyms = new ArrayList<>();
 //		Examples
         ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
         String imageName = "Example";
@@ -56,16 +61,24 @@ public class VFBProcessTermInfo extends AQueryProcessor {
         String relationships = "";
 //		Queries
         String querys = "";
+        int overlapedBy = 0;
+        int partOf = 0;
+        int instanceOf = 0;
+        int hasPreSynap = 0;
+        int hasPostSynap = 0;
+        int hasSynap = 0;
 //		Description
         String desc = "";
 //		References
         String refs = "";
 //		Linkouts
         String links = "";
+//      Download
+        String downloadLink = "";
 
         int i = 0;
         int j = 0;
-        
+
         System.out.println("Creating Variable from " + String.valueOf(results));
 
         try {
@@ -89,7 +102,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 }
                 labelLink = "<a href=\"#\" instancepath=\"" + tempId + "\">" + tempName + "</a>";
                 labelLink = "<h4>" + labelLink + "</h4> (" + tempId + ")";
-
 
 
                 System.out.println("Creating Metadata for " + tempName + "...");
@@ -163,85 +175,254 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 if (results.getValue("links", 0) != null) {
                     List<Object> resultLinks = (List<Object>) results.getValue("links", 0);
                     String edge = "";
+                    String edgeLabel = "";
                     i = 0;
                     j = 0;
                     while (i < resultLinks.size()) {
                         try {
                             Map<String, Object> resultLink = (Map<String, Object>) resultLinks.get(i);
                             edge = (String) resultLink.get("types");
-                            switch (edge) {
-                            	case "REFERSTO":
-                            		System.out.println("Ignoring Refers To data...");
-                                case "INSTANCEOF":
-                                    if (((String) resultLink.get("start")) == "node") {
-                                    	if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label") == "type"){
-                                    		types += "<a href=\"#\" instancepath=\"" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
+                            if ("node".equals(((String) resultLink.get("start")))) {
+                            	// edge from term
+                                switch (edge) {
+                                    case "REFERSTO":
+                                        //System.out.println("Ignoring Refers To data...");
+                                        break;
+                                    case "RelatedTree":
+                                        //System.out.println("Ignoring RelatedTree data...");
+                                        break;
+                                    case "INSTANCEOF":
+                                        if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label") == "type") {
+                                            types += "<a href=\"#\" instancepath=\"" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
+                                        } else {
+                                            System.out.println("INSTANCEOF from node " + String.valueOf(resultLinks.get(i)));
+                                        }
+                                        break;
+                                    case "SUBCLASSOF":
+                                    	edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
+                                        if ("is a".equals(edgeLabel) || "is_a".equals(edgeLabel)) {
+                                            types += "<a href=\"#\" instancepath=\"" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
+                                        } else {
+                                            System.out.println("SUBCLASSOF from node " + String.valueOf(resultLinks.get(i)));
+                                        }
+                                        break;
+                                    case "Related":
+                                    	edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
+                                        if ("overlaps".equals(edgeLabel)){
+                                        	System.out.println("Related overlaps from node " + String.valueOf(resultLinks.get(i)));
+                                        }else{
+                                        	relationships = relationships + edgeLabel.replace("_", " ") + " <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
+                                        }
+                                        break;
+                                    case "has_reference":
+                                    	edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("typ"));
+                                    	if ("syn".equals(edgeLabel)){
+	                                    	for (int s = 0; s < synonyms.size(); s++){
+	                                    		if (synonyms.get(s).equals((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("synonym"))){
+	                                    			if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).containsKey("microref")){
+	                                    				synonyms.set(s, synonyms.get(s) + " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("microref")) + ")"); // TODO: add hyperlink
+	                                    			}else{
+	                                    				synonyms.set(s, synonyms.get(s) + " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) + ")"); // TODO: add hyperlink
+		                                    		}
+	                                    		}
+	                                    	}
+                                    	}else if ("def".equals(edgeLabel)){
+                                    		if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).containsKey("microref")){
+                                				desc = desc + " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("microref")) + ")"; // TODO: add hyperlink
+                                			}else{
+                                				desc = desc + " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) + ")"; // TODO: add hyperlink
+                                    		}
                                     	}else{
-                                    		System.out.println("INSTANCEOF from node " + String.valueOf(resultLinks.get(i)));
+                                    		System.out.println("Has_reference from node " + String.valueOf(resultLinks.get(i)));
                                     	}
-                                    } else {
-                                        System.out.println("INSTANCEOF to node " + String.valueOf(resultLinks.get(i)));
-                                    }
-                                case "Related":
-                                	if (((String) resultLink.get("start")) == "node") {
-                                		System.out.println("Related from node " + String.valueOf(resultLinks.get(i)));
-                                	}else{
-                                		if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label") == "depicts"){
-                                			addImage(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri") + "/template.png", tempName, tempId, images, j);
-                                			j++;
-                                			if (j > 1){
-                                				imageName = "Examples";
-                                			};
-	                                	}else{
-	                                		System.out.println("Related to node " + String.valueOf(resultLinks.get(i)));
-	                                	}
-                                	}
-                                default:
-                                    System.out.println("Can't handle node link: " + String.valueOf(resultLinks.get(i)));
+                                    	break;
+                                    default:
+                                    	relationships = relationships + edgeLabel.replace("_", " ") + " <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
+                                        
+                                }
+                            } else { 
+                            	// edge towards term
+                                switch (edge) {
+                                    case "REFERSTO":
+                                        //System.out.println("Ignoring Refers To data...");
+                                        break;
+                                    case "RelatedTree":
+                                    	//System.out.println("Ignoring RelatedTree data...");
+                                        break;
+                                    case "INSTANCEOF":
+                                    	edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
+                                        if ("type".equals(edgeLabel)){
+                                        	instanceOf += 1;
+                                        }else{
+                                        	System.out.println("INSTANCEOF to node " + String.valueOf(resultLinks.get(i)));
+                                        }
+                                        break;
+                                    case "SUBCLASSOF":
+                                        System.out.println("SUBCLASSOF to node " + String.valueOf(resultLinks.get(i)));
+                                        break;
+                                    case "Related":
+                                    	edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
+                                        if ("depicts".equals(edgeLabel)) {
+                                            edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
+                                        	if (checkURL(edgeLabel + "/template.png")){
+                                        		addImage( edgeLabel + "/template.png", tempName, tempId, images, j);
+                                            	j++;
+                                        	}
+                                            if (j > 1) {
+                                            	imageName = "Examples";
+                                            }else{
+                                            	if (checkURL(edgeLabel + "/volume.obj")){
+                                            		System.out.println("Adding OBJ...");
+                            						Variable objVar = VariablesFactory.eINSTANCE.createVariable();
+                            						ImportType objImportType = TypesFactory.eINSTANCE.createImportType();
+                            						objImportType.setUrl(edgeLabel + "/volume.obj");
+                            						objImportType.setId(variable.getId() + "_obj");
+                            						objImportType.setModelInterpreterId("objModelInterpreterService");
+                            						objVar.getTypes().add(objImportType);
+                            						geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
+                            						objVar.setId(variable.getId() + "_obj");
+                            						objVar.setName("3D Volume");
+                            						type.getVariables().add(objVar);
+                                            	}
+                                            	if (checkURL(edgeLabel + "/volume.swc")){
+                                            		System.out.println("Adding SWC...");
+                                					Variable swcVar = VariablesFactory.eINSTANCE.createVariable();
+                                					ImportType swcImportType = TypesFactory.eINSTANCE.createImportType();
+                                					swcImportType.setUrl(edgeLabel + "/volume.swc");
+                                					swcImportType.setId(variable.getId() + "_swc");
+                                					swcImportType.setModelInterpreterId("swcModelInterpreter");
+                                					swcVar.getTypes().add(swcImportType);
+                                					geppettoModelAccess.addTypeToLibrary(swcImportType, getLibraryFor(dataSource, "swc"));
+                                					swcVar.setName("3D Skeleton");
+                                					swcVar.setId(variable.getId() + "_swc");
+                                					type.getVariables().add(swcVar);
+                                            	}
+                                            	if (checkURL(edgeLabel + "/volume.nrrd")){
+                                            		System.out.println("Adding NRRD...");
+                                					downloadLink = "Aligned Image: ​<a download=\"" + (String) variable.getId() + ".nrrd\" href=\"" + edgeLabel + "/volume.nrrd" + "\">" + (String) variable.getId() + ".nrrd</a><br/>​​​​​​​​​​​​​​​​​​​​​​​​​​​";
+                                					downloadLink += "Note: see licensing section for reuse and attribution info."; 
+                                            	}
+                                            }
+                                            
+                                        }else if ("overlaps".equals(edgeLabel)){
+                                        	overlapedBy += 1;
+                                        }else if ("part_of".equals(edgeLabel) || "part of".equals(edgeLabel)) {
+                                        	partOf += 1;
+                                        }else if ("has_presynaptic_terminal_in".equals(edgeLabel)){
+                                        	hasPreSynap += 1;
+                                        }else if ("has_postsynaptic_terminal_in".equals(edgeLabel)){
+                                        	hasPostSynap += 1;
+                                        }else if ("has_synaptic_terminal_in".equals(edgeLabel)){
+                                            hasSynap += 1;
+                                        }else if ("connected_to".equals(edgeLabel) || "connected to".equals(edgeLabel)){
+                                        	relationships = relationships + "connected to <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
+                                        }else if ("innervates".equals(edgeLabel)){
+                                        	relationships = relationships + "innervated by <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
+                                        }else if ("has_member".equals(edgeLabel)){
+                                        	//System.out.println("Ignoring reciprocal relationship");
+                                        }else{
+                                        	System.out.println("Related to node " + edgeLabel + " " + String.valueOf(resultLinks.get(i)));
+                                        }
+                                        break;
+                                    case "part_of":
+                                    	partOf += 1;
+                                    	break;
+                                    case "overlaps":
+                                        overlapedBy += 1;
+                                        break;
+                                    case "has_presynaptic_terminal_in":
+                                    	hasPreSynap += 1;
+                                    	break;
+                                    case "has_postsynaptic_terminal_in":
+                                    	hasPostSynap += 1;
+                                    	break;
+                                    case "has_synaptic_terminal_in":
+                                    	hasSynap += 1;
+                                    	break;
+                                    case "connected_to":
+                                    	relationships = relationships + "connected to <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
+                                    	break;
+                                    case "innervates":
+                                    	relationships = relationships + "innervated by <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
+                                        break;
+                                    default:
+                                        System.out.println("Can't handle link to node: " + edge + " " + String.valueOf(resultLinks.get(i)));
+                                }
                             }
                         } catch (Exception e) {
-                            System.out.println("Error processing node links: " + e.getMessage());
-                            System.out.println(String.valueOf(resultLinks));
+                        	System.out.println("Error processing node links: " + e.toString());
+                        	System.out.println(String.valueOf(resultLinks));
+                            System.out.println(String.valueOf(resultLinks.get(i)));
+                            System.out.println(tempName + " (" + tempId + ")");
                         }
                         i++;
                     }
                 }
+                
+                System.out.println("sub parts: " +String.valueOf(partOf));
+                System.out.println("overlaped by: " +String.valueOf(overlapedBy));
+                System.out.println("instance of: " +String.valueOf(instanceOf));
+                
+                // set alt names:
+                if (synonyms.size() > 0){
+                	Variable synVar = VariablesFactory.eINSTANCE.createVariable();
+                	synVar.setId("description");
+                	synVar.setName("Description");
+                	synVar.getTypes().add(htmlType);
+                    metaData.getVariables().add(synVar);
+                    HTML synValue = ValuesFactory.eINSTANCE.createHTML();
+                    synValue.setHtml(StringUtils.join(synonyms,", "));
+                    synVar.getInitialValues().put(htmlType, synValue);
+                }
 
+                // set examples:
+                if (j > 0) {
+                    Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
+                    exampleVar.setId("examples");
+                    exampleVar.setName(imageName);
+                    exampleVar.getTypes().add(imageType);
+                    geppettoModelAccess.addVariableToType(exampleVar, metaData);
+                    exampleVar.getInitialValues().put(imageType, images);
+                }
 
+                // set types:
+                if (types != "") {
+                    Variable typesVar = VariablesFactory.eINSTANCE.createVariable();
+                    typesVar.setId("description");
+                    typesVar.setName("Description");
+                    typesVar.getTypes().add(htmlType);
+                    metaData.getVariables().add(typesVar);
+                    HTML typesValue = ValuesFactory.eINSTANCE.createHTML();
+                    typesValue.setHtml(types);
+                    typesVar.getInitialValues().put(htmlType, typesValue);
+                }
+
+                // set relationships
+
+                // set queries
+
+                // set description:
                 if (desc != "") {
                     Variable description = VariablesFactory.eINSTANCE.createVariable();
                     description.setId("description");
                     description.setName("Description");
-                    description.getTypes().add(textType);
+                    description.getTypes().add(htmlType);
                     metaData.getVariables().add(description);
-                    Text descriptionValue = ValuesFactory.eINSTANCE.createText();
+                    HTML descriptionValue = ValuesFactory.eINSTANCE.createHTML();
                     desc = highlightLinks(desc);
-                    descriptionValue.setText(desc);
-                    description.getInitialValues().put(textType, descriptionValue);
+                    descriptionValue.setHtml(desc);
+                    description.getInitialValues().put(htmlType, descriptionValue);
                 }
-                // set comment:
-                if (resultNode.get("comment") != null) {
-                    Variable comment = VariablesFactory.eINSTANCE.createVariable();
-                    comment.setId("comment");
-                    comment.setName("Comments");
-                    comment.getTypes().add(textType);
-                    metaData.getVariables().add(comment);
-                    Text commentValue = ValuesFactory.eINSTANCE.createText();
-                    commentValue.setText(highlightLinks(((List<String>) resultNode.get("comment")).get(0)));
-                    comment.getInitialValues().put(textType, commentValue);
-                }
-                // set examples:
-                if (j > 0){
-                	Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
-                	exampleVar.setId("examples");
-    				exampleVar.setName(imageName);
-    				exampleVar.getTypes().add(imageType);
-    				geppettoModelAccess.addVariableToType(exampleVar, metaData);
-    				exampleVar.getInitialValues().put(imageType, images);
-                }
-                
+
+                // set references:
+
+
+                // set linkouts:
+
                 type.getVariables().add(metaDataVar);
                 geppettoModelAccess.addTypeToLibrary(metaData, dataSource.getTargetLibrary());
+                
+                
 
             }
 
@@ -273,24 +454,61 @@ public class VFBProcessTermInfo extends AQueryProcessor {
         }
         return false;
     }
+
+    /**
+     * @param data
+     * @param name
+     * @param images
+     * @param i
+     */
+    private void addImage(String data, String name, String reference, ArrayValue images, int i) {
+        Image image = ValuesFactory.eINSTANCE.createImage();
+        image.setName(name);
+        image.setData(data);
+        image.setReference(reference);
+        image.setFormat(ImageFormat.PNG);
+        ArrayElement element = ValuesFactory.eINSTANCE.createArrayElement();
+        element.setIndex(i);
+        element.setInitialValue(image);
+        images.getElements().add(element);
+    }
     
     /**
-	 * @param data
-	 * @param name
-	 * @param images
-	 * @param i
+	 * @param urlString
 	 */
-	private void addImage(String data, String name, String reference, ArrayValue images, int i)
+	private boolean checkURL(String urlString)
 	{
-		Image image = ValuesFactory.eINSTANCE.createImage();
-		image.setName(name);
-		image.setData(data);
-		image.setReference(reference);
-		image.setFormat(ImageFormat.PNG);
-		ArrayElement element = ValuesFactory.eINSTANCE.createArrayElement();
-		element.setIndex(i);
-		element.setInitialValue(image);
-		images.getElements().add(element);
+		try
+		{
+			urlString = urlString.replace("https://","http://").replace(":5000", "");
+			URL url = new URL(urlString);
+			HttpURLConnection huc = (HttpURLConnection) url.openConnection();
+			huc.setRequestMethod("HEAD");
+			huc.setInstanceFollowRedirects(false);
+			return (huc.getResponseCode() == HttpURLConnection.HTTP_OK);
+		}
+		catch(Exception e)
+		{
+			System.out.println("Error checking url (" + urlString + ") " + e.toString());
+			return false;
+		}
+	}
+	
+	/**
+	 * @param dataSource
+	 * @param format
+	 * @return
+	 */
+	private GeppettoLibrary getLibraryFor(DataSource dataSource, String format)
+	{
+		for(DataSourceLibraryConfiguration lc : dataSource.getLibraryConfigurations())
+		{
+			if(lc.getFormat().equals(format))
+			{
+				return lc.getLibrary();
+			}
+		}
+		return null;
 	}
 
 }

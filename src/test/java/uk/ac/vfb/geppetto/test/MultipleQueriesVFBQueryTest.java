@@ -84,6 +84,10 @@ public class MultipleQueriesVFBQueryTest
 		BeanDefinition queryProcessorBeanDefinition = new RootBeanDefinition(AddTypesQueryProcessor.class);
 		context.registerBeanDefinition("vfbTypesQueryProcessor", queryProcessorBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.vfbTypesQueryProcessor", queryProcessorBeanDefinition);
+		
+		BeanDefinition queryProcessTermInfoBeanDefinition = new RootBeanDefinition(VFBProcessTermInfo.class);
+		context.registerBeanDefinition("vfbProcessTermInfo", queryProcessTermInfoBeanDefinition);
+		context.registerBeanDefinition("scopedTarget.vfbProcessTermInfo", queryProcessTermInfoBeanDefinition);
 
 		BeanDefinition queryProcessorImportTypesBeanDefinition = new RootBeanDefinition(AddImportTypesQueryProcessor.class);
 		context.registerBeanDefinition("vfbImportTypesQueryProcessor", queryProcessorImportTypesBeanDefinition);
