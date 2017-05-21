@@ -523,7 +523,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 
                 
                 // set description:
-                if (desc != "") {
+                if (desc != "" && desc != ".") {
                     Variable description = VariablesFactory.eINSTANCE.createVariable();
                     description.setId("description");
                     description.setName("Description");
