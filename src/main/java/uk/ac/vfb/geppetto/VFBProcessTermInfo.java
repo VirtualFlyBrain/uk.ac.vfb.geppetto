@@ -198,7 +198,8 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         //System.out.println("Ignoring RelatedTree data...");
                                         break;
                                     case "INSTANCEOF":
-                                        if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label") == "type") {
+                                    	edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
+                                        if ("type".equals(edgeLabel)) {
                                             types += "<a href=\"#\" instancepath=\"" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
                                         } else {
                                             System.out.println("INSTANCEOF from node " + String.valueOf(resultLinks.get(i)));
@@ -230,16 +231,16 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 	                                    	}
                                     	}else if ("def".equals(edgeLabel)){
                                     		if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).containsKey("microref")){
-                                				desc = desc + " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("microref")) + ")"; // TODO: add hyperlink
+                                				desc += " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("microref")) + ")"; // TODO: add hyperlink
                                 			}else{
-                                				desc = desc + " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) + ")"; // TODO: add hyperlink
+                                				desc += " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) + ")"; // TODO: add hyperlink
                                     		}
                                     	}else{
                                     		System.out.println("Has_reference from node " + String.valueOf(resultLinks.get(i)));
                                     	}
                                     	break;
                                     default:
-                                    	relationships = relationships + edgeLabel.replace("_", " ") + " <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
+                                    	relationships += edgeLabel.replace("_", " ") + " <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
                                         
                                 }
                             } else { 
@@ -368,9 +369,9 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         }else if ("has_synaptic_terminal_in".equals(edgeLabel)){
                                             hasSynap += 1;
                                         }else if ("connected_to".equals(edgeLabel) || "connected to".equals(edgeLabel)){
-                                        	relationships = relationships + "connected to <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
+                                        	relationships += "connected to <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
                                         }else if ("innervates".equals(edgeLabel)){
-                                        	relationships = relationships + "innervated by <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
+                                        	relationships += "innervated by <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
                                         }else if ("has_member".equals(edgeLabel)){
                                         	//System.out.println("Ignoring reciprocal relationship");
                                         }else{
@@ -393,10 +394,10 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                     	hasSynap += 1;
                                     	break;
                                     case "connected_to":
-                                    	relationships = relationships + "connected to <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
+                                    	relationships += "connected to <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
                                     	break;
                                     case "innervates":
-                                    	relationships = relationships + "innervated by <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
+                                    	relationships += "innervated by <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
                                         break;
                                     default:
                                         System.out.println("Can't handle link to node: " + edge + " " + String.valueOf(resultLinks.get(i)));
