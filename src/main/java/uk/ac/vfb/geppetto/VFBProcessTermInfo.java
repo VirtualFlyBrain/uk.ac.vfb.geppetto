@@ -277,19 +277,20 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         	}
                                         	//TODO: remove fix for old iri:
                                             edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_"); 
-                                            if (checkURL(edgeLabel + "/template.png")){
-                                        		addImage( edgeLabel + "/template.png", tempName, tempId, images, j);
+                                            String fileUrl = edgeLabel + "/template.png";
+                                            if (fileUrl != null){
+                                        		addImage( fileUrl, tempName, tempId, images, j);
                                             	j++;
                                         	}
                                             if (j > 1) {
                                             	imageName = "Examples";
                                             }else{
-                                            	
-                                            	if (checkURL(edgeLabel + "/volume_man.obj")){
+                                            	fileUrl = checkURL(edgeLabel + "/volume_man.obj");
+                                            	if (fileUrl != null){
                                             		System.out.println("Adding man OBJ...");
                             						Variable objVar = VariablesFactory.eINSTANCE.createVariable();
                             						ImportType objImportType = TypesFactory.eINSTANCE.createImportType();
-                            						objImportType.setUrl(edgeLabel + "volume_man.obj");
+                            						objImportType.setUrl(fileUrl);
                             						objImportType.setId(variable.getId() + "_obj");
                             						objImportType.setModelInterpreterId("objModelInterpreterService");
                             						objVar.getTypes().add(objImportType);	
@@ -297,24 +298,28 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                             						objVar.setId(variable.getId() + "_obj");
                             						objVar.setName("3D Volume");
                             						type.getVariables().add(objVar);
-                                            	}else if (checkURL(edgeLabel + "/volume.obj")){
-                                            		System.out.println("Adding OBJ...");
-                            						Variable objVar = VariablesFactory.eINSTANCE.createVariable();
-                            						ImportType objImportType = TypesFactory.eINSTANCE.createImportType();
-                            						objImportType.setUrl(edgeLabel + "/volume.obj");
-                            						objImportType.setId(variable.getId() + "_obj");
-                            						objImportType.setModelInterpreterId("objModelInterpreterService");
-                            						objVar.getTypes().add(objImportType);
-                            						geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
-                            						objVar.setId(variable.getId() + "_obj");
-                            						objVar.setName("3D Volume");
-                            						type.getVariables().add(objVar);
+                                            	}else{
+                                            		fileUrl = checkURL(edgeLabel + "/volume.obj");
+                                            		if (fileUrl != null){
+                                            			System.out.println("Adding OBJ...");
+	                            						Variable objVar = VariablesFactory.eINSTANCE.createVariable();
+	                            						ImportType objImportType = TypesFactory.eINSTANCE.createImportType();
+	                            						objImportType.setUrl(fileUrl);
+	                            						objImportType.setId(variable.getId() + "_obj");
+	                            						objImportType.setModelInterpreterId("objModelInterpreterService");
+	                            						objVar.getTypes().add(objImportType);
+	                            						geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
+	                            						objVar.setId(variable.getId() + "_obj");
+	                            						objVar.setName("3D Volume");
+	                            						type.getVariables().add(objVar);
+	                                            	}
                                             	}
-                                            	if (checkURL(edgeLabel + "/volume.swc")){
+                                            	fileUrl = checkURL(edgeLabel + "/volume.swc");
+                                            	if (fileUrl != null){
                                             		System.out.println("Adding SWC...");
                                 					Variable swcVar = VariablesFactory.eINSTANCE.createVariable();
                                 					ImportType swcImportType = TypesFactory.eINSTANCE.createImportType();
-                                					swcImportType.setUrl(edgeLabel + "/volume.swc");
+                                					swcImportType.setUrl(fileUrl);
                                 					swcImportType.setId(variable.getId() + "_swc");
                                 					swcImportType.setModelInterpreterId("swcModelInterpreter");
                                 					swcVar.getTypes().add(swcImportType);
@@ -323,13 +328,14 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                 					swcVar.setId(variable.getId() + "_swc");
                                 					type.getVariables().add(swcVar);
                                             	}
-                                            	if(checkURL(edgeLabel + "/volume.wlz"))
+                                            	fileUrl = checkURL(edgeLabel + "/volume.wlz");
+                                            	if(fileUrl != null)
                                 				{
                                 					System.out.println("Adding Woolz...");
                                 					Variable slicesVar = VariablesFactory.eINSTANCE.createVariable();
                                 					ImageType slicesType = (ImageType) geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
                                 					Image slicesValue = ValuesFactory.eINSTANCE.createImage();
-                                					slicesValue.setData(new Gson().toJson(new IIPJSON(0,"https://www.virtualflybrain.org/fcgi/wlziipsrv.fcgi", edgeLabel.replace("http://www.virtualflybrain.org/data/", "/disk/data/VFB/IMAGE_DATA/") + "/volume.wlz", domains)));
+                                					slicesValue.setData(new Gson().toJson(new IIPJSON(0,"https://www.virtualflybrain.org/fcgi/wlziipsrv.fcgi", fileUrl.replace("http://www.virtualflybrain.org/data/", "/disk/data/VFB/IMAGE_DATA/"), domains)));
                                 					slicesValue.setFormat(ImageFormat.IIP);
                                 					slicesValue.setReference(variable.getId());
                                 					slicesVar.setId(variable.getId() + "_slices");
@@ -351,7 +357,8 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                 					type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
                                 					System.out.println("Adding to SuperType: " + supertype);
                                 				}
-                                            	if (checkURL(edgeLabel + "/volume.nrrd")){
+                                				fileUrl = checkURL(edgeLabel + "/volume.nrrd");
+                                            	if (fileUrl != null){
                                             		System.out.println("Adding NRRD...");
                                 					downloadLink = "Aligned Image: ​<a download=\"" + (String) variable.getId() + ".nrrd\" href=\"" + edgeLabel + "/volume.nrrd" + "\">" + (String) variable.getId() + ".nrrd</a><br/>​​​​​​​​​​​​​​​​​​​​​​​​​​​";
                                 					downloadLink += "Note: see licensing section for reuse and attribution info."; 
@@ -571,7 +578,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
     /**
 	 * @param urlString
 	 */
-	private boolean checkURL(String urlString)
+	private String checkURL(String urlString)
 	{
 		try
 		{
@@ -584,16 +591,16 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 			int response = huc.getResponseCode();
 			System.out.println("Reponse: " + response);
 			if (response == HttpURLConnection.HTTP_OK) {
-				return true;
+				return urlString;
 			}else if (response == HttpURLConnection.HTTP_MOVED_TEMP || response == HttpURLConnection.HTTP_MOVED_PERM){
 				return checkURL(huc.getHeaderField("Location"));
 			}
-			return false;
+			return null;
 		}
 		catch(Exception e)
 		{
 			System.out.println("Error checking url (" + urlString + ") " + e.toString());
-			return false;
+			return null;
 		}
 	}
 	
