@@ -58,7 +58,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
         List<String> synonyms = new ArrayList<>();
 //		Examples
         ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
-        String imageName = "Example";
+        String imageName = "Thumbnail";
         String tempLink = "";
         List<List<String>> domains;
 //		Types
@@ -107,8 +107,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 } else {
                     tempId = variable.getId();
                 }
-                labelLink = "<a href=\"#\" instancepath=\"" + tempId + "\">" + tempName + "</a>";
-                labelLink = "<h4>" + labelLink + "</h4> (" + tempId + ")";
+                labelLink = "<b>" + tempName + "</b> (" + tempId + ")";
 
 
                 System.out.println("Creating Metadata for " + tempName + "...");
@@ -283,6 +282,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                             edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_"); 
                                             String fileUrl = checkURL(edgeLabel + "/thumbnail.png");
                                             if (fileUrl != null){
+                                            	System.out.println("Adding example " + String.valueOf(j) + "...");
                                         		addImage( fileUrl, tempName, tempId, images, j);
                                             	j++;
                                         	}
@@ -364,7 +364,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                 				fileUrl = checkURL(edgeLabel + "/volume.nrrd");
                                             	if (fileUrl != null){
                                             		System.out.println("Adding NRRD...");
-                                					downloadLink = "Aligned Image: ​<a download=\"" + (String) variable.getId() + ".nrrd\" href=\"" + edgeLabel + "/volume.nrrd" + "\">" + (String) variable.getId() + ".nrrd</a><br/>​​​​​​​​​​​​​​​​​​​​​​​​​​​";
+                                					downloadLink = "Aligned Image: ​<a download=\"" + (String) variable.getId() + ".nrrd\" href=\"" + fileUrl + "\">" + (String) variable.getId() + ".nrrd</a><br/>​​​​​​​​​​​​​​​​​​​​​​​​​​​";
                                 					downloadLink += "Note: see licensing section for reuse and attribution info."; 
                                             	}
                                             }
@@ -444,9 +444,9 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 }
 
                 // set examples:
-                if (j > 0) {
+               if (j > 0) {
                     Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
-                    exampleVar.setId("examples");
+                    exampleVar.setId("thumbnail");
                     exampleVar.setName(imageName);
                     exampleVar.getTypes().add(imageType);
                     geppettoModelAccess.addVariableToType(exampleVar, metaData);
