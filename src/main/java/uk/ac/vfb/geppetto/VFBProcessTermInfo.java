@@ -444,13 +444,20 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 }
 
                 // set examples:
-               if (j > 0) {
+                if (j > 1) {
+                    Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
+                    exampleVar.setId("examples");
+                    exampleVar.setName(imageName);
+                    exampleVar.getTypes().add(imageType);
+                    geppettoModelAccess.addVariableToType(exampleVar, metaData);
+                    exampleVar.getInitialValues().put(imageType, images);
+                }else if (j > 0) {
                     Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
                     exampleVar.setId("thumbnail");
                     exampleVar.setName(imageName);
                     exampleVar.getTypes().add(imageType);
                     geppettoModelAccess.addVariableToType(exampleVar, metaData);
-                    exampleVar.getInitialValues().put(imageType, images);
+                    exampleVar.getInitialValues().put(imageType, images.getElements().get(0));
                 }
 
                 // set types:
