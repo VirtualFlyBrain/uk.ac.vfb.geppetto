@@ -56,6 +56,10 @@ public class VFBProcessTermInfo extends AQueryProcessor {
         String tempName = "";
 //		Alt_names: barfu (microref), BARFUS (microref) - comma separate (microrefs link down to ref list). Hover-over => scope
         List<String> synonyms = new ArrayList<>();
+//      Thumbnail
+        Variable thumbnailVar = VariablesFactory.eINSTANCE.createVariable();
+        Image thumbnailValue = ValuesFactory.eINSTANCE.createImage();
+        Boolean thumb = false;
 //		Examples
         ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
         String imageName = "Thumbnail";
@@ -282,9 +286,16 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                             edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_"); 
                                             String fileUrl = checkURL(edgeLabel + "/thumbnail.png");
                                             if (fileUrl != null){
-                                            	System.out.println("Adding example " + String.valueOf(j) + "...");
-                                        		addImage( fileUrl, tempName, tempId, images, j);
-                                            	j++;
+                                            	System.out.println("Adding thumbnail...");
+                            					thumbnailVar.setId("thumbnail");
+                            					thumbnailVar.setName("Thumbnail");
+                            					thumbnailVar.getTypes().add(imageType);
+                            					thumbnailValue.setName(variable.getName());
+                            					thumbnailValue.setData(fileUrl);
+                            					thumbnailValue.setReference(variable.getId());
+                            					thumbnailValue.setFormat(ImageFormat.PNG);
+                            					thumbnailVar.getInitialValues().put(imageType, thumbnailValue);
+                            					thumb = true;
                                         	}
                                             if (j > 1) {
                                             	imageName = "Examples";
@@ -444,22 +455,10 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 }
 
                 // set examples:
-                if (j > 1) {
-                    Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
-                    exampleVar.setId("examples");
-                    exampleVar.setName(imageName);
-                    exampleVar.getTypes().add(imageType);
-                    geppettoModelAccess.addVariableToType(exampleVar, metaData);
-                    exampleVar.getInitialValues().put(imageType, images);
-                }else if (j > 0) {
-                    Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
-                    exampleVar.setId("thumbnail");
-                    exampleVar.setName(imageName);
-                    exampleVar.getTypes().add(imageType);
-                    geppettoModelAccess.addVariableToType(exampleVar, metaData);
-                    exampleVar.getInitialValues().put(imageType, images.getElements().get(0));
+                if (thumb) {
+                	geppettoModelAccess.addVariableToType(thumbnailVar, metaData);
                 }
-
+                
                 // set types:
                 if (types != "") {
                     Variable typesVar = VariablesFactory.eINSTANCE.createVariable();
