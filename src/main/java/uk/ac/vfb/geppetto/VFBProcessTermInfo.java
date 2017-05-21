@@ -73,6 +73,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
         int hasPreSynap = 0;
         int hasPostSynap = 0;
         int hasSynap = 0;
+        int subClassOf = 0;
 //		Description
         String desc = "";
 //		References
@@ -262,8 +263,11 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         break;
                                     case "SUBCLASSOF":
                                     	edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
-                                        
-                                        System.out.println("SUBCLASSOF to node " + edgeLabel + " " + String.valueOf(resultLinks.get(i)));
+                                        if ("is a".equals(edgeLabel) || "is_a".equals(edgeLabel)){
+                                        	subClassOf += 1;
+                                        }else{
+                                        	System.out.println("SUBCLASSOF to node " + edgeLabel + " " + String.valueOf(resultLinks.get(i)));
+                                        }
                                         break;
                                     case "Related":
                                     	edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
@@ -375,6 +379,8 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         	hasPostSynap += 1;
                                         }else if ("has_synaptic_terminal_in".equals(edgeLabel)){
                                             hasSynap += 1;
+                                        }else if ("has_synaptic_terminals_of".equals(edgeLabel)){
+                                            hasSynap += 1;
                                         }else if ("connected_to".equals(edgeLabel) || "connected to".equals(edgeLabel)){
                                         	relationships += "connected to <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
                                         }else if ("innervates".equals(edgeLabel)){
@@ -400,6 +406,9 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                     case "has_synaptic_terminal_in":
                                     	hasSynap += 1;
                                     	break;
+                                    case "has_synaptic_terminals_of":
+                                    	hasSynap += 1;
+                                    	break;	
                                     case "connected_to":
                                     	relationships += "connected to <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
                                     	break;
@@ -420,10 +429,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                         i++;
                     }
                 }
-                
-                System.out.println("sub parts: " +String.valueOf(partOf));
-                System.out.println("overlaped by: " +String.valueOf(overlapedBy));
-                System.out.println("instance of: " +String.valueOf(instanceOf));
+             
                 
                 // set alt names:
                 if (synonyms.size() > 0){
@@ -460,9 +466,62 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 }
 
                 // set relationships
+             // set types:
+                if (relationships != "") {
+                    Variable relVar = VariablesFactory.eINSTANCE.createVariable();
+                    relVar.setId("relationships");
+                    relVar.setName("Relationships");
+                    relVar.getTypes().add(htmlType);
+                    metaData.getVariables().add(relVar);
+                    HTML relValue = ValuesFactory.eINSTANCE.createHTML();
+                    relValue.setHtml(relationships);
+                    relVar.getInitialValues().put(htmlType, relValue);
+                }
 
                 // set queries
-
+//                String querys = "";
+//                int overlapedBy = 0;
+//                int partOf = 0;
+//                int instanceOf = 0;
+//                int hasPreSynap = 0;
+//                int hasPostSynap = 0;
+//                int hasSynap = 0;
+//                int subClassOf = 0;
+               
+                if (overlapedBy > 0){
+                	querys += "<span class=\"badge\">" + String.valueOf(overlapedBy) + "</span> Overlap Query"; //TODO add actual query;
+                }
+                if (partOf > 0){
+                	querys += "<span class=\"badge\">" + String.valueOf(partOf) + "</span> SubParts Query"; //TODO add actual query;
+                }
+                if (instanceOf > 0){
+                	querys += "<span class=\"badge\">" + String.valueOf(instanceOf) + "</span> instancesOf Query"; //TODO add actual query;
+                }
+                if (hasPreSynap > 0){
+                	querys += "<span class=\"badge\">" + String.valueOf(hasPreSynap) + "</span> PreSynaptic terminals in Query"; //TODO add actual query;
+                }
+                if (hasPostSynap > 0){
+                	querys += "<span class=\"badge\">" + String.valueOf(hasPostSynap) + "</span> PostSynaptic terminals in Query"; //TODO add actual query;
+                }
+                if (hasSynap > 0){
+                	querys += "<span class=\"badge\">" + String.valueOf(hasSynap) + "</span> Synaptic terminals in Query"; //TODO add actual query;
+                }
+                if (subClassOf > 0){
+                	querys += "<span class=\"badge\">" + String.valueOf(subClassOf) + "</span> SubClass Query"; //TODO add actual query;
+                }
+                
+                if (querys != ""){
+                	Variable queryVar = VariablesFactory.eINSTANCE.createVariable();
+                	queryVar.setId("queries");
+                	queryVar.setName("Query for");
+                	queryVar.getTypes().add(htmlType);
+					metaData.getVariables().add(queryVar);	
+					HTML queryValue = ValuesFactory.eINSTANCE.createHTML();
+					queryValue.setHtml(tempLink);
+					queryVar.getInitialValues().put(htmlType, queryValue);
+                }
+                
+                
                 // set description:
                 if (desc != "") {
                     Variable description = VariablesFactory.eINSTANCE.createVariable();
@@ -583,13 +642,13 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 		try
 		{
 			urlString = urlString.replace("https://","http://").replace(":5000", "");
-			System.out.println("Checking image: " + urlString);
+			//System.out.println("Checking image: " + urlString);
 			URL url = new URL(urlString);
 			HttpURLConnection huc = (HttpURLConnection) url.openConnection();
 			huc.setRequestMethod("HEAD");
 			huc.setInstanceFollowRedirects(true);
 			int response = huc.getResponseCode();
-			System.out.println("Reponse: " + response);
+			//System.out.println("Reponse: " + response);
 			if (response == HttpURLConnection.HTTP_OK) {
 				return urlString;
 			}else if (response == HttpURLConnection.HTTP_MOVED_TEMP || response == HttpURLConnection.HTTP_MOVED_PERM){
