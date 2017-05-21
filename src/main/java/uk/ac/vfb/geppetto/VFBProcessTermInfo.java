@@ -281,7 +281,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         	}
                                         	//TODO: remove fix for old iri:
                                             edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_"); 
-                                            String fileUrl = edgeLabel + "/template.png";
+                                            String fileUrl = checkURL(edgeLabel + "/thumbnail.png");
                                             if (fileUrl != null){
                                         		addImage( fileUrl, tempName, tempId, images, j);
                                             	j++;
