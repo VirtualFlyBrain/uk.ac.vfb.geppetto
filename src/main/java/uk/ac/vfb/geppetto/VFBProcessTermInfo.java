@@ -467,7 +467,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 // set types:
                 if (types != "") {
                     Variable typesVar = VariablesFactory.eINSTANCE.createVariable();
-                    typesVar.setId("type");
+                    typesVar.setId("types");
                     typesVar.setName("Type");
                     typesVar.getTypes().add(htmlType);
                     metaData.getVariables().add(typesVar);
