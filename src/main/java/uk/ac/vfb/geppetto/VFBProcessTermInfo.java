@@ -86,6 +86,8 @@ public class VFBProcessTermInfo extends AQueryProcessor {
         String links = "";
 //      Download
         String downloadLink = "";
+//      SuperTypes
+        String superTypes = "";
 
         int i = 0;
         int j = 0;
@@ -130,7 +132,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     for (String supertype : supertypes) {
                         if (!supertype.startsWith("_")) { // ignore supertypes starting with _
                             type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
-                            System.out.println("Adding to SuperType: " + supertype);
+                            superTypes += supertype + ", ";
                         }
                         if (supertype.equals("Template")) {
                             template = true;
@@ -139,6 +141,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 } else {
                     type.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Orphan", dependenciesLibrary));
                 }
+                System.out.println("SuperTypes: " + superTypes);
 
                 // Load initial metadata
 
@@ -162,6 +165,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
                 label.getInitialValues().put(htmlType, labelValue);
                 labelValue.setHtml(labelLink);
+                System.out.println(labelLink);
 
                 // get alt names
                 if (resultNode.get("synonym") != null) {
@@ -313,7 +317,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                             						objVar.setId(variable.getId() + "_obj");
                             						objVar.setName("3D Volume");
                             						type.getVariables().add(objVar);
-                            						System.out.println(getLibraryFor(dataSource, "obj"));
                                             	}else{
                                             		fileUrl = checkURL(edgeLabel + "/volume.obj");
                                             		if (fileUrl != null){
@@ -328,7 +331,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 	                            						objVar.setId(variable.getId() + "_obj");
 	                            						objVar.setName("3D Volume");
 	                            						type.getVariables().add(objVar);
-	                            						System.out.println(getLibraryFor(dataSource, "obj"));
 	                                            	}
                                             	}
                                             	fileUrl = checkURL(edgeLabel + "/volume.swc");
@@ -344,7 +346,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                 					swcVar.setName("3D Skeleton");
                                 					swcVar.setId(tempId + "_swc");
                                 					type.getVariables().add(swcVar);
-                                					System.out.println(swcVar);
                                             	}
                                             	fileUrl = checkURL(edgeLabel + "/volume.wlz");
                                             	if(fileUrl != null)
@@ -362,7 +363,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                 					slicesVar.getInitialValues().put(slicesType, slicesValue);
                                 					geppettoModelAccess.addTypeToLibrary(slicesType, getLibraryFor(dataSource, "wlz"));
                                 					type.getVariables().add(slicesVar);
-                                					System.out.println(slicesVar);
                                 				}
                                 				if (((Map<String, Object>) resultLinks.get(i)).get("tempIm") != null)
                                 				{
@@ -456,6 +456,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     HTML synValue = ValuesFactory.eINSTANCE.createHTML();
                     synValue.setHtml(StringUtils.join(synonyms,", "));
                     synVar.getInitialValues().put(htmlType, synValue);
+                    System.out.println(StringUtils.join(synonyms,", "));
                 }
 
                 // set examples:
@@ -473,6 +474,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     HTML typesValue = ValuesFactory.eINSTANCE.createHTML();
                     typesValue.setHtml(types);
                     typesVar.getInitialValues().put(htmlType, typesValue);
+                    System.out.println(types);
                 }
 
                 // set relationships
@@ -486,6 +488,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     HTML relValue = ValuesFactory.eINSTANCE.createHTML();
                     relValue.setHtml(relationships);
                     relVar.getInitialValues().put(htmlType, relValue);
+                    System.out.println(relationships);
                 }
 
                 // set queries
@@ -499,25 +502,25 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 //                int subClassOf = 0;
                
                 if (overlapedBy > 0){
-                	querys += "<span class=\"badge\">" + String.valueOf(overlapedBy) + "</span> Overlap Query"; //TODO add actual query;
+                	querys += "<span class=\"badge\">" + String.valueOf(overlapedBy) + "</span> Overlap Query<br/>"; //TODO add actual query;
                 }
                 if (partOf > 0){
-                	querys += "<span class=\"badge\">" + String.valueOf(partOf) + "</span> SubParts Query"; //TODO add actual query;
+                	querys += "<span class=\"badge\">" + String.valueOf(partOf) + "</span> SubParts Query<br/>"; //TODO add actual query;
                 }
                 if (instanceOf > 0){
-                	querys += "<span class=\"badge\">" + String.valueOf(instanceOf) + "</span> instancesOf Query"; //TODO add actual query;
+                	querys += "<span class=\"badge\">" + String.valueOf(instanceOf) + "</span> instancesOf Query<br/>"; //TODO add actual query;
                 }
                 if (hasPreSynap > 0){
-                	querys += "<span class=\"badge\">" + String.valueOf(hasPreSynap) + "</span> PreSynaptic terminals in Query"; //TODO add actual query;
+                	querys += "<span class=\"badge\">" + String.valueOf(hasPreSynap) + "</span> PreSynaptic terminals in Query<br/>"; //TODO add actual query;
                 }
                 if (hasPostSynap > 0){
-                	querys += "<span class=\"badge\">" + String.valueOf(hasPostSynap) + "</span> PostSynaptic terminals in Query"; //TODO add actual query;
+                	querys += "<span class=\"badge\">" + String.valueOf(hasPostSynap) + "</span> PostSynaptic terminals in Query<br/>"; //TODO add actual query;
                 }
                 if (hasSynap > 0){
-                	querys += "<span class=\"badge\">" + String.valueOf(hasSynap) + "</span> Synaptic terminals in Query"; //TODO add actual query;
+                	querys += "<span class=\"badge\">" + String.valueOf(hasSynap) + "</span> Synaptic terminals in Query<br/>"; //TODO add actual query;
                 }
                 if (subClassOf > 0){
-                	querys += "<span class=\"badge\">" + String.valueOf(subClassOf) + "</span> SubClass Query"; //TODO add actual query;
+                	querys += "<span class=\"badge\">" + String.valueOf(subClassOf) + "</span> SubClass Query<br/>"; //TODO add actual query;
                 }
                 
                 if (querys != ""){
@@ -527,8 +530,9 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 	queryVar.getTypes().add(htmlType);
 					metaData.getVariables().add(queryVar);	
 					HTML queryValue = ValuesFactory.eINSTANCE.createHTML();
-					queryValue.setHtml(tempLink);
+					queryValue.setHtml(querys);
 					queryVar.getInitialValues().put(htmlType, queryValue);
+					System.out.println(querys);
                 }
                 
                 
@@ -543,6 +547,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     desc = highlightLinks(desc);
                     descriptionValue.setHtml(desc);
                     description.getInitialValues().put(htmlType, descriptionValue);
+                    System.out.println(desc);
                 }
 
                 // set references:
@@ -557,6 +562,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 					HTML tempValue = ValuesFactory.eINSTANCE.createHTML();
 					tempValue.setHtml(tempLink);
 					tempVar.getInitialValues().put(htmlType, tempValue);
+					System.out.println(tempLink);
                 }
 				
                 // set licensing:
@@ -572,6 +578,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 					HTML downloadValue = ValuesFactory.eINSTANCE.createHTML();
 					downloadValue.setHtml(downloadLink);
 					downloads.getInitialValues().put(htmlType, downloadValue);
+					System.out.println(downloadLink);
                 }
                 
                 // set linkouts:
