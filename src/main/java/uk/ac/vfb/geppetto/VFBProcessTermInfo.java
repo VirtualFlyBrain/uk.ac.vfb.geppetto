@@ -98,7 +98,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
             Type textType = geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE);
             Type htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
             Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
-
+            System.out.println("checking Node...");
             // Extract metadata
             if (results.getValue("node", 0) != null) {
             	System.out.println("Extracting Metadata...");
@@ -595,6 +595,8 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 
 
         } catch (GeppettoVisitingException e) {
+        	System.out.println("Error creating metadata: " + e.toString());
+        	e.printStackTrace();
             throw new GeppettoDataSourceException(e);
         }
 
