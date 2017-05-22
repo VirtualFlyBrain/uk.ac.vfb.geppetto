@@ -144,6 +144,8 @@ public class MultipleQueriesVFBQueryTest
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbAberOWLQueryProcessor"));
 		retrievedContext = ApplicationListenerBean.getApplicationContext("vfbCreateImagesForQueryResultsQueryProcessor");
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbCreateImagesForQueryResultsQueryProcessor"));
+		retrievedContext = ApplicationListenerBean.getApplicationContext("vfbProcessTermInfo");
+		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbProcessTermInfo"));
 
 	}
 

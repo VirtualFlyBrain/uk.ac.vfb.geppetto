@@ -135,6 +135,8 @@ public class VFBQueryTest
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbImportTypesExtLinkQueryProcessor"));
 		retrievedContext = ApplicationListenerBean.getApplicationContext("vfbImportTypesRefsQueryProcessor");
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbImportTypesRefsQueryProcessor"));
+		retrievedContext = ApplicationListenerBean.getApplicationContext("vfbProcessTermInfo");
+		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbProcessTermInfo"));
 	}
 
 	/**

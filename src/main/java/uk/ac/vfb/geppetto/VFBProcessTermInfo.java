@@ -125,7 +125,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 
                 geppettoModelAccess.setObjectAttribute(variable, GeppettoPackage.Literals.NODE__NAME, tempName);
                 CompositeType type = TypesFactory.eINSTANCE.createCompositeType();
-                type.setId(variable.getId());
+                type.setId(tempId);
                 variable.getAnonymousTypes().add(type);
 
                 // add supertypes
@@ -155,10 +155,10 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 metaDataVar.setId("metaDataVar");
                 CompositeType metaData = TypesFactory.eINSTANCE.createCompositeType();
                 metaDataVar.getTypes().add(metaData);
-                metaDataVar.setId(variable.getId() + "_meta");
-                metaData.setId(variable.getId() + "_metadata");
+                metaDataVar.setId(tempId + "_meta");
+                metaData.setId(tempId + "_metadata");
                 metaData.setName("Info");
-                metaDataVar.setName(variable.getName());
+                metaDataVar.setName(tempName);
 
                 // set meta label/name:
                 Variable label = VariablesFactory.eINSTANCE.createVariable();
@@ -319,7 +319,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                             						objImportType.setModelInterpreterId("objModelInterpreterService");
                             						objVar.getTypes().add(objImportType);	
                             						geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
-                            						objVar.setId(variable.getId() + "_obj");
+                            						objVar.setId(tempId + "_obj");
                             						objVar.setName("3D Volume");
                             						type.getVariables().add(objVar);
                                             	}else{
@@ -333,7 +333,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 	                            						objImportType.setModelInterpreterId("objModelInterpreterService");
 	                            						objVar.getTypes().add(objImportType);
 	                            						geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
-	                            						objVar.setId(variable.getId() + "_obj");
+	                            						objVar.setId(tempId + "_obj");
 	                            						objVar.setName("3D Volume");
 	                            						type.getVariables().add(objVar);
 	                                            	}
@@ -361,12 +361,11 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                 					Image slicesValue = ValuesFactory.eINSTANCE.createImage();
                                 					slicesValue.setData(new Gson().toJson(new IIPJSON(0,"https://www.virtualflybrain.org/fcgi/wlziipsrv.fcgi", fileUrl.replace("http://www.virtualflybrain.org/data/", "/disk/data/VFB/IMAGE_DATA/"), domains)));
                                 					slicesValue.setFormat(ImageFormat.IIP);
-                                					slicesValue.setReference(variable.getId());
-                                					slicesVar.setId(variable.getId() + "_slices");
+                                					slicesValue.setReference(tempId);
+                                					slicesVar.setId(tempId + "_slices");
                                 					slicesVar.setName("Stack Viewer Slices");
                                 					slicesVar.getTypes().add(slicesType);
                                 					slicesVar.getInitialValues().put(slicesType, slicesValue);
-                                					geppettoModelAccess.addTypeToLibrary(slicesType, getLibraryFor(dataSource, "wlz"));
                                 					type.getVariables().add(slicesVar);
                                 				}
                                 				if (((Map<String, Object>) resultLinks.get(i)).get("tempIm") != null)
@@ -384,7 +383,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                 				fileUrl = checkURL(edgeLabel + "/volume.nrrd");
                                             	if (fileUrl != null){
                                             		System.out.println("Adding NRRD " + fileUrl);
-                                					downloadLink = "Aligned Image: ​<a download=\"" + (String) variable.getId() + ".nrrd\" href=\"" + fileUrl + "\">" + (String) variable.getId() + ".nrrd</a><br/>​​​​​​​​​​​​​​​​​​​​​​​​​​​";
+                                					downloadLink = "Aligned Image: ​<a download=\"" + (String) tempId + ".nrrd\" href=\"" + fileUrl + "\">" + (String) tempId + ".nrrd</a><br/>​​​​​​​​​​​​​​​​​​​​​​​​​​​";
                                 					downloadLink += "Note: see licensing section for reuse and attribution info."; 
                                             	}
                                             }
@@ -591,7 +590,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 type.getVariables().add(metaDataVar);
                 geppettoModelAccess.addTypeToLibrary(metaData, dataSource.getTargetLibrary());
                 
-                
+                System.out.println(GeppettoSerializer.serializeToJSON(variable, false));
 
             }else{
             	System.out.println("Error node not returned: " + results.eAllContents().toString());
