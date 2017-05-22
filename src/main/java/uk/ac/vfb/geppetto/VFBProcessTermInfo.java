@@ -51,9 +51,9 @@ public class VFBProcessTermInfo extends AQueryProcessor {
     public QueryResults process(ProcessQuery query, DataSource dataSource, Variable variable, QueryResults results, GeppettoModelAccess geppettoModelAccess) throws GeppettoDataSourceException {
 
 //		Generic Anatomy Term Info
-        String tempId = "";
+        String tempId = "xxxxx";
 //		Name: fubar (fbbt_1234567) (all on one line)
-        String tempName = "";
+        String tempName = "not found";
 //		Alt_names: barfu (microref), BARFUS (microref) - comma separate (microrefs link down to ref list). Hover-over => scope
         List<String> synonyms = new ArrayList<>();
 //      Thumbnail
@@ -105,7 +105,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 String labelLink = "";
                 if (resultNode.get("label") != null) {
                     tempName = (String) resultNode.get("label");
-                } else if (resultNode.get("name") != null) {
+                }else if(resultNode.get("name") != null) {
                     tempName = (String) resultNode.get("name");
                 }
                 if (resultNode.get("short_form") != null) {
