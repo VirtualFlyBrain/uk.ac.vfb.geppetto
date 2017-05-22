@@ -167,7 +167,6 @@ public class CrossDataSourceVFBQueryTest
 		Integer i = 0;
 		for (Query query : model.getQueries()) {
 			String q = query.getId();
-			System.out.println("Query #" + Integer.toString(i) + ", id:" + q);
 			if (avQ.containsKey(q)) {
 				System.out.println("Duplicate query id: " + q);
 			} else {

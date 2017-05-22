@@ -26,9 +26,11 @@ import org.geppetto.model.values.Text;
 import org.geppetto.model.values.ValuesFactory;
 import org.geppetto.model.variables.Variable;
 import org.geppetto.model.variables.VariablesFactory;
+import org.geppetto.core.model.GeppettoSerializer;
 
 import com.google.gson.Gson;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -92,9 +94,11 @@ public class VFBProcessTermInfo extends AQueryProcessor {
         int i = 0;
         int j = 0;
 
-        System.out.println("Creating Variable from " + String.valueOf(results));
+        System.out.println("Creating Variable from:");
+        
 
         try {
+        	System.out.println(GeppettoSerializer.serializeToJSON(variable, false));
             Type textType = geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE);
             Type htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
             Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
@@ -598,7 +602,10 @@ public class VFBProcessTermInfo extends AQueryProcessor {
         	System.out.println("Error creating metadata: " + e.toString());
         	e.printStackTrace();
             throw new GeppettoDataSourceException(e);
-        }
+        } catch (IOException e1) {
+        	System.out.println("IO Error creating metadata: " + e1.toString());
+        	e1.printStackTrace();
+		}
 
         return results;
     }
