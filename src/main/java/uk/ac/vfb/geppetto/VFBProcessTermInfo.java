@@ -286,13 +286,13 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                             edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_"); 
                                             String fileUrl = checkURL(edgeLabel + "/thumbnail.png");
                                             if (fileUrl != null){
-                                            	System.out.println("Adding thumbnail...");
+                                            	System.out.println("Adding thumbnail " + fileUrl);
                             					thumbnailVar.setId("thumbnail");
                             					thumbnailVar.setName("Thumbnail");
                             					thumbnailVar.getTypes().add(imageType);
-                            					thumbnailValue.setName(variable.getName());
+                            					thumbnailValue.setName(tempName);
                             					thumbnailValue.setData(fileUrl);
-                            					thumbnailValue.setReference(variable.getId());
+                            					thumbnailValue.setReference(tempId);
                             					thumbnailValue.setFormat(ImageFormat.PNG);
                             					thumbnailVar.getInitialValues().put(imageType, thumbnailValue);
                             					thumb = true;
@@ -302,51 +302,54 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                             }else{
                                             	fileUrl = checkURL(edgeLabel + "/volume_man.obj");
                                             	if (fileUrl != null){
-                                            		System.out.println("Adding man OBJ...");
+                                            		System.out.println("Adding man OBJ " + fileUrl);
                             						Variable objVar = VariablesFactory.eINSTANCE.createVariable();
                             						ImportType objImportType = TypesFactory.eINSTANCE.createImportType();
                             						objImportType.setUrl(fileUrl);
-                            						objImportType.setId(variable.getId() + "_obj");
+                            						objImportType.setId(tempId + "_obj");
                             						objImportType.setModelInterpreterId("objModelInterpreterService");
                             						objVar.getTypes().add(objImportType);	
                             						geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
                             						objVar.setId(variable.getId() + "_obj");
                             						objVar.setName("3D Volume");
                             						type.getVariables().add(objVar);
+                            						System.out.println(getLibraryFor(dataSource, "obj"));
                                             	}else{
                                             		fileUrl = checkURL(edgeLabel + "/volume.obj");
                                             		if (fileUrl != null){
-                                            			System.out.println("Adding OBJ...");
+                                            			System.out.println("Adding OBJ " + fileUrl);
 	                            						Variable objVar = VariablesFactory.eINSTANCE.createVariable();
 	                            						ImportType objImportType = TypesFactory.eINSTANCE.createImportType();
 	                            						objImportType.setUrl(fileUrl);
-	                            						objImportType.setId(variable.getId() + "_obj");
+	                            						objImportType.setId(tempId + "_obj");
 	                            						objImportType.setModelInterpreterId("objModelInterpreterService");
 	                            						objVar.getTypes().add(objImportType);
 	                            						geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
 	                            						objVar.setId(variable.getId() + "_obj");
 	                            						objVar.setName("3D Volume");
 	                            						type.getVariables().add(objVar);
+	                            						System.out.println(getLibraryFor(dataSource, "obj"));
 	                                            	}
                                             	}
                                             	fileUrl = checkURL(edgeLabel + "/volume.swc");
                                             	if (fileUrl != null){
-                                            		System.out.println("Adding SWC...");
+                                            		System.out.println("Adding SWC " + fileUrl);
                                 					Variable swcVar = VariablesFactory.eINSTANCE.createVariable();
                                 					ImportType swcImportType = TypesFactory.eINSTANCE.createImportType();
                                 					swcImportType.setUrl(fileUrl);
-                                					swcImportType.setId(variable.getId() + "_swc");
+                                					swcImportType.setId(tempId + "_swc");
                                 					swcImportType.setModelInterpreterId("swcModelInterpreter");
                                 					swcVar.getTypes().add(swcImportType);
-                                					swcVar.setName("3D Skeleton");
                                 					geppettoModelAccess.addTypeToLibrary(swcImportType, getLibraryFor(dataSource, "swc"));
-                                					swcVar.setId(variable.getId() + "_swc");
+                                					swcVar.setName("3D Skeleton");
+                                					swcVar.setId(tempId + "_swc");
                                 					type.getVariables().add(swcVar);
+                                					System.out.println(swcVar);
                                             	}
                                             	fileUrl = checkURL(edgeLabel + "/volume.wlz");
                                             	if(fileUrl != null)
                                 				{
-                                					System.out.println("Adding Woolz...");
+                                					System.out.println("Adding Woolz " + fileUrl);
                                 					Variable slicesVar = VariablesFactory.eINSTANCE.createVariable();
                                 					ImageType slicesType = (ImageType) geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
                                 					Image slicesValue = ValuesFactory.eINSTANCE.createImage();
@@ -357,6 +360,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                 					slicesVar.setName("Stack Viewer Slices");
                                 					slicesVar.getTypes().add(slicesType);
                                 					slicesVar.getInitialValues().put(slicesType, slicesValue);
+                                					geppettoModelAccess.addTypeToLibrary(slicesType, getLibraryFor(dataSource, "wlz"));
                                 					type.getVariables().add(slicesVar);
                                 					System.out.println(slicesVar);
                                 				}
@@ -374,7 +378,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                 				}
                                 				fileUrl = checkURL(edgeLabel + "/volume.nrrd");
                                             	if (fileUrl != null){
-                                            		System.out.println("Adding NRRD...");
+                                            		System.out.println("Adding NRRD " + fileUrl);
                                 					downloadLink = "Aligned Image: ​<a download=\"" + (String) variable.getId() + ".nrrd\" href=\"" + fileUrl + "\">" + (String) variable.getId() + ".nrrd</a><br/>​​​​​​​​​​​​​​​​​​​​​​​​​​​";
                                 					downloadLink += "Note: see licensing section for reuse and attribution info."; 
                                             	}
@@ -683,6 +687,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 				return lc.getLibrary();
 			}
 		}
+		System.out.println(format + " Not Found!");
 		return null;
 	}
 
