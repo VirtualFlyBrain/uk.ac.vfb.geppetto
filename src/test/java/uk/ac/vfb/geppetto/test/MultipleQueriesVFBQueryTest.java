@@ -62,6 +62,9 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 import uk.ac.vfb.geppetto.*;
 
+import org.geppetto.model.values.Pointer;
+import org.geppetto.model.values.PointerElement;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -169,7 +172,6 @@ public class MultipleQueriesVFBQueryTest
 		Integer i = 0;
 		for (Query query : model.getQueries()) {
 			String q = query.getId();
-			System.out.println("Query #" + Integer.toString(i) + ", id:" + q);
 			if (avQ.containsKey(q)) {
 				System.out.println("Duplicate query id: " + q);
 			} else {
@@ -177,9 +179,13 @@ public class MultipleQueriesVFBQueryTest
 			}
 			i++;
 		}
+		
+		System.out.println(GeppettoSerializer.serializeToJSON(model, true));
 
 		neo4JDataSource.fetchVariable("FBbt_00003748");
 		neo4JDataSource.fetchVariable("FBbt_00003852");
+		
+		System.out.println(GeppettoSerializer.serializeToJSON(model, true));
 
 		Variable variable1 = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
 		Variable variable2 = geppettoModelAccess.getPointer("FBbt_00003852").getElements().get(0).getVariable();
@@ -240,11 +246,15 @@ public class MultipleQueriesVFBQueryTest
             }
             i++;
         }
+        
+        System.out.println(GeppettoSerializer.serializeToJSON(model, false));
 
 		neo4JDataSource.fetchVariable("FBbt_00003748");
 		neo4JDataSource.fetchVariable("FBbt_00045048");
-
-		Variable variable1 = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
+		
+		System.out.println(GeppettoSerializer.serializeToJSON(model, false));
+			
+   		Variable variable1 = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
 		Variable variable2 = geppettoModelAccess.getPointer("FBbt_00045048").getElements().get(0).getVariable();
 
 		EList<RunnableQuery> runnableQueriesEMF = new BasicEList<RunnableQuery>();
