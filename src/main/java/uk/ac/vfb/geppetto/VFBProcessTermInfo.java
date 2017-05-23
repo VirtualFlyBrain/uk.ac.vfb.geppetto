@@ -103,6 +103,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
             Type htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
             Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
             System.out.println("checking Node...");
+            
             // Extract metadata
             if (results.getValue("node", 0) != null) {
                 System.out.println("Extracting Metadata...");
@@ -173,17 +174,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 labelValue.setHtml(labelLink);
                 geppettoModelAccess.addVariableToType(label, metaData);
                 System.out.println(labelLink);
-
-
-                // set meta id:
-                Variable metaID = VariablesFactory.eINSTANCE.createVariable();
-                metaID.setId("id");
-                metaID.setName("ID");
-                metaID.getTypes().add(htmlType);
-                metaData.getVariables().add(metaID);
-                HTML metaIdValue = ValuesFactory.eINSTANCE.createHTML();
-                String idLink = "<a href=\"#\" instancepath=\"" + (String) tempId + "\">" + tempId + "</a>";
-                metaIdValue.setHtml(idLink);
 
 
                 // get alt names
