@@ -37,8 +37,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -86,7 +88,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 //		Description
         String desc = "";
 //		References
-        String refs = "";
+        List<String> refs = new ArrayList<>();
 //		Linkouts
         String links = "";
 //      Download
@@ -239,23 +241,119 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                     case "has_reference":
                                         edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("typ"));
                                         if ("syn".equals(edgeLabel)) {
-                                            for (int s = 0; s < synonyms.size(); s++) {
-                                                if (synonyms.get(s).equals((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("synonym"))) {
-                                                    if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).containsKey("microref")) {
-                                                        synonyms.set(s, synonyms.get(s) + " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("microref")) + ")"); // TODO: add hyperlink
-                                                    } else if ((!"null".equals((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref"))) && (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref") != null)) {
-                                                        synonyms.set(s, synonyms.get(s) + " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) + ")"); // TODO: add hyperlink
+                                        	if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) != null){
+                                        		edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref"));
+                                        		if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) != null)
+            									{
+                                        			edgeLabel += " <a href=\"http://flybase.org/reports/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) + "\" target=\"_blank\" >"
+            												+ "<i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) + "\" aria-hidden=\"true\"></i></a>";
+            									}
+            									if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) != null)
+            									{
+            										edgeLabel += " <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" target=\"_blank\" >"
+            												+ "<i class=\"popup-icon-link gpt-pubmed\" title=\"PMID:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" aria-hidden=\"true\"></i></a>";
+            									}
+            									if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) != null)
+            									{
+            										edgeLabel += " <a href=\"http://dx.doi.org/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" target=\"_blank\" >"
+            												+ "<i class=\"popup-icon-link gpt-doi\" title=\"doi:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" aria-hidden=\"true\"></i></a>";
+            									}
+                                        		for (int s = 0; s < synonyms.size(); s++) {
+                                                    if (synonyms.get(s).equals((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("synonym"))) {
+                                                        if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).containsKey("microref")) {
+                                                            synonyms.set(s, synonyms.get(s) + " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("microref")) + ")"); // TODO: add hyperlink
+                                                        } else if ((!"null".equals((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref"))) && (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref") != null)) {
+                                                            synonyms.set(s, synonyms.get(s) + " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) + ")"); // TODO: add hyperlink
+                                                        } 
                                                     }
                                                 }
+                                        	}else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http")) != null) {
+                                        		edgeLabel = "<a href=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http")) + "\" target=\"_blank\" >"
+                                        				+ ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http")) + "</a>";
+                                        		for (int s = 0; s < synonyms.size(); s++) {
+                                                    if (synonyms.get(s).equals((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("synonym"))) {
+                                                    	synonyms.set(s, synonyms.get(s) + " (" + edgeLabel + ")"); 
+                                                    }
+                                                }
+                                        	}else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) != null) {
+                                        		edgeLabel = "<a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" target=\"_blank\" >"
+        												+ "PMID:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "</a>";
+                                        		for (int s = 0; s < synonyms.size(); s++) {
+                                                    if (synonyms.get(s).equals((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("synonym"))) {
+                                                    	synonyms.set(s, synonyms.get(s) + " (" + edgeLabel + ")"); 
+                                                    }
+                                                }
+                                        	}
+                                            if (!"syn".equals(edgeLabel)){
+                                            	refs.add(edgeLabel);
                                             }
                                         } else if ("def".equals(edgeLabel)) {
-                                            if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).containsKey("microref")) {
-                                                desc += " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("microref")) + ")"; // TODO: add hyperlink
-                                            } else {
-                                                desc += " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) + ")"; // TODO: add hyperlink
+                                        	if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) != null){
+                                        		edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref"));
+                                        		if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) != null)
+            									{
+                                        			edgeLabel += " <a href=\"http://flybase.org/reports/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) + "\" target=\"_blank\" >"
+            												+ "<i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) + "\" aria-hidden=\"true\"></i></a>";
+            									}
+            									if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) != null)
+            									{
+            										edgeLabel += " <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" target=\"_blank\" >"
+            												+ "<i class=\"popup-icon-link gpt-pubmed\" title=\"PMID:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" aria-hidden=\"true\"></i></a>";
+            									}
+            									if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) != null)
+            									{
+            										edgeLabel += " <a href=\"http://dx.doi.org/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" target=\"_blank\" >"
+            												+ "<i class=\"popup-icon-link gpt-doi\" title=\"doi:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" aria-hidden=\"true\"></i></a>";
+            									}
+            									if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).containsKey("microref")) {
+                                                    desc += " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("microref")) + ")"; // TODO: add hyperlink
+                                                } else {
+                                                    desc += " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) + ")"; // TODO: add hyperlink
+                                                }
+                                        	}else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http")) != null) {
+                                        		edgeLabel = "<a href=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http")) + "\" target=\"_blank\" >"
+                                        				+ ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http")) + "</a>";
+                                        		desc += " (" + edgeLabel + ")";
+                                        	}else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) != null) {
+                                        		edgeLabel = "<a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" target=\"_blank\" >"
+        												+ "PMID:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "</a>";
+                                        		desc += " (" + edgeLabel + ")";
+                                        	}
+                                        	if (!"def".equals(edgeLabel)){
+                                            	refs.add(edgeLabel);
                                             }
                                         } else {
-                                            System.out.println("Has_reference from node " + String.valueOf(resultLinks.get(i)));
+                                        	edgeLabel = ""
+                                        	if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) != null){
+                                        		edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref"));
+                                        		if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) != null)
+            									{
+                                        			edgeLabel += " <a href=\"http://flybase.org/reports/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) + "\" target=\"_blank\" >"
+            												+ "<i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) + "\" aria-hidden=\"true\"></i></a>";
+            									}
+            									if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) != null)
+            									{
+            										edgeLabel += " <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" target=\"_blank\" >"
+            												+ "<i class=\"popup-icon-link gpt-pubmed\" title=\"PMID:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" aria-hidden=\"true\"></i></a>";
+            									}
+            									if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) != null)
+            									{
+            										edgeLabel += " <a href=\"http://dx.doi.org/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" target=\"_blank\" >"
+            												+ "<i class=\"popup-icon-link gpt-doi\" title=\"doi:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" aria-hidden=\"true\"></i></a>";
+            									}
+            									
+                                        	}else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http")) != null) {
+                                        		edgeLabel = "<a href=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http")) + "\" target=\"_blank\" >"
+                                        				+ ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http")) + "</a>";
+                                        		
+                                        	}else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) != null) {
+                                        		edgeLabel = "<a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" target=\"_blank\" >"
+        												+ "PMID:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "</a>";
+                                        		
+                                        	}
+                                        	if (!"".equals(edgeLabel)){
+                                            	refs.add(edgeLabel);
+                                            }
                                         }
                                         break;
                                     default:
@@ -501,7 +599,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 }
 
                 // set relationships
-                // set types:
+                
                 if (relationships != "") {
                     Variable relVar = VariablesFactory.eINSTANCE.createVariable();
                     relVar.setId("relationships");
@@ -516,14 +614,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 }
 
                 // set queries
-//                String querys = "";
-//                int overlapedBy = 0;
-//                int partOf = 0;
-//                int instanceOf = 0;
-//                int hasPreSynap = 0;
-//                int hasPostSynap = 0;
-//                int hasSynap = 0;
-//                int subClassOf = 0;
                 String badge = "";
                 for(Query runnableQuery : geppettoModelAccess.getQueries())
     			{
@@ -601,6 +691,23 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 }
 
                 // set references:
+                if (refs.size() > 0){
+                	Set<String> hs = new HashSet<>();
+                	hs.addAll(refs);
+                	refs.clear();
+                	refs.addAll(hs);
+                	String references = StringUtils.join(refs, "<br/>");
+                	Variable refVar = VariablesFactory.eINSTANCE.createVariable();
+                	refVar.setId("template");
+                	refVar.setName("Aligned to");
+                	refVar.getTypes().add(htmlType);
+                    HTML refValue = ValuesFactory.eINSTANCE.createHTML();
+                    refValue.setHtml(references);
+                    refVar.getInitialValues().put(htmlType, refValue);
+                    metaData.getVariables().add(refVar);
+                    System.out.println(references);
+                }
+                
 
                 // set template space:
                 if (tempLink != "") {
@@ -608,7 +715,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     tempVar.setId("template");
                     tempVar.setName("Aligned to");
                     tempVar.getTypes().add(htmlType);
-//					metaData.getVariables().add(tempVar);	
                     HTML tempValue = ValuesFactory.eINSTANCE.createHTML();
                     tempValue.setHtml(tempLink);
                     tempVar.getInitialValues().put(htmlType, tempValue);
