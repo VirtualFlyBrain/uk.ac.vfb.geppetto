@@ -1,6 +1,7 @@
 package uk.ac.vfb.geppetto;
 
 import org.geppetto.core.datasources.GeppettoDataSourceException;
+import org.geppetto.core.datasources.QueryChecker;
 import org.geppetto.core.model.GeppettoModelAccess;
 import org.geppetto.core.model.GeppettoSerializer;
 import org.geppetto.datasources.AQueryProcessor;
@@ -9,6 +10,7 @@ import org.geppetto.model.GeppettoPackage;
 import org.geppetto.model.datasources.DataSource;
 import org.geppetto.model.datasources.DataSourceLibraryConfiguration;
 import org.geppetto.model.datasources.ProcessQuery;
+import org.geppetto.model.datasources.Query;
 import org.geppetto.model.datasources.QueryResults;
 import org.geppetto.model.types.CompositeType;
 import org.geppetto.model.types.ImageType;
@@ -522,28 +524,54 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 //                int hasPostSynap = 0;
 //                int hasSynap = 0;
 //                int subClassOf = 0;
-
-                if (overlapedBy > 0) {
-                    querys += "<span class=\"badge\">" + String.valueOf(overlapedBy) + "</span> Overlap Query<br/>"; //TODO add actual query;
-                }
-                if (partOf > 0) {
-                    querys += "<span class=\"badge\">" + String.valueOf(partOf) + "</span> SubParts Query<br/>"; //TODO add actual query;
-                }
-                if (instanceOf > 0) {
-                    querys += "<span class=\"badge\">" + String.valueOf(instanceOf) + "</span> instancesOf Query<br/>"; //TODO add actual query;
-                }
-                if (hasPreSynap > 0) {
-                    querys += "<span class=\"badge\">" + String.valueOf(hasPreSynap) + "</span> PreSynaptic terminals in Query<br/>"; //TODO add actual query;
-                }
-                if (hasPostSynap > 0) {
-                    querys += "<span class=\"badge\">" + String.valueOf(hasPostSynap) + "</span> PostSynaptic terminals in Query<br/>"; //TODO add actual query;
-                }
-                if (hasSynap > 0) {
-                    querys += "<span class=\"badge\">" + String.valueOf(hasSynap) + "</span> Synaptic terminals in Query<br/>"; //TODO add actual query;
-                }
-                if (subClassOf > 0) {
-                    querys += "<span class=\"badge\">" + String.valueOf(subClassOf) + "</span> SubClass Query<br/>"; //TODO add actual query;
-                }
+                String badge = "";
+                for(Query runnableQuery : geppettoModelAccess.getQueries())
+    			{
+    				if(QueryChecker.check(runnableQuery, variable))
+    				{
+    					
+    					switch ((String) runnableQuery.getPath()) {
+    					case "partsof":
+    						if (partOf > 0) {
+    		                    badge = "<span class=\"badge\">&gt;" + String.valueOf(partOf) + "</span>";
+    		                    break;
+    		                }
+    					case "ImagesOfNeuronsWithSomePartHere":
+    						if (overlapedBy > 0) {
+    							badge = "<span class=\"badge\">&gt;" + String.valueOf(overlapedBy) + "</span>"; 
+    							break;
+    		                }
+    					case "subclasses":
+    						if (subClassOf > 0) {
+    							badge = "<span class=\"badge\">&gt;" + String.valueOf(subClassOf) + "</span>"; 
+    							break;
+    		                }
+    					case "neuronssynaptic":
+    						if (hasSynap > 0) {
+    							badge = "<span class=\"badge\">&gt;" + String.valueOf(hasSynap) + "</span>"; 
+    							break;
+    		                }
+    					case "neuronspresynaptic":
+    						if (hasPreSynap > 0) {
+    							badge = "<span class=\"badge\">&gt;" + String.valueOf(hasPreSynap) + "</span>"; 
+    							break;
+    		                }
+    					case "neuronspostsynaptic":
+    						if (hasPostSynap > 0) {
+    							badge = "<span class=\"badge\">&gt;" + String.valueOf(hasPostSynap) + "</span>"; 
+    							break;
+    		                }
+    					case "ListAllExamples":
+    						if (instanceOf > 0) {
+    							badge = "<span class=\"badge\">&gt;" + String.valueOf(instanceOf) + "</span>"; 
+    							break;
+    		                }
+    					default:
+    						badge = "<i class=\"popup-icon-link fa fa-cogs\" />";
+    					}
+    					querys += "badge<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
+    				}
+    			}
 
                 if (querys != "") {
                     Variable queryVar = VariablesFactory.eINSTANCE.createVariable();
