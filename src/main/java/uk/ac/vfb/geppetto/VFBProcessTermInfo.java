@@ -404,7 +404,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                                 thumbnailVar.setName("Thumbnail");
                                                 thumbnailVar.getTypes().add(imageType);
                                                 thumbnailValue.setName(tempName);
-                                                thumbnailValue.setData(fileUrl);
+                                                thumbnailValue.setData(fileUrl.replace("http://", "https://"));
                                                 thumbnailValue.setReference(tempId);
                                                 thumbnailValue.setFormat(ImageFormat.PNG);
                                                 thumbnailVar.getInitialValues().put(imageType, thumbnailValue);
@@ -485,6 +485,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                                     slicesVar.getTypes().add(imageType);
                                                     slicesVar.getInitialValues().put(imageType, slicesValue);
                                                     type.getVariables().add(slicesVar);
+                                                    
                                                 }
                                                 if (((Map<String, Object>) resultLinks.get(i)).get("tempIm") != null) {
                                                     System.out.println("Adding Template Space...");
@@ -659,7 +660,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
     					default:
     						badge = "<i class=\"popup-icon-link fa fa-cogs\" />";
     					}
-    					querys += "badge<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
+    					querys += badge + "<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
     				}
     			}
 
