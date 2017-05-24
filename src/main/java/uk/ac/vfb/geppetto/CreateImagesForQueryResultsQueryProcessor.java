@@ -107,6 +107,7 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 				if(!images.getElements().isEmpty())
 				{
 					exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), images);
+					processedResult.getValues().add(GeppettoSerializer.serializeToJSON(exampleVar));
 				}
 				else
 				{
