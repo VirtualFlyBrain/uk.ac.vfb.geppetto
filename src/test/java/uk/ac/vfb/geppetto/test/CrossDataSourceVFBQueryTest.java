@@ -177,11 +177,11 @@ public class CrossDataSourceVFBQueryTest
 			i++;
 		}
 
-		System.out.println(GeppettoSerializer.serializeToJSON(model, false));
+		
 		
 		neo4JDataSource.fetchVariable("FBbt_00003748");
 		
-		System.out.println(GeppettoSerializer.serializeToJSON(model, false));
+		
 
 		Variable variable = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
 

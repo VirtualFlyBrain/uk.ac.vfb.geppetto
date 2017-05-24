@@ -185,7 +185,6 @@ public class MultipleQueriesVFBQueryTest
 		neo4JDataSource.fetchVariable("FBbt_00003748");
 		neo4JDataSource.fetchVariable("FBbt_00003852");
 		
-		System.out.println(GeppettoSerializer.serializeToJSON(model, true));
 
 		Variable variable1 = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
 		Variable variable2 = geppettoModelAccess.getPointer("FBbt_00003852").getElements().get(0).getVariable();
