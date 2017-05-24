@@ -323,7 +323,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                             	refs.add(edgeLabel);
                                             }
                                         } else {
-                                        	edgeLabel = ""
+                                        	edgeLabel = "";
                                         	if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) != null){
                                         		edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref"));
                                         		if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) != null)
