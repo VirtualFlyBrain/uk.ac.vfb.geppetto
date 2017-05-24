@@ -179,13 +179,11 @@ public class MultipleQueriesVFBQueryTest
 			}
 			i++;
 		}
-		
-		System.out.println(GeppettoSerializer.serializeToJSON(model, true));
+
 
 		neo4JDataSource.fetchVariable("FBbt_00003748");
 		neo4JDataSource.fetchVariable("FBbt_00003852");
-		
-		System.out.println(GeppettoSerializer.serializeToJSON(model, true));
+
 
 		Variable variable1 = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
 		Variable variable2 = geppettoModelAccess.getPointer("FBbt_00003852").getElements().get(0).getVariable();
@@ -214,7 +212,6 @@ public class MultipleQueriesVFBQueryTest
 		Assert.assertEquals("Images", results.getHeader().get(3));
 		Assert.assertEquals(87, results.getResults().size());
 
-		System.out.println(GeppettoSerializer.serializeToJSON(results, true));
 
 	}
 
@@ -246,13 +243,11 @@ public class MultipleQueriesVFBQueryTest
             }
             i++;
         }
-        
-        System.out.println(GeppettoSerializer.serializeToJSON(model, false));
+
 
 		neo4JDataSource.fetchVariable("FBbt_00003748");
 		neo4JDataSource.fetchVariable("FBbt_00045048");
-		
-		System.out.println(GeppettoSerializer.serializeToJSON(model, false));
+
 			
    		Variable variable1 = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
 		Variable variable2 = geppettoModelAccess.getPointer("FBbt_00045048").getElements().get(0).getVariable();
@@ -281,7 +276,6 @@ public class MultipleQueriesVFBQueryTest
 		Assert.assertEquals("Images", results.getHeader().get(3));
 		Assert.assertEquals(84, results.getResults().size());
 
-		System.out.println(GeppettoSerializer.serializeToJSON(results, true));
 
 	}
 

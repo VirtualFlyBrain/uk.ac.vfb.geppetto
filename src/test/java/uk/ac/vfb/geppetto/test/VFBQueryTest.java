@@ -157,15 +157,12 @@ public class VFBQueryTest
 		Neo4jDataSourceService dataSource = new Neo4jDataSourceService();
 		dataSource.initialize(model.getDataSources().get(0), geppettoModelAccess);
 
-		System.out.println(GeppettoSerializer.serializeToJSON(model, true));
 
 		dataSource.fetchVariable("FBbt_00100219");
 
-		System.out.println(GeppettoSerializer.serializeToJSON(model, true));
 
 		dataSource.fetchVariable("VFB_00000001");
 
-		System.out.println(GeppettoSerializer.serializeToJSON(model, true));
 
 		// // Initialize the factory and the resource set
 		GeppettoPackage.eINSTANCE.eClass();
