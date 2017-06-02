@@ -75,7 +75,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 //		Types
         String types = "";
         String depictedType = "";
-        Boolean depicts = false;
 //		Relationships
         String relationships = "";
 //		Queries
@@ -225,7 +224,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
                                         if ("type".equals(edgeLabel)) {
                                         	depictedType += "<a href=\"#\" instancepath=\"" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + " (" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + ")</a><br/>";
-                                            depicts = true;
                                         } else {
                                             System.out.println("INSTANCEOF from node " + String.valueOf(resultLinks.get(i)));
                                         }
@@ -573,22 +571,20 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 }
 
 
-                if (depicts){
-                	
-                	// set depictedType:
-	                if (depictedType != "") {
-	                    Variable depictsVar = VariablesFactory.eINSTANCE.createVariable();
-	                    depictsVar.setId("type");
-	                    depictsVar.setName("Depicts");
-	                    depictsVar.getTypes().add(htmlType);
-	                    HTML depictsValue = ValuesFactory.eINSTANCE.createHTML();
-	                    depictsValue.setHtml(depictedType);
-	                    depictsVar.getInitialValues().put(htmlType, depictsValue);
-	                    metaData.getVariables().add(depictsVar);
-	                    System.out.println(depictedType);
-	                }
-	            	
+                // set depictedType:
+                if (depictedType != "") {
+                    Variable depictsVar = VariablesFactory.eINSTANCE.createVariable();
+                    depictsVar.setId("type");
+                    depictsVar.setName("Depicts");
+                    depictsVar.getTypes().add(htmlType);
+                    HTML depictsValue = ValuesFactory.eINSTANCE.createHTML();
+                    depictsValue.setHtml(depictedType);
+                    depictsVar.getInitialValues().put(htmlType, depictsValue);
+                    metaData.getVariables().add(depictsVar);
+                    System.out.println(depictedType);
                 }
+	            	
+               
                 
                 // set alt names:
                 if (synonyms.size() > 0) {
