@@ -74,6 +74,8 @@ public class VFBProcessTermInfo extends AQueryProcessor {
         List<List<String>> domains;
 //		Types
         String types = "";
+        String depictedType = "";
+        Boolean depicts = false;
 //		Relationships
         String relationships = "";
 //		Queries
@@ -98,6 +100,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 
         int i = 0;
         int j = 0;
+        int r = 0;
 
         System.out.println("Creating Variable from:");
 
@@ -199,8 +202,8 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 }
 
 
-                if (results.getValue("links", 0) != null) {
-                    List<Object> resultLinks = (List<Object>) results.getValue("links", 0);
+                while (results.getValue("links", r) != null) {
+                    List<Object> resultLinks = (List<Object>) results.getValue("links", r);
                     String edge = "";
                     String edgeLabel = "";
                     i = 0;
@@ -221,7 +224,8 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                     case "INSTANCEOF":
                                         edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
                                         if ("type".equals(edgeLabel)) {
-                                            types += "<a href=\"#\" instancepath=\"" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
+                                        	depictedType += "<a href=\"#\" instancepath=\"" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + " (" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + ")</a><br/>";
+                                            depicts = true;
                                         } else {
                                             System.out.println("INSTANCEOF from node " + String.valueOf(resultLinks.get(i)));
                                         }
@@ -565,9 +569,27 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                         }
                         i++;
                     }
+                    r++;
                 }
 
 
+                if (depicts){
+                	
+                	// set depictedType:
+	                if (depictedType != "") {
+	                    Variable depictsVar = VariablesFactory.eINSTANCE.createVariable();
+	                    depictsVar.setId("type");
+	                    depictsVar.setName("Depicts");
+	                    depictsVar.getTypes().add(htmlType);
+	                    HTML depictsValue = ValuesFactory.eINSTANCE.createHTML();
+	                    depictsValue.setHtml(depictedType);
+	                    depictsVar.getInitialValues().put(htmlType, depictsValue);
+	                    metaData.getVariables().add(depictsVar);
+	                    System.out.println(depictedType);
+	                }
+	            	
+                }
+                
                 // set alt names:
                 if (synonyms.size() > 0) {
                     Variable synVar = VariablesFactory.eINSTANCE.createVariable();
@@ -581,6 +603,8 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     System.out.println(StringUtils.join(synonyms, ", "));
                 }
 
+             
+                
                 // set examples:
                 if (thumb) {
                     geppettoModelAccess.addVariableToType(thumbnailVar, metaData);
@@ -742,6 +766,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 
                 // set linkouts:
 
+            
 
                 geppettoModelAccess.addTypeToLibrary(metaData, dataSource.getTargetLibrary());
 
