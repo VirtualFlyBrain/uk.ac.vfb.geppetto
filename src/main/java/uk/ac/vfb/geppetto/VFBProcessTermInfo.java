@@ -359,7 +359,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         }
                                         break;
                                     default:
-                                        relationships += edgeLabel.replace("_", " ") + " <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
+                                    	relationships = addUniqueToString(relationships, edgeLabel.replace("_", " ") + " <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
 
                                 }
                             } else {
@@ -521,9 +521,9 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         } else if ("has_synaptic_terminals_of".equals(edgeLabel)) {
                                             hasSynap += 1;
                                         } else if ("connected_to".equals(edgeLabel) || "connected to".equals(edgeLabel)) {
-                                            relationships += "connected to <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
+                                        	relationships = addUniqueToString(relationships, "connected to <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
                                         } else if ("innervates".equals(edgeLabel)) {
-                                            relationships += "innervated by <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
+                                        	relationships = addUniqueToString(relationships, "innervated by <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
                                         } else if ("has_member".equals(edgeLabel)) {
                                             //System.out.println("Ignoring reciprocal relationship");
                                         } else {
@@ -549,10 +549,10 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         hasSynap += 1;
                                         break;
                                     case "connected_to":
-                                        relationships += "connected to <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
+                                    	relationships = addUniqueToString(relationships, "connected to <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
                                         break;
                                     case "innervates":
-                                        relationships += "innervated by <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
+                                        relationships = addUniqueToString(relationships, "innervated by <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
                                         break;
                                     default:
                                         System.out.println("Can't handle link to node: " + edge + " " + String.valueOf(resultLinks.get(i)));
@@ -792,6 +792,13 @@ public class VFBProcessTermInfo extends AQueryProcessor {
             System.out.println("Error highlighting links in (" + text + ") " + e.toString());
             return text;
         }
+    }
+    
+    private String addUniqueToString(String concatList, String newItem) {
+        if (concatList.indexOf(newItem) > -1){
+        	return concatList;
+        }
+        return concatList + newItem;
     }
 
     private class IIPJSON {
