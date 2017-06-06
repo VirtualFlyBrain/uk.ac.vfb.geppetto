@@ -505,14 +505,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                                 }
                                                 if (((Map<String, Object>) resultLinks.get(i)).get("tempIm") != null) {
                                                 	String supertype = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("short_form");
-                                                    
-
-                                                    tempLink = "<a href=\"#\" instancepath=\"" + (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("short_form") + "\">" + (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("label") + "</a>";
-                                                    System.out.println("Adding Template Space (" + supertype + ")...");
-                                                    // Add template ID as supertype:
-
-                                                    metaDataType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
-                                                    System.out.println("Adding to SuperType: " + supertype);
+                                                	tempLink = "<a href=\"#\" instancepath=\"" + (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("short_form") + "\">" + (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("label") + "</a>";
                                                 }
                                                 fileUrl = checkURL(edgeLabel + "/volume.nrrd");
                                                 if (fileUrl != null) {
