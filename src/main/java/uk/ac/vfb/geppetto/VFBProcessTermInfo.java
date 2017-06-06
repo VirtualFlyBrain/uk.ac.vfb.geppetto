@@ -503,9 +503,9 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                                     metaDataType.getVariables().add(slicesVar);
                                                     
                                                 }
-                                                if (((Map<String, Object>) resultLinks.get(i)).get("tempIm") != null) {
-                                                	String supertype = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("short_form");
-                                                	tempLink = "<a href=\"#\" instancepath=\"" + (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("short_form") + "\">" + (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("label") + "</a>";
+                                                if (((Map<String, Object>) resultLinks.get(i)).get("temp") != null) {
+                                                	String supertype = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("short_form");
+                                                	tempLink = "<a href=\"#\" instancepath=\"" + supertype + "\">" + (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("label") + "</a>";
                                                 }
                                                 fileUrl = checkURL(edgeLabel + "/volume.nrrd");
                                                 if (fileUrl != null) {
