@@ -745,8 +745,8 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 	refs.addAll(hs);
                 	String references = StringUtils.join(refs, "<br/>");
                 	Variable refVar = VariablesFactory.eINSTANCE.createVariable();
-                	refVar.setId("template");
-                	refVar.setName("Aligned to");
+                	refVar.setId("references");
+                	refVar.setName("References");
                 	refVar.getTypes().add(htmlType);
                     HTML refValue = ValuesFactory.eINSTANCE.createHTML();
                     refValue.setHtml(references);
