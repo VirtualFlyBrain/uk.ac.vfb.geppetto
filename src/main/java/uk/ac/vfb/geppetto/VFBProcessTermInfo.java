@@ -510,7 +510,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 
                                                     // Add template ID as supertype:
 
-                                                    String supertype = (String) results.getValue("tempId", 0);
+                                                    String supertype = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("short_form");
                                                     metaDataType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
                                                     System.out.println("Adding to SuperType: " + supertype);
                                                 }
