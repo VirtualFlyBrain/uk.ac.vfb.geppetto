@@ -782,9 +782,9 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 // set linkouts:
 
             
-
+                metaDataType.getVariables().add(metaDataVar);
                 geppettoModelAccess.addTypeToLibrary(metaData, dataSource.getTargetLibrary());
-
+                System.out.println("MetaData Creation Finished");
             } else {
                 System.out.println("Error node not returned: " + results.eAllContents().toString());
             }
