@@ -96,6 +96,8 @@ public class VFBProcessTermInfo extends AQueryProcessor {
         String downloadLink = "";
 //      SuperTypes
         String superTypes = "";
+        boolean template = false;
+        boolean synapticNP = false;
 
         int i = 0;
         int j = 0;
@@ -136,7 +138,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 variable.getAnonymousTypes().add(metaDataType);
 
                 // add supertypes
-                boolean template = false;
+                
                 List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
                 if (results.getValue("labels", 0) != null) {
                     List<String> supertypes = (List<String>) results.getValue("labels", 0);
@@ -148,6 +150,9 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                         }
                         if (supertype.equals("Template")) {
                             template = true;
+                        }
+                        if (supertype.equals("Synaptic_neuropil_domain")) {
+                            synapticNP = true;
                         }
                     }
                 } else {
@@ -201,7 +206,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 }
 
 
-                while (results.getValue("links", r) != null) {
+                while (results.getValue("links", r) != null && (synapticNP || r < 1)) {
                     List<Object> resultLinks = (List<Object>) results.getValue("links", r);
                     String edge = "";
                     String edgeLabel = "";
@@ -243,6 +248,9 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                     case "has_reference":
                                         edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("typ"));
                                         if ("syn".equals(edgeLabel)) {
+                                        	if (!contains(synonyms,(String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("synonym"))){
+                                        		synonyms.add(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("synonym")));
+                                        	}
                                         	if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) != null){
                                         		edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref"));
                                         		if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) != null)
@@ -289,6 +297,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                             if (!"syn".equals(edgeLabel)){
                                             	refs.add(edgeLabel);
                                             }
+                                            break;
                                         } else if ("def".equals(edgeLabel)) {
                                         	if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) != null){
                                         		edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref"));
@@ -329,6 +338,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         	if (!"def".equals(edgeLabel)){
                                             	refs.add(edgeLabel);
                                             }
+                                        	break;
                                         } else {
                                         	edgeLabel = "";
                                         	if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) != null){
