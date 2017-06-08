@@ -278,8 +278,13 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                                     }
                                                 }
                                         	}else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http")) != null) {
-                                        		edgeLabel = "<a href=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http")) + "\" target=\"_blank\" >"
-                                        				+ ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http")) + "</a>";
+                                        		edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http"));
+                                        		if ("//".equals(edgeLabel.substring(0,2))){
+                                        			edgeLabel = "http:" + edgeLabel;
+                                        		}
+                                        		// TODO check link works!? (grey out if broken?)
+                                        		edgeLabel = "<a href=\"" + edgeLabel + "\" target=\"_blank\" >"
+                                        				+ edgeLabel.replace("http://", "") + "</a>";
                                         		for (int s = 0; s < synonyms.size(); s++) {
                                                     if (synonyms.get(s).equals((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("synonym"))) {
                                                     	synonyms.set(s, synonyms.get(s) + " (" + edgeLabel + ")"); 
@@ -297,7 +302,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                             if (!"syn".equals(edgeLabel)){
                                             	refs.add(edgeLabel);
                                             }
-                                            break;
                                         } else if ("def".equals(edgeLabel)) {
                                         	if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) != null){
                                         		edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref"));
@@ -327,8 +331,8 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         			edgeLabel = "http:" + edgeLabel;
                                         		}
                                         		// TODO check link works!? (grey out if broken?)
-                                        		edgeLabel = "<a href=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http")) + "\" target=\"_blank\" >"
-                                        				+ ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http")) + "</a>";
+                                        		edgeLabel = "<a href=\"" + edgeLabel + "\" target=\"_blank\" >"
+                                        				+ edgeLabel.replace("http://", "") + "</a>";
                                         		desc += " (" + edgeLabel + ")";
                                         	}else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) != null) {
                                         		edgeLabel = "<a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" target=\"_blank\" >"
@@ -338,7 +342,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         	if (!"def".equals(edgeLabel)){
                                             	refs.add(edgeLabel);
                                             }
-                                        	break;
                                         } else {
                                         	edgeLabel = "";
                                         	if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) != null){
@@ -360,8 +363,13 @@ public class VFBProcessTermInfo extends AQueryProcessor {
             									}
             									
                                         	}else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http")) != null) {
-                                        		edgeLabel = "<a href=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http")) + "\" target=\"_blank\" >"
-                                        				+ ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http")) + "</a>";
+                                        		edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http"));
+                                        		if ("//".equals(edgeLabel.substring(0,2))){
+                                        			edgeLabel = "http:" + edgeLabel;
+                                        		}
+                                        		// TODO check link works!? (grey out if broken?)
+                                        		edgeLabel = "<a href=\"" + edgeLabel + "\" target=\"_blank\" >"
+                                        				+ edgeLabel.replace("http://", "") + "</a>";
                                         		
                                         	}else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) != null) {
                                         		edgeLabel = "<a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" target=\"_blank\" >"
