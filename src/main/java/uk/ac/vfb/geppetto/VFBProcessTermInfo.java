@@ -193,17 +193,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 }
 
 
-                // get description:
-                if (resultNode.get("description") != null) {
-                    desc = ((List<String>) resultNode.get("description")).get(0);
-                    if (desc == ".") {
-                        desc = "";
-                    }
-                }
-                // get description comment:
-                if (resultNode.get("comment") != null) {
-                    desc = desc + "<br><h5>Comment<h5><br>" + highlightLinks(((List<String>) resultNode.get("comment")).get(0));
-                }
+                
 
 
                 while (results.getValue("links", r) != null && (synapticNP || r < 1)) {
@@ -212,6 +202,18 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     String edgeLabel = "";
                     i = 0;
                     j = 0;
+                    resultNode = (Map<String, Object>) results.getValue("node", r);
+                    // get description:
+                    if (resultNode.get("description") != null) {
+                        desc = ((List<String>) resultNode.get("description")).get(0);
+                        if (".".equals(desc)) {
+                            desc = "";
+                        }
+                    }
+                    // get description comment:
+                    if (resultNode.get("comment") != null) {
+                        desc = desc + "<br><h5>Comment<h5><br>" + highlightLinks(((List<String>) resultNode.get("comment")).get(0));
+                    }
                     while (i < resultLinks.size()) {
                         try {
                             Map<String, Object> resultLink = (Map<String, Object>) resultLinks.get(i);
