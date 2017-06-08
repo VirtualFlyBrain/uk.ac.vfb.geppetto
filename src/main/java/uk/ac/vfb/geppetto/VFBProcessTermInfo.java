@@ -313,6 +313,11 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                                     desc += " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) + ")"; // TODO: add hyperlink
                                                 }
                                         	}else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http")) != null) {
+                                        		edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http"));
+                                        		if ("//".equals(edgeLabel.substring(0,2))){
+                                        			edgeLabel = "http:" + edgeLabel;
+                                        		}
+                                        		// TODO check link works!? (grey out if broken?)
                                         		edgeLabel = "<a href=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http")) + "\" target=\"_blank\" >"
                                         				+ ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http")) + "</a>";
                                         		desc += " (" + edgeLabel + ")";
