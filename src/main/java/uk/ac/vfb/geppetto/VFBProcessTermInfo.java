@@ -255,7 +255,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         	}
                                         	if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) != null){
                                         		if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("microref")) != null){
-                                        			edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("microref"));
+                                        			edgeLabel = "<span title=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) + "\">" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("microref")) + "</span>";
                                         		}else{
                                         			edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref"));
                                         		}
@@ -312,7 +312,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         } else if ("def".equals(edgeLabel)) {
                                         	if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) != null){
                                         		if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("microref")) != null){
-                                        			edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("microref"));
+                                        			edgeLabel = "<span title=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) + "\">" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("microref")) + "</span>";
                                         		}else{
                                         			edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref"));
                                         		}
@@ -357,7 +357,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         	edgeLabel = "";
                                         	if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) != null){
                                         		if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("microref")) != null){
-                                        			edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("microref"));
+                                        			edgeLabel = "<span title=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) + "\">" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("microref")) + "</span>";
                                         		}else{
                                         			edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref"));
                                         		}
@@ -423,6 +423,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                                 String fileUrl = checkURL(edgeLabel + "/thumbnailT.png");
                                                 if (fileUrl != null) {
                                                 	addImage(fileUrl, ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, j);
+                                                	System.out.println("Adding example image: " + fileUrl);
                                                 	j++;
                                                 }
                                             }
