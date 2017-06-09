@@ -723,7 +723,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
     							break;
     		                }
     					default:
-    						badge = "<i class=\"popup-icon-link fa fa-cogs\" />";
+    						badge = "<i class=\"popup-icon-link fa fa-wpexplorer\" />";
     					}
     					querys += badge + "<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
     				}
@@ -749,7 +749,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     description.setName("Description");
                     description.getTypes().add(htmlType);
                     HTML descriptionValue = ValuesFactory.eINSTANCE.createHTML();
-                    desc = highlightLinks(desc).replaceAll(") (", "; ");
+                    desc = highlightLinks(desc).replaceAll("[)] [(]", "; ");
                     descriptionValue.setHtml(desc);
                     description.getInitialValues().put(htmlType, descriptionValue);
                     geppettoModelAccess.addVariableToType(description, metaData);
