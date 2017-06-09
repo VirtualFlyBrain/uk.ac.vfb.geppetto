@@ -249,6 +249,40 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         break;
                                     case "Related":
                                         edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
+                                        if ("has_exemplar".equals(edgeLabel)){
+                                        	if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
+                                                edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
+                                            } else {
+                                                edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri"));
+                                            }
+                                        	//TODO: remove fix for old iri:
+                                            edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_");
+                                            String fileUrl = checkURL(edgeLabel + "/thumbnailT.png");
+                                            if (fileUrl != null) {
+                                            	addImage(fileUrl, "Exemplar: " + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, 0);
+                                            	System.out.println("Adding exemplar: " + fileUrl);
+                                            }
+                                        	break;
+                                        }
+                                        if ("has_member".equals(edgeLabel)){
+                                        	if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
+                                                edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
+                                            } else {
+                                                edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri"));
+                                            }
+                                        	//TODO: remove fix for old iri:
+                                            edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_");
+                                            String fileUrl = checkURL(edgeLabel + "/thumbnailT.png");
+                                            if (j < 1){
+                                            	j=1; // ensure exemplar is first image;
+                                            }
+                                            if (fileUrl != null) {
+                                            	addImage(fileUrl, "Member: " + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, j);
+                                            	System.out.println("Adding member: " + fileUrl);
+                                            	j++;
+                                            }
+                                        	break;
+                                        }
                                         relationships = relationships + edgeLabel.replace("_", " ") + " <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
                                         break;
                                     case "has_reference":
@@ -621,7 +655,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 
 
                 // set depictedType:
-                if (depictedType != "") {
+                if (depictedType != "" && !cluster) {
                     Variable depictsVar = VariablesFactory.eINSTANCE.createVariable();
                     depictsVar.setId("type");
                     depictsVar.setName("Depicts");
@@ -659,7 +693,11 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 if (images.getElements().size() > 0) {
                 	Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
                 	exampleVar.setId("examples");
-    				exampleVar.setName("Examples");
+                	if (cluster){
+                		exampleVar.setName("Cluster");
+                	}else{
+                		exampleVar.setName("Examples");
+                	}
     				exampleVar.getTypes().add(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE));
     				geppettoModelAccess.addVariableToType(exampleVar, metaData);
     				exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), images);
