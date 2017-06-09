@@ -750,7 +750,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     description.setName("Description");
                     description.getTypes().add(htmlType);
                     HTML descriptionValue = ValuesFactory.eINSTANCE.createHTML();
-                    desc = highlightLinks(desc);
+                    desc = highlightLinks(desc).replaceAll(") (", "; ");
                     descriptionValue.setHtml(desc);
                     description.getInitialValues().put(htmlType, descriptionValue);
                     geppettoModelAccess.addVariableToType(description, metaData);
