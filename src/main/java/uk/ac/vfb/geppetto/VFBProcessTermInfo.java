@@ -98,6 +98,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
         String superTypes = "";
         boolean template = false;
         boolean synapticNP = false;
+        boolean cluster = false;
 
         int i = 0;
         int j = 0;
@@ -153,6 +154,9 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                         }
                         if (supertype.equals("Synaptic_neuropil_domain")) {
                             synapticNP = true;
+                        }
+                        if (supertype.equals("Cluster")) {
+                            cluster = true;
                         }
                     }
                 } else {
@@ -657,7 +661,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 	exampleVar.setId("examples");
     				exampleVar.setName("Examples");
     				exampleVar.getTypes().add(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE));
-    				geppettoModelAccess.addVariableToType(exampleVar, metaDataType);
+    				geppettoModelAccess.addVariableToType(exampleVar, metaData);
     				exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), images);
     				metaDataType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("hasExamples", dependenciesLibrary));
                 }
