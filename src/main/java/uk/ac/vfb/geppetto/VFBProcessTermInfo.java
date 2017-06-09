@@ -286,9 +286,8 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         		}
                                         		// TODO check link works!? (grey out if broken?)
                                         		String[] bits = edgeLabel.replace("http://", "").split("/");
-                                        		String lastOne = bits[bits.length-1];
                                         		edgeLabel = "<i class=\"fa fa-external-link\" aria-hidden=\"true\"></i><a href=\"" + edgeLabel + "\" target=\"_blank\" >"
-                                        				+ bits[0] + "/.../" + bits[lastOne] + "</a>";
+                                        				+ bits[0] + "/.../" + bits[bits.length-1] + "</a>";
                                         		for (int s = 0; s < synonyms.size(); s++) {
                                                     if (synonyms.get(s).equals((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("synonym"))) {
                                                     	synonyms.set(s, synonyms.get(s) + " (" + edgeLabel + ")"); 
