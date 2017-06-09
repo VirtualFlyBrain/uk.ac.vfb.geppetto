@@ -723,7 +723,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
     							break;
     		                }
     					default:
-    						badge = "<i class=\"popup-icon-link fa fa-wpexplorer\" />";
+    						badge = "<i class=\"popup-icon-link fa fa-quora\" />";
     					}
     					querys += badge + "<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
     				}
