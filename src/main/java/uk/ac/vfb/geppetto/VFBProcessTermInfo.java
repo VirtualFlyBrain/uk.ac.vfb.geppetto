@@ -466,6 +466,8 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                                 	System.out.println("Adding example image: " + fileUrl);
                                                 	j++;
                                                 }
+                                            }else{
+                                            	System.out.println("INSTANCEOF type to node " + String.valueOf(resultLinks.get(i)));
                                             }
                                         } else {
                                             System.out.println("INSTANCEOF to node " + String.valueOf(resultLinks.get(i)));
