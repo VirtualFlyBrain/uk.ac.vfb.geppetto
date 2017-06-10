@@ -889,7 +889,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
      */
     private String highlightLinks(String text) {
         try {
-            text = text.replaceAll("([F,V,G][A-z]*)[:,_](\\d{5}[0-9]*\\b)", "<a href=\"#\" instancepath=\"$1_$2\">$1_$2</a>");
+            text = text.replaceAll("([F,V,G][A-z]*)[:,_](\\d{5}[0-9]*\\b)", "<a href=\"#\" instancepath=\"$1_$2\" title=\"$1_$2\" ><i class=\"fa fa-info-circle\" aria-hidden=\"true\"></i></a>");
             return text;
         } catch (Exception e) {
             System.out.println("Error highlighting links in (" + text + ") " + e.toString());
