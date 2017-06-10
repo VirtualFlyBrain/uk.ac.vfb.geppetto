@@ -452,7 +452,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
                                         if ("type".equals(edgeLabel)) {
                                             instanceOf += 1;
-                                            if (i == 0 && contains(((List<String>) ((Map<String, Object>) resultLinks.get(i)).get("labels")), "Individual")) {
+                                            if (r == 0 && contains(((List<String>) ((Map<String, Object>) resultLinks.get(i)).get("labels")), "Individual")) {
                                             	if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
                                                     edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
                                                 } else {
