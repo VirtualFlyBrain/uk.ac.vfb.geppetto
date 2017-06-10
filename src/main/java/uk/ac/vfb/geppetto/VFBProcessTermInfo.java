@@ -380,8 +380,9 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         			edgeLabel = "http:" + edgeLabel;
                                         		}
                                         		// TODO check link works!? (grey out if broken?)
-                                        		edgeLabel = "<a href=\"" + edgeLabel + "\" target=\"_blank\" >"
-                                        				+ edgeLabel.replace("http://", "") + "</a>";
+                                        		String[] bits = edgeLabel.replace("http://", "").split("/");
+                                        		edgeLabel = "<i class=\"fa fa-external-link\" aria-hidden=\"true\"></i><a href=\"" + edgeLabel + "\" target=\"_blank\" >"
+                                        				+ bits[0] + "/.../" + bits[bits.length-1] + "</a>";
                                         		desc += " (" + edgeLabel + ")";
                                         	}else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) != null) {
                                         		edgeLabel = "<a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" target=\"_blank\" >"
@@ -420,8 +421,9 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         			edgeLabel = "http:" + edgeLabel;
                                         		}
                                         		// TODO check link works!? (grey out if broken?)
-                                        		edgeLabel = "<a href=\"" + edgeLabel + "\" target=\"_blank\" >"
-                                        				+ edgeLabel.replace("http://", "") + "</a>";
+                                        		String[] bits = edgeLabel.replace("http://", "").split("/");
+                                        		edgeLabel = "<i class=\"fa fa-external-link\" aria-hidden=\"true\"></i><a href=\"" + edgeLabel + "\" target=\"_blank\" >"
+                                        				+ bits[0] + "/.../" + bits[bits.length-1] + "</a>";
                                         		
                                         	}else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) != null) {
                                         		edgeLabel = "<a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" target=\"_blank\" >"
