@@ -452,7 +452,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
                                         if ("type".equals(edgeLabel)) {
                                             instanceOf += 1;
-                                            if (r == 0 && listContains(((List<String>) ((Map<String, Object>) resultLinks.get(i)).get("labels")), "Individual")) {
+                                            if (r == 0 && j < 10 && listContains(((List<String>) ((Map<String, Object>) resultLinks.get(i)).get("labels")), "Individual")) {
                                             	if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
                                                     edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
                                                 } else {
@@ -743,46 +743,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
     			{
     				if(QueryChecker.check(runnableQuery, variable))
     				{
-    					
-    					switch ((String) runnableQuery.getPath()) {
-    					case "partsof":
-    						if (partOf > 0) {
-    		                    badge = "<span class=\"badge\">&gt;" + String.valueOf(partOf) + "</span>";
-    		                    break;
-    		                }
-    					case "ImagesOfNeuronsWithSomePartHere":
-    						if (overlapedBy > 0) {
-    							badge = "<span class=\"badge\">&gt;" + String.valueOf(overlapedBy) + "</span>"; 
-    							break;
-    		                }
-    					case "subclasses":
-    						if (subClassOf > 0) {
-    							badge = "<span class=\"badge\">&gt;" + String.valueOf(subClassOf) + "</span>"; 
-    							break;
-    		                }
-    					case "neuronssynaptic":
-    						if (hasSynap > 0) {
-    							badge = "<span class=\"badge\">&gt;" + String.valueOf(hasSynap) + "</span>"; 
-    							break;
-    		                }
-    					case "neuronspresynaptic":
-    						if (hasPreSynap > 0) {
-    							badge = "<span class=\"badge\">&gt;" + String.valueOf(hasPreSynap) + "</span>"; 
-    							break;
-    		                }
-    					case "neuronspostsynaptic":
-    						if (hasPostSynap > 0) {
-    							badge = "<span class=\"badge\">&gt;" + String.valueOf(hasPostSynap) + "</span>"; 
-    							break;
-    		                }
-    					case "ListAllExamples":
-    						if (instanceOf > 0) {
-    							badge = "<span class=\"badge\">&gt;" + String.valueOf(instanceOf) + "</span>"; 
-    							break;
-    		                }
-    					default:
-    						badge = "<i class=\"popup-icon-link fa fa-quora\" />";
-    					}
+    					badge = "<i class=\"popup-icon-link fa fa-quora on fa-square\" />";
     					querys += badge + "<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
     				}
     			}
