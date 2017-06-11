@@ -261,6 +261,16 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                             if (fileUrl != null) {
                                             	addImage(fileUrl, "Exemplar: " + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, 0);
                                             	System.out.println("Adding exemplar: " + fileUrl);
+                                                String edgeLabel = "http://flybrain.mrc-lmb.cam.ac.uk/vfb/fc/clusterv/3/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")) + "/snapshot.png";
+                                            	thumbnailVar.setId("thumbnail");
+                                                thumbnailVar.setName("Thumbnail");
+                                                thumbnailVar.getTypes().add(imageType);
+                                                thumbnailValue.setName(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")));
+                                                thumbnailValue.setData(edgeLabel);
+                                                thumbnailValue.setReference(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")));
+                                                thumbnailValue.setFormat(ImageFormat.PNG);
+                                                thumbnailVar.getInitialValues().put(imageType, thumbnailValue);
+                                                thumb = true;
                                             }
                                         	break;
                                         }
@@ -513,7 +523,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                                     thumbnailVar.setName("Thumbnail");
                                                     thumbnailVar.getTypes().add(imageType);
                                                     thumbnailValue.setName(tempName);
-                                                    thumbnailValue.setData(fileUrl);
+                                                    thumbnailValue.setData(fileUrl.replace("http://", "https://"));
                                                     thumbnailValue.setReference(tempId);
                                                     thumbnailValue.setFormat(ImageFormat.PNG);
                                                     thumbnailVar.getInitialValues().put(imageType, thumbnailValue);
