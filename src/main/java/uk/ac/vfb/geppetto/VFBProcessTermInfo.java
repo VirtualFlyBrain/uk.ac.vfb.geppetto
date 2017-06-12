@@ -200,7 +200,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 
 
 
-                while (results.getValue("links", r) != null && (synapticNP || r < 1)) {
+                while (results.getValue("links", r) != null && (synapticNP || cluster || r < 1)) {
                     List<Object> resultLinks = (List<Object>) results.getValue("links", r);
                     String edge = "";
                     String edgeLabel = "";
