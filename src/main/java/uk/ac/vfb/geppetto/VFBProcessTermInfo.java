@@ -209,15 +209,17 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     j = 0;
                     resultNode = (Map<String, Object>) results.getValue("node", r);
                     // get description:
-                    if (resultNode.get("description") != null) {
-                        desc = ((List<String>) resultNode.get("description")).get(0);
-                        if (".".equals(desc)) {
-                            desc = "";
-                        }
-                    }
-                    // get description comment:
-                    if (resultNode.get("comment") != null) {
-                        desc = desc + "<br><h5>Comment<h5><br>" + highlightLinks(((List<String>) resultNode.get("comment")).get(0));
+                    if (r == 0 || (synapticNP && desc.length() < 2)){
+	                    if (resultNode.get("description") != null) {
+	                        desc = ((List<String>) resultNode.get("description")).get(0);
+	                        if (".".equals(desc)) {
+	                            desc = "";
+	                        }
+	                    }
+	                    // get description comment:
+	                    if (resultNode.get("comment") != null) {
+	                        desc = desc + "<br><h5>Comment<h5><br>" + highlightLinks(((List<String>) resultNode.get("comment")).get(0));
+	                    }
                     }
                     while (i < resultLinks.size()) {
                         try {
@@ -725,46 +727,80 @@ public class VFBProcessTermInfo extends AQueryProcessor {
     				metaDataType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("hasExamples", dependenciesLibrary));
                 }
                 
-
-                // set types:
-                if (types != "") {
-                    Variable typesVar = VariablesFactory.eINSTANCE.createVariable();
-                    typesVar.setId("type");
-                    typesVar.setName("Type");
-                    typesVar.getTypes().add(htmlType);
-                    HTML typesValue = ValuesFactory.eINSTANCE.createHTML();
-                    typesValue.setHtml(types);
-                    typesVar.getInitialValues().put(htmlType, typesValue);
-                    metaData.getVariables().add(typesVar);
-                    System.out.println(types);
-                }
-
-                // set relationships
+                if (cluster) {
+                	
+                	// set exemplar details:
+	                	String tempHtml = "";
+	                	if (results.getValue("node", 1) != null) {
+	                		resultNode = (Map<String, Object>) results.getValue("node", 1);
+	                		if (resultNode.get("name") != null) {
+	                			tempHtml += "<b>Name:</b> " + (String) resultNode.get("name") + " (" + (String) resultNode.get("short_form") + ")<br/>";	                			
+	                		}
+	                		if (types != "") {
+	                			tempHtml += "<b>Types:</b> " + types + "<br/>";
+	                		}
+	                		if (relationships != "") {
+	                			tempHtml += "<b>Relationships:</b><br/>" + relationships;
+	                		}
+	                	}
+	                    Variable typesVar = VariablesFactory.eINSTANCE.createVariable();
+	                    typesVar.setId("exemplar");
+	                    typesVar.setName("Most typical neuron (exemplar)");
+	                    typesVar.getTypes().add(htmlType);
+	                    HTML typesValue = ValuesFactory.eINSTANCE.createHTML();
+	                    typesValue.setHtml(tempHtml);
+	                    typesVar.getInitialValues().put(htmlType, typesValue);
+	                    metaData.getVariables().add(typesVar);
+	                    System.out.println(tempHtml);
+	                    
+	                    if (("".equalsIgnoreCase(desc)) || (".".equals(desc))) { 
+	                    	desc = "A Cluster of morphologically similar neurons using affinity propogation clustering based on NBLAST neuron similarity scores (Costa et al., 2016).";
+	                    }
+	                
+                	
+                }else{
                 
-                if (relationships != "") {
-                    Variable relVar = VariablesFactory.eINSTANCE.createVariable();
-                    relVar.setId("relationships");
-                    relVar.setName("Relationships");
-                    relVar.getTypes().add(htmlType);
-                    metaData.getVariables().add(relVar);
-                    HTML relValue = ValuesFactory.eINSTANCE.createHTML();
-                    relValue.setHtml(relationships);
-                    relVar.getInitialValues().put(htmlType, relValue);
-                    metaData.getVariables().add(relVar);
-                    System.out.println(relationships);
+	                // set types:
+	                if (types != "") {
+	                    Variable typesVar = VariablesFactory.eINSTANCE.createVariable();
+	                    typesVar.setId("type");
+	                    typesVar.setName("Type");
+	                    typesVar.getTypes().add(htmlType);
+	                    HTML typesValue = ValuesFactory.eINSTANCE.createHTML();
+	                    typesValue.setHtml(types);
+	                    typesVar.getInitialValues().put(htmlType, typesValue);
+	                    metaData.getVariables().add(typesVar);
+	                    System.out.println(types);
+	                }
+	
+	                // set relationships
+	                
+	                if (relationships != "") {
+	                    Variable relVar = VariablesFactory.eINSTANCE.createVariable();
+	                    relVar.setId("relationships");
+	                    relVar.setName("Relationships");
+	                    relVar.getTypes().add(htmlType);
+	                    metaData.getVariables().add(relVar);
+	                    HTML relValue = ValuesFactory.eINSTANCE.createHTML();
+	                    relValue.setHtml(relationships);
+	                    relVar.getInitialValues().put(htmlType, relValue);
+	                    metaData.getVariables().add(relVar);
+	                    System.out.println(relationships);
+	                }
+	
+	                // set queries
+	                String badge = "";
+	                for(Query runnableQuery : geppettoModelAccess.getQueries())
+	    			{
+	    				if(QueryChecker.check(runnableQuery, variable))
+	    				{
+	    					badge = "<i class=\"popup-icon-link fa fa-quora on fa-square\" />";
+	    					querys += badge + "<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
+	    				}
+	    			}
+	
                 }
-
-                // set queries
-                String badge = "";
-                for(Query runnableQuery : geppettoModelAccess.getQueries())
-    			{
-    				if(QueryChecker.check(runnableQuery, variable))
-    				{
-    					badge = "<i class=\"popup-icon-link fa fa-quora on fa-square\" />";
-    					querys += badge + "<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
-    				}
-    			}
-
+	                
                 if (querys != "") {
                     Variable queryVar = VariablesFactory.eINSTANCE.createVariable();
                     queryVar.setId("queries");
@@ -840,6 +876,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     metaData.getVariables().add(downloads);
                     System.out.println(downloadLink);
                 }
+                
 
                 // set linkouts:
 
