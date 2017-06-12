@@ -72,6 +72,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
         String imageName = "Thumbnail";
         String tempLink = "";
         List<List<String>> domains;
+        List<String> addedExamples = new ArrayList<>();
 //		Types
         String types = "";
         String depictedType = "";
@@ -287,9 +288,12 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                             	j=1; // ensure exemplar is first image;
                                             }
                                             if (fileUrl != null) {
-                                            	addImage(fileUrl, "Member: " + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, j);
-                                            	System.out.println("Adding member: " + fileUrl);
-                                            	j++;
+                                            	if (!listContains(addedExamples, ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")))){
+	                                            	addImage(fileUrl, "Member: " + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, j);
+	                                            	System.out.println("Adding member: " + fileUrl);
+	                                            	j++;
+	                                            	addedExamples.add(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")));
+                                            	}
                                             }
                                         	break;
                                         }
@@ -391,7 +395,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         		}
                                         		// TODO check link works!? (grey out if broken?)
                                         		String[] bits = edgeLabel.replace("http://", "").split("/");
-                                        		edgeLabel = "<i class=\"fa fa-external-link\" aria-hidden=\"true\"></i><a href=\"" + edgeLabel + "\" target=\"_blank\" >"
+                                        		edgeLabel = "<a href=\"" + edgeLabel + "\" target=\"_blank\" title=\"" + edgeLabel + "\" ><i class=\"fa fa-external-link\" aria-hidden=\"true\"></i> "
                                         				+ bits[0] + "/.../" + bits[bits.length-1] + "</a>";
                                         		desc += " (" + edgeLabel + ")";
                                         	}else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) != null) {
@@ -472,9 +476,12 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                                 edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_");
                                                 String fileUrl = checkURL(edgeLabel + "/thumbnailT.png");
                                                 if (fileUrl != null) {
-                                                	addImage(fileUrl, ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, j);
-                                                	System.out.println("Adding example image: " + fileUrl);
-                                                	j++;
+                                                	if (!listContains(addedExamples, ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")))){
+    	                                            	addImage(fileUrl, ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, j);
+    	                                            	System.out.println("Adding example image: " + fileUrl);
+    	                                            	j++;
+    	                                            	addedExamples.add(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")));
+                                                	}
                                                 }
                                             }else{
                                             	System.out.println("INSTANCEOF type to node " + String.valueOf(resultLinks.get(i)));
