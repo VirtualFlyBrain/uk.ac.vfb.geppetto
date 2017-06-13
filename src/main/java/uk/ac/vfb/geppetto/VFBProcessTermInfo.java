@@ -344,8 +344,8 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         		}
                                         		// TODO check link works!? (grey out if broken?)
                                         		String[] bits = edgeLabel.replace("http://", "").split("/");
-                                        		edgeLabel = "<i class=\"fa fa-external-link\" aria-hidden=\"true\"></i><a href=\"" + edgeLabel + "\" target=\"_blank\" >"
-                                        				+ bits[0] + "/.../" + bits[bits.length-1] + "</a>";
+                                        		edgeLabel = "<a href=\"" + edgeLabel + "\" target=\"_blank\" >"
+                                        				+ bits[0] + "<i class=\"popup-icon-link fa fa-external-link\" aria-hidden=\"true\"></i>" + "</a>";
                                         		for (int s = 0; s < synonyms.size(); s++) {
                                                     if (synonyms.get(s).equals((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("synonym"))) {
                                                     	synonyms.set(s, synonyms.get(s) + " (" + edgeLabel + ")"); 
@@ -397,8 +397,8 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         		}
                                         		// TODO check link works!? (grey out if broken?)
                                         		String[] bits = edgeLabel.replace("http://", "").split("/");
-                                        		edgeLabel = "<a href=\"" + edgeLabel + "\" target=\"_blank\" title=\"" + edgeLabel + "\" ><i class=\"fa fa-external-link\" aria-hidden=\"true\"></i> "
-                                        				+ bits[0] + "/.../" + bits[bits.length-1] + "</a>";
+                                        		edgeLabel = "<a href=\"" + edgeLabel + "\" target=\"_blank\" >"
+                                        				+ bits[0] + "<i class=\"popup-icon-link fa fa-external-link\" aria-hidden=\"true\"></i>" + "</a>";
                                         		desc += " (" + edgeLabel + ")";
                                         	}else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) != null) {
                                         		edgeLabel = "<a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" target=\"_blank\" >"
@@ -438,8 +438,8 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         		}
                                         		// TODO check link works!? (grey out if broken?)
                                         		String[] bits = edgeLabel.replace("http://", "").split("/");
-                                        		edgeLabel = "<i class=\"fa fa-external-link\" aria-hidden=\"true\"></i><a href=\"" + edgeLabel + "\" target=\"_blank\" >"
-                                        				+ bits[0] + "/.../" + bits[bits.length-1] + "</a>";
+                                        		edgeLabel = "<a href=\"" + edgeLabel + "\" target=\"_blank\" >"
+                                        				+ bits[0] + "<i class=\"popup-icon-link fa fa-external-link\" aria-hidden=\"true\"></i>" + "</a>";
                                         		
                                         	}else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) != null) {
                                         		edgeLabel = "<a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" target=\"_blank\" >"
