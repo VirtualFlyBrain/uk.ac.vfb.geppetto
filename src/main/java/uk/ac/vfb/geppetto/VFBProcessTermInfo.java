@@ -101,6 +101,11 @@ public class VFBProcessTermInfo extends AQueryProcessor {
         boolean synapticNP = false;
         boolean cluster = false;
         boolean individual = false;
+        
+//      Template Domain data:
+        String[] domainId = new String[255];
+        String[] domainName = new String[255];
+        String[] domainType = new String[255];
 
         int i = 0;
         int j = 0;
@@ -506,7 +511,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
     	                                            	addedExamples.add(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")));
                                                 	}
                                                 }
-                                            }else{
+                                            }else if (j < 10){
                                             	System.out.println("INSTANCEOF type to node " + String.valueOf(resultLinks.get(i)));
                                             }
                                         } else {
@@ -524,46 +529,54 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                     case "Related":
                                         edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
                                         if ("depicts".equals(edgeLabel)) {
-                                            if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
-                                                edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
-                                                domains = (List<List<String>>) ((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("domains");
-                                            } else {
-                                                edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri"));
-                                                domains = Arrays.asList(Arrays.asList(""));
-                                            }
-                                            //TODO: remove fix for old iri:
-                                            edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_");
-                                            String fileUrl = checkURL(edgeLabel + "/thumbnailT.png");
-                                            if (fileUrl != null) {
-                                                System.out.println("Adding thumbnail " + fileUrl);
-                                                thumbnailVar.setId("thumbnail");
-                                                thumbnailVar.setName("Thumbnail");
-                                                thumbnailVar.getTypes().add(imageType);
-                                                thumbnailValue.setName(tempName);
-                                                thumbnailValue.setData(fileUrl.replace("http://", "https://"));
-                                                thumbnailValue.setReference(tempId);
-                                                thumbnailValue.setFormat(ImageFormat.PNG);
-                                                thumbnailVar.getInitialValues().put(imageType, thumbnailValue);
-                                                thumb = true;
-                                            } else {
-                                                fileUrl = checkURL(edgeLabel + "/thumbnail.png");
-                                                if (fileUrl != null) {
-                                                    System.out.println("Adding thumbnail " + fileUrl);
-                                                    thumbnailVar.setId("thumbnail");
-                                                    thumbnailVar.setName("Thumbnail");
-                                                    thumbnailVar.getTypes().add(imageType);
-                                                    thumbnailValue.setName(tempName);
-                                                    thumbnailValue.setData(fileUrl.replace("http://", "https://"));
-                                                    thumbnailValue.setReference(tempId);
-                                                    thumbnailValue.setFormat(ImageFormat.PNG);
-                                                    thumbnailVar.getInitialValues().put(imageType, thumbnailValue);
-                                                    thumb = true;
-                                                }
-                                            }
-                                            if (j > 1) {
-                                                imageName = "Examples";
-                                            } else {
-                                                fileUrl = checkURL(edgeLabel + "/volume_man.obj");
+                                        	if (template && ((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index") != null){
+                                        		if ("0".equals(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index"))){
+                                        			domainId[0] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("short_form");
+                                        			domainName[0] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label");
+                                        			domainType[0] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form");
+                                        		}else{
+                                        			domainId[Integer.parseInt(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index"))] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("short_form");
+                                        			domainName[Integer.parseInt(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index"))] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label");
+                                        			domainType[Integer.parseInt(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index"))] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form");
+                                        		}
+                                        	}else{
+	                                            if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
+	                                                edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
+	                                                domains = (List<List<String>>) ((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("domains");
+	                                            } else {
+	                                                edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri"));
+	                                                domains = Arrays.asList(Arrays.asList(""));
+	                                            }
+	                                            //TODO: remove fix for old iri:
+	                                            edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_");
+	                                            String fileUrl = checkURL(edgeLabel + "/thumbnailT.png");
+	                                            if (fileUrl != null) {
+	                                                System.out.println("Adding thumbnail " + fileUrl);
+	                                                thumbnailVar.setId("thumbnail");
+	                                                thumbnailVar.setName("Thumbnail");
+	                                                thumbnailVar.getTypes().add(imageType);
+	                                                thumbnailValue.setName(tempName);
+	                                                thumbnailValue.setData(fileUrl.replace("http://", "https://"));
+	                                                thumbnailValue.setReference(tempId);
+	                                                thumbnailValue.setFormat(ImageFormat.PNG);
+	                                                thumbnailVar.getInitialValues().put(imageType, thumbnailValue);
+	                                                thumb = true;
+	                                            } else {
+	                                                fileUrl = checkURL(edgeLabel + "/thumbnail.png");
+	                                                if (fileUrl != null) {
+	                                                    System.out.println("Adding thumbnail " + fileUrl);
+	                                                    thumbnailVar.setId("thumbnail");
+	                                                    thumbnailVar.setName("Thumbnail");
+	                                                    thumbnailVar.getTypes().add(imageType);
+	                                                    thumbnailValue.setName(tempName);
+	                                                    thumbnailValue.setData(fileUrl.replace("http://", "https://"));
+	                                                    thumbnailValue.setReference(tempId);
+	                                                    thumbnailValue.setFormat(ImageFormat.PNG);
+	                                                    thumbnailVar.getInitialValues().put(imageType, thumbnailValue);
+	                                                    thumb = true;
+	                                                }
+	                                            }
+	                                            fileUrl = checkURL(edgeLabel + "/volume_man.obj");
                                                 if (fileUrl != null) {
                                                     System.out.println("Adding man OBJ " + fileUrl);
                                                     Variable objVar = VariablesFactory.eINSTANCE.createVariable();
@@ -633,7 +646,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                                     downloadLink = "Aligned Image: ​<a download=\"" + (String) tempId + ".nrrd\" href=\"" + fileUrl + "\">" + (String) tempId + ".nrrd</a><br/>​​​​​​​​​​​​​​​​​​​​​​​​​​​";
                                                     downloadLink += "Note: see licensing section for reuse and attribution info.";
                                                 }
-                                            }
+                                        	}
 
                                         } else if ("overlaps".equals(edgeLabel)) {
                                             overlapedBy += 1;
