@@ -100,13 +100,13 @@ public class VFBProcessTermInfo extends AQueryProcessor {
         boolean template = false;
         boolean synapticNP = false;
         boolean cluster = false;
+        boolean individual = false;
 
         int i = 0;
         int j = 0;
         int r = 0;
 
         System.out.println("Creating Variable from:");
-
 
         try {
             Type textType = geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE);
@@ -138,6 +138,10 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 CompositeType metaDataType = TypesFactory.eINSTANCE.createCompositeType();
                 metaDataType.setId(tempId);
                 variable.getAnonymousTypes().add(metaDataType);
+                
+                Variable typeVariable = VariablesFactory.eINSTANCE.createVariable();
+                CompositeType typeMetaDataType = TypesFactory.eINSTANCE.createCompositeType();
+                typeVariable.getAnonymousTypes().add(typeMetaDataType);
 
                 // add supertypes
                 
@@ -152,6 +156,9 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                         }
                         if (supertype.equals("Template")) {
                             template = true;
+                        }
+                        if (supertype.equals("Individual")) {
+                            individual = true;
                         }
                         if (supertype.equals("Synaptic_neuropil_domain")) {
                             synapticNP = true;
@@ -238,6 +245,20 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
                                         if ("type".equals(edgeLabel)) {
                                         	depictedType += "<a href=\"#\" instancepath=\"" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + " (" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + ")</a><br/>";
+                                        	if (synapticNP && individual){
+                                        		try{
+	                                        		typeVariable.setId(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form"));
+	                                        		typeVariable.setName(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label"));
+	                                        		for (String supertype : ((List<String>) ((Map<String, Object>) resultLinks.get(i)).get("labels"))) {
+	                                                    if (!supertype.startsWith("_")) { // ignore supertypes starting with _
+	                                                    	typeMetaDataType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
+	                                                    }
+	                                        		}
+                                        		}catch (Exception e) {
+                                                    System.out.println("Error creating temp type variable for " + depictedType + " - " + e.toString());
+                                                    e.printStackTrace();
+                                                }
+                                        	}
                                         } else {
                                             System.out.println("INSTANCEOF from node " + String.valueOf(resultLinks.get(i)));
                                         }
@@ -344,7 +365,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         		}
                                         		// TODO check link works!? (grey out if broken?)
                                         		String[] bits = edgeLabel.replace("http://", "").split("/");
-                                        		edgeLabel = "<a href=\"" + edgeLabel + "\" target=\"_blank\" >"
+                                        		edgeLabel = "<a href=\"" + edgeLabel + "\" target=\"_blank\" title=\""+edgeLabel+"\">"
                                         				+ bits[0] + "<i class=\"popup-icon-link fa fa-external-link\" aria-hidden=\"true\"></i>" + "</a>";
                                         		for (int s = 0; s < synonyms.size(); s++) {
                                                     if (synonyms.get(s).equals((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("synonym"))) {
@@ -397,7 +418,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         		}
                                         		// TODO check link works!? (grey out if broken?)
                                         		String[] bits = edgeLabel.replace("http://", "").split("/");
-                                        		edgeLabel = "<a href=\"" + edgeLabel + "\" target=\"_blank\" >"
+                                        		edgeLabel = "<a href=\"" + edgeLabel + "\" target=\"_blank\" title=\""+edgeLabel+"\">"
                                         				+ bits[0] + "<i class=\"popup-icon-link fa fa-external-link\" aria-hidden=\"true\"></i>" + "</a>";
                                         		desc += " (" + edgeLabel + ")";
                                         	}else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) != null) {
@@ -438,7 +459,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         		}
                                         		// TODO check link works!? (grey out if broken?)
                                         		String[] bits = edgeLabel.replace("http://", "").split("/");
-                                        		edgeLabel = "<a href=\"" + edgeLabel + "\" target=\"_blank\" >"
+                                        		edgeLabel = "<a href=\"" + edgeLabel + "\" target=\"_blank\" title=\""+edgeLabel+"\">"
                                         				+ bits[0] + "<i class=\"popup-icon-link fa fa-external-link\" aria-hidden=\"true\"></i>" + "</a>";
                                         		
                                         	}else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) != null) {
@@ -796,6 +817,11 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 	    				{
 	    					badge = "<i class=\"popup-icon-link fa fa-quora on fa-square\" />";
 	    					querys += badge + "<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
+	    				}else if (synapticNP && individual){
+	    					if(QueryChecker.check(runnableQuery, typeVariable)){
+	    						badge = "<i class=\"popup-icon-link fa fa-quora on fa-square\" />";
+		    					querys += badge + "<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "," + typeVariable.getId() + "\">" + runnableQuery.getDescription().replace("$NAME", typeVariable.getName()) + "</a></br>";
+	    					}
 	    				}
 	    			}
 	
