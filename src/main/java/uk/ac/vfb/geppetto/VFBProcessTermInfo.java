@@ -71,7 +71,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
         ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
         String imageName = "Thumbnail";
         String tempLink = "";
-        List<List<String>> domains;
+        List<List<String>> domains = new ArrayList(new ArrayList());
         List<String> addedExamples = new ArrayList<>();
 //		Types
         String types = "";
@@ -103,10 +103,14 @@ public class VFBProcessTermInfo extends AQueryProcessor {
         boolean individual = false;
         
 //      Template Domain data:
+        String wlzUrl = "";
         String[] domainId = new String[255];
         String[] domainName = new String[255];
         String[] domainType = new String[255];
-
+        String[] domainCentre = new String[255];
+        String[] voxelSize = new String[4];
+        
+        
         int i = 0;
         int j = 0;
         int r = 0;
@@ -534,18 +538,29 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         			domainId[0] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("short_form");
                                         			domainName[0] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label");
                                         			domainType[0] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form");
+                                        			if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("center") != null){
+                                        				domainCentre[0] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("center");
+                                            		}
+                                        			if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("voxel") != null){
+                                        				voxelSize = (String[]) ((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("voxel");
+                                            		}else{ // default - should not be used:
+                                            			voxelSize[0] = "0.622088"; // X
+                                            			voxelSize[1] = "0.622088"; // Y
+                                            			voxelSize[2] = "0.622088"; // Z
+                                            		}
                                         		}else{
                                         			domainId[Integer.parseInt(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index"))] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("short_form");
                                         			domainName[Integer.parseInt(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index"))] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label");
                                         			domainType[Integer.parseInt(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index"))] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form");
+                                        			if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("center") != null){
+                                        				domainCentre[Integer.parseInt(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index"))] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("center");
+                                            		}
                                         		}
                                         	}else{
 	                                            if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
 	                                                edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
-	                                                domains = (List<List<String>>) ((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("domains");
 	                                            } else {
 	                                                edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri"));
-	                                                domains = Arrays.asList(Arrays.asList(""));
 	                                            }
 	                                            //TODO: remove fix for old iri:
 	                                            edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_");
@@ -624,17 +639,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                                 fileUrl = checkURL(edgeLabel + "/volume.wlz");
                                                 if (fileUrl != null) {
                                                     System.out.println("Adding Woolz " + fileUrl);
-                                                    Variable slicesVar = VariablesFactory.eINSTANCE.createVariable();
-                                                    Image slicesValue = ValuesFactory.eINSTANCE.createImage();
-                                                    slicesValue.setData(new Gson().toJson(new IIPJSON(0, "https://www.virtualflybrain.org/fcgi/wlziipsrv.fcgi", fileUrl.replace("http://www.virtualflybrain.org/data/", "/disk/data/VFB/IMAGE_DATA/"), domains)));
-                                                    slicesValue.setFormat(ImageFormat.IIP);
-                                                    slicesValue.setReference(tempId);
-                                                    slicesVar.setId(tempId + "_slices");
-                                                    slicesVar.setName("Stack Viewer Slices");
-                                                    slicesVar.getTypes().add(imageType);
-                                                    slicesVar.getInitialValues().put(imageType, slicesValue);
-                                                    metaDataType.getVariables().add(slicesVar);
-                                                    
+                                                    wlzUrl = fileUrl;
                                                 }
                                                 if (((Map<String, Object>) resultLinks.get(i)).get("temp") != null) {
                                                 	String supertype = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("short_form");
@@ -708,6 +713,28 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                         i++;
                     }
                     r++;
+                }
+                
+                // set slices
+                if (wlzUrl != null) {
+                    System.out.println("Adding Woolz " + wlzUrl);
+                    
+                    domains.add(Arrays.asList(voxelSize));
+                    domains.add(Arrays.asList(domainId));
+                    domains.add(Arrays.asList(domainName));
+                    domains.add(Arrays.asList(domainType));
+                    domains.add(Arrays.asList(domainCentre));
+                    
+                    Variable slicesVar = VariablesFactory.eINSTANCE.createVariable();
+                    Image slicesValue = ValuesFactory.eINSTANCE.createImage();
+                    slicesValue.setData(new Gson().toJson(new IIPJSON(0, "https://www.virtualflybrain.org/fcgi/wlziipsrv.fcgi", wlzUrl.replace("http://www.virtualflybrain.org/data/", "/disk/data/VFB/IMAGE_DATA/"), domains)));
+                    slicesValue.setFormat(ImageFormat.IIP);
+                    slicesValue.setReference(tempId);
+                    slicesVar.setId(tempId + "_slices");
+                    slicesVar.setName("Stack Viewer Slices");
+                    slicesVar.getTypes().add(imageType);
+                    slicesVar.getInitialValues().put(imageType, slicesValue);
+                    metaDataType.getVariables().add(slicesVar);
                 }
 
 
