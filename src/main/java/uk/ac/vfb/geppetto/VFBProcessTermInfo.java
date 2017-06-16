@@ -237,6 +237,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 	                        desc = desc + "<br><h5>Comment<h5><br>" + highlightLinks(((List<String>) resultNode.get("comment")).get(0));
 	                    }
                     }
+                    System.out.println(resultLinks.size());
                     while (i < resultLinks.size()) {
                         try {
                             Map<String, Object> resultLink = (Map<String, Object>) resultLinks.get(i);
