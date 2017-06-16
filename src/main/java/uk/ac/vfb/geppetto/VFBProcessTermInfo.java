@@ -241,6 +241,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                         try {
                             Map<String, Object> resultLink = (Map<String, Object>) resultLinks.get(i);
                             edge = (String) resultLink.get("types");
+                            System.out.println(String.valueOf(i) + " - " + edge + " - " + String.valueOf(resultLink)); 
                             if ("node".equals(((String) resultLink.get("start")))) {
                                 // edge from term
                                 switch (edge) {
