@@ -179,7 +179,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 } else {
                 	metaDataType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Orphan", dependenciesLibrary));
                 }
-                System.out.println("SuperTypes: " + superTypes);
+                System.out.println("SuperTypes: " + superTypes + " - " + String.valueOf(template) + String.valueOf(individual) + String.valueOf(synapticNP) + String.valueOf(cluster));
 
                 // Load initial metadata
 
