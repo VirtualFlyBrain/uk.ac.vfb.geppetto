@@ -163,16 +163,16 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                         	metaDataType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
                             superTypes += supertype + ", ";
                         }
-                        if (supertype.equals("Template")) {
+                        if ("Template".equals(supertype)) {
                             template = true;
                         }
-                        if (supertype.equals("Individual")) {
+                        if ("Individual".equals(supertype)) {
                             individual = true;
                         }
-                        if (supertype.equals("Synaptic_neuropil_domain")) {
+                        if ("Synaptic_neuropil_domain".equals(supertype)) {
                             synapticNP = true;
                         }
-                        if (supertype.equals("Cluster")) {
+                        if ("Cluster".equals(supertype)) {
                             cluster = true;
                         }
                     }
