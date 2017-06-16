@@ -556,6 +556,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         				domainCentre[Integer.parseInt(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index"))] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("center");
                                             		}
                                         		}
+                                        		System.out.println("Adding domain data: " + String.valueOf(((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm"))));
                                         	}else{
 	                                            if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
 	                                                edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
