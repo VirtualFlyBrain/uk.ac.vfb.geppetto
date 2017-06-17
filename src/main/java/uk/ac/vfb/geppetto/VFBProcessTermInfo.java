@@ -557,7 +557,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         			domainId[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("short_form");
                                         			domainName[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label");
                                         			domainType[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form");
-                                        			if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("center") != null){
+                                        			if (((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("center") != null){
                                         				domainCentre[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] = String.valueOf(((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("center"));
                                             		}
                                         		}
