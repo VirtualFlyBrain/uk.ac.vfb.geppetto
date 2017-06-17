@@ -126,6 +126,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
             // Extract metadata
             if (results.getValue("node", 0) != null) {
                 System.out.println("Extracting Metadata...");
+                System.out.println(String.valueOf(results));
                 Map<String, Object> resultNode = (Map<String, Object>) results.getValue("node", 0);
                 String labelLink = "";
                 if (resultNode.get("label") != null) {
