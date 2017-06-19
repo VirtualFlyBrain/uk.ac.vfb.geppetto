@@ -539,11 +539,11 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         			domainId[0] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("short_form");
                                         			domainName[0] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label");
                                         			domainType[0] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form");
-                                        			if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("center") != null){
-                                        				domainCentre[0] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("center");
+                                        			if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("center") != null){
+                                        				domainCentre[0] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("center");
                                             		}
-                                        			if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("voxel") != null){
-                                        				voxelSize = (String[]) ((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("voxel");
+                                        			if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("voxel") != null){
+                                        				voxelSize = (String[]) ((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("voxel");
                                             		}else{ // default - should not be used:
                                             			voxelSize[0] = "0.622088"; // X
                                             			voxelSize[1] = "0.622088"; // Y
@@ -553,8 +553,8 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         			domainId[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("short_form");
                                         			domainName[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label");
                                         			domainType[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form");
-                                        			if (((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("center") != null){
-                                        				domainCentre[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] = String.valueOf(((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("center"));
+                                        			if (((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("center") != null){
+                                        				domainCentre[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] = String.valueOf(((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("center"));
                                             		}
                                         		}
                                         		System.out.println("Adding domain " + String.valueOf((((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()) + " id: " + domainId[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] + " Name: " + domainName[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] + " Type: " + domainType[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] + " Centre: " + domainCentre[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()]);
