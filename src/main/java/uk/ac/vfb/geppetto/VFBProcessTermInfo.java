@@ -719,7 +719,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 }
                 
                 // set slices
-                if (wlzUrl != null) {
+                if (wlzUrl != "") {
                     System.out.println("Adding Woolz " + wlzUrl);
                     
                     domains.add(Arrays.asList(voxelSize));
