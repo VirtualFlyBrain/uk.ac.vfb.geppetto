@@ -558,8 +558,9 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                             		}
                                         		}
                                         		System.out.println("Adding domain " + String.valueOf((((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()) + " id: " + domainId[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] + " Name: " + domainName[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] + " Type: " + domainType[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] + " Centre: " + domainCentre[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()]);
-                                        	}else{
-	                                            if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
+                                        	}
+                                        	if (!template || 1 > (((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()){
+                                        		if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
 	                                                edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
 	                                            } else {
 	                                                edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri"));
