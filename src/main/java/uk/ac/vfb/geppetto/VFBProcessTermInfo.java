@@ -721,23 +721,27 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 // set slices
                 if (wlzUrl != "") {
                     System.out.println("Adding Woolz " + wlzUrl);
-                    
-                    domains.add(Arrays.asList(voxelSize));
-                    domains.add(Arrays.asList(domainId));
-                    domains.add(Arrays.asList(domainName));
-                    domains.add(Arrays.asList(domainType));
-                    domains.add(Arrays.asList(domainCentre));
-                    
-                    Variable slicesVar = VariablesFactory.eINSTANCE.createVariable();
-                    Image slicesValue = ValuesFactory.eINSTANCE.createImage();
-                    slicesValue.setData(new Gson().toJson(new IIPJSON(0, "https://www.virtualflybrain.org/fcgi/wlziipsrv.fcgi", wlzUrl.replace("http://www.virtualflybrain.org/data/", "/disk/data/VFB/IMAGE_DATA/"), domains)));
-                    slicesValue.setFormat(ImageFormat.IIP);
-                    slicesValue.setReference(tempId);
-                    slicesVar.setId(tempId + "_slices");
-                    slicesVar.setName("Stack Viewer Slices");
-                    slicesVar.getTypes().add(imageType);
-                    slicesVar.getInitialValues().put(imageType, slicesValue);
-                    metaDataType.getVariables().add(slicesVar);
+                    try{
+	                    domains.add(Arrays.asList(voxelSize));
+	                    domains.add(Arrays.asList(domainId));
+	                    domains.add(Arrays.asList(domainName));
+	                    domains.add(Arrays.asList(domainType));
+	                    domains.add(Arrays.asList(domainCentre));
+	                    
+	                    Variable slicesVar = VariablesFactory.eINSTANCE.createVariable();
+	                    Image slicesValue = ValuesFactory.eINSTANCE.createImage();
+	                    slicesValue.setData(new Gson().toJson(new IIPJSON(0, "https://www.virtualflybrain.org/fcgi/wlziipsrv.fcgi", wlzUrl.replace("http://www.virtualflybrain.org/data/", "/disk/data/VFB/IMAGE_DATA/"), domains)));
+	                    slicesValue.setFormat(ImageFormat.IIP);
+	                    slicesValue.setReference(tempId);
+	                    slicesVar.setId(tempId + "_slices");
+	                    slicesVar.setName("Stack Viewer Slices");
+	                    slicesVar.getTypes().add(imageType);
+	                    slicesVar.getInitialValues().put(imageType, slicesValue);
+	                    metaDataType.getVariables().add(slicesVar);
+                    } catch (Exception e) {
+                    	System.out.println("Error adding slices:");
+                    	e.printStackTrace();
+                    }
                 }
 
 
