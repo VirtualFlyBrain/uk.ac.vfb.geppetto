@@ -543,11 +543,12 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 	                                        			if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("center") != null){
 	                                        				domainCentre[0] = String.valueOf(((Map<String, ArrayList>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("center"));
 	                                            		}
-	                                        			if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("voxel") != null){
+	                                        			if (((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("voxel") != null){
 	                                        				voxelSize[0] = String.valueOf(((Map<String, ArrayList>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("voxel").get(0));
 	                                        				voxelSize[1] = String.valueOf(((Map<String, ArrayList>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("voxel").get(1));
 	                                        				voxelSize[2] = String.valueOf(((Map<String, ArrayList>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("voxel").get(2));
 	                                        			}else{ // default - should not be used:
+	                                        				System.out.println("Failure to load voxel size!");
 	                                            			voxelSize[0] = "0.622088"; // X
 	                                            			voxelSize[1] = "0.622088"; // Y
 	                                            			voxelSize[2] = "0.622088"; // Z
