@@ -104,10 +104,10 @@ public class VFBProcessTermInfo extends AQueryProcessor {
         
 //      Template Domain data:
         String wlzUrl = "";
-        String[] domainId = new String[255];
-        String[] domainName = new String[255];
-        String[] domainType = new String[255];
-        String[] domainCentre = new String[255];
+        String[] domainId = new String[600];
+        String[] domainName = new String[600];
+        String[] domainType = new String[600];
+        String[] domainCentre = new String[600];
         String[] voxelSize = new String[4];
         
         
