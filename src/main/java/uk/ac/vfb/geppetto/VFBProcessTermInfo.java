@@ -814,11 +814,11 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 	                	String tempHtml = "";
 	                	if (results.getValue("node", 1) != null) {
 	                		resultNode = (Map<String, Object>) results.getValue("node", 1);
-	                		if (resultNode.get("name") != null) {
-	                			tempHtml += "<b>Name:</b> " + (String) resultNode.get("name") + " (" + (String) resultNode.get("short_form") + ")<br/>";	                			
+	                		if (resultNode.get("label") != null) {
+	                			tempHtml += "<b>Name:</b> " + (String) resultNode.get("label") + " (" + (String) resultNode.get("short_form") + ")<br/>";	                			
 	                		}
-	                		if (types != "") {
-	                			tempHtml += "<b>Types:</b> " + types + "<br/>";
+	                		if (depictedType != "") {
+	                			tempHtml += "<b>Types:</b> " + depictedType + "<br/>";
 	                		}
 	                		if (relationships != "") {
 	                			tempHtml += "<b>Relationships:</b><br/>" + relationships;
