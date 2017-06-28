@@ -818,7 +818,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 	                			tempHtml += "<b>Name:</b> " + (String) resultNode.get("label") + " (" + (String) resultNode.get("short_form") + ")<br/>";	                			
 	                		}
 	                		if (depictedType != "") {
-	                			tempHtml += "<b>Types:</b> " + depictedType + "<br/>";
+	                			tempHtml += "<b>Types:</b> " + depictedType;
 	                		}
 	                		if (relationships != "") {
 	                			tempHtml += "<b>Relationships:</b><br/>" + relationships;
