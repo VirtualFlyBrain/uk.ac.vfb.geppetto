@@ -149,10 +149,11 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 metaDataType.setId(tempId);
                 variable.getAnonymousTypes().add(metaDataType);
                 
-                Variable typeVariable = VariablesFactory.eINSTANCE.createVariable();
-                CompositeType typeMetaDataType = TypesFactory.eINSTANCE.createCompositeType();
-                typeVariable.getAnonymousTypes().add(typeMetaDataType);
-
+//                Variable typeVariable = VariablesFactory.eINSTANCE.createVariable();
+//                CompositeType typeMetaDataType = TypesFactory.eINSTANCE.createCompositeType();
+//                typeVariable.getAnonymousTypes().add(typeMetaDataType);
+                Variable typeVariable = variable;
+                CompositeType typeMetaDataType = metaDataType;
                 // add supertypes
                 
                 List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
