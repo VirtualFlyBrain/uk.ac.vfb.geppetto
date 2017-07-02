@@ -152,8 +152,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 //                Variable typeVariable = VariablesFactory.eINSTANCE.createVariable();
 //                CompositeType typeMetaDataType = TypesFactory.eINSTANCE.createCompositeType();
 //                typeVariable.getAnonymousTypes().add(typeMetaDataType);
-                Variable typeVariable = variable;
-                CompositeType typeMetaDataType = metaDataType;
+                
                 // add supertypes
                 
                 List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
@@ -258,11 +257,11 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         	depictedType += "<a href=\"#\" instancepath=\"" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + " (" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + ")</a><br/>";
                                         	if (synapticNP && individual){
                                         		try{
-	                                        		typeVariable.setId(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form"));
-	                                        		typeVariable.setName(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label"));
+	                                        		variable.setId(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form"));
+	                                        		variable.setName(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label"));
 	                                        		for (String supertype : ((List<String>) ((Map<String, Object>) resultLinks.get(i)).get("labels"))) {
 	                                                    if (!supertype.startsWith("_")) { // ignore supertypes starting with _
-	                                                    	typeMetaDataType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
+	                                                    	metaDataType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
 	                                                    }
 	                                        		}
                                         		}catch (Exception e) {
@@ -879,9 +878,9 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 	    					badge = "<i class=\"popup-icon-link fa fa-quora on fa-square\" />";
 	    					querys += badge + "<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
 	    				}else if (synapticNP && individual){
-	    					if(QueryChecker.check(runnableQuery, typeVariable)){
+	    					if(QueryChecker.check(runnableQuery, variable)){
 	    						badge = "<i class=\"popup-icon-link fa fa-quora on fa-square\" />";
-		    					querys += badge + "<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "," + typeVariable.getId() + "," + typeVariable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", typeVariable.getName()) + "</a></br>";
+		    					querys += badge + "<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "," + variable.getId() + "," + variable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
 	    					}
 	    				}
 	    			}
