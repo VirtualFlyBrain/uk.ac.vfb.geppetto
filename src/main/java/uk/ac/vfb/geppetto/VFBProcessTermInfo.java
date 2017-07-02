@@ -868,24 +868,26 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 	                    metaData.getVariables().add(relVar);
 	                    System.out.println(relationships);
 	                }
-	
-	                // set queries
-	                String badge = "";
-	                for(Query runnableQuery : geppettoModelAccess.getQueries())
-	    			{
-	    				if(QueryChecker.check(runnableQuery, variable))
-	    				{
-	    					badge = "<i class=\"popup-icon-link fa fa-quora on fa-square\" />";
-	    					querys += badge + "<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
-	    				}else if (synapticNP && individual){
-	    					if(QueryChecker.check(runnableQuery, variable)){
-	    						badge = "<i class=\"popup-icon-link fa fa-quora on fa-square\" />";
-		    					querys += badge + "<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "," + variable.getId() + "," + variable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
-	    					}
-	    				}
-	    			}
-	
+	                
                 }
+	
+                // set queries
+                String badge = "";
+                for(Query runnableQuery : geppettoModelAccess.getQueries())
+    			{
+    				if(QueryChecker.check(runnableQuery, variable))
+    				{
+    					badge = "<i class=\"popup-icon-link fa fa-quora on fa-square\" />";
+    					querys += badge + "<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
+    				}else if (synapticNP && individual){
+    					if(QueryChecker.check(runnableQuery, variable)){
+    						badge = "<i class=\"popup-icon-link fa fa-quora on fa-square\" />";
+	    					querys += badge + "<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "," + variable.getId() + "," + variable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
+    					}
+    				}
+    			}
+	
+                
 	                
                 if (querys != "") {
                     Variable queryVar = VariablesFactory.eINSTANCE.createVariable();
