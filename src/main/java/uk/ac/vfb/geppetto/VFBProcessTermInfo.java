@@ -604,7 +604,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 			                                                }
 			                                            }
 		                                            }		           
-		                                            if (objVar == null){
+		                                            if (r == 0){
 			                                            fileUrl = checkURL(edgeLabel + "/volume_man.obj");
 		                                                if (fileUrl != null) {
 		                                                    System.out.println("Adding man OBJ " + fileUrl);
@@ -636,7 +636,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 		                                                }
 		                                            }
 	                                                fileUrl = checkURL(edgeLabel + "/volume.swc");
-	                                                if (fileUrl != null && swcVar == null) {
+	                                                if (fileUrl != null && r == 0) {
 	                                                    System.out.println("Adding SWC " + fileUrl);
 	                                                    Variable swcVar = VariablesFactory.eINSTANCE.createVariable();
 	                                                    ImportType swcImportType = TypesFactory.eINSTANCE.createImportType();
