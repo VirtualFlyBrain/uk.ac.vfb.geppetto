@@ -574,64 +574,69 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 		                                            }
 		                                            //TODO: remove fix for old iri:
 		                                            edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_");
-		                                            String fileUrl = checkURL(edgeLabel + "/thumbnailT.png");
-		                                            if (fileUrl != null) {
-		                                                System.out.println("Adding thumbnail " + fileUrl);
-		                                                thumbnailVar.setId("thumbnail");
-		                                                thumbnailVar.setName("Thumbnail");
-		                                                thumbnailVar.getTypes().add(imageType);
-		                                                thumbnailValue.setName(tempName);
-		                                                thumbnailValue.setData(fileUrl.replace("http://", "https://"));
-		                                                thumbnailValue.setReference(tempId);
-		                                                thumbnailValue.setFormat(ImageFormat.PNG);
-		                                                thumbnailVar.getInitialValues().put(imageType, thumbnailValue);
-		                                                thumb = true;
-		                                            } else {
-		                                                fileUrl = checkURL(edgeLabel + "/thumbnail.png");
+		                                            String fileUrl;
+		                                            if (thumbnailVar.getName() != "Thumbnail"){
+			                                            fileUrl = checkURL(edgeLabel + "/thumbnailT.png");
+			                                            if (fileUrl != null) {
+			                                                System.out.println("Adding thumbnail " + fileUrl);
+			                                                thumbnailVar.setId("thumbnail");
+			                                                thumbnailVar.setName("Thumbnail");
+			                                                thumbnailVar.getTypes().add(imageType);
+			                                                thumbnailValue.setName(tempName);
+			                                                thumbnailValue.setData(fileUrl.replace("http://", "https://"));
+			                                                thumbnailValue.setReference(tempId);
+			                                                thumbnailValue.setFormat(ImageFormat.PNG);
+			                                                thumbnailVar.getInitialValues().put(imageType, thumbnailValue);
+			                                                thumb = true;
+			                                            } else {
+			                                                fileUrl = checkURL(edgeLabel + "/thumbnail.png");
+			                                                if (fileUrl != null) {
+			                                                    System.out.println("Adding thumbnail " + fileUrl);
+			                                                    thumbnailVar.setId("thumbnail");
+			                                                    thumbnailVar.setName("Thumbnail");
+			                                                    thumbnailVar.getTypes().add(imageType);
+			                                                    thumbnailValue.setName(tempName);
+			                                                    thumbnailValue.setData(fileUrl.replace("http://", "https://"));
+			                                                    thumbnailValue.setReference(tempId);
+			                                                    thumbnailValue.setFormat(ImageFormat.PNG);
+			                                                    thumbnailVar.getInitialValues().put(imageType, thumbnailValue);
+			                                                    thumb = true;
+			                                                }
+			                                            }
+		                                            }		           
+		                                            if (objVar == null){
+			                                            fileUrl = checkURL(edgeLabel + "/volume_man.obj");
 		                                                if (fileUrl != null) {
-		                                                    System.out.println("Adding thumbnail " + fileUrl);
-		                                                    thumbnailVar.setId("thumbnail");
-		                                                    thumbnailVar.setName("Thumbnail");
-		                                                    thumbnailVar.getTypes().add(imageType);
-		                                                    thumbnailValue.setName(tempName);
-		                                                    thumbnailValue.setData(fileUrl.replace("http://", "https://"));
-		                                                    thumbnailValue.setReference(tempId);
-		                                                    thumbnailValue.setFormat(ImageFormat.PNG);
-		                                                    thumbnailVar.getInitialValues().put(imageType, thumbnailValue);
-		                                                    thumb = true;
+		                                                    System.out.println("Adding man OBJ " + fileUrl);
+		                                                    Variable objVar = VariablesFactory.eINSTANCE.createVariable();
+		                                                    ImportType objImportType = TypesFactory.eINSTANCE.createImportType();
+		                                                    objImportType.setUrl(fileUrl);
+		                                                    objImportType.setId(tempId + "_obj");
+		                                                    objImportType.setModelInterpreterId("objModelInterpreterService");
+		                                                    objVar.getTypes().add(objImportType);
+		                                                    geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
+		                                                    objVar.setId(tempId + "_obj");
+		                                                    objVar.setName("3D Volume");
+		                                                    geppettoModelAccess.addVariableToType(objVar, metaDataType);
+		                                                } else {
+		                                                    fileUrl = checkURL(edgeLabel + "/volume.obj");
+		                                                    if (fileUrl != null) {
+		                                                        System.out.println("Adding OBJ " + fileUrl);
+		                                                        Variable objVar = VariablesFactory.eINSTANCE.createVariable();
+		                                                        ImportType objImportType = TypesFactory.eINSTANCE.createImportType();
+		                                                        objImportType.setUrl(fileUrl);
+		                                                        objImportType.setId(tempId + "_obj");
+		                                                        objImportType.setModelInterpreterId("objModelInterpreterService");
+		                                                        objVar.getTypes().add(objImportType);
+		                                                        geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
+		                                                        objVar.setId(tempId + "_obj");
+		                                                        objVar.setName("3D Volume");
+		                                                        geppettoModelAccess.addVariableToType(objVar, metaDataType);
+		                                                    }
 		                                                }
 		                                            }
-		                                            fileUrl = checkURL(edgeLabel + "/volume_man.obj");
-	                                                if (fileUrl != null) {
-	                                                    System.out.println("Adding man OBJ " + fileUrl);
-	                                                    Variable objVar = VariablesFactory.eINSTANCE.createVariable();
-	                                                    ImportType objImportType = TypesFactory.eINSTANCE.createImportType();
-	                                                    objImportType.setUrl(fileUrl);
-	                                                    objImportType.setId(tempId + "_obj");
-	                                                    objImportType.setModelInterpreterId("objModelInterpreterService");
-	                                                    objVar.getTypes().add(objImportType);
-	                                                    geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
-	                                                    objVar.setId(tempId + "_obj");
-	                                                    objVar.setName("3D Volume");
-	                                                    geppettoModelAccess.addVariableToType(objVar, metaDataType);
-	                                                } else {
-	                                                    fileUrl = checkURL(edgeLabel + "/volume.obj");
-	                                                    if (fileUrl != null) {
-	                                                        System.out.println("Adding OBJ " + fileUrl);
-	                                                        Variable objVar = VariablesFactory.eINSTANCE.createVariable();
-	                                                        ImportType objImportType = TypesFactory.eINSTANCE.createImportType();
-	                                                        objImportType.setUrl(fileUrl);
-	                                                        objImportType.setId(tempId + "_obj");
-	                                                        objImportType.setModelInterpreterId("objModelInterpreterService");
-	                                                        objVar.getTypes().add(objImportType);
-	                                                        geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
-	                                                        objVar.setId(tempId + "_obj");
-	                                                        objVar.setName("3D Volume");
-	                                                        geppettoModelAccess.addVariableToType(objVar, metaDataType);
-	                                                    }
-	                                                }
 	                                                fileUrl = checkURL(edgeLabel + "/volume.swc");
-	                                                if (fileUrl != null) {
+	                                                if (fileUrl != null && swcVar == null) {
 	                                                    System.out.println("Adding SWC " + fileUrl);
 	                                                    Variable swcVar = VariablesFactory.eINSTANCE.createVariable();
 	                                                    ImportType swcImportType = TypesFactory.eINSTANCE.createImportType();
@@ -646,7 +651,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 	
 	                                                }
 	                                                fileUrl = checkURL(edgeLabel + "/volume.wlz");
-	                                                if (fileUrl != null) {
+	                                                if (fileUrl != null && wlzUrl == "") {
 	                                                    System.out.println("Adding Woolz " + fileUrl);
 	                                                    wlzUrl = fileUrl;
 	                                                }
@@ -655,7 +660,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 	                                                	tempLink = "<a href=\"#\" instancepath=\"" + supertype + "\">" + (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("label") + "</a>";
 	                                                }
 	                                                fileUrl = checkURL(edgeLabel + "/volume.nrrd");
-	                                                if (fileUrl != null) {
+	                                                if (fileUrl != null && downloadLink == "") {
 	                                                    System.out.println("Adding NRRD " + fileUrl);
 	                                                    downloadLink = "Aligned Image: ​<a download=\"" + (String) tempId + ".nrrd\" href=\"" + fileUrl + "\">" + (String) tempId + ".nrrd</a><br/>​​​​​​​​​​​​​​​​​​​​​​​​​​​";
 	                                                    downloadLink += "Note: see licensing section for reuse and attribution info.";
