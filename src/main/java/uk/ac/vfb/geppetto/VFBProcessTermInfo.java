@@ -145,9 +145,9 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 System.out.println("Creating Metadata for " + tempName + "...");
 
                 geppettoModelAccess.setObjectAttribute(variable, GeppettoPackage.Literals.NODE__NAME, tempName);
-                CompositeType metaDataType = TypesFactory.eINSTANCE.createCompositeType();
-                metaDataType.setId(tempId);
-                variable.getAnonymousTypes().add(metaDataType);
+                CompositeType parentType = TypesFactory.eINSTANCE.createCompositeType();
+                parentType.setId(tempId);
+                variable.getAnonymousTypes().add(parentType);
                
                 
 //                Variable typeVariable = VariablesFactory.eINSTANCE.createVariable();
@@ -162,7 +162,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 
                     for (String supertype : supertypes) {
                         if (!supertype.startsWith("_")) { // ignore supertypes starting with _
-                        	metaDataType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
+                        	parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
                             superTypes += supertype + ", ";
                         }
                         if ("Template".equals(supertype)) {
@@ -179,7 +179,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                         }
                     }
                 } else {
-                	metaDataType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Orphan", dependenciesLibrary));
+                	parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Orphan", dependenciesLibrary));
                 }
                 System.out.println("SuperTypes: " + superTypes + " - " + String.valueOf(template) + String.valueOf(individual) + String.valueOf(synapticNP) + String.valueOf(cluster));
 
@@ -187,13 +187,12 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 
                 // Create new Variable
                 Variable metaDataVar = VariablesFactory.eINSTANCE.createVariable();
-                metaDataVar.setId("metaDataVar");
+                CompositeType metaDataType = TypesFactory.eINSTANCE.createCompositeType();
                 metaDataVar.getTypes().add(metaDataType);
                 metaDataVar.setId(tempId + "_meta");
                 metaDataType.setId(tempId + "_metadata");
                 metaDataType.setName("Info");
                 metaDataVar.setName(tempName);
-                geppettoModelAccess.addVariableToType(metaDataVar, metaDataType);
 
 
                 // set meta label/name:
@@ -260,7 +259,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 	                                        		variable.setName(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label"));
 	                                        		for (String supertype : ((List<String>) ((Map<String, Object>) resultLinks.get(i)).get("labels"))) {
 	                                                    if (!supertype.startsWith("_")) { // ignore supertypes starting with _
-	                                                    	metaDataType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
+	                                                    	parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
 	                                                    }
 	                                        		}
                                         		}catch (Exception e) {
@@ -808,7 +807,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
     				exampleVar.getTypes().add(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE));
     				geppettoModelAccess.addVariableToType(exampleVar, metaDataType);
     				exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), images);
-    				metaDataType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("hasExamples", dependenciesLibrary));
+    				parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("hasExamples", dependenciesLibrary));
                 }
                 
                 if (cluster) {
@@ -969,8 +968,9 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 
 
                 // set linkouts:
-
                 
+                
+                geppettoModelAccess.addVariableToType(metaDataVar, parentType);
                 geppettoModelAccess.addTypeToLibrary(metaDataType, dataSource.getTargetLibrary());
                 System.out.println("MetaData Creation Finished");
             } else {
