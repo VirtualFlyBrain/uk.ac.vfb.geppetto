@@ -533,7 +533,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                     case "Related":
                                         edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
                                         if ("depicts".equals(edgeLabel)) {
-                                        	if (!imagesChecked){
+                                        	if (!imagesChecked || template){
 	                                        	try{
 		                                        	if (template && ((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index") != null){
 		                                        		if (1 > (((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()){
@@ -569,7 +569,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 	                                            	e.printStackTrace();
 	                                        	}
 	                                        	try{
-		                                        	if (!template || 1 > (((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()){
+		                                        	if ((!template && !imagesChecked) || 1 > (((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()){
 		                                        		if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
 			                                                edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
 			                                            } else {
