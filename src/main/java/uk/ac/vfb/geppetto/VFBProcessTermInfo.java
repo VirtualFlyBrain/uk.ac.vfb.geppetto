@@ -67,6 +67,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
         Variable thumbnailVar = VariablesFactory.eINSTANCE.createVariable();
         Image thumbnailValue = ValuesFactory.eINSTANCE.createImage();
         Boolean thumb = false;
+        Boolean imagesChecked = false;
 //		Examples
         ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
         String imageName = "Thumbnail";
@@ -532,51 +533,51 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                     case "Related":
                                         edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
                                         if ("depicts".equals(edgeLabel)) {
-                                        	try{
-	                                        	if (template && ((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index") != null){
-	                                        		if (1 > (((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()){
-	                                        			domainId[0] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("short_form");
-	                                        			domainName[0] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label");
-	                                        			domainType[0] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form");
-	                                        			if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("center") != null){
-	                                        				domainCentre[0] = String.valueOf(((Map<String, ArrayList>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("center"));
-	                                            		}
-	                                        			if (((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("voxel") != null){
-	                                        				voxelSize[0] = String.valueOf(((Map<String, ArrayList>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("voxel").get(0));
-	                                        				voxelSize[1] = String.valueOf(((Map<String, ArrayList>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("voxel").get(1));
-	                                        				voxelSize[2] = String.valueOf(((Map<String, ArrayList>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("voxel").get(2));
-	                                        			}else{ // default - should not be used:
-	                                        				System.out.println("Failure to load voxel size!");
-	                                            			voxelSize[0] = "0.622088"; // X
-	                                            			voxelSize[1] = "0.622088"; // Y
-	                                            			voxelSize[2] = "0.622088"; // Z
-	                                            		}
-	                                        		}else{
-	                                        			domainId[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("short_form");
-	                                        			domainName[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label");
-	                                        			domainType[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form");
-	                                        			if (((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("center") != null){
-	                                        				
-	                                        				domainCentre[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] = String.valueOf(((Map<String, ArrayList>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("center"));
-	                                            		}
-	                                        		}
-	                                        		System.out.println("Adding domain " + String.valueOf((((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()) + " id: " + domainId[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] + " Name: " + domainName[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] + " Type: " + domainType[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] + " Centre: " + domainCentre[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()]);
+                                        	if (!imagesChecked){
+	                                        	try{
+		                                        	if (template && ((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index") != null){
+		                                        		if (1 > (((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()){
+		                                        			domainId[0] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("short_form");
+		                                        			domainName[0] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label");
+		                                        			domainType[0] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form");
+		                                        			if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("center") != null){
+		                                        				domainCentre[0] = String.valueOf(((Map<String, ArrayList>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("center"));
+		                                            		}
+		                                        			if (((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("voxel") != null){
+		                                        				voxelSize[0] = String.valueOf(((Map<String, ArrayList>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("voxel").get(0));
+		                                        				voxelSize[1] = String.valueOf(((Map<String, ArrayList>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("voxel").get(1));
+		                                        				voxelSize[2] = String.valueOf(((Map<String, ArrayList>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("voxel").get(2));
+		                                        			}else{ // default - should not be used:
+		                                        				System.out.println("Failure to load voxel size!");
+		                                            			voxelSize[0] = "0.622088"; // X
+		                                            			voxelSize[1] = "0.622088"; // Y
+		                                            			voxelSize[2] = "0.622088"; // Z
+		                                            		}
+		                                        		}else{
+		                                        			domainId[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("short_form");
+		                                        			domainName[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label");
+		                                        			domainType[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form");
+		                                        			if (((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("center") != null){
+		                                        				
+		                                        				domainCentre[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] = String.valueOf(((Map<String, ArrayList>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("center"));
+		                                            		}
+		                                        		}
+		                                        		System.out.println("Adding domain " + String.valueOf((((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()) + " id: " + domainId[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] + " Name: " + domainName[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] + " Type: " + domainType[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] + " Centre: " + domainCentre[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()]);
+		                                        	}
+	                                        	}catch (Exception e){
+	                                        		System.out.println("Error adding domain metadata:");
+	                                            	e.printStackTrace();
 	                                        	}
-                                        	}catch (Exception e){
-                                        		System.out.println("Error adding domain metadata:");
-                                            	e.printStackTrace();
-                                        	}
-                                        	try{
-	                                        	if (!template || 1 > (((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()){
-	                                        		if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
-		                                                edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
-		                                            } else {
-		                                                edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri"));
-		                                            }
-		                                            //TODO: remove fix for old iri:
-		                                            edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_");
-		                                            String fileUrl;
-		                                            if (thumbnailVar.getName() != "Thumbnail"){
+	                                        	try{
+		                                        	if (!template || 1 > (((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()){
+		                                        		if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
+			                                                edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
+			                                            } else {
+			                                                edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri"));
+			                                            }
+			                                            //TODO: remove fix for old iri:
+			                                            edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_");
+			                                            String fileUrl;
 			                                            fileUrl = checkURL(edgeLabel + "/thumbnailT.png");
 			                                            if (fileUrl != null) {
 			                                                System.out.println("Adding thumbnail " + fileUrl);
@@ -603,9 +604,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 			                                                    thumbnailVar.getInitialValues().put(imageType, thumbnailValue);
 			                                                    thumb = true;
 			                                                }
-			                                            }
-		                                            }		           
-		                                            if (r == 0){
+			                                            }		           
 			                                            fileUrl = checkURL(edgeLabel + "/volume_man.obj");
 		                                                if (fileUrl != null) {
 		                                                    System.out.println("Adding man OBJ " + fileUrl);
@@ -635,41 +634,42 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 		                                                        geppettoModelAccess.addVariableToType(objVar, parentType);
 		                                                    }
 		                                                }
-		                                            }
-	                                                fileUrl = checkURL(edgeLabel + "/volume.swc");
-	                                                if (fileUrl != null && r == 0) {
-	                                                    System.out.println("Adding SWC " + fileUrl);
-	                                                    Variable swcVar = VariablesFactory.eINSTANCE.createVariable();
-	                                                    ImportType swcImportType = TypesFactory.eINSTANCE.createImportType();
-	                                                    swcImportType.setUrl(fileUrl);
-	                                                    swcImportType.setId(tempId + "_swc");
-	                                                    swcImportType.setModelInterpreterId("swcModelInterpreter");
-	                                                    swcVar.getTypes().add(swcImportType);
-	                                                    geppettoModelAccess.addTypeToLibrary(swcImportType, getLibraryFor(dataSource, "swc"));
-	                                                    swcVar.setName("3D Skeleton");
-	                                                    swcVar.setId(tempId + "_swc");
-	                                                    geppettoModelAccess.addVariableToType(swcVar, parentType);
-	
-	                                                }
-	                                                fileUrl = checkURL(edgeLabel + "/volume.wlz");
-	                                                if (fileUrl != null && wlzUrl == "") {
-	                                                    System.out.println("Adding Woolz " + fileUrl);
-	                                                    wlzUrl = fileUrl;
-	                                                }
-	                                                if (((Map<String, Object>) resultLinks.get(i)).get("temp") != null) {
-	                                                	String supertype = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("short_form");
-	                                                	tempLink = "<a href=\"#\" instancepath=\"" + supertype + "\">" + (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("label") + "</a>";
-	                                                }
-	                                                fileUrl = checkURL(edgeLabel + "/volume.nrrd");
-	                                                if (fileUrl != null && downloadLink == "") {
-	                                                    System.out.println("Adding NRRD " + fileUrl);
-	                                                    downloadLink = "Aligned Image: ​<a download=\"" + (String) tempId + ".nrrd\" href=\"" + fileUrl + "\">" + (String) tempId + ".nrrd</a><br/>​​​​​​​​​​​​​​​​​​​​​​​​​​​";
-	                                                    downloadLink += "Note: see licensing section for reuse and attribution info.";
-	                                                }
+		                                                fileUrl = checkURL(edgeLabel + "/volume.swc");
+		                                                if (fileUrl != null && r == 0) {
+		                                                    System.out.println("Adding SWC " + fileUrl);
+		                                                    Variable swcVar = VariablesFactory.eINSTANCE.createVariable();
+		                                                    ImportType swcImportType = TypesFactory.eINSTANCE.createImportType();
+		                                                    swcImportType.setUrl(fileUrl);
+		                                                    swcImportType.setId(tempId + "_swc");
+		                                                    swcImportType.setModelInterpreterId("swcModelInterpreter");
+		                                                    swcVar.getTypes().add(swcImportType);
+		                                                    geppettoModelAccess.addTypeToLibrary(swcImportType, getLibraryFor(dataSource, "swc"));
+		                                                    swcVar.setName("3D Skeleton");
+		                                                    swcVar.setId(tempId + "_swc");
+		                                                    geppettoModelAccess.addVariableToType(swcVar, parentType);
+		
+		                                                }
+		                                                fileUrl = checkURL(edgeLabel + "/volume.wlz");
+		                                                if (fileUrl != null && wlzUrl == "") {
+		                                                    System.out.println("Adding Woolz " + fileUrl);
+		                                                    wlzUrl = fileUrl;
+		                                                }
+		                                                if (((Map<String, Object>) resultLinks.get(i)).get("temp") != null) {
+		                                                	String supertype = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("short_form");
+		                                                	tempLink = "<a href=\"#\" instancepath=\"" + supertype + "\">" + (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("label") + "</a>";
+		                                                }
+		                                                fileUrl = checkURL(edgeLabel + "/volume.nrrd");
+		                                                if (fileUrl != null && downloadLink == "") {
+		                                                    System.out.println("Adding NRRD " + fileUrl);
+		                                                    downloadLink = "Aligned Image: ​<a download=\"" + (String) tempId + ".nrrd\" href=\"" + fileUrl + "\">" + (String) tempId + ".nrrd</a><br/>​​​​​​​​​​​​​​​​​​​​​​​​​​​";
+		                                                    downloadLink += "Note: see licensing section for reuse and attribution info.";
+		                                                }
+		                                                imagesChecked = true;
+		                                        	}
+	                                        	}catch (Exception e){
+	                                        		System.out.println("Error adding images:");
+	                                            	e.printStackTrace();
 	                                        	}
-                                        	}catch (Exception e){
-                                        		System.out.println("Error adding images:");
-                                            	e.printStackTrace();
                                         	}
                                         } else if ("overlaps".equals(edgeLabel)) {
                                             overlapedBy += 1;
