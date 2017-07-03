@@ -187,13 +187,11 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 // Create new Variable
                 Variable metaDataVar = VariablesFactory.eINSTANCE.createVariable();
                 metaDataVar.setId("metaDataVar");
-                CompositeType metaData = TypesFactory.eINSTANCE.createCompositeType();
-                metaDataVar.getTypes().add(metaData);
+                metaDataVar.getTypes().add(metaDataType);
                 metaDataVar.setId(tempId + "_meta");
-                metaData.setId(tempId + "_metadata");
-                metaData.setName("Info");
+                metaDataType.setId(tempId + "_metadata");
+                metaDataType.setName("Info");
                 metaDataVar.setName(tempName);
-                metaDataType.getVariables().add(metaDataVar);
 
 
                 // set meta label/name:
@@ -201,11 +199,10 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 label.setId("label");
                 label.setName("Name");
                 label.getTypes().add(htmlType);
-                metaData.getVariables().add(label);
                 HTML labelValue = ValuesFactory.eINSTANCE.createHTML();
                 label.getInitialValues().put(htmlType, labelValue);
                 labelValue.setHtml(labelLink);
-                metaData.getVariables().add(label);	
+                geppettoModelAccess.addVariableToType(label, metaDataType);	
                 System.out.println(labelLink);
 
 
@@ -616,7 +613,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 	                                                    geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
 	                                                    objVar.setId(tempId + "_obj");
 	                                                    objVar.setName("3D Volume");
-	//                            						metaDataType.getVariables().add(objVar);
 	                                                    geppettoModelAccess.addVariableToType(objVar, metaDataType);
 	                                                } else {
 	                                                    fileUrl = checkURL(edgeLabel + "/volume.obj");
@@ -750,7 +746,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 	                    slicesVar.setName("Stack Viewer Slices");
 	                    slicesVar.getTypes().add(imageType);
 	                    slicesVar.getInitialValues().put(imageType, slicesValue);
-	                    metaDataType.getVariables().add(slicesVar);
+	                    geppettoModelAccess.addVariableToType(slicesVar, metaDataType);
                     } catch (Exception e) {
                     	System.out.println("Error adding slices:");
                     	e.printStackTrace();
@@ -767,7 +763,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     HTML depictsValue = ValuesFactory.eINSTANCE.createHTML();
                     depictsValue.setHtml(depictedType);
                     depictsVar.getInitialValues().put(htmlType, depictsValue);
-                    metaData.getVariables().add(depictsVar);
+                    geppettoModelAccess.addVariableToType(depictsVar, metaDataType);
                     System.out.println(depictedType);
                 }
 	            	
@@ -782,7 +778,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     HTML synValue = ValuesFactory.eINSTANCE.createHTML();
                     synValue.setHtml(StringUtils.join(synonyms, ", "));
                     synVar.getInitialValues().put(htmlType, synValue);
-                    metaData.getVariables().add(synVar);
+                    geppettoModelAccess.addVariableToType(synVar, metaDataType);
                     System.out.println(StringUtils.join(synonyms, ", "));
                 }
 
@@ -790,7 +786,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 
                 // set thumbnails:
                 if (thumb) {
-                    geppettoModelAccess.addVariableToType(thumbnailVar, metaData);
+                    geppettoModelAccess.addVariableToType(thumbnailVar, metaDataType);
                 }
                 
                 // set examples:
@@ -803,7 +799,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 		exampleVar.setName("Examples");
                 	}
     				exampleVar.getTypes().add(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE));
-    				geppettoModelAccess.addVariableToType(exampleVar, metaData);
+    				geppettoModelAccess.addVariableToType(exampleVar, metaDataType);
     				exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), images);
     				metaDataType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("hasExamples", dependenciesLibrary));
                 }
@@ -831,7 +827,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 	                    HTML typesValue = ValuesFactory.eINSTANCE.createHTML();
 	                    typesValue.setHtml(tempHtml);
 	                    typesVar.getInitialValues().put(htmlType, typesValue);
-	                    metaData.getVariables().add(typesVar);
+	                    geppettoModelAccess.addVariableToType(typesVar, metaDataType);
 	                    System.out.println(tempHtml);
 	                    
 	                    if (("".equalsIgnoreCase(desc)) || (".".equals(desc))) { 
@@ -850,7 +846,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 	                    HTML typesValue = ValuesFactory.eINSTANCE.createHTML();
 	                    typesValue.setHtml(types);
 	                    typesVar.getInitialValues().put(htmlType, typesValue);
-	                    metaData.getVariables().add(typesVar);
+	                    geppettoModelAccess.addVariableToType(typesVar, metaDataType);
 	                    System.out.println(types);
 	                }
 	
@@ -861,11 +857,10 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 	                    relVar.setId("relationships");
 	                    relVar.setName("Relationships");
 	                    relVar.getTypes().add(htmlType);
-	                    metaData.getVariables().add(relVar);
 	                    HTML relValue = ValuesFactory.eINSTANCE.createHTML();
 	                    relValue.setHtml(relationships);
 	                    relVar.getInitialValues().put(htmlType, relValue);
-	                    metaData.getVariables().add(relVar);
+	                    geppettoModelAccess.addVariableToType(relVar, metaDataType);
 	                    System.out.println(relationships);
 	                }
 	                
@@ -897,7 +892,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     HTML queryValue = ValuesFactory.eINSTANCE.createHTML();
                     queryValue.setHtml(querys);
                     queryVar.getInitialValues().put(htmlType, queryValue);
-                    metaData.getVariables().add(queryVar);
+                    geppettoModelAccess.addVariableToType(queryVar, metaDataType);
                     System.out.println(querys);
                 }
 
@@ -912,7 +907,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     desc = highlightLinks(desc).replaceAll("[)] [(]", "; ");
                     descriptionValue.setHtml(desc);
                     description.getInitialValues().put(htmlType, descriptionValue);
-                    geppettoModelAccess.addVariableToType(description, metaData);
+                    geppettoModelAccess.addVariableToType(description, metaDataType);
                     System.out.println(desc);
                 }
 
@@ -930,7 +925,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     HTML refValue = ValuesFactory.eINSTANCE.createHTML();
                     refValue.setHtml(references);
                     refVar.getInitialValues().put(htmlType, refValue);
-                    metaData.getVariables().add(refVar);
+                    geppettoModelAccess.addVariableToType(refVar, metaDataType);
                     System.out.println(references);
                 }
                 
@@ -944,7 +939,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     HTML tempValue = ValuesFactory.eINSTANCE.createHTML();
                     tempValue.setHtml(tempLink);
                     tempVar.getInitialValues().put(htmlType, tempValue);
-                    metaData.getVariables().add(tempVar);
+                    geppettoModelAccess.addVariableToType(tempVar, metaDataType);
                     System.out.println(tempLink);
                 }
 
@@ -961,16 +956,15 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     HTML downloadValue = ValuesFactory.eINSTANCE.createHTML();
                     downloadValue.setHtml(downloadLink);
                     downloads.getInitialValues().put(htmlType, downloadValue);
-                    metaData.getVariables().add(downloads);
+                    geppettoModelAccess.addVariableToType(downloads, metaDataType);
                     System.out.println(downloadLink);
                 }
                 
 
                 // set linkouts:
 
-            
-                metaDataType.getVariables().add(metaDataVar);
-                geppettoModelAccess.addTypeToLibrary(metaData, dataSource.getTargetLibrary());
+                geppettoModelAccess.addVariableToType(metaDataVar, metaDataType);
+                geppettoModelAccess.addTypeToLibrary(metaDataType, dataSource.getTargetLibrary());
                 System.out.println("MetaData Creation Finished");
             } else {
                 System.out.println("Error node not returned: " + results.eAllContents().toString());
