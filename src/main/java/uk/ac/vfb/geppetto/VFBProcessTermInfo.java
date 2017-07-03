@@ -148,6 +148,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 CompositeType metaDataType = TypesFactory.eINSTANCE.createCompositeType();
                 metaDataType.setId(tempId);
                 variable.getAnonymousTypes().add(metaDataType);
+               
                 
 //                Variable typeVariable = VariablesFactory.eINSTANCE.createVariable();
 //                CompositeType typeMetaDataType = TypesFactory.eINSTANCE.createCompositeType();
@@ -192,6 +193,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 metaDataType.setId(tempId + "_metadata");
                 metaDataType.setName("Info");
                 metaDataVar.setName(tempName);
+                geppettoModelAccess.addVariableToType(metaDataVar, metaDataType);
 
 
                 // set meta label/name:
@@ -968,7 +970,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 
                 // set linkouts:
 
-                geppettoModelAccess.addVariableToType(metaDataVar, metaDataType);
+                
                 geppettoModelAccess.addTypeToLibrary(metaDataType, dataSource.getTargetLibrary());
                 System.out.println("MetaData Creation Finished");
             } else {
