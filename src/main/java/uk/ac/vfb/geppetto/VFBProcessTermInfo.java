@@ -618,7 +618,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 		                                                    geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
 		                                                    objVar.setId(tempId + "_obj");
 		                                                    objVar.setName("3D Volume");
-		                                                    geppettoModelAccess.addVariableToType(objVar, metaDataType);
+		                                                    geppettoModelAccess.addVariableToType(objVar, parentType);
 		                                                } else {
 		                                                    fileUrl = checkURL(edgeLabel + "/volume.obj");
 		                                                    if (fileUrl != null) {
@@ -632,7 +632,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 		                                                        geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
 		                                                        objVar.setId(tempId + "_obj");
 		                                                        objVar.setName("3D Volume");
-		                                                        geppettoModelAccess.addVariableToType(objVar, metaDataType);
+		                                                        geppettoModelAccess.addVariableToType(objVar, parentType);
 		                                                    }
 		                                                }
 		                                            }
@@ -648,7 +648,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 	                                                    geppettoModelAccess.addTypeToLibrary(swcImportType, getLibraryFor(dataSource, "swc"));
 	                                                    swcVar.setName("3D Skeleton");
 	                                                    swcVar.setId(tempId + "_swc");
-	                                                    geppettoModelAccess.addVariableToType(swcVar, metaDataType);
+	                                                    geppettoModelAccess.addVariableToType(swcVar, parentType);
 	
 	                                                }
 	                                                fileUrl = checkURL(edgeLabel + "/volume.wlz");
@@ -752,7 +752,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 	                    slicesVar.setName("Stack Viewer Slices");
 	                    slicesVar.getTypes().add(imageType);
 	                    slicesVar.getInitialValues().put(imageType, slicesValue);
-	                    geppettoModelAccess.addVariableToType(slicesVar, metaDataType);
+	                    geppettoModelAccess.addVariableToType(slicesVar, parentType);
                     } catch (Exception e) {
                     	System.out.println("Error adding slices:");
                     	e.printStackTrace();
