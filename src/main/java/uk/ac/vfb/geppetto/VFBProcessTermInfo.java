@@ -604,7 +604,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 			                                                    thumbnailVar.getInitialValues().put(imageType, thumbnailValue);
 			                                                    thumb = true;
 			                                                }
-			                                            }		           
+			                                            }		                                                if (r==0){
 			                                            fileUrl = checkURL(edgeLabel + "/volume_man.obj");
 		                                                if (fileUrl != null) {
 		                                                    System.out.println("Adding man OBJ " + fileUrl);
@@ -633,6 +633,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 		                                                        objVar.setName("3D Volume");
 		                                                        geppettoModelAccess.addVariableToType(objVar, parentType);
 		                                                    }
+		                                                }
 		                                                }
 		                                                fileUrl = checkURL(edgeLabel + "/volume.swc");
 		                                                if (fileUrl != null && r == 0) {
