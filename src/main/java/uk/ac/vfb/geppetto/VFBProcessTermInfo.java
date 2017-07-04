@@ -194,7 +194,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 metaDataType.setId(tempId + "_metadata");
                 metaDataType.setName("Info");
                 metaDataVar.setName(tempName);
-
+                geppettoModelAccess.addVariableToType(metaDataVar, parentType);
 
                 // set meta label/name:
                 Variable label = VariablesFactory.eINSTANCE.createVariable();
@@ -971,7 +971,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 // set linkouts:
                 
                 
-                geppettoModelAccess.addVariableToType(metaDataVar, parentType);
+                
                 geppettoModelAccess.addTypeToLibrary(metaDataType, dataSource.getTargetLibrary());
                 System.out.println("MetaData Creation Finished");
             } else {
