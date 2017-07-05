@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 
 /**
  * @author RobertCourt
@@ -974,6 +975,16 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 
                 geppettoModelAccess.addTypeToLibrary(metaDataType, dataSource.getTargetLibrary());
                 System.out.println("MetaData Creation Finished");
+                
+                
+                try {
+					System.out.println(GeppettoSerializer.serializeToJSON(EcoreUtil.copy(variable), false));
+					System.out.println(GeppettoSerializer.serializeToJSON(EcoreUtil.copy(parentType), false));
+				} catch (IOException e) {
+					System.out.println("IO exception outputting variable");
+					e.printStackTrace();
+				}
+                
             } else {
                 System.out.println("Error node not returned: " + results.eAllContents().toString());
             }
