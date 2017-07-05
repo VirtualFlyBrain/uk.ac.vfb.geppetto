@@ -605,36 +605,37 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 			                                                    thumbnailVar.getInitialValues().put(imageType, thumbnailValue);
 			                                                    thumb = true;
 			                                                }
-			                                            }		                                                if (r==0){
-			                                            fileUrl = checkURL(edgeLabel + "/volume_man.obj");
-		                                                if (fileUrl != null) {
-		                                                    System.out.println("Adding man OBJ " + fileUrl);
-		                                                    Variable objVar = VariablesFactory.eINSTANCE.createVariable();
-		                                                    ImportType objImportType = TypesFactory.eINSTANCE.createImportType();
-		                                                    objImportType.setUrl(fileUrl);
-		                                                    objImportType.setId(tempId + "_obj");
-		                                                    objImportType.setModelInterpreterId("objModelInterpreterService");
-		                                                    objVar.getTypes().add(objImportType);
-		                                                    geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
-		                                                    objVar.setId(tempId + "_obj");
-		                                                    objVar.setName("3D Volume");
-		                                                    geppettoModelAccess.addVariableToType(objVar, parentType);
-		                                                } else {
-		                                                    fileUrl = checkURL(edgeLabel + "/volume.obj");
-		                                                    if (fileUrl != null) {
-		                                                        System.out.println("Adding OBJ " + fileUrl);
-		                                                        Variable objVar = VariablesFactory.eINSTANCE.createVariable();
-		                                                        ImportType objImportType = TypesFactory.eINSTANCE.createImportType();
-		                                                        objImportType.setUrl(fileUrl);
-		                                                        objImportType.setId(tempId + "_obj");
-		                                                        objImportType.setModelInterpreterId("objModelInterpreterService");
-		                                                        objVar.getTypes().add(objImportType);
-		                                                        geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
-		                                                        objVar.setId(tempId + "_obj");
-		                                                        objVar.setName("3D Volume");
-		                                                        geppettoModelAccess.addVariableToType(objVar, parentType);
-		                                                    }
-		                                                }
+			                                            }		                                                
+			                                            if (r==0){
+				                                            fileUrl = checkURL(edgeLabel + "/volume_man.obj");
+			                                                if (fileUrl != null) {
+			                                                    System.out.println("Adding man OBJ " + fileUrl);
+			                                                    Variable objVar = VariablesFactory.eINSTANCE.createVariable();
+			                                                    ImportType objImportType = TypesFactory.eINSTANCE.createImportType();
+			                                                    objImportType.setUrl(fileUrl);
+			                                                    objImportType.setId(tempId + "_obj");
+			                                                    objImportType.setModelInterpreterId("objModelInterpreterService");
+			                                                    objVar.getTypes().add(objImportType);
+			                                                    geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
+			                                                    objVar.setId(tempId + "_obj");
+			                                                    objVar.setName("3D Volume");
+			                                                    geppettoModelAccess.addVariableToType(objVar, parentType);
+			                                                } else {
+			                                                    fileUrl = checkURL(edgeLabel + "/volume.obj");
+			                                                    if (fileUrl != null) {
+			                                                        System.out.println("Adding OBJ " + fileUrl);
+			                                                        Variable objVar = VariablesFactory.eINSTANCE.createVariable();
+			                                                        ImportType objImportType = TypesFactory.eINSTANCE.createImportType();
+			                                                        objImportType.setUrl(fileUrl);
+			                                                        objImportType.setId(tempId + "_obj");
+			                                                        objImportType.setModelInterpreterId("objModelInterpreterService");
+			                                                        objVar.getTypes().add(objImportType);
+			                                                        geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
+			                                                        objVar.setId(tempId + "_obj");
+			                                                        objVar.setName("3D Volume");
+			                                                        geppettoModelAccess.addVariableToType(objVar, parentType);
+			                                                    }
+			                                                }
 		                                                }
 		                                                fileUrl = checkURL(edgeLabel + "/volume.swc");
 		                                                if (fileUrl != null && r == 0) {
