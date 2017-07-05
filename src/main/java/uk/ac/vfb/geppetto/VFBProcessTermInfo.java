@@ -740,12 +740,23 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 if (wlzUrl != "") {
                     System.out.println("Adding Woolz " + wlzUrl);
                     try{
-	                    domains.add(Arrays.asList(voxelSize));
-	                    domains.add(Arrays.asList(domainId));
-	                    domains.add(Arrays.asList(domainName));
-	                    domains.add(Arrays.asList(domainType));
-	                    domains.add(Arrays.asList(domainCentre));
-	                    
+                    	if (template){
+		                    domains.add(Arrays.asList(voxelSize));
+		                    domains.add(Arrays.asList(domainId));
+		                    domains.add(Arrays.asList(domainName));
+		                    domains.add(Arrays.asList(domainType));
+		                    domains.add(Arrays.asList(domainCentre));
+                    	}else{
+                    		domains.add(Arrays.asList("0","0","0"));
+                    		domains.add(Arrays.asList(tempId));
+		                    domains.add(Arrays.asList(tempName));
+                    		if (depictedType.indexOf('(') > -1){
+                    			domains.add(Arrays.asList(((depictedType.split("(")[1]).split(")")[0])));
+                    		}else{
+                    			domains.add(Arrays.asList(""));
+                    		}
+                    		domains.add(Arrays.asList("0","0","0"));
+                    	}
 	                    Variable slicesVar = VariablesFactory.eINSTANCE.createVariable();
 	                    Image slicesValue = ValuesFactory.eINSTANCE.createImage();
 	                    slicesValue.setData(new Gson().toJson(new IIPJSON(0, "https://www.virtualflybrain.org/fcgi/wlziipsrv.fcgi", wlzUrl.replace("http://www.virtualflybrain.org/data/", "/disk/data/VFB/IMAGE_DATA/"), domains)));
