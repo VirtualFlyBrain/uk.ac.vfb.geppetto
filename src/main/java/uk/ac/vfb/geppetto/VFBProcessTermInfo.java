@@ -979,9 +979,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 
                 
                 try {
-                	System.out.println("variable:");
-					System.out.println(GeppettoSerializer.serializeToJSON(EcoreUtil.copy(variable), false));
-					System.out.println("type:");
+                	System.out.println("type:");
 					System.out.println(GeppettoSerializer.serializeToJSON(EcoreUtil.copy(parentType), false));
 				} catch (IOException e) {
 					System.out.println("IO exception outputting variable");
