@@ -570,7 +570,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 	                                            	e.printStackTrace();
 	                                        	}
 	                                        	try{
-		                                        	if ((!template && !imagesChecked) || 1 > (((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()){
+		                                        	if ((!template && !imagesChecked) || (template && 1 > (((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue())){
 		                                        		if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
 			                                                edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
 			                                            } else {
