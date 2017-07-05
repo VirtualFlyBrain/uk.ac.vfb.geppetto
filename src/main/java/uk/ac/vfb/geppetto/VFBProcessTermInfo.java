@@ -257,8 +257,8 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         	depictedType += "<a href=\"#\" instancepath=\"" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + " (" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + ")</a><br/>";
                                         	if (synapticNP && individual){
                                         		try{
-	                                        		variable.setId(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form"));
-	                                        		variable.setName(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label"));
+//	                                        		variable.setId(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form"));
+//	                                        		variable.setName(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label"));
 	                                        		for (String supertype : ((List<String>) ((Map<String, Object>) resultLinks.get(i)).get("labels"))) {
 	                                                    if (!supertype.startsWith("_")) { // ignore supertypes starting with _
 	                                                    	parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
