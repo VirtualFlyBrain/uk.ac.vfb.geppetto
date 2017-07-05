@@ -990,8 +990,18 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 
                 
                 try {
-                	System.out.println("type:");
+                	System.out.println("parentType:");
 					System.out.println(GeppettoSerializer.serializeToJSON(EcoreUtil.copy(parentType), false));
+					System.out.println("metaDataType:");
+					System.out.println(GeppettoSerializer.serializeToJSON(EcoreUtil.copy(metaDataType), false));
+				} catch (IOException e) {
+					System.out.println("IO exception outputting composte types");
+					e.printStackTrace();
+				}
+                
+                try {
+                	System.out.println("variable:");
+					System.out.println(GeppettoSerializer.serializeToJSON(EcoreUtil.copy(variable), false));
 				} catch (IOException e) {
 					System.out.println("IO exception outputting variable");
 					e.printStackTrace();
