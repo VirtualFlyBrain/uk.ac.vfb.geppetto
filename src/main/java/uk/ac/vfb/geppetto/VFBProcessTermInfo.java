@@ -608,11 +608,10 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 			                                            }		                                                
 			                                            if (r==0){
 				                                            fileUrl = checkURL(edgeLabel + "/volume_man.obj");
-			                                                if (fileUrl != null) {
-			                                                    System.out.println("Adding man OBJ " + fileUrl);
-			                                                    Variable objVar = VariablesFactory.eINSTANCE.createVariable();
-			                                                    ImportType objImportType = TypesFactory.eINSTANCE.createImportType();
-			                                                    objImportType.setUrl(fileUrl);
+				                                            Variable objVar = VariablesFactory.eINSTANCE.createVariable();
+		                                                    ImportType objImportType = TypesFactory.eINSTANCE.createImportType();
+				                                            if (fileUrl != null) {
+			                                                    System.out.println("Adding man OBJ " + fileUrl);objImportType.setUrl(fileUrl);
 			                                                    objImportType.setId(tempId + "_obj");
 			                                                    objImportType.setModelInterpreterId("objModelInterpreterService");
 			                                                    objVar.getTypes().add(objImportType);
@@ -624,10 +623,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 			                                                } else {
 			                                                    fileUrl = checkURL(edgeLabel + "/volume.obj");
 			                                                    if (fileUrl != null) {
-			                                                        System.out.println("Adding OBJ " + fileUrl);
-			                                                        Variable objVar = VariablesFactory.eINSTANCE.createVariable();
-			                                                        ImportType objImportType = TypesFactory.eINSTANCE.createImportType();
-			                                                        objImportType.setUrl(fileUrl);
+			                                                        System.out.println("Adding OBJ " + fileUrl);objImportType.setUrl(fileUrl);
 			                                                        objImportType.setId(tempId + "_obj");
 			                                                        objImportType.setModelInterpreterId("objModelInterpreterService");
 			                                                        objVar.getTypes().add(objImportType);
@@ -638,6 +634,20 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 			                                                        geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
 			                                                    }
 			                                                }
+			                                                try {
+	                                                        	System.out.println("OBJ variable:");
+	                                        					System.out.println(GeppettoSerializer.serializeToJSON(EcoreUtil.copy(objVar), false));
+	                                        				} catch (IOException e) {
+	                                        					System.out.println("IO exception outputing variable");
+	                                        					e.printStackTrace();
+	                                        				}
+			                                                try {
+	                                                        	System.out.println("OBJ type:");
+	                                        					System.out.println(GeppettoSerializer.serializeToJSON(EcoreUtil.copy(objImportType), false));
+	                                        				} catch (IOException e) {
+	                                        					System.out.println("IO exception outputing type");
+	                                        					e.printStackTrace();
+	                                        				}
 		                                                }
 		                                                fileUrl = checkURL(edgeLabel + "/volume.swc");
 		                                                if (fileUrl != null && r == 0) {
@@ -652,6 +662,20 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 		                                                    swcVar.setId(tempId + "_swc");
 		                                                    geppettoModelAccess.addVariableToType(swcVar, parentType);
 		                                                    geppettoModelAccess.addTypeToLibrary(swcImportType, getLibraryFor(dataSource, "swc"));
+		                                                    try {
+	                                                        	System.out.println("SWC variable:");
+	                                        					System.out.println(GeppettoSerializer.serializeToJSON(EcoreUtil.copy(swcVar), false));
+	                                        				} catch (IOException e) {
+	                                        					System.out.println("IO exception outputing variable");
+	                                        					e.printStackTrace();
+	                                        				}
+			                                                try {
+	                                                        	System.out.println("SWC type:");
+	                                        					System.out.println(GeppettoSerializer.serializeToJSON(EcoreUtil.copy(swcImportType), false));
+	                                        				} catch (IOException e) {
+	                                        					System.out.println("IO exception outputing type");
+	                                        					e.printStackTrace();
+	                                        				}
 		                                                }
 		                                                fileUrl = checkURL(edgeLabel + "/volume.wlz");
 		                                                if (fileUrl != null && wlzUrl == "") {
