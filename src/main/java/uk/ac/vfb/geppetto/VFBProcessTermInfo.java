@@ -616,10 +616,11 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 			                                                    objImportType.setId(tempId + "_obj");
 			                                                    objImportType.setModelInterpreterId("objModelInterpreterService");
 			                                                    objVar.getTypes().add(objImportType);
-			                                                    geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
 			                                                    objVar.setId(tempId + "_obj");
 			                                                    objVar.setName("3D Volume");
-			                                                    geppettoModelAccess.addVariableToType(objVar, parentType);
+//			                                                    geppettoModelAccess.addVariableToType(objVar, parentType);
+			                                                    parentType.getVariables().add(objVar);
+			                                                    geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
 			                                                } else {
 			                                                    fileUrl = checkURL(edgeLabel + "/volume.obj");
 			                                                    if (fileUrl != null) {
@@ -630,10 +631,11 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 			                                                        objImportType.setId(tempId + "_obj");
 			                                                        objImportType.setModelInterpreterId("objModelInterpreterService");
 			                                                        objVar.getTypes().add(objImportType);
-			                                                        geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
 			                                                        objVar.setId(tempId + "_obj");
 			                                                        objVar.setName("3D Volume");
-			                                                        geppettoModelAccess.addVariableToType(objVar, parentType);
+//			                                                        geppettoModelAccess.addVariableToType(objVar, parentType);
+			                                                        parentType.getVariables().add(objVar);
+			                                                        geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
 			                                                    }
 			                                                }
 		                                                }
@@ -646,11 +648,10 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 		                                                    swcImportType.setId(tempId + "_swc");
 		                                                    swcImportType.setModelInterpreterId("swcModelInterpreter");
 		                                                    swcVar.getTypes().add(swcImportType);
-		                                                    geppettoModelAccess.addTypeToLibrary(swcImportType, getLibraryFor(dataSource, "swc"));
 		                                                    swcVar.setName("3D Skeleton");
 		                                                    swcVar.setId(tempId + "_swc");
 		                                                    geppettoModelAccess.addVariableToType(swcVar, parentType);
-		
+		                                                    geppettoModelAccess.addTypeToLibrary(swcImportType, getLibraryFor(dataSource, "swc"));
 		                                                }
 		                                                fileUrl = checkURL(edgeLabel + "/volume.wlz");
 		                                                if (fileUrl != null && wlzUrl == "") {
