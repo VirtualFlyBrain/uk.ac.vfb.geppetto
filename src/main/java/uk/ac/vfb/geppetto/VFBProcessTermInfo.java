@@ -751,7 +751,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     		domains.add(Arrays.asList(tempId));
 		                    domains.add(Arrays.asList(tempName));
                     		if (depictedType.indexOf('(') > -1){
-                    			domains.add(Arrays.asList(((depictedType.split("(")[1]).split(")")[0])));
+                    			domains.add(Arrays.asList(((depictedType.split("[(]")[1]).split("[)]")[0])));
                     		}else{
                     			domains.add(Arrays.asList(""));
                     		}
