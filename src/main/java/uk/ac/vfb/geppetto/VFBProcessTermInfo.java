@@ -255,20 +255,20 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
                                         if ("type".equals(edgeLabel)) {
                                         	depictedType += "<a href=\"#\" instancepath=\"" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + " (" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + ")</a><br/>";
-                                        	if (synapticNP && individual){
-                                        		try{
-//	                                        		variable.setId(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form"));
-//	                                        		variable.setName(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label"));
-	                                        		for (String supertype : ((List<String>) ((Map<String, Object>) resultLinks.get(i)).get("labels"))) {
-	                                                    if (!supertype.startsWith("_")) { // ignore supertypes starting with _
-	                                                    	parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
-	                                                    }
-	                                        		}
-                                        		}catch (Exception e) {
-                                                    System.out.println("Error creating temp type variable for " + depictedType + " - " + e.toString());
-                                                    e.printStackTrace();
-                                                }
-                                        	}
+//                                        	if (synapticNP && individual){
+//                                        		try{
+////	                                        		variable.setId(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form"));
+////	                                        		variable.setName(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label"));
+//	                                        		for (String supertype : ((List<String>) ((Map<String, Object>) resultLinks.get(i)).get("labels"))) {
+//	                                                    if (!supertype.startsWith("_")) { // ignore supertypes starting with _
+//	                                                    	parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
+//	                                                    }
+//	                                        		}
+//                                        		}catch (Exception e) {
+//                                                    System.out.println("Error creating temp type variable for " + depictedType + " - " + e.toString());
+//                                                    e.printStackTrace();
+//                                                }
+//                                        	}
                                         } else {
                                             System.out.println("INSTANCEOF from node " + String.valueOf(resultLinks.get(i)));
                                         }
