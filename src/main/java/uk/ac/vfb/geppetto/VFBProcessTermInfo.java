@@ -89,6 +89,9 @@ public class VFBProcessTermInfo extends AQueryProcessor {
         int hasPostSynap = 0;
         int hasSynap = 0;
         int subClassOf = 0;
+        Variable classVariable = VariablesFactory.eINSTANCE.createVariable();
+		CompositeType classParentType = TypesFactory.eINSTANCE.createCompositeType();
+		classVariable.setId("notSet");
 //		Description
         String desc = "";
 //		References
@@ -255,20 +258,22 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
                                         if ("type".equals(edgeLabel)) {
                                         	depictedType += "<a href=\"#\" instancepath=\"" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + " (" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + ")</a><br/>";
-//                                        	if (synapticNP && individual){
-//                                        		try{
-////	                                        		variable.setId(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form"));
-////	                                        		variable.setName(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label"));
-//	                                        		for (String supertype : ((List<String>) ((Map<String, Object>) resultLinks.get(i)).get("labels"))) {
-//	                                                    if (!supertype.startsWith("_")) { // ignore supertypes starting with _
-//	                                                    	parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
-//	                                                    }
-//	                                        		}
-//                                        		}catch (Exception e) {
-//                                                    System.out.println("Error creating temp type variable for " + depictedType + " - " + e.toString());
-//                                                    e.printStackTrace();
-//                                                }
-//                                        	}
+                                        	if (synapticNP && individual){
+                                        		try{
+                                        			classVariable.setId(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form"));
+                                        			classVariable.setName(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label"));
+                                        			classParentType.setId(classVariable.getId());
+                                        			classVariable.getAnonymousTypes().add(classParentType);
+                                        			for (String supertype : ((List<String>) ((Map<String, Object>) resultLinks.get(i)).get("labels"))) {
+	                                                    if (!supertype.startsWith("_")) { // ignore supertypes starting with _
+	                                                    	classParentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
+	                                                    }
+	                                        		}
+                                        		}catch (Exception e) {
+                                                    System.out.println("Error creating temp type variable for " + depictedType + " - " + e.toString());
+                                                    e.printStackTrace();
+                                                }
+                                        	}
                                         } else {
                                             System.out.println("INSTANCEOF from node " + String.valueOf(resultLinks.get(i)));
                                         }
@@ -919,10 +924,10 @@ public class VFBProcessTermInfo extends AQueryProcessor {
     				{
     					badge = "<i class=\"popup-icon-link fa fa-quora on fa-square\" />";
     					querys += badge + "<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
-    				}else if (synapticNP && individual){
-    					if(QueryChecker.check(runnableQuery, variable)){
+    				}else if (synapticNP && individual && classVariable.getId()!="notSet"){
+    					if(QueryChecker.check(runnableQuery, classVariable)){
     						badge = "<i class=\"popup-icon-link fa fa-quora on fa-square\" />";
-	    					querys += badge + "<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "," + variable.getId() + "," + variable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
+	    					querys += badge + "<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "," + classVariable.getId() + "," + classVariable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", classVariable.getName()) + "</a></br>";
     					}
     				}
     			}
