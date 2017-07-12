@@ -70,14 +70,16 @@ public class VFBAberOWLidOnlyQueryProcessor extends AQueryProcessor
         processedResults.getHeader().add("ID");
 
 		List<String> ids = new ArrayList<String>();
-		for(AQueryResult result : results.getResults())
-		{
-            SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
-
-            String id = ((QueryResult) result).getValues().get(idIndex).toString();
-            processedResult.getValues().add(id);
-			ids.add("'" + id + "'");
-            processedResults.getResults().add(processedResult);
+		if (idIndex > -1){
+			for(AQueryResult result : results.getResults())
+			{
+	            SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
+	
+	            String id = ((QueryResult) result).getValues().get(idIndex).toString();
+	            processedResult.getValues().add(id);
+				ids.add("'" + id + "'");
+	            processedResults.getResults().add(processedResult);
+			}
 		}
 
 		processingOutputMap.put("ARRAY_ID_RESULTS", ids);
