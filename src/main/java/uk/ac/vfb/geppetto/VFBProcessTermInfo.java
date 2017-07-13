@@ -556,6 +556,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 				                                            Variable objVar = VariablesFactory.eINSTANCE.createVariable();
 		                                                    ImportType objImportType = TypesFactory.eINSTANCE.createImportType();
 				                                            if (fileUrl != null) {
+				                                            	objImportType.setUrl(fileUrl);
 			                                                    objImportType.setId(tempId + "_obj");
 			                                                    objImportType.setModelInterpreterId("objModelInterpreterService");
 			                                                    objVar.getTypes().add(objImportType);
@@ -567,6 +568,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 			                                                } else {
 			                                                    fileUrl = checkURL(edgeLabel + "/volume.obj");
 			                                                    if (fileUrl != null) {
+			                                                    	objImportType.setUrl(fileUrl);
 			                                                        objImportType.setId(tempId + "_obj");
 			                                                        objImportType.setModelInterpreterId("objModelInterpreterService");
 			                                                        objVar.getTypes().add(objImportType);
