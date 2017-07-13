@@ -82,13 +82,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
         String relationships = "";
 //		Queries
         String querys = "";
-        int overlapedBy = 0;
-        int partOf = 0;
-        int instanceOf = 0;
-        int hasPreSynap = 0;
-        int hasPostSynap = 0;
-        int hasSynap = 0;
-        int subClassOf = 0;
         Variable classVariable = VariablesFactory.eINSTANCE.createVariable();
 		CompositeType classParentType = TypesFactory.eINSTANCE.createCompositeType();
 		classVariable.setId("notSet");
@@ -120,18 +113,15 @@ public class VFBProcessTermInfo extends AQueryProcessor {
         int j = 0;
         int r = 0;
 
-        System.out.println("Creating Variable from:");
-        System.out.println(String.valueOf(variable.getId()));
+        System.out.println("Creating Variable for: " + String.valueOf(variable.getId()));
 
         try {
             Type textType = geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE);
             Type htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
             Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
-            System.out.println("checking Node...");
             
             // Extract metadata
             if (results.getValue("node", 0) != null) {
-                System.out.println("Extracting Metadata...");
                 Map<String, Object> resultNode = (Map<String, Object>) results.getValue("node", 0);
                 String labelLink = "";
                 if (resultNode.get("label") != null) {
@@ -146,19 +136,11 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 }
                 labelLink = "<b>" + tempName + "</b> (" + tempId + ")";
 
-
-                System.out.println("Creating Metadata for " + tempName + "...");
-
                 geppettoModelAccess.setObjectAttribute(variable, GeppettoPackage.Literals.NODE__NAME, tempName);
                 CompositeType parentType = TypesFactory.eINSTANCE.createCompositeType();
                 parentType.setId(tempId);
                 variable.getAnonymousTypes().add(parentType);
                
-                
-//                Variable typeVariable = VariablesFactory.eINSTANCE.createVariable();
-//                CompositeType typeMetaDataType = TypesFactory.eINSTANCE.createCompositeType();
-//                typeVariable.getAnonymousTypes().add(typeMetaDataType);
-                
                 // add supertypes
                 
                 List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
@@ -186,11 +168,10 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 } else {
                 	parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Orphan", dependenciesLibrary));
                 }
-                System.out.println("SuperTypes: " + superTypes + " - " + String.valueOf(template) + String.valueOf(individual) + String.valueOf(synapticNP) + String.valueOf(cluster));
-
+                
                 // Load initial metadata
 
-                // Create new Variable
+                // Create new composite variable for metadata
                 Variable metaDataVar = VariablesFactory.eINSTANCE.createVariable();
                 CompositeType metaDataType = TypesFactory.eINSTANCE.createCompositeType();
                 metaDataVar.getTypes().add(metaDataType);
@@ -209,17 +190,12 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 label.getInitialValues().put(htmlType, labelValue);
                 labelValue.setHtml(labelLink);
                 geppettoModelAccess.addVariableToType(label, metaDataType);	
-                System.out.println(labelLink);
 
 
                 // get alt names
                 if (resultNode.get("synonym") != null) {
                     synonyms = (List<String>) resultNode.get("synonym");
                 }
-
-
-                
-
 
                 while (results.getValue("links", r) != null && (synapticNP || cluster || r < 1)) {
                     List<Object> resultLinks = (List<Object>) results.getValue("links", r);
@@ -248,12 +224,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                             if ("node".equals(((String) resultLink.get("start")))) {
                                 // edge from term
                                 switch (edge) {
-                                    case "REFERSTO":
-                                        //System.out.println("Ignoring Refers To data...");
-                                        break;
-                                    case "RelatedTree":
-                                        //System.out.println("Ignoring RelatedTree data...");
-                                        break;
                                     case "INSTANCEOF":
                                         edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
                                         if ("type".equals(edgeLabel)) {
@@ -274,16 +244,12 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                                     e.printStackTrace();
                                                 }
                                         	}
-                                        } else {
-                                            System.out.println("INSTANCEOF from node " + String.valueOf(resultLinks.get(i)));
                                         }
                                         break;
                                     case "SUBCLASSOF":
                                         edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
                                         if ("is a".equals(edgeLabel) || "is_a".equals(edgeLabel)) {
                                             types += "<a href=\"#\" instancepath=\"" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
-                                        } else {
-                                            System.out.println("SUBCLASSOF from node " + String.valueOf(resultLinks.get(i)));
                                         }
                                         break;
                                     case "Related":
@@ -299,8 +265,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                             String fileUrl = checkURL(edgeLabel + "/thumbnailT.png");
                                             if (fileUrl != null) {
                                             	addImage(fileUrl, "Exemplar: " + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, 0);
-                                            	System.out.println("Adding exemplar: " + fileUrl);
-                                                edgeLabel = "http://flybrain.mrc-lmb.cam.ac.uk/vfb/fc/clusterv/3/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")) + "/snapshot.png";
+                                            	edgeLabel = "http://flybrain.mrc-lmb.cam.ac.uk/vfb/fc/clusterv/3/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")) + "/snapshot.png";
                                             	thumbnailVar.setId("thumbnail");
                                                 thumbnailVar.setName("Thumbnail");
                                                 thumbnailVar.getTypes().add(imageType);
@@ -328,7 +293,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                             if (fileUrl != null) {
                                             	if (!listContains(addedExamples, ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")))){
 	                                            	addImage(fileUrl, "Member: " + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, j);
-	                                            	System.out.println("Adding member: " + fileUrl);
 	                                            	j++;
 	                                            	addedExamples.add(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")));
                                             	}
@@ -489,21 +453,13 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         break;
                                     default:
                                     	relationships = addUniqueToString(relationships, edge.replace("_", " ") + " <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
-
                                 }
                             } else {
                                 // edge towards term
                                 switch (edge) {
-                                    case "REFERSTO":
-                                        //System.out.println("Ignoring Refers To data...");
-                                        break;
-                                    case "RelatedTree":
-                                        //System.out.println("Ignoring RelatedTree data...");
-                                        break;
                                     case "INSTANCEOF":
                                         edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
                                         if ("type".equals(edgeLabel)) {
-                                            instanceOf += 1;
                                             if (r == 0 && j < 10 && listContains(((List<String>) ((Map<String, Object>) resultLinks.get(i)).get("labels")), "Individual")) {
                                             	if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
                                                     edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
@@ -516,24 +472,11 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                                 if (fileUrl != null) {
                                                 	if (!listContains(addedExamples, ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")))){
     	                                            	addImage(fileUrl, ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, j);
-    	                                            	System.out.println("Adding example image: " + fileUrl);
     	                                            	j++;
     	                                            	addedExamples.add(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")));
                                                 	}
                                                 }
-                                            }else if (j < 10){
-                                            	System.out.println("INSTANCEOF type to node " + String.valueOf(resultLinks.get(i)));
                                             }
-                                        } else {
-                                            System.out.println("INSTANCEOF to node " + String.valueOf(resultLinks.get(i)));
-                                        }
-                                        break;
-                                    case "SUBCLASSOF":
-                                        edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
-                                        if ("is a".equals(edgeLabel) || "is_a".equals(edgeLabel)) {
-                                            subClassOf += 1;
-                                        } else {
-                                            System.out.println("SUBCLASSOF to node " + edgeLabel + " " + String.valueOf(resultLinks.get(i)));
                                         }
                                         break;
                                     case "Related":
@@ -568,7 +511,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 		                                        				domainCentre[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] = String.valueOf(((Map<String, ArrayList>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("center"));
 		                                            		}
 		                                        		}
-		                                        		System.out.println("Adding domain " + String.valueOf((((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()) + " id: " + domainId[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] + " Name: " + domainName[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] + " Type: " + domainType[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] + " Centre: " + domainCentre[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()]);
 		                                        	}
 	                                        	}catch (Exception e){
 	                                        		System.out.println("Error adding domain metadata:");
@@ -586,7 +528,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 			                                            String fileUrl;
 			                                            fileUrl = checkURL(edgeLabel + "/thumbnailT.png");
 			                                            if (fileUrl != null) {
-			                                                System.out.println("Adding thumbnail " + fileUrl);
 			                                                thumbnailVar.setId("thumbnail");
 			                                                thumbnailVar.setName("Thumbnail");
 			                                                thumbnailVar.getTypes().add(imageType);
@@ -599,7 +540,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 			                                            } else {
 			                                                fileUrl = checkURL(edgeLabel + "/thumbnail.png");
 			                                                if (fileUrl != null) {
-			                                                    System.out.println("Adding thumbnail " + fileUrl);
 			                                                    thumbnailVar.setId("thumbnail");
 			                                                    thumbnailVar.setName("Thumbnail");
 			                                                    thumbnailVar.getTypes().add(imageType);
@@ -616,7 +556,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 				                                            Variable objVar = VariablesFactory.eINSTANCE.createVariable();
 		                                                    ImportType objImportType = TypesFactory.eINSTANCE.createImportType();
 				                                            if (fileUrl != null) {
-			                                                    System.out.println("Adding man OBJ " + fileUrl);objImportType.setUrl(fileUrl);
 			                                                    objImportType.setId(tempId + "_obj");
 			                                                    objImportType.setModelInterpreterId("objModelInterpreterService");
 			                                                    objVar.getTypes().add(objImportType);
@@ -628,7 +567,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 			                                                } else {
 			                                                    fileUrl = checkURL(edgeLabel + "/volume.obj");
 			                                                    if (fileUrl != null) {
-			                                                        System.out.println("Adding OBJ " + fileUrl);objImportType.setUrl(fileUrl);
 			                                                        objImportType.setId(tempId + "_obj");
 			                                                        objImportType.setModelInterpreterId("objModelInterpreterService");
 			                                                        objVar.getTypes().add(objImportType);
@@ -640,15 +578,13 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 			                                                    }
 			                                                }
 			                                                try {
-	                                                        	System.out.println("OBJ variable:");
-	                                        					System.out.println(GeppettoSerializer.serializeToJSON(EcoreUtil.copy(objVar), false));
+	                                                        	System.out.println("OBJ variable: " + GeppettoSerializer.serializeToJSON(EcoreUtil.copy(objVar), false));
 	                                        				} catch (IOException e) {
 	                                        					System.out.println("IO exception outputing variable");
 	                                        					e.printStackTrace();
 	                                        				}
 			                                                try {
-	                                                        	System.out.println("OBJ type:");
-	                                        					System.out.println(GeppettoSerializer.serializeToJSON(EcoreUtil.copy(objImportType), false));
+	                                                        	System.out.println("OBJ type: " + GeppettoSerializer.serializeToJSON(EcoreUtil.copy(objImportType), false));
 	                                        				} catch (IOException e) {
 	                                        					System.out.println("IO exception outputing type");
 	                                        					e.printStackTrace();
@@ -656,7 +592,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 		                                                }
 		                                                fileUrl = checkURL(edgeLabel + "/volume.swc");
 		                                                if (fileUrl != null && r == 0) {
-		                                                    System.out.println("Adding SWC " + fileUrl);
 		                                                    Variable swcVar = VariablesFactory.eINSTANCE.createVariable();
 		                                                    ImportType swcImportType = TypesFactory.eINSTANCE.createImportType();
 		                                                    swcImportType.setUrl(fileUrl);
@@ -668,15 +603,13 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 		                                                    geppettoModelAccess.addVariableToType(swcVar, parentType);
 		                                                    geppettoModelAccess.addTypeToLibrary(swcImportType, getLibraryFor(dataSource, "swc"));
 		                                                    try {
-	                                                        	System.out.println("SWC variable:");
-	                                        					System.out.println(GeppettoSerializer.serializeToJSON(EcoreUtil.copy(swcVar), false));
+	                                                        	System.out.println("SWC variable: " + GeppettoSerializer.serializeToJSON(EcoreUtil.copy(swcVar), false));
 	                                        				} catch (IOException e) {
 	                                        					System.out.println("IO exception outputing variable");
 	                                        					e.printStackTrace();
 	                                        				}
 			                                                try {
-	                                                        	System.out.println("SWC type:");
-	                                        					System.out.println(GeppettoSerializer.serializeToJSON(EcoreUtil.copy(swcImportType), false));
+	                                                        	System.out.println("SWC type: " + GeppettoSerializer.serializeToJSON(EcoreUtil.copy(swcImportType), false));
 	                                        				} catch (IOException e) {
 	                                        					System.out.println("IO exception outputing type");
 	                                        					e.printStackTrace();
@@ -684,7 +617,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 		                                                }
 		                                                fileUrl = checkURL(edgeLabel + "/volume.wlz");
 		                                                if (fileUrl != null && wlzUrl == "") {
-		                                                    System.out.println("Adding Woolz " + fileUrl);
 		                                                    wlzUrl = fileUrl;
 		                                                }
 		                                                if (((Map<String, Object>) resultLinks.get(i)).get("temp") != null) {
@@ -693,7 +625,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 		                                                }
 		                                                fileUrl = checkURL(edgeLabel + "/volume.nrrd");
 		                                                if (fileUrl != null && downloadLink == "") {
-		                                                    System.out.println("Adding NRRD " + fileUrl);
 		                                                    downloadLink = "Aligned Image: ​<a download=\"" + (String) tempId + ".nrrd\" href=\"" + fileUrl + "\">" + (String) tempId + ".nrrd</a><br/>​​​​​​​​​​​​​​​​​​​​​​​​​​​";
 		                                                    downloadLink += "Note: see licensing section for reuse and attribution info.";
 		                                                }
@@ -704,45 +635,11 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 	                                            	e.printStackTrace();
 	                                        	}
                                         	}
-                                        } else if ("overlaps".equals(edgeLabel)) {
-                                            overlapedBy += 1;
-                                        } else if ("part_of".equals(edgeLabel) || "part of".equals(edgeLabel)) {
-                                            partOf += 1;
-                                        } else if ("has_presynaptic_terminal_in".equals(edgeLabel)) {
-                                            hasPreSynap += 1;
-                                        } else if ("has_postsynaptic_terminal_in".equals(edgeLabel)) {
-                                            hasPostSynap += 1;
-                                        } else if ("has_synaptic_terminal_in".equals(edgeLabel)) {
-                                            hasSynap += 1;
-                                        } else if ("has_synaptic_terminals_of".equals(edgeLabel)) {
-                                            hasSynap += 1;
                                         } else if ("connected_to".equals(edgeLabel) || "connected to".equals(edgeLabel)) {
                                         	relationships = addUniqueToString(relationships, "connected to <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
                                         } else if ("innervates".equals(edgeLabel)) {
                                         	relationships = addUniqueToString(relationships, "innervated by <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
-                                        } else if ("has_member".equals(edgeLabel)) {
-                                            //System.out.println("Ignoring reciprocal relationship");
-                                        } else {
-                                            System.out.println("Related to node " + edgeLabel + " " + String.valueOf(resultLinks.get(i)));
                                         }
-                                        break;
-                                    case "part_of":
-                                        partOf += 1;
-                                        break;
-                                    case "overlaps":
-                                        overlapedBy += 1;
-                                        break;
-                                    case "has_presynaptic_terminal_in":
-                                        hasPreSynap += 1;
-                                        break;
-                                    case "has_postsynaptic_terminal_in":
-                                        hasPostSynap += 1;
-                                        break;
-                                    case "has_synaptic_terminal_in":
-                                        hasSynap += 1;
-                                        break;
-                                    case "has_synaptic_terminals_of":
-                                        hasSynap += 1;
                                         break;
                                     case "connected_to":
                                     	relationships = addUniqueToString(relationships, "connected to <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
@@ -751,7 +648,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         relationships = addUniqueToString(relationships, "innervated by <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
                                         break;
                                     default:
-                                        System.out.println("Can't handle link to node: " + edge + " " + String.valueOf(resultLinks.get(i)));
+                                        System.out.println("Unhandled link to node: " + edge + " " + String.valueOf(resultLinks.get(i)));
                                 }
                             }
                         } catch (Exception e) {
@@ -768,7 +665,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 
                 // set slices
                 if (wlzUrl != "") {
-                    System.out.println("Adding Woolz " + wlzUrl);
                     try{
                     	if (template){
 		                    domains.add(Arrays.asList(voxelSize));
@@ -814,7 +710,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     depictsValue.setHtml(depictedType);
                     depictsVar.getInitialValues().put(htmlType, depictsValue);
                     geppettoModelAccess.addVariableToType(depictsVar, metaDataType);
-                    System.out.println(depictedType);
                 }
 	            	
                
@@ -829,7 +724,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     synValue.setHtml(StringUtils.join(synonyms, ", "));
                     synVar.getInitialValues().put(htmlType, synValue);
                     geppettoModelAccess.addVariableToType(synVar, metaDataType);
-                    System.out.println(StringUtils.join(synonyms, ", "));
                 }
 
              
@@ -878,8 +772,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 	                    typesValue.setHtml(tempHtml);
 	                    typesVar.getInitialValues().put(htmlType, typesValue);
 	                    geppettoModelAccess.addVariableToType(typesVar, metaDataType);
-	                    System.out.println(tempHtml);
-	                    
 	                    if (("".equalsIgnoreCase(desc)) || (".".equals(desc))) { 
 	                    	desc = "A Cluster of morphologically similar neurons using affinity propogation clustering based on NBLAST neuron similarity scores (Costa et al., 2016).";
 	                    }
@@ -901,7 +793,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 	                    typesValue.setHtml(types);
 	                    typesVar.getInitialValues().put(htmlType, typesValue);
 	                    geppettoModelAccess.addVariableToType(typesVar, metaDataType);
-	                    System.out.println(types);
 	                }
 	
 	                // set relationships
@@ -915,7 +806,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 	                    relValue.setHtml(relationships);
 	                    relVar.getInitialValues().put(htmlType, relValue);
 	                    geppettoModelAccess.addVariableToType(relVar, metaDataType);
-	                    System.out.println(relationships);
 	                }
 	                
                 }
@@ -947,7 +837,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     queryValue.setHtml(querys);
                     queryVar.getInitialValues().put(htmlType, queryValue);
                     geppettoModelAccess.addVariableToType(queryVar, metaDataType);
-                    System.out.println(querys);
                 }
 
 
@@ -962,7 +851,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     descriptionValue.setHtml(desc);
                     description.getInitialValues().put(htmlType, descriptionValue);
                     geppettoModelAccess.addVariableToType(description, metaDataType);
-                    System.out.println(desc);
                 }
 
                 // set references:
@@ -980,7 +868,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     refValue.setHtml(references);
                     refVar.getInitialValues().put(htmlType, refValue);
                     geppettoModelAccess.addVariableToType(refVar, metaDataType);
-                    System.out.println(references);
                 }
                 
 
@@ -994,7 +881,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     tempValue.setHtml(tempLink);
                     tempVar.getInitialValues().put(htmlType, tempValue);
                     geppettoModelAccess.addVariableToType(tempVar, metaDataType);
-                    System.out.println(tempLink);
                 }
 
                 // set licensing:
@@ -1011,7 +897,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     downloadValue.setHtml(downloadLink);
                     downloads.getInitialValues().put(htmlType, downloadValue);
                     geppettoModelAccess.addVariableToType(downloads, metaDataType);
-                    System.out.println(downloadLink);
                 }
                 
 
@@ -1020,22 +905,18 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 
                 
                 geppettoModelAccess.addTypeToLibrary(metaDataType, dataSource.getTargetLibrary());
-                System.out.println("MetaData Creation Finished");
                 
                 
                 try {
-                	System.out.println("parentType:");
-					System.out.println(GeppettoSerializer.serializeToJSON(EcoreUtil.copy(parentType), false));
-					System.out.println("metaDataType:");
-					System.out.println(GeppettoSerializer.serializeToJSON(EcoreUtil.copy(metaDataType), false));
+                	System.out.println("parentType:" + GeppettoSerializer.serializeToJSON(EcoreUtil.copy(parentType), false));
+					System.out.println("metaDataType:" + GeppettoSerializer.serializeToJSON(EcoreUtil.copy(metaDataType), false));
 				} catch (IOException e) {
 					System.out.println("IO exception outputting composte types");
 					e.printStackTrace();
 				}
                 
                 try {
-                	System.out.println("variable:");
-					System.out.println(GeppettoSerializer.serializeToJSON(EcoreUtil.copy(variable), false));
+                	System.out.println("variable: "+ GeppettoSerializer.serializeToJSON(EcoreUtil.copy(variable), false));
 				} catch (IOException e) {
 					System.out.println("IO exception outputting variable");
 					e.printStackTrace();
@@ -1121,13 +1002,11 @@ public class VFBProcessTermInfo extends AQueryProcessor {
     private String checkURL(String urlString) {
         try {
             urlString = urlString.replace("https://", "http://").replace(":5000", "");
-            //System.out.println("Checking image: " + urlString);
             URL url = new URL(urlString);
             HttpURLConnection huc = (HttpURLConnection) url.openConnection();
             huc.setRequestMethod("HEAD");
             huc.setInstanceFollowRedirects(true);
             int response = huc.getResponseCode();
-            //System.out.println("Reponse: " + response);
             if (response == HttpURLConnection.HTTP_OK) {
                 return urlString;
             } else if (response == HttpURLConnection.HTTP_MOVED_TEMP || response == HttpURLConnection.HTTP_MOVED_PERM) {
