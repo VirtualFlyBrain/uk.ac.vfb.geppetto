@@ -451,6 +451,12 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                             }
                                         }
                                         break;
+                                    case "REFERSTO":
+                                        //Ignoring Refers To data
+                                        break;
+                                    case "RelatedTree":
+                                        //Ignoring RelatedTree data
+                                        break;
                                     default:
                                     	relationships = addUniqueToString(relationships, edge.replace("_", " ") + " <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
                                 }
