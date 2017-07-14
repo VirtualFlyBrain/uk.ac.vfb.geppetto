@@ -148,7 +148,7 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 	 */
 	private void addImage(String data, String name, String reference, ArrayValue images, int i)
 	{
-		System.out.println("Adding image "+ count++ + " "+name);
+//		System.out.println("Adding image "+ count++ + " "+name);
 		Image image = ValuesFactory.eINSTANCE.createImage();
 		image.setName(name);
 		image.setData(data);
