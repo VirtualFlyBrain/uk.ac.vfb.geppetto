@@ -210,7 +210,8 @@ public class MultipleQueriesVFBQueryTest
 		Assert.assertEquals("ID", results.getHeader().get(0));
 		Assert.assertEquals("Name", results.getHeader().get(1));
 		Assert.assertEquals("Definition", results.getHeader().get(2));
-		Assert.assertEquals("Images", results.getHeader().get(3));
+		Assert.assertEquals("Type", results.getHeader().get(3));
+		Assert.assertEquals("Images", results.getHeader().get(4));
 		Assert.assertEquals(87, results.getResults().size());
 
 		System.out.println(GeppettoSerializer.serializeToJSON(results, true));
@@ -277,7 +278,8 @@ public class MultipleQueriesVFBQueryTest
 		Assert.assertEquals("ID", results.getHeader().get(0));
 		Assert.assertEquals("Name", results.getHeader().get(1));
 		Assert.assertEquals("Definition", results.getHeader().get(2));
-		Assert.assertEquals("Images", results.getHeader().get(3));
+		Assert.assertEquals("Type", results.getHeader().get(3));
+		Assert.assertEquals("Images", results.getHeader().get(4));
 		Assert.assertEquals(84, results.getResults().size());
 
 		System.out.println(GeppettoSerializer.serializeToJSON(results, true));
