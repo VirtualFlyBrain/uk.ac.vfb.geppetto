@@ -69,6 +69,7 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 			processedResults.getHeader().add("ID");
 			processedResults.getHeader().add("Name");
 			processedResults.getHeader().add("Definition");
+			processedResults.getHeader().add("Type");
 			processedResults.getHeader().add("Images");
 			while(results.getValue("id", i) != null)
 			{
@@ -81,6 +82,9 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 
 				String def = (String) results.getValue("def", i);
 				processedResult.getValues().add(def);
+				
+				String type = (String) results.getValue("type", i);
+				processedResult.getValues().add(type);
 
 				Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
 				exampleVar.setId("images");

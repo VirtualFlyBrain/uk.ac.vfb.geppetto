@@ -77,6 +77,7 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 			int i = 0;
 			QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
 			processedResults.getHeader().add("ID");
+			processedResults.getHeader().add("Type");
 			processedResults.getHeader().add("Images");
 			while(results.getValue("inds", i) != null)
 			{
@@ -84,6 +85,12 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 				SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 				String id = (String) results.getValue("class_Id", i);
 				processedResult.getValues().add(id);
+				String type = (String) results.getValue("class_Type", i);
+				if (type != null){
+					processedResult.getValues().add(type);
+				}else{
+					processedResult.getValues().add("");
+				}
 
 				Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
 				exampleVar.setId("images");
