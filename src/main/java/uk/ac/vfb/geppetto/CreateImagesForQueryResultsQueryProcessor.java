@@ -91,6 +91,7 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 				}catch (Exception e){
 					System.out.println(e);
 					e.printStackTrace();
+					System.out.println(results.toString());
 				}
 				if (type != null){
 					processedResult.getValues().add(type);
