@@ -83,7 +83,7 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 				String def = (String) results.getValue("def", i);
 				processedResult.getValues().add(def);
 				
-				String type = (String) results.getValue("type", i);
+				String type = ((List<String>) results.getValue("type", i)).toString();
 				processedResult.getValues().add(type);
 
 				Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();

@@ -85,7 +85,7 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 				SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 				String id = (String) results.getValue("class_Id", i);
 				processedResult.getValues().add(id);
-				String type = (String) results.getValue("class_Type", i);
+				String type = ((List<String>) results.getValue("class_Type", i)).toString();
 				if (type != null){
 					processedResult.getValues().add(type);
 				}else{
