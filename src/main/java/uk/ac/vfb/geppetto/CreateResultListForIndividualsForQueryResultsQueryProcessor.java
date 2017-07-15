@@ -83,9 +83,15 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 				String def = (String) results.getValue("def", i);
 				processedResult.getValues().add(def);
 				
-				String type = ((List<String>) results.getValue("type", i)).toString();
-				processedResult.getValues().add(type);
-
+				try{
+					String type = ((List<String>) results.getValue("type", i)).toString();
+					processedResult.getValues().add(type);
+				}catch (Exception e){
+					System.out.println(e);
+					e.printStackTrace();
+					processedResult.getValues().add("");
+				}
+				
 				Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
 				exampleVar.setId("images");
 				exampleVar.setName("Images");
@@ -135,11 +141,13 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 		catch(GeppettoVisitingException e)
 		{
 			System.out.println(e);
+			e.printStackTrace();
 			throw new GeppettoDataSourceException(e);
 		}
 		catch(Exception e)
 		{
 			System.out.println(e);
+			e.printStackTrace();
 		}
 
 		return results;

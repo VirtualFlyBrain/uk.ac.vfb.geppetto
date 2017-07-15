@@ -85,7 +85,13 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 				SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 				String id = (String) results.getValue("class_Id", i);
 				processedResult.getValues().add(id);
-				String type = ((List<String>) results.getValue("class_Type", i)).toString();
+				String type = null;
+				try{
+					type = ((List<String>) results.getValue("class_Type", i)).toString();
+				}catch (Exception e){
+					System.out.println(e);
+					e.printStackTrace();
+				}
 				if (type != null){
 					processedResult.getValues().add(type);
 				}else{
@@ -130,11 +136,13 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 		catch(GeppettoVisitingException e)
 		{
 			System.out.println(e);
+			e.printStackTrace();
 			throw new GeppettoDataSourceException(e);
 		}
 		catch(Exception e)
 		{
 			System.out.println(e);
+			e.printStackTrace();
 		}
 
 		return results;
