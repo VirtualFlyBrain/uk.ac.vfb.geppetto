@@ -655,6 +655,9 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                     case "innervates":
                                         relationships = addUniqueToString(relationships, "innervated by <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
                                         break;
+                                    case "SUBCLASSOF":
+//                                    	Ignore SUBCLASSOF
+                                    	break;
                                     default:
                                         System.out.println("Unhandled link to node: " + edge + " " + String.valueOf(resultLinks.get(i)));
                                 }
