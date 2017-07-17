@@ -585,18 +585,18 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 			                                                        geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
 			                                                    }
 			                                                }
-			                                                try {
-	                                                        	System.out.println("OBJ variable: " + GeppettoSerializer.serializeToJSON(EcoreUtil.copy(objVar), false));
-	                                        				} catch (IOException e) {
-	                                        					System.out.println("IO exception outputing variable");
-	                                        					e.printStackTrace();
-	                                        				}
-			                                                try {
-	                                                        	System.out.println("OBJ type: " + GeppettoSerializer.serializeToJSON(EcoreUtil.copy(objImportType), false));
-	                                        				} catch (IOException e) {
-	                                        					System.out.println("IO exception outputing type");
-	                                        					e.printStackTrace();
-	                                        				}
+//			                                                try {
+//	                                                        	System.out.println("OBJ variable: " + GeppettoSerializer.serializeToJSON(EcoreUtil.copy(objVar), false));
+//	                                        				} catch (IOException e) {
+//	                                        					System.out.println("IO exception outputing variable");
+//	                                        					e.printStackTrace();
+//	                                        				}
+//			                                                try {
+//	                                                        	System.out.println("OBJ type: " + GeppettoSerializer.serializeToJSON(EcoreUtil.copy(objImportType), false));
+//	                                        				} catch (IOException e) {
+//	                                        					System.out.println("IO exception outputing type");
+//	                                        					e.printStackTrace();
+//	                                        				}
 		                                                }
 		                                                fileUrl = checkURL(edgeLabel + "/volume.swc");
 		                                                if (fileUrl != null && r == 0) {
@@ -610,18 +610,18 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 		                                                    swcVar.setId(tempId + "_swc");
 		                                                    geppettoModelAccess.addVariableToType(swcVar, parentType);
 		                                                    geppettoModelAccess.addTypeToLibrary(swcImportType, getLibraryFor(dataSource, "swc"));
-		                                                    try {
-	                                                        	System.out.println("SWC variable: " + GeppettoSerializer.serializeToJSON(EcoreUtil.copy(swcVar), false));
-	                                        				} catch (IOException e) {
-	                                        					System.out.println("IO exception outputing variable");
-	                                        					e.printStackTrace();
-	                                        				}
-			                                                try {
-	                                                        	System.out.println("SWC type: " + GeppettoSerializer.serializeToJSON(EcoreUtil.copy(swcImportType), false));
-	                                        				} catch (IOException e) {
-	                                        					System.out.println("IO exception outputing type");
-	                                        					e.printStackTrace();
-	                                        				}
+//		                                                    try {
+//	                                                        	System.out.println("SWC variable: " + GeppettoSerializer.serializeToJSON(EcoreUtil.copy(swcVar), false));
+//	                                        				} catch (IOException e) {
+//	                                        					System.out.println("IO exception outputing variable");
+//	                                        					e.printStackTrace();
+//	                                        				}
+//			                                                try {
+//	                                                        	System.out.println("SWC type: " + GeppettoSerializer.serializeToJSON(EcoreUtil.copy(swcImportType), false));
+//	                                        				} catch (IOException e) {
+//	                                        					System.out.println("IO exception outputing type");
+//	                                        					e.printStackTrace();
+//	                                        				}
 		                                                }
 		                                                fileUrl = checkURL(edgeLabel + "/volume.wlz");
 		                                                if (fileUrl != null && wlzUrl == "") {
@@ -918,21 +918,21 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                 geppettoModelAccess.addTypeToLibrary(metaDataType, dataSource.getTargetLibrary());
                 
                 
-                try {
-                	System.out.println("parentType:" + GeppettoSerializer.serializeToJSON(EcoreUtil.copy(parentType), false));
-					System.out.println("metaDataType:" + GeppettoSerializer.serializeToJSON(EcoreUtil.copy(metaDataType), false));
-				} catch (IOException e) {
-					System.out.println("IO exception outputting composte types");
-					e.printStackTrace();
-				}
-                
-                try {
-                	System.out.println("variable: "+ GeppettoSerializer.serializeToJSON(EcoreUtil.copy(variable), false));
-				} catch (IOException e) {
-					System.out.println("IO exception outputting variable");
-					e.printStackTrace();
-				}
-                
+//                try {
+//                	System.out.println("parentType:" + GeppettoSerializer.serializeToJSON(EcoreUtil.copy(parentType), false));
+//					System.out.println("metaDataType:" + GeppettoSerializer.serializeToJSON(EcoreUtil.copy(metaDataType), false));
+//				} catch (IOException e) {
+//					System.out.println("IO exception outputting composte types");
+//					e.printStackTrace();
+//				}
+//                
+//                try {
+//                	System.out.println("variable: "+ GeppettoSerializer.serializeToJSON(EcoreUtil.copy(variable), false));
+//				} catch (IOException e) {
+//					System.out.println("IO exception outputting variable");
+//					e.printStackTrace();
+//				}
+//                
             } else {
                 System.out.println("Error node not returned: " + results.eAllContents().toString());
             }
