@@ -87,7 +87,7 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 				processedResult.getValues().add(id);
 				String type = null;
 				try{
-					type = ((List<String>) results.getValue("class_Type", i)).toString();
+					type = cleanType((List<String>) results.getValue("type", i));
 				}catch (Exception e){
 					System.out.println(e);
 					e.printStackTrace();
@@ -169,6 +169,25 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 		images.getElements().add(element);
 	}
 
-	
+	private String cleanType(List<String> types){
+		String type;
+		for( int i = 0; i < types.size() - 1; i++)
+		{
+			type = types.get(i);
+			switch (type) {
+				case "Neuron":
+					return type;
+				case "Tract":
+					return type;
+				case "Clone":
+					return type;
+				case "Synaptic_neuropil":
+					return "Synaptic neuropil";
+				default:
+					continue;
+			}
+		}
+		return "";
+	}
 
 }

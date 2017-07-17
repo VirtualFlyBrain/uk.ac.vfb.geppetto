@@ -84,7 +84,7 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 				processedResult.getValues().add(def);
 				
 				try{
-					String type = ((List<String>) results.getValue("type", i)).toString();
+					String type = cleanType((List<String>) results.getValue("type", i));
 					processedResult.getValues().add(type);
 				}catch (Exception e){
 					System.out.println(e);
@@ -173,6 +173,25 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 		images.getElements().add(element);
 	}
 
-	
+	private String cleanType(List<String> types){
+		String type;
+		for( int i = 0; i < types.size() - 1; i++)
+		{
+			type = types.get(i);
+			switch (type) {
+				case "Neuron":
+					return type;
+				case "Tract":
+					return type;
+				case "Clone":
+					return type;
+				case "Synaptic_neuropil":
+					return "Synaptic neuropil";
+				default:
+					continue;
+			}
+		}
+		return "";
+	}
 
 }
