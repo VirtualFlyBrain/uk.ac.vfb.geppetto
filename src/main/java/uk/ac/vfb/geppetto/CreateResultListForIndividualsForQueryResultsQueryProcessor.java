@@ -185,6 +185,8 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 					return type;
 				case "Clone":
 					return type;
+				case "Cluster":
+					return type;
 				case "Synaptic_neuropil":
 					return "Synaptic neuropil";
 				default:
