@@ -203,6 +203,9 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     String edgeLabel = "";
                     i = 0;
                     j = 0;
+                    if (cluster && r>0){
+                    	types = "";
+                    }
                     resultNode = (Map<String, Object>) results.getValue("node", r);
                     // get description:
                     if (r == 0 || (synapticNP && desc.length() < 2)){
