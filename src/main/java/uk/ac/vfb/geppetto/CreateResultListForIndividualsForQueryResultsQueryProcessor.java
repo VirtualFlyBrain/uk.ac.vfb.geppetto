@@ -174,26 +174,12 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 	}
 
 	private String cleanType(List<String> types){
-		String type;
+		String type="";
 		for( int i = 0; i < types.size() - 1; i++)
 		{
-			type = types.get(i);
-			switch (type) {
-				case "Neuron":
-					return type;
-				case "Tract":
-					return type;
-				case "Clone":
-					return type;
-				case "Cluster":
-					return type;
-				case "Synaptic_neuropil":
-					return "Synaptic neuropil";
-				default:
-					continue;
-			}
+			type+=types.get(i);
 		}
-		return "";
+		return type;
 	}
 
 }
