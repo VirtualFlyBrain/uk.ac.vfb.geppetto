@@ -87,7 +87,7 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 				processedResult.getValues().add(id);
 				String type = null;
 				try{
-					type = cleanType((List<String>) results.getValue("type", i));
+					type = cleanType((List<String>) results.getValue("class_Type", i));
 				}catch (Exception e){
 					System.out.println(e);
 					e.printStackTrace();
@@ -173,6 +173,9 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 		String type="";
 		for( int i = 0; i < types.size() - 1; i++)
 		{
+			if (i>0){
+				type+=", ";
+			}
 			type+=types.get(i);
 		}
 		return type;
