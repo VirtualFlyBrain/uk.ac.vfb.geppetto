@@ -204,7 +204,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     i = 0;
                     j = 0;
                     if (cluster && r>0){
-                    	types = "";
+                    	depictedType = "";
                     }
                     resultNode = (Map<String, Object>) results.getValue("node", r);
                     // get description:
@@ -769,7 +769,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 	                	if (results.getValue("node", 1) != null) {
 	                		resultNode = (Map<String, Object>) results.getValue("node", 1);
 	                		if (resultNode.get("label") != null) {
-	                			tempHtml += "<b>Name:</b> " + (String) resultNode.get("label") + " (" + (String) resultNode.get("short_form") + ")<br/>";	                			
+	                			tempHtml += "<b>Name:</b> <a href=\"#\" instancepath=\"" + (String) resultNode.get("short_form") + "\">" + (String) resultNode.get("label") + " (" + (String) resultNode.get("short_form") + ")</a><br/>";	                			
 	                		}
 	                		if (depictedType != "") {
 	                			tempHtml += "<b>Types:</b> " + depictedType;
