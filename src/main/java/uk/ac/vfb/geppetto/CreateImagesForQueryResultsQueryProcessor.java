@@ -132,6 +132,7 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 
 				i++;
 			}
+			System.out.println("CreateImagesForQueryResultsQueryProcessor returning " + Integer.toString(i) + " rows");
 			return processedResults;
 		}
 		catch(GeppettoVisitingException e)
