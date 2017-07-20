@@ -99,6 +99,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
         boolean synapticNP = false;
         boolean cluster = false;
         boolean individual = false;
+        boolean NBLAST = false;
         
 //      Template Domain data:
         String wlzUrl = "";
@@ -460,6 +461,9 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                     case "RelatedTree":
                                         //Ignoring RelatedTree data
                                         break;
+                                    case "member_of":
+                                    	NBLAST = true;
+                                    	// then run default:
                                     default:
                                     	relationships = addUniqueToString(relationships, edge.replace("_", " ") + " <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
                                 }
@@ -839,6 +843,12 @@ public class VFBProcessTermInfo extends AQueryProcessor {
     					}
     				}
     			}
+                
+                if (NBLAST){
+                	badge = "<i class=\"popup-icon-link fa fa-external-link\" />";
+                	querys += badge + "<a href=\"http://flybrain.mrc-lmb.cam.ac.uk:8080/NBLAST_on-the-fly/?all_query=" + tempName + "&amp;all_use_mean=TRUE\" target=\"_blank\">Load live NBLAST query for similar neurons to " + tempName + "</a><br/>";
+					querys += badge + "<a href=\"http://flybrain.mrc-lmb.cam.ac.uk:8080/NBLAST_on-the-fly/?gal4_query=" + tempName + "&amp;tab=GAL4\" target=\"_blank\">Load live NBLAST query to find GAL4 matches that potentially target " + tempName + "</a><br/>";
+				}
 	
                 
 	                
