@@ -175,7 +175,7 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 		for( int i = 0; i < types.size(); i++)
 		{
 			if (i>0){
-				type+=",<br/>";
+				type+=", ";
 			}
 			type+=types.get(i);
 		}

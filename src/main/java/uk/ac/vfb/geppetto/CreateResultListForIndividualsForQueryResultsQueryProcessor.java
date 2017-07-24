@@ -181,7 +181,7 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 		for( int i = 0; i < types.size(); i++)
 		{
 			if (i>0){
-				type+=",<br/>";
+				type+=", ";
 			}
 			type+=types.get(i);
 		}
