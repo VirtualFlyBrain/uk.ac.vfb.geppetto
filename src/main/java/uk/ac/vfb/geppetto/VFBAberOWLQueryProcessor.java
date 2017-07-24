@@ -94,7 +94,15 @@ public class VFBAberOWLQueryProcessor extends AQueryProcessor
 				}
 				ids.add("'" + id + "'");
 				Object value = ((QueryResult) result).getValues().get(descirptionIndex);
-				processedResult.getValues().add(value == null ? "" : value.toString());
+				if (value != null){
+					if (value.toString().length() > 250){
+						processedResult.getValues().add(value.toString().substring(0, 250) + "...");
+					}else{
+						processedResult.getValues().add(value.toString());
+					}
+				}else{
+					processedResult.getValues().add("");
+				}
 				processedResults.getResults().add(processedResult);
 			}
 		}
