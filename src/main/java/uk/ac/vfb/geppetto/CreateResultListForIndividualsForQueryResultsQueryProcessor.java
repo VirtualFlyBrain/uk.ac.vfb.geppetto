@@ -81,6 +81,9 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 				processedResult.getValues().add(name);
 
 				String def = (String) results.getValue("def", i);
+				if (def.length() > 250){
+					def = def.substring(0, 250) + "...";
+				}
 				processedResult.getValues().add(def);
 				
 				try{
