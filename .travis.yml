@@ -18,6 +18,8 @@ install:
     - cd org.geppetto.datasources
     - mvn install
     - cd .. 
+    - cd uk.ac.vfb.geppetto
+    - mvn install
 
     
     
