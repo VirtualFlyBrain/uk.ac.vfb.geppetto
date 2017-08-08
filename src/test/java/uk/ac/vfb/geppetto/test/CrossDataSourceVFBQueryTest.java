@@ -93,6 +93,10 @@ public class CrossDataSourceVFBQueryTest
 		context.registerBeanDefinition("vfbImportTypesSynonymQueryProcessor", queryProcessorImportTypesSynonymBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.vfbImportTypesSynonymQueryProcessor", queryProcessorImportTypesSynonymBeanDefinition);
 
+		BeanDefinition queryProcessTermInfoBeanDefinition = new RootBeanDefinition(VFBProcessTermInfo.class);
+		context.registerBeanDefinition("vfbProcessTermInfo", queryProcessTermInfoBeanDefinition);
+		context.registerBeanDefinition("scopedTarget.vfbProcessTermInfo", queryProcessTermInfoBeanDefinition);
+		
 		BeanDefinition queryProcessorImportTypesThumbnailBeanDefinition = new RootBeanDefinition(AddImportTypesThumbnailQueryProcessor.class);
 		context.registerBeanDefinition("vfbImportTypesThumbnailQueryProcessor", queryProcessorImportTypesThumbnailBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.vfbImportTypesThumbnailQueryProcessor", queryProcessorImportTypesThumbnailBeanDefinition);
@@ -140,6 +144,8 @@ public class CrossDataSourceVFBQueryTest
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbAberOWLQueryProcessor"));
 		retrievedContext = ApplicationListenerBean.getApplicationContext("vfbCreateImagesForQueryResultsQueryProcessor");
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbCreateImagesForQueryResultsQueryProcessor"));
+		retrievedContext = ApplicationListenerBean.getApplicationContext("vfbProcessTermInfo");
+		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbProcessTermInfo"));
 
 	}
 
@@ -163,7 +169,6 @@ public class CrossDataSourceVFBQueryTest
 		Integer i = 0;
 		for (Query query : model.getQueries()) {
 			String q = query.getId();
-			System.out.println("Query #" + Integer.toString(i) + ", id:" + q);
 			if (avQ.containsKey(q)) {
 				System.out.println("Duplicate query id: " + q);
 			} else {
@@ -172,7 +177,11 @@ public class CrossDataSourceVFBQueryTest
 			i++;
 		}
 
+		
+		
 		neo4JDataSource.fetchVariable("FBbt_00003748");
+		
+		
 
 		Variable variable = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
 
@@ -184,10 +193,11 @@ public class CrossDataSourceVFBQueryTest
 		Assert.assertEquals("ID", results.getHeader().get(0));
 		Assert.assertEquals("Name", results.getHeader().get(1));
 		Assert.assertEquals("Definition", results.getHeader().get(2));
-		Assert.assertEquals("Images", results.getHeader().get(3));
+		Assert.assertEquals("Type", results.getHeader().get(3));
+		Assert.assertEquals("Images", results.getHeader().get(4));
 		Assert.assertEquals(84, results.getResults().size());
 
-		System.out.println(GeppettoSerializer.serializeToJSON(results, true));
+		System.out.println(GeppettoSerializer.serializeToJSON(results, false));
 
 	}
 

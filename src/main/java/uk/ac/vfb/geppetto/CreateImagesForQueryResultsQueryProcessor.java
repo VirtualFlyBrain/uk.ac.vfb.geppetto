@@ -77,6 +77,7 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 			int i = 0;
 			QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
 			processedResults.getHeader().add("ID");
+			processedResults.getHeader().add("Type");
 			processedResults.getHeader().add("Images");
 			while(results.getValue("inds", i) != null)
 			{
@@ -84,6 +85,19 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 				SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 				String id = (String) results.getValue("class_Id", i);
 				processedResult.getValues().add(id);
+				String type = null;
+				try{
+					type = cleanType((List<String>) results.getValue("class_Type", i));
+				}catch (Exception e){
+					System.out.println(e);
+					e.printStackTrace();
+					System.out.println(results.toString());
+				}
+				if (type != null){
+					processedResult.getValues().add(type);
+				}else{
+					processedResult.getValues().add("");
+				}
 
 				Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
 				exampleVar.setId("images");
@@ -118,16 +132,19 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 
 				i++;
 			}
+			System.out.println("CreateImagesForQueryResultsQueryProcessor returning " + Integer.toString(i) + " rows");
 			return processedResults;
 		}
 		catch(GeppettoVisitingException e)
 		{
 			System.out.println(e);
+			e.printStackTrace();
 			throw new GeppettoDataSourceException(e);
 		}
 		catch(Exception e)
 		{
 			System.out.println(e);
+			e.printStackTrace();
 		}
 
 		return results;
@@ -141,7 +158,7 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 	 */
 	private void addImage(String data, String name, String reference, ArrayValue images, int i)
 	{
-		System.out.println("Adding image "+ count++ + " "+name);
+//		System.out.println("Adding image "+ count++ + " "+name);
 		Image image = ValuesFactory.eINSTANCE.createImage();
 		image.setName(name);
 		image.setData(data);
@@ -153,6 +170,16 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 		images.getElements().add(element);
 	}
 
-	
+	private String cleanType(List<String> types){
+		String type="";
+		for( int i = 0; i < types.size(); i++)
+		{
+			if (i>0){
+				type+=", ";
+			}
+			type+=types.get(i);
+		}
+		return type;
+	}
 
 }

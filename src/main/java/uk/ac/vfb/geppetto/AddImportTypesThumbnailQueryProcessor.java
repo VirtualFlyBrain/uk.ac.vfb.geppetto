@@ -5,7 +5,7 @@
  * http://openworm.org
  * 
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the MIT License
+ * are made available under the terms of the MIT License`
  * which accompanies this distribution, and is available at
  * http://opensource.org/licenses/MIT
  *
@@ -192,7 +192,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 					Variable slicesVar = VariablesFactory.eINSTANCE.createVariable();
 					ImageType slicesType = (ImageType) geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
 					Image slicesValue = ValuesFactory.eINSTANCE.createImage();
-					slicesValue.setData(new Gson().toJson(new IIPJSON(0,"http://vfbdev.inf.ed.ac.uk/fcgi/wlziipsrv.fcgi", tempFile, domains)));
+					slicesValue.setData(new Gson().toJson(new IIPJSON(0,"https://www.virtualflybrain.org/fcgi/wlziipsrv.fcgi", tempFile, domains)));
 					slicesValue.setFormat(ImageFormat.IIP);
 					slicesValue.setReference(variable.getId());
 					slicesVar.setId(variable.getId() + "_slices");
@@ -207,7 +207,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 					System.out.println("Adding Template Space...");
 					Variable tempVar = VariablesFactory.eINSTANCE.createVariable();
 					tempVar.setId("template");
-					tempVar.setName("Template Space");
+					tempVar.setName("Aligned to");
 					tempVar.getTypes().add(htmlType);
 					geppettoModelAccess.addVariableToType(tempVar, metadataType);
 
@@ -310,6 +310,7 @@ public class AddImportTypesThumbnailQueryProcessor extends AQueryProcessor
 	{
 		try
 		{
+			urlString = urlString.replace("http://www.virtualflybrain.org/data/VFB","http://www.virtualflybrain.org/data/VFB");
 			URL url = new URL(urlString);
 			HttpURLConnection huc = (HttpURLConnection) url.openConnection();
 			huc.setRequestMethod("HEAD");
