@@ -268,7 +268,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                             edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_");
                                             String fileUrl = checkURL(edgeLabel + "/thumbnailT.png");
                                             if (fileUrl != null) {
-                                            	addImage(fileUrl, "Exemplar: " + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, 0);
+                                            	addImage(fileUrl.replace("http:","https:"), "Exemplar: " + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, 0);
                                             	edgeLabel = "http://flybrain.mrc-lmb.cam.ac.uk/vfb/fc/clusterv/3/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")) + "/snapshot.png";
                                             	thumbnailVar.setId("thumbnail");
                                                 thumbnailVar.setName("Thumbnail");
@@ -296,7 +296,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                             }
                                             if (fileUrl != null) {
                                             	if (!listContains(addedExamples, ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")))){
-	                                            	addImage(fileUrl, "Member: " + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, j);
+	                                            	addImage(fileUrl.replace("http:","https:"), "Member: " + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, j);
 	                                            	j++;
 	                                            	addedExamples.add(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")));
                                             	}
@@ -487,7 +487,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                                 String fileUrl = checkURL(edgeLabel + "/thumbnailT.png");
                                                 if (fileUrl != null) {
                                                 	if (!listContains(addedExamples, ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")))){
-    	                                            	addImage(fileUrl, ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, j);
+    	                                            	addImage(fileUrl.replace("http:","https:"), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, j);
     	                                            	j++;
     	                                            	addedExamples.add(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")));
                                                 	}
@@ -548,7 +548,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 			                                                thumbnailVar.setName("Thumbnail");
 			                                                thumbnailVar.getTypes().add(imageType);
 			                                                thumbnailValue.setName(tempName);
-			                                                thumbnailValue.setData(fileUrl.replace("http://", "https://"));
+			                                                thumbnailValue.setData(fileUrl.replace("http:","https:"));
 			                                                thumbnailValue.setReference(tempId);
 			                                                thumbnailValue.setFormat(ImageFormat.PNG);
 			                                                thumbnailVar.getInitialValues().put(imageType, thumbnailValue);
