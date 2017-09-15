@@ -837,11 +837,11 @@ public class VFBProcessTermInfo extends AQueryProcessor {
     			{
     				if(QueryChecker.check(runnableQuery, variable))
     				{
-    					badge = "<i class=\"popup-icon-link fa fa-quora on fa-square\" />";
+    					badge = "<i class=\"popup-icon-link gpt-query\" />";
     					querys += badge + "<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
     				}else if (synapticNP && individual && classVariable.getId()!="notSet"){
     					if(QueryChecker.check(runnableQuery, classVariable)){
-    						badge = "<i class=\"popup-icon-link fa fa-quora on fa-square\" />";
+    						badge = "<i class=\"popup-icon-link gpt-query\" />";
 	    					querys += badge + "<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "," + classVariable.getId() + "," + classVariable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", classVariable.getName()) + "</a></br>";
     					}
     				}
