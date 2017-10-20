@@ -58,38 +58,38 @@ public class VFBProcessTermInfo extends AQueryProcessor {
     @Override
     public QueryResults process(ProcessQuery query, DataSource dataSource, Variable variable, QueryResults results, GeppettoModelAccess geppettoModelAccess) throws GeppettoDataSourceException {
 
-//		Generic Anatomy Term Info
+//	Generic Anatomy Term Info
         String tempId = "xxxxx";
-//		Name: fubar (fbbt_1234567) (all on one line)
+//	Name: fubar (fbbt_1234567) (all on one line)
         String tempName = "not found";
-//		Alt_names: barfu (microref), BARFUS (microref) - comma separate (microrefs link down to ref list). Hover-over => scope
+//	Alt_names: barfu (microref), BARFUS (microref) - comma separate (microrefs link down to ref list). Hover-over => scope
         List<String> synonyms = new ArrayList<>();
 //      Thumbnail
         Variable thumbnailVar = VariablesFactory.eINSTANCE.createVariable();
         Image thumbnailValue = ValuesFactory.eINSTANCE.createImage();
         Boolean thumb = false;
         Boolean imagesChecked = false;
-//		Examples
+//	Examples
         ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
         String imageName = "Thumbnail";
         String tempLink = "";
         List<List<String>> domains = new ArrayList(new ArrayList());
         List<String> addedExamples = new ArrayList<>();
-//		Types
+//	Types
         String types = "";
         String depictedType = "";
-//		Relationships
+//	Relationships
         String relationships = "";
-//		Queries
+//	Queries
         String querys = "";
         Variable classVariable = VariablesFactory.eINSTANCE.createVariable();
-		CompositeType classParentType = TypesFactory.eINSTANCE.createCompositeType();
-		classVariable.setId("notSet");
-//		Description
+	CompositeType classParentType = TypesFactory.eINSTANCE.createCompositeType();
+	classVariable.setId("notSet");
+//	Description
         String desc = "";
-//		References
+//	References
         List<String> refs = new ArrayList<>();
-//		Linkouts
+//	Linkouts
         String links = "";
 //      Download
         String downloadLink = "";
@@ -578,7 +578,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 			                                                    objVar.getTypes().add(objImportType);
 			                                                    objVar.setId(tempId + "_obj");
 			                                                    objVar.setName("3D Volume");
-//			                                                    geppettoModelAccess.addVariableToType(objVar, parentType);
 			                                                    parentType.getVariables().add(objVar);
 			                                                    geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
 			                                                } else {
@@ -590,23 +589,10 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 			                                                        objVar.getTypes().add(objImportType);
 			                                                        objVar.setId(tempId + "_obj");
 			                                                        objVar.setName("3D Volume");
-//			                                                        geppettoModelAccess.addVariableToType(objVar, parentType);
 			                                                        parentType.getVariables().add(objVar);
 			                                                        geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
 			                                                    }
 			                                                }
-//			                                                try {
-//	                                                        	System.out.println("OBJ variable: " + GeppettoSerializer.serializeToJSON(EcoreUtil.copy(objVar), false));
-//	                                        				} catch (IOException e) {
-//	                                        					System.out.println("IO exception outputing variable");
-//	                                        					e.printStackTrace();
-//	                                        				}
-//			                                                try {
-//	                                                        	System.out.println("OBJ type: " + GeppettoSerializer.serializeToJSON(EcoreUtil.copy(objImportType), false));
-//	                                        				} catch (IOException e) {
-//	                                        					System.out.println("IO exception outputing type");
-//	                                        					e.printStackTrace();
-//	                                        				}
 		                                                }
 		                                                fileUrl = checkURL(edgeLabel + "/volume.swc");
 		                                                if (fileUrl != null && r == 0) {
@@ -620,18 +606,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 		                                                    swcVar.setId(tempId + "_swc");
 		                                                    geppettoModelAccess.addVariableToType(swcVar, parentType);
 		                                                    geppettoModelAccess.addTypeToLibrary(swcImportType, getLibraryFor(dataSource, "swc"));
-//		                                                    try {
-//	                                                        	System.out.println("SWC variable: " + GeppettoSerializer.serializeToJSON(EcoreUtil.copy(swcVar), false));
-//	                                        				} catch (IOException e) {
-//	                                        					System.out.println("IO exception outputing variable");
-//	                                        					e.printStackTrace();
-//	                                        				}
-//			                                                try {
-//	                                                        	System.out.println("SWC type: " + GeppettoSerializer.serializeToJSON(EcoreUtil.copy(swcImportType), false));
-//	                                        				} catch (IOException e) {
-//	                                        					System.out.println("IO exception outputing type");
-//	                                        					e.printStackTrace();
-//	                                        				}
 		                                                }
 		                                                fileUrl = checkURL(edgeLabel + "/volume.wlz");
 		                                                if (fileUrl != null && wlzUrl == "") {
@@ -919,36 +893,16 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     downloads.setId("downloads");
                     downloads.setName("Downloads");
                     downloads.getTypes().add(htmlType);
-//					metaData.getVariables().add(downloads);	
                     HTML downloadValue = ValuesFactory.eINSTANCE.createHTML();
                     downloadValue.setHtml(downloadLink);
                     downloads.getInitialValues().put(htmlType, downloadValue);
                     geppettoModelAccess.addVariableToType(downloads, metaDataType);
                 }
                 
-
                 // set linkouts:
-                
-                
                 
                 geppettoModelAccess.addTypeToLibrary(metaDataType, dataSource.getTargetLibrary());
                 
-                
-//                try {
-//                	System.out.println("parentType:" + GeppettoSerializer.serializeToJSON(EcoreUtil.copy(parentType), false));
-//					System.out.println("metaDataType:" + GeppettoSerializer.serializeToJSON(EcoreUtil.copy(metaDataType), false));
-//				} catch (IOException e) {
-//					System.out.println("IO exception outputting composte types");
-//					e.printStackTrace();
-//				}
-//                
-//                try {
-//                	System.out.println("variable: "+ GeppettoSerializer.serializeToJSON(EcoreUtil.copy(variable), false));
-//				} catch (IOException e) {
-//					System.out.println("IO exception outputting variable");
-//					e.printStackTrace();
-//				}
-//                
             } else {
                 System.out.println("Error node not returned: " + results.eAllContents().toString());
             }
