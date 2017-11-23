@@ -97,6 +97,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
         String superTypes = "";
         boolean template = false;
         boolean synapticNP = false;
+        boolean tract = false;
         boolean cluster = false;
         boolean individual = false;
         boolean NBLAST = false;
@@ -162,6 +163,9 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                         if ("Synaptic_neuropil_domain".equals(supertype)) {
                             synapticNP = true;
                         }
+                        if ("Neuron_projection_bundle".equals(supertype)) {
+                            tract = true;
+                        }
                         if ("Cluster".equals(supertype)) {
                             cluster = true;
                         }
@@ -198,7 +202,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     synonyms = (List<String>) resultNode.get("synonym");
                 }
 
-                while (results.getValue("links", r) != null && (synapticNP || cluster || r < 1)) {
+                while (results.getValue("links", r) != null && (synapticNP || cluster || tract || r < 1)) {
                     List<Object> resultLinks = (List<Object>) results.getValue("links", r);
                     String edge = "";
                     String edgeLabel = "";
@@ -209,7 +213,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                     }
                     resultNode = (Map<String, Object>) results.getValue("node", r);
                     // get description:
-                    if (r == 0 || (synapticNP && desc.length() < 2)){
+                    if (r == 0 || ((synapticNP || tract) && desc.length() < 2)){
 	                    if (resultNode.get("description") != null) {
 	                        desc = ((List<String>) resultNode.get("description")).get(0);
 	                        if (".".equals(desc)) {
@@ -232,7 +236,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
                                         if ("type".equals(edgeLabel)) {
                                         	depictedType += "<a href=\"#\" instancepath=\"" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + " (" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + ")</a><br/>";
-                                        	if (synapticNP && individual){
+                                        	if ((synapticNP || tract) && individual){
                                         		try{
                                         			classVariable.setId(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form"));
                                         			classVariable.setName(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label"));
@@ -813,7 +817,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
     				{
     					badge = "<i class=\"popup-icon-link gpt-query\" />";
     					querys += badge + "<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
-    				}else if (synapticNP && individual && classVariable.getId()!="notSet"){
+    				}else if ((synapticNP || tract) && individual && classVariable.getId()!="notSet"){
     					if(QueryChecker.check(runnableQuery, classVariable)){
     						badge = "<i class=\"popup-icon-link gpt-query\" />";
 	    					querys += badge + "<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "," + classVariable.getId() + "," + classVariable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", classVariable.getName()) + "</a></br>";
