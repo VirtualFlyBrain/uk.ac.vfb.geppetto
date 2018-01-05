@@ -67,6 +67,7 @@ import uk.ac.vfb.geppetto.AddImportTypesRefsQueryProcessor;
 import uk.ac.vfb.geppetto.AddImportTypesQueryProcessor;
 import uk.ac.vfb.geppetto.AddImportTypesSynonymQueryProcessor;
 import uk.ac.vfb.geppetto.AddTypesQueryProcessor;
+import uk.ac.vfb.geppetto.VFBProcessTermInfo;
 
 /**
  * @author matteocantarelli
@@ -91,6 +92,10 @@ public class VFBQueryTest
 		context.registerBeanDefinition("vfbImportTypesQueryProcessor", queryProcessorImportTypesBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.vfbImportTypesQueryProcessor", queryProcessorImportTypesBeanDefinition);
 
+		BeanDefinition queryProcessTermInfoBeanDefinition = new RootBeanDefinition(VFBProcessTermInfo.class);
+		context.registerBeanDefinition("vfbProcessTermInfo", queryProcessTermInfoBeanDefinition);
+		context.registerBeanDefinition("scopedTarget.vfbProcessTermInfo", queryProcessTermInfoBeanDefinition);
+		
 		BeanDefinition queryProcessorImportTypesSynonymBeanDefinition = new RootBeanDefinition(AddImportTypesSynonymQueryProcessor.class);
 		context.registerBeanDefinition("vfbImportTypesSynonymQueryProcessor", queryProcessorImportTypesSynonymBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.vfbImportTypesSynonymQueryProcessor", queryProcessorImportTypesSynonymBeanDefinition);
@@ -130,6 +135,8 @@ public class VFBQueryTest
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbImportTypesExtLinkQueryProcessor"));
 		retrievedContext = ApplicationListenerBean.getApplicationContext("vfbImportTypesRefsQueryProcessor");
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbImportTypesRefsQueryProcessor"));
+		retrievedContext = ApplicationListenerBean.getApplicationContext("vfbProcessTermInfo");
+		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbProcessTermInfo"));
 	}
 
 	/**
@@ -150,15 +157,12 @@ public class VFBQueryTest
 		Neo4jDataSourceService dataSource = new Neo4jDataSourceService();
 		dataSource.initialize(model.getDataSources().get(0), geppettoModelAccess);
 
-		System.out.println(GeppettoSerializer.serializeToJSON(model, true));
 
 		dataSource.fetchVariable("FBbt_00100219");
 
-		System.out.println(GeppettoSerializer.serializeToJSON(model, true));
 
 		dataSource.fetchVariable("VFB_00000001");
 
-		System.out.println(GeppettoSerializer.serializeToJSON(model, true));
 
 		// // Initialize the factory and the resource set
 		GeppettoPackage.eINSTANCE.eClass();

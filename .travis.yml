@@ -1,6 +1,7 @@
 language: java
 
 install:
+    - cd ..
     - git clone https://github.com/openworm/org.geppetto.model.git -b $TRAVIS_BRANCH
     - cd org.geppetto.model
     - mvn install
@@ -17,6 +18,8 @@ install:
     - cd org.geppetto.datasources
     - mvn install
     - cd .. 
+    - cd uk.ac.vfb.geppetto
+    - mvn install
 
     
     

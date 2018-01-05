@@ -200,6 +200,7 @@ public class AddImportTypesExtLinkQueryProcessor extends AQueryProcessor
 	{
 		try
 		{
+			urlString = urlString.replace("http://www.virtualflybrain.org/data/VFB","http://www.virtualflybrain.org/data/VFB");
 			URL url = new URL(urlString);
 			HttpURLConnection huc = (HttpURLConnection) url.openConnection();
 			huc.setRequestMethod("HEAD");

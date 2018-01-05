@@ -72,6 +72,7 @@ import uk.ac.vfb.geppetto.AddImportTypesThumbnailQueryProcessor;
 import uk.ac.vfb.geppetto.AddTypesQueryProcessor;
 import uk.ac.vfb.geppetto.CreateImagesForQueryResultsQueryProcessor;
 import uk.ac.vfb.geppetto.VFBAberOWLQueryProcessor;
+import uk.ac.vfb.geppetto.VFBProcessTermInfo;
 
 /**
  * @author matteocantarelli
@@ -96,6 +97,10 @@ public class PartsOfAdultBrainTest
 		context.registerBeanDefinition("vfbImportTypesQueryProcessor", queryProcessorImportTypesBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.vfbImportTypesQueryProcessor", queryProcessorImportTypesBeanDefinition);
 
+		BeanDefinition queryProcessTermInfoBeanDefinition = new RootBeanDefinition(VFBProcessTermInfo.class);
+		context.registerBeanDefinition("vfbProcessTermInfo", queryProcessTermInfoBeanDefinition);
+		context.registerBeanDefinition("scopedTarget.vfbProcessTermInfo", queryProcessTermInfoBeanDefinition);
+		
 		BeanDefinition queryProcessorImportTypesSynonymBeanDefinition = new RootBeanDefinition(AddImportTypesSynonymQueryProcessor.class);
 		context.registerBeanDefinition("vfbImportTypesSynonymQueryProcessor", queryProcessorImportTypesSynonymBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.vfbImportTypesSynonymQueryProcessor", queryProcessorImportTypesSynonymBeanDefinition);
@@ -147,6 +152,8 @@ public class PartsOfAdultBrainTest
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbAberOWLQueryProcessor"));
 		retrievedContext = ApplicationListenerBean.getApplicationContext("vfbCreateImagesForQueryResultsQueryProcessor");
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbCreateImagesForQueryResultsQueryProcessor"));
+		retrievedContext = ApplicationListenerBean.getApplicationContext("vfbProcessTermInfo");
+		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbProcessTermInfo"));
 
 	}
 
@@ -191,7 +198,8 @@ public class PartsOfAdultBrainTest
 		Assert.assertEquals("ID", results.getHeader().get(0));
 		Assert.assertEquals("Name", results.getHeader().get(1));
 		Assert.assertEquals("Definition", results.getHeader().get(2));
-		Assert.assertEquals("Images", results.getHeader().get(3));
+		Assert.assertEquals("Type", results.getHeader().get(3));
+		Assert.assertEquals("Images", results.getHeader().get(4));
 		Assert.assertEquals(1600, results.getResults().size());
 
 	}

@@ -69,6 +69,7 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 			processedResults.getHeader().add("ID");
 			processedResults.getHeader().add("Name");
 			processedResults.getHeader().add("Definition");
+			processedResults.getHeader().add("Type");
 			processedResults.getHeader().add("Images");
 			while(results.getValue("id", i) != null)
 			{
@@ -80,8 +81,20 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 				processedResult.getValues().add(name);
 
 				String def = (String) results.getValue("def", i);
+				if (def != null && def.length() > 250){
+					def = def.substring(0, 250) + "...";
+				}
 				processedResult.getValues().add(def);
-
+				
+				try{
+					String type = cleanType((List<String>) results.getValue("type", i));
+					processedResult.getValues().add(type);
+				}catch (Exception e){
+					System.out.println(e);
+					e.printStackTrace();
+					processedResult.getValues().add("");
+				}
+				
 				Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
 				exampleVar.setId("images");
 				exampleVar.setName("Images");
@@ -131,11 +144,13 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 		catch(GeppettoVisitingException e)
 		{
 			System.out.println(e);
+			e.printStackTrace();
 			throw new GeppettoDataSourceException(e);
 		}
 		catch(Exception e)
 		{
 			System.out.println(e);
+			e.printStackTrace();
 		}
 
 		return results;
@@ -149,7 +164,7 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 	 */
 	private void addImage(String data, String name, String reference, ArrayValue images, int i)
 	{
-		System.out.println("Adding image "+ count++ + " "+name);
+//		System.out.println("Adding image "+ count++ + " "+name);
 		Image image = ValuesFactory.eINSTANCE.createImage();
 		image.setName(name);
 		image.setData(data);
@@ -161,6 +176,16 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 		images.getElements().add(element);
 	}
 
-	
+	private String cleanType(List<String> types){
+		String type="";
+		for( int i = 0; i < types.size(); i++)
+		{
+			if (i>0){
+				type+=", ";
+			}
+			type+=types.get(i);
+		}
+		return type;
+	}
 
 }

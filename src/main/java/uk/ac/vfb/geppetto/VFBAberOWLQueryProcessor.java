@@ -80,23 +80,33 @@ public class VFBAberOWLQueryProcessor extends AQueryProcessor
 		processedResults.getHeader().add("Definition");
 
 		List<String> ids = new ArrayList<String>();
-		for(AQueryResult result : results.getResults())
-		{
-			SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
-			String id = ((QueryResult) result).getValues().get(idIndex).toString();
-			processedResult.getValues().add(id);
-
-			if ((((QueryResult) result).getValues().get(nameIndex)) instanceof String) {
-				processedResult.getValues().add(((QueryResult) result).getValues().get(nameIndex).toString());
-			}else{
-				processedResult.getValues().add(((List<String>) ((QueryResult) result).getValues().get(nameIndex)).get(0));
+		if (idIndex > -1){
+			for(AQueryResult result : results.getResults())
+			{
+				SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
+				String id = ((QueryResult) result).getValues().get(idIndex).toString();
+				processedResult.getValues().add(id);
+	
+				if ((((QueryResult) result).getValues().get(nameIndex)) instanceof String) {
+					processedResult.getValues().add(((QueryResult) result).getValues().get(nameIndex).toString());
+				}else{
+					processedResult.getValues().add(((List<String>) ((QueryResult) result).getValues().get(nameIndex)).get(0));
+				}
+				ids.add("'" + id + "'");
+				Object value = ((QueryResult) result).getValues().get(descirptionIndex);
+				if (value != null){
+					if (value.toString().length() > 250){
+						processedResult.getValues().add(value.toString().substring(0, 250) + "...");
+					}else{
+						processedResult.getValues().add(value.toString());
+					}
+				}else{
+					processedResult.getValues().add("");
+				}
+				processedResults.getResults().add(processedResult);
 			}
-			ids.add("'" + id + "'");
-			Object value = ((QueryResult) result).getValues().get(descirptionIndex);
-			processedResult.getValues().add(value == null ? "" : value.toString());
-			processedResults.getResults().add(processedResult);
 		}
-
+		
 		processingOutputMap.put("ARRAY_ID_RESULTS", ids);
 
 		return processedResults;
