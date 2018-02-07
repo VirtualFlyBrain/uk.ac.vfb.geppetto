@@ -19,7 +19,7 @@ install:
     - mvn install
     - cd .. 
     - cd uk.ac.vfb.geppetto
-    - mvn install
+    - travis_wait 60 mvn install
 
     
     
