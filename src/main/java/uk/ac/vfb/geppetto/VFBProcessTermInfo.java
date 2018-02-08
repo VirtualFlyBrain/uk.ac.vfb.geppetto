@@ -260,59 +260,50 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                             types += "<a href=\"#\" instancepath=\"" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
                                         }
                                         break;
-                                    case "Related":
-                                        edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
-                                        if ("has_exemplar".equals(edgeLabel)){
-                                        	if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
-                                                edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
-                                            } else {
-                                                edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri"));
-                                            }
-                                        	//TODO: remove fix for old iri:
-                                            edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_");
-                                            String fileUrl = checkURL(edgeLabel + "/thumbnailT.png");
-                                            if (fileUrl != null) {
-                                            	addImage(fileUrl.replace("http:","https:"), "Exemplar: " + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, 0);
-                                            	edgeLabel = "http://flybrain.mrc-lmb.cam.ac.uk/vfb/fc/clusterv/3/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")) + "/snapshot.png";
-                                            	thumbnailVar.setId("thumbnail");
-                                                thumbnailVar.setName("Thumbnail");
-                                                thumbnailVar.getTypes().add(imageType);
-                                                thumbnailValue.setName(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")));
-                                                thumbnailValue.setData(edgeLabel);
-                                                thumbnailValue.setReference(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")));
-                                                thumbnailValue.setFormat(ImageFormat.PNG);
-                                                thumbnailVar.getInitialValues().put(imageType, thumbnailValue);
-                                                thumb = true;
-                                            }
-                                        	break;
+				    				case "has_exemplar":
+										if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
+                                        	edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
+                                        } else {
+                                        	edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri"));
                                         }
-                                        if ("has_member".equals(edgeLabel)){
-                                        	if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
-                                                edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
-                                            } else {
-                                                edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri"));
-                                            }
-                                        	//TODO: remove fix for old iri:
-                                            edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_");
-                                            String fileUrl = checkURL(edgeLabel + "/thumbnailT.png");
-                                            if (j < 1){
-                                            	j=1; // ensure exemplar is first image;
-                                            }
-                                            if (fileUrl != null) {
-                                            	if (!listContains(addedExamples, ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")))){
-	                                            	addImage(fileUrl.replace("http:","https:"), "Member: " + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, j);
-	                                            	j++;
-	                                            	addedExamples.add(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")));
-                                            	}
-                                            }
-                                        	break;
-                                        }
-                                        if ("member_of".equals(edgeLabel)){
-                                        	NBLAST = true;
-                                        }
-                                        relationships = addUniqueToString(relationships, edgeLabel.replace("_", " ") + " <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
-                                        break;
-                                    case "has_reference":
+										//TODO: remove fix for old iri:
+										edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_");
+										String fileUrl = checkURL(edgeLabel + "/thumbnailT.png");
+										if (fileUrl != null) {
+											addImage(fileUrl.replace("http:","https:"), "Exemplar: " + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, 0);
+											edgeLabel = "http://flybrain.mrc-lmb.cam.ac.uk/vfb/fc/clusterv/3/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")) + "/snapshot.png";
+											thumbnailVar.setId("thumbnail");
+											thumbnailVar.setName("Thumbnail");
+											thumbnailVar.getTypes().add(imageType);
+											thumbnailValue.setName(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")));
+											thumbnailValue.setData(edgeLabel);
+											thumbnailValue.setReference(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")));
+											thumbnailValue.setFormat(ImageFormat.PNG);
+											thumbnailVar.getInitialValues().put(imageType, thumbnailValue);
+											thumb = true;
+										}
+										break;
+									case "has_member":
+										if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
+											edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
+										} else {
+											edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri"));
+										}
+										//TODO: remove fix for old iri:
+										edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_");
+										String fileUrl = checkURL(edgeLabel + "/thumbnailT.png");
+										if (j < 1){
+											j=1; // ensure exemplar is first image;
+										}
+										if (fileUrl != null) {
+											if (!listContains(addedExamples, ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")))){
+												addImage(fileUrl.replace("http:","https:"), "Member: " + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, j);
+												j++;
+												addedExamples.add(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")));
+											}
+										}
+										break;
+									case "has_reference":
                                         edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("typ"));
                                         if ("syn".equals(edgeLabel)) {
                                         	if (!listContains(synonyms,(String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("synonym"))){
@@ -499,144 +490,136 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                             }
                                         }
                                         break;
-                                    case "Related":
-                                        edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
-                                        if ("depicts".equals(edgeLabel)) {
-                                        	if (!imagesChecked || template){
-	                                        	try{
-		                                        	if (template && ((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index") != null){
-		                                        		if (1 > (((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()){
-		                                        			domainId[0] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("short_form");
-		                                        			domainName[0] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label");
-		                                        			domainType[0] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form");
-		                                        			if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("center") != null){
-		                                        				domainCentre[0] = String.valueOf(((Map<String, ArrayList>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("center"));
-		                                            		}
-		                                        			if (((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("voxel") != null){
-		                                        				voxelSize[0] = String.valueOf(((Map<String, ArrayList>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("voxel").get(0));
-		                                        				voxelSize[1] = String.valueOf(((Map<String, ArrayList>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("voxel").get(1));
-		                                        				voxelSize[2] = String.valueOf(((Map<String, ArrayList>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("voxel").get(2));
-		                                        			}else{ // default - should not be used:
-		                                        				System.out.println("Failure to load voxel size!");
-											System.out.println((String) ((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
-		                                            				voxelSize[0] = "0.622088"; // X
-		                                            				voxelSize[1] = "0.622088"; // Y
-		                                            				voxelSize[2] = "0.622088"; // Z
-		                                            			}
-		                                        		}else{
-		                                        			domainId[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("short_form");
-		                                        			domainName[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label");
-		                                        			domainType[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form");
-		                                        			if (((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("center") != null){
-		                                        				
-		                                        				domainCentre[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] = String.valueOf(((Map<String, ArrayList>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("center"));
-		                                            		}
-		                                        		}
-		                                        	}
-	                                        	}catch (Exception e){
-	                                        		System.out.println("Error adding domain metadata:");
-	                                            	e.printStackTrace();
-	                                        	}
-	                                        	try{
-		                                        	if ((!template && !imagesChecked) || (template && 1 > (((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue())){
-		                                        		if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
-			                                                edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
-			                                            } else {
-			                                                edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri"));
-			                                            }
-			                                            //TODO: remove fix for old iri:
-			                                            edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_");
-			                                            String fileUrl;
-			                                            fileUrl = checkURL(edgeLabel + "/thumbnailT.png");
-			                                            if (fileUrl != null) {
-			                                                thumbnailVar.setId("thumbnail");
-			                                                thumbnailVar.setName("Thumbnail");
-			                                                thumbnailVar.getTypes().add(imageType);
-			                                                thumbnailValue.setName(tempName);
-			                                                thumbnailValue.setData(fileUrl.replace("http:","https:"));
-			                                                thumbnailValue.setReference(tempId);
-			                                                thumbnailValue.setFormat(ImageFormat.PNG);
-			                                                thumbnailVar.getInitialValues().put(imageType, thumbnailValue);
-			                                                thumb = true;
-			                                            } else {
-			                                                fileUrl = checkURL(edgeLabel + "/thumbnail.png");
-			                                                if (fileUrl != null) {
-			                                                    thumbnailVar.setId("thumbnail");
-			                                                    thumbnailVar.setName("Thumbnail");
-			                                                    thumbnailVar.getTypes().add(imageType);
-			                                                    thumbnailValue.setName(tempName);
-			                                                    thumbnailValue.setData(fileUrl.replace("http://", "https://"));
-			                                                    thumbnailValue.setReference(tempId);
-			                                                    thumbnailValue.setFormat(ImageFormat.PNG);
-			                                                    thumbnailVar.getInitialValues().put(imageType, thumbnailValue);
-			                                                    thumb = true;
-			                                                }
-			                                            }		                                                
-			                                            if (r==0){
-				                                            fileUrl = checkURL(edgeLabel + "/volume_man.obj");
-				                                            Variable objVar = VariablesFactory.eINSTANCE.createVariable();
-		                                                    ImportType objImportType = TypesFactory.eINSTANCE.createImportType();
-				                                            if (fileUrl != null) {
-				                                            	objImportType.setUrl(fileUrl);
-			                                                    objImportType.setId(tempId + "_obj");
-			                                                    objImportType.setModelInterpreterId("objModelInterpreterService");
-			                                                    objVar.getTypes().add(objImportType);
-			                                                    objVar.setId(tempId + "_obj");
-			                                                    objVar.setName("3D Volume");
-			                                                    parentType.getVariables().add(objVar);
-			                                                    geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
-			                                                } else {
-			                                                    fileUrl = checkURL(edgeLabel + "/volume.obj");
-			                                                    if (fileUrl != null) {
-			                                                    	objImportType.setUrl(fileUrl);
-			                                                        objImportType.setId(tempId + "_obj");
-			                                                        objImportType.setModelInterpreterId("objModelInterpreterService");
-			                                                        objVar.getTypes().add(objImportType);
-			                                                        objVar.setId(tempId + "_obj");
-			                                                        objVar.setName("3D Volume");
-			                                                        parentType.getVariables().add(objVar);
-			                                                        geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
-			                                                    }
-			                                                }
-		                                                }
-		                                                fileUrl = checkURL(edgeLabel + "/volume.swc");
-		                                                if (fileUrl != null && r == 0) {
-		                                                    Variable swcVar = VariablesFactory.eINSTANCE.createVariable();
-		                                                    ImportType swcImportType = TypesFactory.eINSTANCE.createImportType();
-		                                                    swcImportType.setUrl(fileUrl);
-		                                                    swcImportType.setId(tempId + "_swc");
-		                                                    swcImportType.setModelInterpreterId("swcModelInterpreter");
-		                                                    swcVar.getTypes().add(swcImportType);
-		                                                    swcVar.setName("3D Skeleton");
-		                                                    swcVar.setId(tempId + "_swc");
-		                                                    geppettoModelAccess.addVariableToType(swcVar, parentType);
-		                                                    geppettoModelAccess.addTypeToLibrary(swcImportType, getLibraryFor(dataSource, "swc"));
-		                                                }
-		                                                fileUrl = checkURL(edgeLabel + "/volume.wlz");
-		                                                if (fileUrl != null && wlzUrl == "") {
-		                                                    wlzUrl = fileUrl;
-		                                                }
-		                                                if (((Map<String, Object>) resultLinks.get(i)).get("temp") != null) {
-		                                                	String supertype = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("short_form");
-		                                                	tempLink = "<a href=\"#\" instancepath=\"" + supertype + "\">" + (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("label") + "</a>";
-		                                                }
-		                                                fileUrl = checkURL(edgeLabel + "/volume.nrrd");
-		                                                if (fileUrl != null && downloadLink == "") {
-		                                                    downloadLink = "Aligned Image: ​<a download=\"" + (String) tempId + ".nrrd\" href=\"" + fileUrl + "\">" + (String) tempId + ".nrrd</a><br/>​​​​​​​​​​​​​​​​​​​​​​​​​​​";
-		                                                    downloadLink += "Note: see licensing section for reuse and attribution info.";
-		                                                }
-		                                                imagesChecked = true;
-		                                        	}
-	                                        	}catch (Exception e){
-	                                        		System.out.println("Error adding images:");
-	                                            	e.printStackTrace();
-	                                        	}
-                                        	}
-                                        } else if ("connected_to".equals(edgeLabel) || "connected to".equals(edgeLabel)) {
-                                        	relationships = addUniqueToString(relationships, "connected to <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
-                                        } else if ("innervates".equals(edgeLabel)) {
-                                        	relationships = addUniqueToString(relationships, "innervated by <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
-                                        }
+									case "depicts":
+										if (!imagesChecked || template){
+											try{
+												if (template && ((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index") != null){
+													if (1 > (((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()){
+														domainId[0] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("short_form");
+														domainName[0] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label");
+														domainType[0] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form");
+														if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("center") != null){
+															domainCentre[0] = String.valueOf(((Map<String, ArrayList>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("center"));
+														}
+														if (((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("voxel") != null){
+															voxelSize[0] = String.valueOf(((Map<String, ArrayList>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("voxel").get(0));
+															voxelSize[1] = String.valueOf(((Map<String, ArrayList>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("voxel").get(1));
+															voxelSize[2] = String.valueOf(((Map<String, ArrayList>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("voxel").get(2));
+														}else{ // default - should not be used:
+															System.out.println("Failure to load voxel size!");
+															System.out.println((String) ((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
+															voxelSize[0] = "0.622088"; // X
+															voxelSize[1] = "0.622088"; // Y
+															voxelSize[2] = "0.622088"; // Z
+														}
+													}else{
+														domainId[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("short_form");
+														domainName[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label");
+														domainType[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] = ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form");
+														if (((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("center") != null){
+															domainCentre[(((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue()] = String.valueOf(((Map<String, ArrayList>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("center"));
+														}
+													}
+												}
+											}catch (Exception e){
+												System.out.println("Error adding domain metadata:");
+												e.printStackTrace();
+											}
+											try{
+												if ((!template && !imagesChecked) || (template && 1 > (((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue())){
+													if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
+														edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
+													} else {
+														edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri"));
+													}
+													//TODO: remove fix for old iri:
+													edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_");
+													String fileUrl;
+													fileUrl = checkURL(edgeLabel + "/thumbnailT.png");
+													if (fileUrl != null) {
+														thumbnailVar.setId("thumbnail");
+														thumbnailVar.setName("Thumbnail");
+														thumbnailVar.getTypes().add(imageType);
+														thumbnailValue.setName(tempName);
+														thumbnailValue.setData(fileUrl.replace("http:","https:"));
+														thumbnailValue.setReference(tempId);
+														thumbnailValue.setFormat(ImageFormat.PNG);
+														thumbnailVar.getInitialValues().put(imageType, thumbnailValue);
+														thumb = true;
+													} else {
+														fileUrl = checkURL(edgeLabel + "/thumbnail.png");
+														if (fileUrl != null) {
+															thumbnailVar.setId("thumbnail");
+															thumbnailVar.setName("Thumbnail");
+															thumbnailVar.getTypes().add(imageType);
+															thumbnailValue.setName(tempName);
+															thumbnailValue.setData(fileUrl.replace("http://", "https://"));
+															thumbnailValue.setReference(tempId);
+															thumbnailValue.setFormat(ImageFormat.PNG);
+															thumbnailVar.getInitialValues().put(imageType, thumbnailValue);
+															thumb = true;
+														}
+													}		                                                
+													if (r==0){
+														fileUrl = checkURL(edgeLabel + "/volume_man.obj");
+														Variable objVar = VariablesFactory.eINSTANCE.createVariable();
+														ImportType objImportType = TypesFactory.eINSTANCE.createImportType();
+														if (fileUrl != null) {
+															objImportType.setUrl(fileUrl);
+															objImportType.setId(tempId + "_obj");
+															objImportType.setModelInterpreterId("objModelInterpreterService");
+															objVar.getTypes().add(objImportType);
+															objVar.setId(tempId + "_obj");
+															objVar.setName("3D Volume");
+															parentType.getVariables().add(objVar);
+															geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
+														} else {
+															fileUrl = checkURL(edgeLabel + "/volume.obj");
+															if (fileUrl != null) {
+																objImportType.setUrl(fileUrl);
+																objImportType.setId(tempId + "_obj");
+																objImportType.setModelInterpreterId("objModelInterpreterService");
+																objVar.getTypes().add(objImportType);
+																objVar.setId(tempId + "_obj");
+																objVar.setName("3D Volume");
+																parentType.getVariables().add(objVar);
+																geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
+															}
+														}
+													}
+													fileUrl = checkURL(edgeLabel + "/volume.swc");
+													if (fileUrl != null && r == 0) {
+														Variable swcVar = VariablesFactory.eINSTANCE.createVariable();
+														ImportType swcImportType = TypesFactory.eINSTANCE.createImportType();
+														swcImportType.setUrl(fileUrl);
+														swcImportType.setId(tempId + "_swc");
+														swcImportType.setModelInterpreterId("swcModelInterpreter");
+														swcVar.getTypes().add(swcImportType);
+														swcVar.setName("3D Skeleton");
+														swcVar.setId(tempId + "_swc");
+														geppettoModelAccess.addVariableToType(swcVar, parentType);
+														geppettoModelAccess.addTypeToLibrary(swcImportType, getLibraryFor(dataSource, "swc"));
+													}
+													fileUrl = checkURL(edgeLabel + "/volume.wlz");
+													if (fileUrl != null && wlzUrl == "") {
+														wlzUrl = fileUrl;
+													}
+													if (((Map<String, Object>) resultLinks.get(i)).get("temp") != null) {
+														String supertype = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("short_form");
+														tempLink = "<a href=\"#\" instancepath=\"" + supertype + "\">" + (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("label") + "</a>";
+													}
+													fileUrl = checkURL(edgeLabel + "/volume.nrrd");
+													if (fileUrl != null && downloadLink == "") {
+														downloadLink = "Aligned Image: ​<a download=\"" + (String) tempId + ".nrrd\" href=\"" + fileUrl + "\">" + (String) tempId + ".nrrd</a><br/>​​​​​​​​​​​​​​​​​​​​​​​​​​​";
+														downloadLink += "Note: see licensing section for reuse and attribution info.";
+													}
+													imagesChecked = true;
+												}
+											}catch (Exception e){
+												System.out.println("Error adding images:");
+												e.printStackTrace();
+											}
+                                    	}
                                         break;
                                     case "connected_to":
                                     	relationships = addUniqueToString(relationships, "connected to <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
