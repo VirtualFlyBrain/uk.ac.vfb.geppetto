@@ -73,6 +73,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
         ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
         String imageName = "Thumbnail";
         String tempLink = "";
+	String vfbFileUrl = "";
         List<List<String>> domains = new ArrayList(new ArrayList());
         List<String> addedExamples = new ArrayList<>();
 //	Types
@@ -268,7 +269,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                         }
 										//TODO: remove fix for old iri:
 										edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_");
-										String vfbFileUrl = checkURL(edgeLabel + "/thumbnailT.png");
+										vfbFileUrl = checkURL(edgeLabel + "/thumbnailT.png");
 										if (vfbFileUrl != null) {
 											addImage(vfbFileUrl.replace("http:","https:"), "Exemplar: " + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, 0);
 											edgeLabel = "http://flybrain.mrc-lmb.cam.ac.uk/vfb/fc/clusterv/3/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")) + "/snapshot.png";
@@ -291,7 +292,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 										}
 										//TODO: remove fix for old iri:
 										edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_");
-										String vfbFileUrl = checkURL(edgeLabel + "/thumbnailT.png");
+										vfbFileUrl = checkURL(edgeLabel + "/thumbnailT.png");
 										if (j < 1){
 											j=1; // ensure exemplar is first image;
 										}
@@ -479,7 +480,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                                 }
                                             	//TODO: remove fix for old iri:
                                                 edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_");
-                                                String vfbFileUrl = checkURL(edgeLabel + "/thumbnailT.png");
+                                                vfbFileUrl = checkURL(edgeLabel + "/thumbnailT.png");
                                                 if (vfbFileUrl != null) {
                                                 	if (!listContains(addedExamples, ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")))){
     	                                            	addImage(vfbFileUrl.replace("http:","https:"), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, j);
@@ -534,7 +535,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 													}
 													//TODO: remove fix for old iri:
 													edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_");
-													String vfbFileUrl;
 													vfbFileUrl = checkURL(edgeLabel + "/thumbnailT.png");
 													if (vfbFileUrl != null) {
 														thumbnailVar.setId("thumbnail");
