@@ -2,25 +2,27 @@ language: java
 
 install:
     - cd ..
-    - if [ $(git ls-remote --heads https://github.com/openworm/org.geppetto.model.git $TRAVIS_BRANCH | wc -l) -gt 0 ]; then git clone https://github.com/openworm/org.geppetto.model.git -b development; else git clone https://github.com/openworm/org.geppetto.model.git -b $TRAVIS_BRANCH; fi
+    - git clone https://github.com/openworm/org.geppetto.model.git
     - cd org.geppetto.model
+    - git checkout development
+    - git checkout $TRAVIS_BRANCH | :
     - mvn install
     - cd ..
-    - git clone https://github.com/openworm/org.geppetto.core.git -b development
+    - git clone https://github.com/openworm/org.geppetto.core.git
     - cd org.geppetto.core
-    - git fetch
+    - git checkout development
     - git checkout $TRAVIS_BRANCH | :
     - mvn install
     - cd .. 
-    - git clone https://github.com/openworm/org.geppetto.simulation.git -b development
+    - git clone https://github.com/openworm/org.geppetto.simulation.git
     - cd org.geppetto.simulation
-    - git fetch
+    - git checkout development
     - git checkout $TRAVIS_BRANCH | :
     - mvn install
     - cd ..
-    - git clone https://github.com/openworm/org.geppetto.datasources.git -b development
+    - git clone https://github.com/openworm/org.geppetto.datasources.git
     - cd org.geppetto.datasources
-    - git fetch
+    - git checkout development
     - git checkout $TRAVIS_BRANCH | :
     - mvn install
     - cd .. 
