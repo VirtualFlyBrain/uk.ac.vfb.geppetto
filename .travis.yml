@@ -4,21 +4,25 @@ install:
     - cd ..
     - git clone https://github.com/openworm/org.geppetto.model.git -b development
     - cd org.geppetto.model
+    - git fetch
     - git checkout $TRAVIS_BRANCH | :
     - mvn install
     - cd ..
     - git clone https://github.com/openworm/org.geppetto.core.git -b development
     - cd org.geppetto.core
+    - git fetch
     - git checkout $TRAVIS_BRANCH | :
     - mvn install
     - cd .. 
     - git clone https://github.com/openworm/org.geppetto.simulation.git -b development
     - cd org.geppetto.simulation
+    - git fetch
     - git checkout $TRAVIS_BRANCH | :
     - mvn install
     - cd ..
     - git clone https://github.com/openworm/org.geppetto.datasources.git -b development
     - cd org.geppetto.datasources
+    - git fetch
     - git checkout $TRAVIS_BRANCH | :
     - mvn install
     - cd .. 
