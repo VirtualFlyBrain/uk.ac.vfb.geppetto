@@ -460,6 +460,12 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 								case "RelatedTree":
 									//Ignoring RelatedTree data
 									break;
+								case "hasDbXref":
+									if ("None".equals((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("accession"))){
+										refs.add("DbXref <a href=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri")) + "\" target=\"_blank\" >" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");		
+									}else{
+										refs.add("DbXref <a href=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("link_base")) + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("accession")) + "\" target=\"_blank\" >" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("accession")) + ")</a><br/>");		
+									}
 								case "member_of":
 									NBLAST = true;
 									// then run default:
