@@ -476,23 +476,20 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 								// edge towards term
 								switch (edge) {
 								case "INSTANCEOF":
-									edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
-									if ("type".equals(edgeLabel)) {
-										if (r == 0 && j < 10 && listContains(((List<String>) ((Map<String, Object>) resultLinks.get(i)).get("labels")), "Individual")) {
-											if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
-												edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
-											} else {
-												edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri"));
-											}
-											//TODO: remove fix for old iri:
-											edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_");
-											vfbFileUrl = checkURL(edgeLabel + "/thumbnailT.png");
-											if (vfbFileUrl != null) {
-												if (!listContains(addedExamples, ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")))){
-													addImage(vfbFileUrl.replace("http:","https:"), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, j);
-													j++;
-													addedExamples.add(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")));
-												}
+									if (r == 0 && j < 10 && listContains(((List<String>) ((Map<String, Object>) resultLinks.get(i)).get("labels")), "Individual")) {
+										if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
+											edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
+										} else {
+											edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri"));
+										}
+										//TODO: remove fix for old iri:
+										edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_");
+										vfbFileUrl = checkURL(edgeLabel + "/thumbnailT.png");
+										if (vfbFileUrl != null) {
+											if (!listContains(addedExamples, ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")))){
+												addImage(vfbFileUrl.replace("http:","https:"), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, j);
+												j++;
+												addedExamples.add(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")));
 											}
 										}
 									}
@@ -637,27 +634,23 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 									//                                    	Ignore SUBCLASSOF
 									break;
 								case "has_source":
-									edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
-									if ("type".equals(edgeLabel)) {
-										if (r == 0 && j < 10 && listContains(((List<String>) ((Map<String, Object>) resultLinks.get(i)).get("labels")), "Individual")) {
-											if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
-												edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
-											} else {
-												edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri"));
-											}
-											//TODO: remove fix for old iri:
-											edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_");
-											vfbFileUrl = checkURL(edgeLabel + "/thumbnailT.png");
-											if (vfbFileUrl != null) {
-												if (!listContains(addedExamples, ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")))){
-													addImage(vfbFileUrl.replace("http:","https:"), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, j);
-													j++;
-													addedExamples.add(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")));
-												}
+									if (r == 0 && j < 10 && listContains(((List<String>) ((Map<String, Object>) resultLinks.get(i)).get("labels")), "Individual")) {
+										if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
+											edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
+										} else {
+											edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri"));
+										}
+										//TODO: remove fix for old iri:
+										edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_");
+										vfbFileUrl = checkURL(edgeLabel + "/thumbnailT.png");
+										if (vfbFileUrl != null) {
+											if (!listContains(addedExamples, ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")))){
+												addImage(vfbFileUrl.replace("http:","https:"), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, j);
+												j++;
+												addedExamples.add(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")));
 											}
 										}
 									}
-									break;
 									break;
 								default:
 									System.out.println("Unhandled link to node: " + edge + " " + String.valueOf(resultLinks.get(i)));
