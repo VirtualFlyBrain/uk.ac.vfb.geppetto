@@ -466,6 +466,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 									}else{
 										refs.add("DbXref <a href=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("link_base")) + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("accession")) + "\" target=\"_blank\" >" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("accession")) + ")</a><br/>");		
 									}
+									break;
 								case "member_of":
 									NBLAST = true;
 									// then run default:
