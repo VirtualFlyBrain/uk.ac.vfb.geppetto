@@ -203,7 +203,7 @@ public class MultipleQueriesVFBQueryTest
 
 		
 		int count = aberDataSource.getNumberOfResults(runnableQueriesEMF);
-		Assert.assertEquals(87, count);
+		Assert.assertEquals(88, count);
 
 		QueryResults results = aberDataSource.execute(runnableQueriesEMF);
 
@@ -212,7 +212,7 @@ public class MultipleQueriesVFBQueryTest
 		Assert.assertEquals("Definition", results.getHeader().get(2));
 		Assert.assertEquals("Type", results.getHeader().get(3));
 		Assert.assertEquals("Images", results.getHeader().get(4));
-		Assert.assertEquals(87, results.getResults().size());
+		Assert.assertEquals(88, results.getResults().size());
 
 		System.out.println(GeppettoSerializer.serializeToJSON(results, true));
 
