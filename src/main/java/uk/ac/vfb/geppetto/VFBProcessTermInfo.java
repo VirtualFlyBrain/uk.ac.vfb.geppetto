@@ -263,7 +263,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 									break;
 								case "has_exemplar":
 									if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
-										edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
+										edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("folder"));
 									} else {
 										edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri"));
 									}
@@ -286,7 +286,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 									break;
 								case "has_member":
 									if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
-										edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
+										edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("folder"));
 									} else {
 										edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri"));
 									}
@@ -479,7 +479,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 								case "INSTANCEOF":
 									if (r == 0 && j < 10 && listContains(((List<String>) ((Map<String, Object>) resultLinks.get(i)).get("labels")), "Individual")) {
 										if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
-											edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
+											edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("folder"));
 										} else {
 											edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri"));
 										}
@@ -512,7 +512,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 														voxelSize[2] = String.valueOf(((Map<String, ArrayList>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("voxel").get(2));
 													}else{ // default - should not be used:
 														System.out.println("Failure to load voxel size!");
-														System.out.println((String) ((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
+														System.out.println((String) ((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("folder"));
 														voxelSize[0] = "0.622088"; // X
 														voxelSize[1] = "0.622088"; // Y
 														voxelSize[2] = "0.622088"; // Z
@@ -533,7 +533,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 										try{
 											if ((!template && !imagesChecked) || (template && 1 > (((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue())){
 												if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
-													edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
+													edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("folder"));
 												} else {
 													edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri"));
 												}
@@ -637,7 +637,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 								case "has_source":
 									if (r == 0 && j < 10 && listContains(((List<String>) ((Map<String, Object>) resultLinks.get(i)).get("labels")), "Individual")) {
 										if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
-											edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
+											edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("folder"));
 										} else {
 											edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri"));
 										}
