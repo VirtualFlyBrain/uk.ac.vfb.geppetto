@@ -270,7 +270,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 									//TODO: remove fix for old iri:
 									edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_");
 									vfbFileUrl = checkURL(edgeLabel + "/thumbnailT.png");
-									if (vfbFileUrl != null) {
+									if (vfbFileUrl != null && vfbFileUrl.indexOf("?") < 0) {
 										addImage(vfbFileUrl.replace("http:","https:"), "Exemplar: " + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, 0);
 										edgeLabel = "http://flybrain.mrc-lmb.cam.ac.uk/vfb/fc/clusterv/3/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")) + "/snapshot.png";
 										thumbnailVar.setId("thumbnail");
@@ -296,7 +296,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 									if (j < 1){
 										j=1; // ensure exemplar is first image;
 									}
-									if (vfbFileUrl != null) {
+									if (vfbFileUrl != null && vfbFileUrl.indexOf("?") < 0) {
 										if (!listContains(addedExamples, ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")))){
 											addImage(vfbFileUrl.replace("http:","https:"), "Member: " + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, j);
 											j++;
@@ -486,7 +486,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 										//TODO: remove fix for old iri:
 										edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_");
 										vfbFileUrl = checkURL(edgeLabel + "/thumbnailT.png");
-										if (vfbFileUrl != null) {
+										if (vfbFileUrl != null && vfbFileUrl.indexOf("?") < 0) {
 											if (!listContains(addedExamples, ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")))){
 												addImage(vfbFileUrl.replace("http:","https:"), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, j);
 												j++;
@@ -541,7 +541,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 												//TODO: remove fix for old iri:
 												edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_");
 												vfbFileUrl = checkURL(edgeLabel + "/thumbnailT.png");
-												if (vfbFileUrl != null) {
+												if (vfbFileUrl != null && vfbFileUrl.indexOf("?") < 0) {
 													thumbnailVar.setId("thumbnail");
 													thumbnailVar.setName("Thumbnail");
 													thumbnailVar.getTypes().add(imageType);
@@ -553,7 +553,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 													thumb = true;
 												} else {
 													vfbFileUrl = checkURL(edgeLabel + "/thumbnail.png");
-													if (vfbFileUrl != null) {
+													if (vfbFileUrl != null && vfbFileUrl.indexOf("?") < 0) {
 														thumbnailVar.setId("thumbnail");
 														thumbnailVar.setName("Thumbnail");
 														thumbnailVar.getTypes().add(imageType);
@@ -569,7 +569,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 													vfbFileUrl = checkURL(edgeLabel + "/volume_man.obj");
 													Variable objVar = VariablesFactory.eINSTANCE.createVariable();
 													ImportType objImportType = TypesFactory.eINSTANCE.createImportType();
-													if (vfbFileUrl != null) {
+													if (vfbFileUrl != null && vfbFileUrl.indexOf("?") < 0) {
 														objImportType.setUrl(vfbFileUrl);
 														objImportType.setId(tempId + "_obj");
 														objImportType.setModelInterpreterId("objModelInterpreterService");
@@ -580,7 +580,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 														geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
 													} else {
 														vfbFileUrl = checkURL(edgeLabel + "/volume.obj");
-														if (vfbFileUrl != null) {
+														if (vfbFileUrl != null && vfbFileUrl.indexOf("?") < 0) {
 															objImportType.setUrl(vfbFileUrl);
 															objImportType.setId(tempId + "_obj");
 															objImportType.setModelInterpreterId("objModelInterpreterService");
@@ -645,7 +645,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 										//TODO: remove fix for old iri:
 										edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_");
 										vfbFileUrl = checkURL(edgeLabel + "/thumbnailT.png");
-										if (vfbFileUrl != null) {
+										if (vfbFileUrl != null && vfbFileUrl.indexOf("?") < 0) {
 											if (!listContains(addedExamples, ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")))){
 												addImage(vfbFileUrl.replace("http:","https:"), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, j);
 												j++;
