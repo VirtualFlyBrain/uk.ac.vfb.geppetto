@@ -495,6 +495,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 										}
 									}
 									break;
+								case "expresses":
 								case "depicts":
 									if (!imagesChecked || template){
 										try{
@@ -653,6 +654,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 										}
 									}
 									break;
+								
 								default:
 									System.out.println("Unhandled link to node: " + edge + " " + String.valueOf(resultLinks.get(i)));
 								}
