@@ -462,9 +462,9 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 									break;
 								case "hasDbXref":
 									if ("None".equals((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("accession"))){
-										refs.add("DbXref <a href=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri")) + "\" target=\"_blank\" >" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");		
+										refs.add("<i class=\"popup-icon-link fa fa-external-link\" /> <a href=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri")) + "\" target=\"_blank\" >" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");		
 									}else{
-										refs.add("DbXref <a href=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("link_base")) + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("accession")) + "\" target=\"_blank\" >" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("accession")) + ")</a><br/>");		
+										refs.add("<i class=\"popup-icon-link fa fa-external-link\" /> <a href=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("link_base")) + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("accession")) + "\" target=\"_blank\" >" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("accession")) + ")</a><br/>");		
 									}
 									break;
 								case "member_of":
@@ -822,11 +822,11 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 				{
 					if(QueryChecker.check(runnableQuery, variable))
 					{
-						badge = "<i class=\"popup-icon-link gpt-query\" />";
+						badge = "<i class=\"popup-icon-link fa fa-quora\" />";
 						querys += badge + "<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
 					}else if ((synapticNP || tract) && individual && classVariable.getId()!="notSet"){
 						if(QueryChecker.check(runnableQuery, classVariable)){
-							badge = "<i class=\"popup-icon-link gpt-query\" />";
+							badge = "<i class=\"popup-icon-link fa fa-quora\" />";
 							querys += badge + "<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "," + classVariable.getId() + "," + classVariable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", classVariable.getName()) + "</a></br>";
 						}
 					}
