@@ -476,6 +476,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 							} else {
 								// edge towards term
 								switch (edge) {
+								case "expresses":
 								case "INSTANCEOF":
 									if (r == 0 && j < 10 && listContains(((List<String>) ((Map<String, Object>) resultLinks.get(i)).get("labels")), "Individual")) {
 										if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
@@ -495,7 +496,6 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 										}
 									}
 									break;
-								case "expresses":
 								case "depicts":
 									if (!imagesChecked || template){
 										try{
