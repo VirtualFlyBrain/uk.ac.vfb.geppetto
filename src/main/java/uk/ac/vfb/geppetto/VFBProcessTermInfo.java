@@ -221,7 +221,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 								if (".".equals(desc)) {
 									desc = "";
 								}
-							catch (Exception e) {
+							}catch (Exception e) {
 								System.out.println("Error processing node desc: " + e.toString());
 								e.printStackTrace();
 								System.out.println(tempName + " (" + tempId + ")");	
