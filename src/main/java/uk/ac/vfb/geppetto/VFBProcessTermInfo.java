@@ -216,9 +216,16 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 					// get description:
 					if (r == 0 || ((synapticNP || tract) && desc.length() < 2)){
 						if (resultNode.get("description") != null) {
-							desc = ((List<String>) resultNode.get("description")).get(0);
-							if (".".equals(desc)) {
-								desc = "";
+							try{
+								desc = ((List<String>) resultNode.get("description")).get(0);
+								if (".".equals(desc)) {
+									desc = "";
+								}
+							catch (Exception e) {
+								System.out.println("Error processing node desc: " + e.toString());
+								e.printStackTrace();
+								System.out.println(tempName + " (" + tempId + ")");	
+								desc = (String) resultNode.get("description");
 							}
 						}
 						// get description comment:
