@@ -130,10 +130,10 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 				}else if(currentObjects.size() > 0){
 					Map<String, Object> currentObject = (Map<String, Object>) currentObjects.get(0);
 					String tempId = (String) currentObject.get("image_id");
+					Image image = ValuesFactory.eINSTANCE.createImage();
 					if(tempId != null) {
 						String tempThumb = (String) currentObject.get("image_thumb");
 						String tempName = (String) currentObject.get("image_name");
-						Image image = ValuesFactory.eINSTANCE.createImage();
 						image.setName(tempName);
 						image.setData(tempThumb);
 						image.setReference(tempId);
