@@ -104,30 +104,52 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 				exampleVar.setName("Images");
 
 				exampleVar.getTypes().add(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE));
-				ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
+				if (currentObjects.size() > 1){ 
+					ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
 
-				for(int j = 0; j < currentObjects.size(); j++)
-				{
-					Map<String, Object> currentObject = (Map<String, Object>) currentObjects.get(j);
-					String tempId = (String) currentObject.get("image_id");
-					if(tempId != null)
+					for(int j = 0; j < currentObjects.size(); j++)
 					{
+						Map<String, Object> currentObject = (Map<String, Object>) currentObjects.get(j);
+						String tempId = (String) currentObject.get("image_id");
+						if(tempId != null)
+						{
+							String tempThumb = (String) currentObject.get("image_thumb");
+							String tempName = (String) currentObject.get("image_name");
+							addImage(tempThumb, tempName, tempId, images, j);
+						}
+					}
+					if(!images.getElements().isEmpty())
+					{
+						exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), images);
+						processedResult.getValues().add(GeppettoSerializer.serializeToJSON(exampleVar));
+					}
+					else
+					{
+						processedResult.getValues().add("");
+					}
+				}else if(currentObjects.size() > 0){
+					Map<String, Object> currentObject = (Map<String, Object>) currentObjects.get(0);
+					String tempId = (String) currentObject.get("image_id");
+					if(tempId != null) {
 						String tempThumb = (String) currentObject.get("image_thumb");
 						String tempName = (String) currentObject.get("image_name");
-						addImage(tempThumb, tempName, tempId, images, j);
-						
+						Image image = ValuesFactory.eINSTANCE.createImage();
+						image.setName(tempName);
+						image.setData(tempThumb);
+						image.setReference(tempId);
+						image.setFormat(ImageFormat.PNG);
+					}
+					if(!image.isEmpty())
+					{
+						exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), image);
+						processedResult.getValues().add(GeppettoSerializer.serializeToJSON(exampleVar));
+					}
+					else
+					{
+						processedResult.getValues().add("");
 					}
 				}
-				if(!images.getElements().isEmpty())
-				{
-					exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), images);
-					processedResult.getValues().add(GeppettoSerializer.serializeToJSON(exampleVar));
-				}
-				else
-				{
-					processedResult.getValues().add("");
-				}
-
+				
 				processedResults.getResults().add(processedResult);
 
 				i++;
