@@ -93,9 +93,12 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 					e.printStackTrace();
 					System.out.println(results.toString());
 				}
-				if (type != null){
+				if (type != null)
+				{
 					processedResult.getValues().add(type);
-				}else{
+				}
+				else
+				{
 					processedResult.getValues().add("");
 				}
 
@@ -104,7 +107,8 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 				exampleVar.setName("Images");
 
 				exampleVar.getTypes().add(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE));
-				if (currentObjects.size() > 1){ 
+				if (currentObjects.size() > 1)
+				{ 
 					ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
 
 					for(int j = 0; j < currentObjects.size(); j++)
@@ -127,20 +131,21 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 					{
 						processedResult.getValues().add("");
 					}
-				}else if(currentObjects.size() > 0){
+				}
+				else if(currentObjects.size() > 0)
+				{
 					Map<String, Object> currentObject = (Map<String, Object>) currentObjects.get(0);
 					String tempId = (String) currentObject.get("image_id");
-					Image image = ValuesFactory.eINSTANCE.createImage();
-					if(tempId != null) {
+					
+					if(tempId != null) 
+					{
 						String tempThumb = (String) currentObject.get("image_thumb");
 						String tempName = (String) currentObject.get("image_name");
+						Image image = ValuesFactory.eINSTANCE.createImage();
 						image.setName(tempName);
 						image.setData(tempThumb);
 						image.setReference(tempId);
 						image.setFormat(ImageFormat.PNG);
-					}
-					if(!image.isEmpty())
-					{
 						exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), image);
 						processedResult.getValues().add(GeppettoSerializer.serializeToJSON(exampleVar));
 					}
@@ -148,7 +153,9 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 					{
 						processedResult.getValues().add("");
 					}
-				}else{
+				}
+				else
+				{
 					processedResult.getValues().add("");
 				}
 				
