@@ -41,6 +41,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Collections;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -739,6 +740,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 
 				// set alt names:
 				if (synonyms.size() > 0) {
+					Collections.sort(synonyms);
 					Variable synVar = VariablesFactory.eINSTANCE.createVariable();
 					synVar.setId("synonym");
 					synVar.setName("Alternative Names");
@@ -821,6 +823,10 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 					// set relationships
 
 					if (relationships != "") {
+						
+						list<Strings> r = StringUtils.split(relationships, '<br/>');
+						Collections.sort(r)
+						relationships = StringUtils.join(r, "<br/>")
 						Variable relVar = VariablesFactory.eINSTANCE.createVariable();
 						relVar.setId("relationships");
 						relVar.setName("Relationships");
@@ -888,6 +894,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 					hs.addAll(refs);
 					refs.clear();
 					refs.addAll(hs);
+					Collections.sort(refs);
 					String references = StringUtils.join(refs, "<br/>");
 					Variable refVar = VariablesFactory.eINSTANCE.createVariable();
 					refVar.setId("references");
