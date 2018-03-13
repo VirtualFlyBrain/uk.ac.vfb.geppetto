@@ -824,7 +824,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 
 					if (relationships != "") {
 						
-						List<String> rela = StringUtils.split(relationships, "<br/>");
+						List<String> rela = Arrays.asList(StringUtils.split(relationships, "<br/>"));
 						Collections.sort(rela);
 						relationships = StringUtils.join(rela, "<br/>");
 						Variable relVar = VariablesFactory.eINSTANCE.createVariable();
