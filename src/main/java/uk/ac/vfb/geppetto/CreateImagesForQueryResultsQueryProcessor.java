@@ -148,8 +148,6 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 					{
 						processedResult.getValues().add("");
 					}
-				}else{
-					processedResult.getValues().add("");
 				}
 				
 				processedResults.getResults().add(processedResult);
