@@ -1018,6 +1018,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 	private String checkURL(String urlString) {
 		try {
 			urlString = urlString.replace("https://", "http://").replace(":5000", "");
+			urlString = urlString.replace("//virtualflybrain.org","//www.virtualflybrain.org");
 			URL url = new URL(urlString);
 			HttpURLConnection huc = (HttpURLConnection) url.openConnection();
 			huc.setRequestMethod("HEAD");
