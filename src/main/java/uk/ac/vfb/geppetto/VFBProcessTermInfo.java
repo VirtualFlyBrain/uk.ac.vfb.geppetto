@@ -230,7 +230,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 							}
 						}
 						// get description comment:
-						if (resultNode.get("comment") != null) {
+						if (resultNode.get("annotation-comment") != null) {
 							desc = desc + "<br><h5>Comment<h5><br>" + highlightLinks(((List<String>) resultNode.get("comment")).get(0));
 						}
 					}
