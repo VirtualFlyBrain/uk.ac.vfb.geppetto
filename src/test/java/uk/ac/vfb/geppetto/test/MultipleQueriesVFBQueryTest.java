@@ -203,7 +203,12 @@ public class MultipleQueriesVFBQueryTest
 
 		
 		int count = aberDataSource.getNumberOfResults(runnableQueriesEMF);
-		Assert.assertEquals(88, count);
+		try{
+			Assert.assertTrue(88<count);
+		}catch (AssertionError e) {
+			System.out.println("Fail: only " + count + " results returned, there should be more than than 88 results";
+			Throw new AssertionError(e);
+		}
 
 		QueryResults results = aberDataSource.execute(runnableQueriesEMF);
 
@@ -212,8 +217,13 @@ public class MultipleQueriesVFBQueryTest
 		Assert.assertEquals("Definition", results.getHeader().get(2));
 		Assert.assertEquals("Type", results.getHeader().get(3));
 		Assert.assertEquals("Images", results.getHeader().get(4));
-		Assert.assertEquals(88, results.getResults().size());
-
+		try{
+			Assert.assertTrue(88<results.getResults().size());
+		}catch (AssertionError e) {
+			System.out.println("Fail: only " + results.getResults().size() + " results returned, there should be more than than 88 results";
+			Throw new AssertionError(e);
+		}
+	
 		System.out.println(GeppettoSerializer.serializeToJSON(results, true));
 
 	}
@@ -271,8 +281,13 @@ public class MultipleQueriesVFBQueryTest
 		runnableQueriesEMF.add(rqEMF2);
 		
 		int count = aberDataSource.getNumberOfResults(runnableQueriesEMF);
-		Assert.assertEquals(84, count);
-
+		try{
+			Assert.assertTrue(84<count);
+		}catch (AssertionError e) {
+			System.out.println("Fail: only " + count + " results returned, there should be more than than 84 results";
+			Throw new AssertionError(e);
+		}
+			
 		QueryResults results = aberDataSource.execute(runnableQueriesEMF);
 
 		Assert.assertEquals("ID", results.getHeader().get(0));
