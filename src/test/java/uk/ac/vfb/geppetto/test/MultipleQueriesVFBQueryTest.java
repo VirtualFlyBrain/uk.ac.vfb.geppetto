@@ -204,9 +204,9 @@ public class MultipleQueriesVFBQueryTest
 		
 		int count = aberDataSource.getNumberOfResults(runnableQueriesEMF);
 		try{
-			Assert.assertTrue(88<count);
+			Assert.assertTrue(87<count);
 		}catch (AssertionError e) {
-			System.out.println("Fail: only " + count + " results returned, there should be more than than 88 results");
+			System.out.println("Fail: only " + count + " results returned, there should be 88+ results");
 			throw new AssertionError(e);
 		}
 
@@ -218,9 +218,9 @@ public class MultipleQueriesVFBQueryTest
 		Assert.assertEquals("Type", results.getHeader().get(3));
 		Assert.assertEquals("Images", results.getHeader().get(4));
 		try{
-			Assert.assertTrue(88<results.getResults().size());
+			Assert.assertTrue(87<results.getResults().size());
 		}catch (AssertionError e) {
-			System.out.println("Fail: only " + results.getResults().size() + " results returned, there should be more than than 88 results");
+			System.out.println("Fail: only " + results.getResults().size() + " results returned, there should be 88+ results");
 			throw new AssertionError(e);
 		}
 	
@@ -282,9 +282,9 @@ public class MultipleQueriesVFBQueryTest
 		
 		int count = aberDataSource.getNumberOfResults(runnableQueriesEMF);
 		try{
-			Assert.assertTrue(84<count);
+			Assert.assertTrue(83<count);
 		}catch (AssertionError e) {
-			System.out.println("Fail: only " + count + " results returned, there should be more than than 84 results");
+			System.out.println("Fail: only " + count + " results returned, there should be 84+ results");
 			throw new AssertionError(e);
 		}
 			
