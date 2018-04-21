@@ -41,6 +41,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Collections;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -216,14 +217,21 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 					// get description:
 					if (r == 0 || ((synapticNP || tract) && desc.length() < 2)){
 						if (resultNode.get("description") != null) {
-							desc = ((List<String>) resultNode.get("description")).get(0);
-							if (".".equals(desc)) {
-								desc = "";
+							try{
+								desc = ((List<String>) resultNode.get("description")).get(0);
+								if (".".equals(desc)) {
+									desc = "";
+								}
+							}catch (Exception e) {
+								System.out.println("Error processing node desc: " + e.toString());
+								e.printStackTrace();
+								System.out.println(tempName + " (" + tempId + ")");	
+								desc = (String) resultNode.get("description");
 							}
 						}
 						// get description comment:
-						if (resultNode.get("comment") != null) {
-							desc = desc + "<br><h5>Comment<h5><br>" + highlightLinks(((List<String>) resultNode.get("comment")).get(0));
+						if (resultNode.get("annotation-comment") != null) {
+							desc = desc + "<br><h5>Comment<h5><br>" + highlightLinks(((List<String>) resultNode.get("annotation-comment")).get(0));
 						}
 					}
 					while (i < resultLinks.size()) {
@@ -263,14 +271,14 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 									break;
 								case "has_exemplar":
 									if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
-										edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
+										edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("folder"));
 									} else {
 										edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri"));
 									}
 									//TODO: remove fix for old iri:
 									edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_");
 									vfbFileUrl = checkURL(edgeLabel + "/thumbnailT.png");
-									if (vfbFileUrl != null) {
+									if (vfbFileUrl != null && vfbFileUrl.indexOf("?") < 0) {
 										addImage(vfbFileUrl.replace("http:","https:"), "Exemplar: " + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, 0);
 										edgeLabel = "http://flybrain.mrc-lmb.cam.ac.uk/vfb/fc/clusterv/3/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")) + "/snapshot.png";
 										thumbnailVar.setId("thumbnail");
@@ -286,7 +294,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 									break;
 								case "has_member":
 									if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
-										edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
+										edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("folder"));
 									} else {
 										edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri"));
 									}
@@ -296,7 +304,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 									if (j < 1){
 										j=1; // ensure exemplar is first image;
 									}
-									if (vfbFileUrl != null) {
+									if (vfbFileUrl != null && vfbFileUrl.indexOf("?") < 0) {
 										if (!listContains(addedExamples, ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")))){
 											addImage(vfbFileUrl.replace("http:","https:"), "Member: " + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, j);
 											j++;
@@ -305,154 +313,159 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 									}
 									break;
 								case "has_reference":
-									edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("typ"));
-									if ("syn".equals(edgeLabel)) {
-										if (!listContains(synonyms,(String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("synonym"))){
-											synonyms.add(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("synonym")));
-										}
-										if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) != null){
-											if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("microref")) != null){
-												edgeLabel = "<span title=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) + "\">" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("microref")) + "</span>";
-											}else{
-												edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref"));
-											}
-											if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) != null)
-											{
-												edgeLabel += " <a href=\"http://flybase.org/reports/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) + "\" target=\"_blank\" >"
-														+ "<i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) + "\" aria-hidden=\"true\"></i></a>";
-											}
-											if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) != null)
-											{
-												edgeLabel += " <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" target=\"_blank\" >"
-														+ "<i class=\"popup-icon-link gpt-pubmed\" title=\"PMID:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" aria-hidden=\"true\"></i></a>";
-											}
-											if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) != null)
-											{
-												edgeLabel += " <a href=\"http://dx.doi.org/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" target=\"_blank\" >"
-														+ "<i class=\"popup-icon-link gpt-doi\" title=\"doi:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" aria-hidden=\"true\"></i></a>";
-											}
-											for (int s = 0; s < synonyms.size(); s++) {
-												if (synonyms.get(s).equals((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("synonym"))) {
-													if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).containsKey("microref")) {
-														synonyms.set(s, synonyms.get(s) + " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("microref")) + ")"); // TODO: add hyperlink
-													} else if ((!"null".equals((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref"))) && (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref") != null)) {
-														synonyms.set(s, synonyms.get(s) + " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) + ")"); // TODO: add hyperlink
-													} 
-												}
-											}
-										}else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http")) != null) {
-											edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http"));
-											if ("//".equals(edgeLabel.substring(0,2))){
-												edgeLabel = "http:" + edgeLabel;
-											}
-											// TODO check link works!? (grey out if broken?)
-											String[] bits = edgeLabel.replace("http://", "").split("/");
-											edgeLabel = "<a href=\"" + edgeLabel + "\" target=\"_blank\" title=\""+edgeLabel+"\">"
-													+ bits[0] + "<i class=\"popup-icon-link fa fa-external-link\" aria-hidden=\"true\"></i>" + "</a>";
-											for (int s = 0; s < synonyms.size(); s++) {
-												if (synonyms.get(s).equals((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("synonym"))) {
-													synonyms.set(s, synonyms.get(s) + " (" + edgeLabel + ")"); 
-												}
-											}
-										}else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) != null) {
-											edgeLabel = "<a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" target=\"_blank\" >"
-													+ "PMID:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "</a>";
-											for (int s = 0; s < synonyms.size(); s++) {
-												if (synonyms.get(s).equals((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("synonym"))) {
-													synonyms.set(s, synonyms.get(s) + " (" + edgeLabel + ")"); 
-												}
-											}
-										}
-										if (!"syn".equals(edgeLabel)){
-											refs.add(edgeLabel);
-										}
-									} else if ("def".equals(edgeLabel)) {
-										if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) != null){
-											if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("microref")) != null){
-												edgeLabel = "<span title=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) + "\">" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("microref")) + "</span>";
-											}else{
-												edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref"));
-											}
-											if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) != null)
-											{
-												edgeLabel += " <a href=\"http://flybase.org/reports/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) + "\" target=\"_blank\" >"
-														+ "<i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) + "\" aria-hidden=\"true\"></i></a>";
-											}
-											if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) != null)
-											{
-												edgeLabel += " <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" target=\"_blank\" >"
-														+ "<i class=\"popup-icon-link gpt-pubmed\" title=\"PMID:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" aria-hidden=\"true\"></i></a>";
-											}
-											if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) != null)
-											{
-												edgeLabel += " <a href=\"http://dx.doi.org/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" target=\"_blank\" >"
-														+ "<i class=\"popup-icon-link gpt-doi\" title=\"doi:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" aria-hidden=\"true\"></i></a>";
-											}
-											if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).containsKey("microref")) {
-												desc += " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("microref")) + ")"; // TODO: add hyperlink
-											} else {
-												desc += " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) + ")"; // TODO: add hyperlink
-											}
-										}else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http")) != null) {
-											edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http"));
-											if ("//".equals(edgeLabel.substring(0,2))){
-												edgeLabel = "http:" + edgeLabel;
-											}
-											// TODO check link works!? (grey out if broken?)
-											String[] bits = edgeLabel.replace("http://", "").split("/");
-											edgeLabel = "<a href=\"" + edgeLabel + "\" target=\"_blank\" title=\""+edgeLabel+"\">"
-													+ bits[0] + "<i class=\"popup-icon-link fa fa-external-link\" aria-hidden=\"true\"></i>" + "</a>";
-											desc += " (" + edgeLabel + ")";
-										}else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) != null) {
-											edgeLabel = "<a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" target=\"_blank\" >"
-													+ "PMID:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "</a>";
-											desc += " (" + edgeLabel + ")";
-										}
-										if (!"def".equals(edgeLabel)){
-											refs.add(edgeLabel);
-										}
-									} else {
-										edgeLabel = "";
-										if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) != null){
-											if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("microref")) != null){
-												edgeLabel = "<span title=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) + "\">" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("microref")) + "</span>";
-											}else{
-												edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref"));
-											}
-											if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) != null)
-											{
-												edgeLabel += " <a href=\"http://flybase.org/reports/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) + "\" target=\"_blank\" >"
-														+ "<i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) + "\" aria-hidden=\"true\"></i></a>";
-											}
-											if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) != null)
-											{
-												edgeLabel += " <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" target=\"_blank\" >"
-														+ "<i class=\"popup-icon-link gpt-pubmed\" title=\"PMID:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" aria-hidden=\"true\"></i></a>";
-											}
-											if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) != null)
-											{
-												edgeLabel += " <a href=\"http://dx.doi.org/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" target=\"_blank\" >"
-														+ "<i class=\"popup-icon-link gpt-doi\" title=\"doi:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" aria-hidden=\"true\"></i></a>";
-											}
-										}else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http")) != null) {
-											edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http"));
-											if ("//".equals(edgeLabel.substring(0,2))){
-												edgeLabel = "http:" + edgeLabel;
-											}
-											// TODO check link works!? (grey out if broken?)
-											String[] bits = edgeLabel.replace("http://", "").split("/");
-											edgeLabel = "<a href=\"" + edgeLabel + "\" target=\"_blank\" title=\""+edgeLabel+"\">"
-													+ bits[0] + "<i class=\"popup-icon-link fa fa-external-link\" aria-hidden=\"true\"></i>" + "</a>";
+									try{
+									    edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("typ"));
+                                        if ("syn".equals(edgeLabel)) {
+                                            if (!listContains(synonyms,(String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("synonym"))){
+                                                synonyms.add(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("synonym")));
+                                            }
+                                            if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) != null){
+                                                if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")) != null){
+                                                    edgeLabel = "<span title=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) + "\">" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")) + "</span>";
+                                                }else{
+                                                    edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref"));
+                                                }
+                                                if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) != null)
+                                                {
+                                                    edgeLabel += " <a href=\"http://flybase.org/reports/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) + "\" target=\"_blank\" >"
+                                                            + "<i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) + "\" aria-hidden=\"true\"></i></a>";
+                                                }
+                                                if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) != null)
+                                                {
+                                                    edgeLabel += " <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" target=\"_blank\" >"
+                                                            + "<i class=\"popup-icon-link gpt-pubmed\" title=\"PMID:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" aria-hidden=\"true\"></i></a>";
+                                                }
+                                                if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) != null)
+                                                {
+                                                    edgeLabel += " <a href=\"http://dx.doi.org/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" target=\"_blank\" >"
+                                                            + "<i class=\"popup-icon-link gpt-doi\" title=\"doi:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" aria-hidden=\"true\"></i></a>";
+                                                }
+                                                for (int s = 0; s < synonyms.size(); s++) {
+                                                    if (synonyms.get(s).equals((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("synonym"))) {
+                                                        if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).containsKey("label")) {
+                                                            synonyms.set(s, synonyms.get(s) + " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")) + ")"); // TODO: add hyperlink
+                                                        } else if ((!"null".equals((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref"))) && (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref") != null)) {
+                                                            synonyms.set(s, synonyms.get(s) + " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) + ")"); // TODO: add hyperlink
+                                                        } 
+                                                    }
+                                                }
+                                            }else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http")) != null) {
+                                                edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http"));
+                                                if ("//".equals(edgeLabel.substring(0,2))){
+                                                    edgeLabel = "http:" + edgeLabel;
+                                                }
+                                                // TODO check link works!? (grey out if broken?)
+                                                String[] bits = edgeLabel.replace("http://", "").split("/");
+                                                edgeLabel = "<a href=\"" + edgeLabel + "\" target=\"_blank\" title=\""+edgeLabel+"\">"
+                                                        + bits[0] + "<i class=\"popup-icon-link fa fa-external-link\" aria-hidden=\"true\"></i>" + "</a>";
+                                                for (int s = 0; s < synonyms.size(); s++) {
+                                                    if (synonyms.get(s).equals((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("synonym"))) {
+                                                        synonyms.set(s, synonyms.get(s) + " (" + edgeLabel + ")"); 
+                                                    }
+                                                }
+                                            }else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) != null) {
+                                                edgeLabel = "<a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" target=\"_blank\" >"
+                                                        + "PMID:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "</a>";
+                                                for (int s = 0; s < synonyms.size(); s++) {
+                                                    if (synonyms.get(s).equals((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("synonym"))) {
+                                                        synonyms.set(s, synonyms.get(s) + " (" + edgeLabel + ")"); 
+                                                    }
+                                                }
+                                            }
+                                            if (!"syn".equals(edgeLabel)){
+                                                refs.add(edgeLabel);
+                                            }
+                                        } else if ("def".equals(edgeLabel)) {
+                                            if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) != null){
+                                                if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")) != null){
+                                                    edgeLabel = "<span title=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) + "\">" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")) + "</span>";
+                                                }else{
+                                                    edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref"));
+                                                }
+                                                if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) != null)
+                                                {
+                                                    edgeLabel += " <a href=\"http://flybase.org/reports/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) + "\" target=\"_blank\" >"
+                                                            + "<i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) + "\" aria-hidden=\"true\"></i></a>";
+                                                }
+                                                if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) != null)
+                                                {
+                                                    edgeLabel += " <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" target=\"_blank\" >"
+                                                            + "<i class=\"popup-icon-link gpt-pubmed\" title=\"PMID:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" aria-hidden=\"true\"></i></a>";
+                                                }
+                                                if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) != null)
+                                                {
+                                                    edgeLabel += " <a href=\"http://dx.doi.org/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" target=\"_blank\" >"
+                                                            + "<i class=\"popup-icon-link gpt-doi\" title=\"doi:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" aria-hidden=\"true\"></i></a>";
+                                                }
+                                                if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).containsKey("label")) {
+                                                    desc += " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")) + ")"; // TODO: add hyperlink
+                                                } else {
+                                                    desc += " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) + ")"; // TODO: add hyperlink
+                                                }
+                                            }else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http")) != null) {
+                                                edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http"));
+                                                if ("//".equals(edgeLabel.substring(0,2))){
+                                                    edgeLabel = "http:" + edgeLabel;
+                                                }
+                                                // TODO check link works!? (grey out if broken?)
+                                                String[] bits = edgeLabel.replace("http://", "").split("/");
+                                                edgeLabel = "<a href=\"" + edgeLabel + "\" target=\"_blank\" title=\""+edgeLabel+"\">"
+                                                        + bits[0] + "<i class=\"popup-icon-link fa fa-external-link\" aria-hidden=\"true\"></i>" + "</a>";
+                                                desc += " (" + edgeLabel + ")";
+                                            }else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) != null) {
+                                                edgeLabel = "<a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" target=\"_blank\" >"
+                                                        + "PMID:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "</a>";
+                                                desc += " (" + edgeLabel + ")";
+                                            }
+                                            if (!"def".equals(edgeLabel)){
+                                                refs.add(edgeLabel);
+                                            }
+                                        } else {
+                                            edgeLabel = "";
+                                            if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) != null){
+                                                if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")) != null){
+                                                    edgeLabel = "<span title=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) + "\">" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")) + "</span>";
+                                                }else{
+                                                    edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref"));
+                                                }
+                                                if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) != null)
+                                                {
+                                                    edgeLabel += " <a href=\"http://flybase.org/reports/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) + "\" target=\"_blank\" >"
+                                                            + "<i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) + "\" aria-hidden=\"true\"></i></a>";
+                                                }
+                                                if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) != null)
+                                                {
+                                                    edgeLabel += " <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" target=\"_blank\" >"
+                                                            + "<i class=\"popup-icon-link gpt-pubmed\" title=\"PMID:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" aria-hidden=\"true\"></i></a>";
+                                                }
+                                                if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) != null)
+                                                {
+                                                    edgeLabel += " <a href=\"http://dx.doi.org/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" target=\"_blank\" >"
+                                                            + "<i class=\"popup-icon-link gpt-doi\" title=\"doi:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" aria-hidden=\"true\"></i></a>";
+                                                }
+                                            }else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http")) != null) {
+                                                edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http"));
+                                                if ("//".equals(edgeLabel.substring(0,2))){
+                                                    edgeLabel = "http:" + edgeLabel;
+                                                }
+                                                // TODO check link works!? (grey out if broken?)
+                                                String[] bits = edgeLabel.replace("http://", "").split("/");
+                                                edgeLabel = "<a href=\"" + edgeLabel + "\" target=\"_blank\" title=\""+edgeLabel+"\">"
+                                                        + bits[0] + "<i class=\"popup-icon-link fa fa-external-link\" aria-hidden=\"true\"></i>" + "</a>";
 
-										}else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) != null) {
-											edgeLabel = "<a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" target=\"_blank\" >"
-													+ "PMID:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "</a>";
+                                            }else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) != null) {
+                                                edgeLabel = "<a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" target=\"_blank\" >"
+                                                        + "PMID:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "</a>";
 
-										}
-										if (!"".equals(edgeLabel)){
-											refs.add(edgeLabel);
-										}
-									}
+                                            }
+                                            if (!"".equals(edgeLabel)){
+                                                refs.add(edgeLabel);
+                                            }
+                                        }
+                                    }catch (Exception e) {
+                                        System.out.println("Error creating reference: " + e.toString());
+			                            e.printStackTrace();
+                                    }
 									break;
 								case "REFERSTO":
 									//Ignoring Refers To data
@@ -461,10 +474,10 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 									//Ignoring RelatedTree data
 									break;
 								case "hasDbXref":
-									if ("None".equals((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("accession"))){
-										refs.add("DbXref <a href=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri")) + "\" target=\"_blank\" >" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");		
+									if ((((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("accession")) == null || "None".equals((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("accession"))){
+										refs.add("<i class=\"popup-icon-link fa fa-external-link\" /> <a href=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri")) + "\" target=\"_blank\" >" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a>");		
 									}else{
-										refs.add("DbXref <a href=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("link_base")) + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("accession")) + "\" target=\"_blank\" >" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("accession")) + ")</a><br/>");		
+										refs.add("<i class=\"popup-icon-link fa fa-external-link\" /> <a href=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("link_base")) + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("accession")) + "\" target=\"_blank\" >" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("accession")) + ")</a>");		
 									}
 									break;
 								case "member_of":
@@ -476,17 +489,18 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 							} else {
 								// edge towards term
 								switch (edge) {
+								case "expresses":
 								case "INSTANCEOF":
 									if (r == 0 && j < 10 && listContains(((List<String>) ((Map<String, Object>) resultLinks.get(i)).get("labels")), "Individual")) {
 										if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
-											edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
+											edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("folder"));
 										} else {
 											edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri"));
 										}
 										//TODO: remove fix for old iri:
 										edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_");
 										vfbFileUrl = checkURL(edgeLabel + "/thumbnailT.png");
-										if (vfbFileUrl != null) {
+										if (vfbFileUrl != null && vfbFileUrl.indexOf("?") < 0) {
 											if (!listContains(addedExamples, ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")))){
 												addImage(vfbFileUrl.replace("http:","https:"), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, j);
 												j++;
@@ -512,7 +526,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 														voxelSize[2] = String.valueOf(((Map<String, ArrayList>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("voxel").get(2));
 													}else{ // default - should not be used:
 														System.out.println("Failure to load voxel size!");
-														System.out.println((String) ((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
+														System.out.println((String) ((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("folder"));
 														voxelSize[0] = "0.622088"; // X
 														voxelSize[1] = "0.622088"; // Y
 														voxelSize[2] = "0.622088"; // Z
@@ -533,14 +547,14 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 										try{
 											if ((!template && !imagesChecked) || (template && 1 > (((Map<String, Double>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("index")).intValue())){
 												if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
-													edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
+													edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("folder"));
 												} else {
 													edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri"));
 												}
 												//TODO: remove fix for old iri:
 												edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_");
 												vfbFileUrl = checkURL(edgeLabel + "/thumbnailT.png");
-												if (vfbFileUrl != null) {
+												if (vfbFileUrl != null && vfbFileUrl.indexOf("?") < 0) {
 													thumbnailVar.setId("thumbnail");
 													thumbnailVar.setName("Thumbnail");
 													thumbnailVar.getTypes().add(imageType);
@@ -552,7 +566,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 													thumb = true;
 												} else {
 													vfbFileUrl = checkURL(edgeLabel + "/thumbnail.png");
-													if (vfbFileUrl != null) {
+													if (vfbFileUrl != null && vfbFileUrl.indexOf("?") < 0) {
 														thumbnailVar.setId("thumbnail");
 														thumbnailVar.setName("Thumbnail");
 														thumbnailVar.getTypes().add(imageType);
@@ -568,7 +582,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 													vfbFileUrl = checkURL(edgeLabel + "/volume_man.obj");
 													Variable objVar = VariablesFactory.eINSTANCE.createVariable();
 													ImportType objImportType = TypesFactory.eINSTANCE.createImportType();
-													if (vfbFileUrl != null) {
+													if (vfbFileUrl != null && vfbFileUrl.indexOf("?") < 0) {
 														objImportType.setUrl(vfbFileUrl);
 														objImportType.setId(tempId + "_obj");
 														objImportType.setModelInterpreterId("objModelInterpreterService");
@@ -579,7 +593,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 														geppettoModelAccess.addTypeToLibrary(objImportType, getLibraryFor(dataSource, "obj"));
 													} else {
 														vfbFileUrl = checkURL(edgeLabel + "/volume.obj");
-														if (vfbFileUrl != null) {
+														if (vfbFileUrl != null && vfbFileUrl.indexOf("?") < 0) {
 															objImportType.setUrl(vfbFileUrl);
 															objImportType.setId(tempId + "_obj");
 															objImportType.setModelInterpreterId("objModelInterpreterService");
@@ -625,6 +639,9 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 										}
 									}
 									break;
+								case "has_license":
+									relationships = addUniqueToString(relationships, "applies to <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
+									break;	
 								case "connected_to":
 									relationships = addUniqueToString(relationships, "connected to <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
 									break;
@@ -637,14 +654,14 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 								case "has_source":
 									if (r == 0 && j < 10 && listContains(((List<String>) ((Map<String, Object>) resultLinks.get(i)).get("labels")), "Individual")) {
 										if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")) != null) {
-											edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("iri"));
+											edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("tempIm")).get("folder"));
 										} else {
 											edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri"));
 										}
 										//TODO: remove fix for old iri:
 										edgeLabel = edgeLabel.replace("/owl/VFBc_", "/reports/VFB_");
 										vfbFileUrl = checkURL(edgeLabel + "/thumbnailT.png");
-										if (vfbFileUrl != null) {
+										if (vfbFileUrl != null && vfbFileUrl.indexOf("?") < 0) {
 											if (!listContains(addedExamples, ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")))){
 												addImage(vfbFileUrl.replace("http:","https:"), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")), ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")), images, j);
 												j++;
@@ -653,6 +670,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 										}
 									}
 									break;
+								
 								default:
 									System.out.println("Unhandled link to node: " + edge + " " + String.valueOf(resultLinks.get(i)));
 								}
@@ -722,6 +740,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 
 				// set alt names:
 				if (synonyms.size() > 0) {
+					Collections.sort(synonyms);
 					Variable synVar = VariablesFactory.eINSTANCE.createVariable();
 					synVar.setId("synonym");
 					synVar.setName("Alternative Names");
@@ -804,6 +823,10 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 					// set relationships
 
 					if (relationships != "") {
+						
+// 						List<String> rela = Arrays.asList(StringUtils.split(relationships, "<br/>"));
+// 						Collections.sort(rela);
+// 						relationships = StringUtils.join(rela, "<br/>");
 						Variable relVar = VariablesFactory.eINSTANCE.createVariable();
 						relVar.setId("relationships");
 						relVar.setName("Relationships");
@@ -822,11 +845,11 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 				{
 					if(QueryChecker.check(runnableQuery, variable))
 					{
-						badge = "<i class=\"popup-icon-link gpt-query\" />";
+						badge = "<i class=\"popup-icon-link fa fa-quora\" />";
 						querys += badge + "<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
 					}else if ((synapticNP || tract) && individual && classVariable.getId()!="notSet"){
 						if(QueryChecker.check(runnableQuery, classVariable)){
-							badge = "<i class=\"popup-icon-link gpt-query\" />";
+							badge = "<i class=\"popup-icon-link fa fa-quora\" />";
 							querys += badge + "<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "," + classVariable.getId() + "," + classVariable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", classVariable.getName()) + "</a></br>";
 						}
 					}
@@ -871,6 +894,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 					hs.addAll(refs);
 					refs.clear();
 					refs.addAll(hs);
+					Collections.sort(refs);
 					String references = StringUtils.join(refs, "<br/>");
 					Variable refVar = VariablesFactory.eINSTANCE.createVariable();
 					refVar.setId("references");
@@ -994,6 +1018,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 	private String checkURL(String urlString) {
 		try {
 			urlString = urlString.replace("https://", "http://").replace(":5000", "");
+			urlString = urlString.replace("//virtualflybrain.org","//www.virtualflybrain.org");
 			URL url = new URL(urlString);
 			HttpURLConnection huc = (HttpURLConnection) url.openConnection();
 			huc.setRequestMethod("HEAD");
