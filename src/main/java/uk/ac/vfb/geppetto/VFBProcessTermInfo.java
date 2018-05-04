@@ -857,8 +857,8 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 
 				if (NBLAST){
 					badge = "<i class=\"popup-icon-link fa fa-external-link\" />";
-					querys += badge + "<a href=\"http://flybrain.mrc-lmb.cam.ac.uk:8080/NBLAST_on-the-fly/?all_query=" + tempName + "&amp;all_use_mean=TRUE\" target=\"_blank\">Load live NBLAST query for similar neurons to " + tempName + "</a><br/>";
-					querys += badge + "<a href=\"http://flybrain.mrc-lmb.cam.ac.uk:8080/NBLAST_on-the-fly/?gal4_query=" + tempName + "&amp;tab=GAL4\" target=\"_blank\">Load live NBLAST query to find GAL4 matches that potentially target " + tempName + "</a><br/>";
+					querys += badge + "<a href=\"http://nblast.virtualflybrain.org:8080/NBLAST_on-the-fly/?all_query=" + tempName + "&amp;all_use_mean=TRUE\" target=\"_blank\">Load live NBLAST query for similar neurons to " + tempName + "</a><br/>";
+					querys += badge + "<a href=\"http://nblast.virtualflybrain.org:8080/NBLAST_on-the-fly/?gal4_query=" + tempName + "&amp;tab=GAL4\" target=\"_blank\">Load live NBLAST query to find GAL4 matches that potentially target " + tempName + "</a><br/>";
 				}
 
 
