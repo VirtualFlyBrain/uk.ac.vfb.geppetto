@@ -101,7 +101,7 @@
       id="neo4JDataSourceService"
       name="neo4j Data Source"
       dataSourceService="neo4jDataSource"
-      url="http://VFB_PDB_SERVER/db/data/transaction"
+      url="http://geppetto-unittests.virtualflybrain.org/db/data/transaction"
       dependenciesLibrary="//@libraries.3"
       targetLibrary="//@libraries.4">
     <libraryConfigurations
@@ -265,7 +265,7 @@
       id="aberOWLDataSource"
       name="Aber OWL Data Source"
       dataSourceService="aberOWLDataSource"
-      url="http://VFB_OWL_SERVER/api/runQuery.groovy"
+      url="http://geppetto-unittests.virtualflybrain.org/api/runQuery.groovy"
       dependenciesLibrary="//@libraries.3"
       targetLibrary="//@libraries.4">
     <queries
@@ -400,7 +400,7 @@
       id="owleryDataSourceSubclass"
       name="owlery Data Source (subclasses)"
       dataSourceService="owleryDataSourceSubclass"
-      url="http://VFB_OWL_SERVER/kbs/vfb/subclasses"
+      url="http://geppetto-unittests.virtualflybrain.org/kbs/vfb/subclasses"
       dependenciesLibrary="//@libraries.3"
       targetLibrary="//@libraries.4">
     <queries
@@ -509,7 +509,7 @@
       id="owleryDataSourceRealise"
       name="owlery Data Source (instances)"
       dataSourceService="owleryDataSourceRealise"
-      url="http://VFB_OWL_SERVER/kbs/vfb/instances"
+      url="http://geppetto-unittests.virtualflybrain.org/kbs/vfb/instances"
       dependenciesLibrary="//@libraries.3"
       targetLibrary="//@libraries.4">
     <queries
