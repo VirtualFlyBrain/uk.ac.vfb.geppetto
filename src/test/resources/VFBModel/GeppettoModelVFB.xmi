@@ -101,7 +101,7 @@
       id="neo4JDataSourceService"
       name="neo4j Data Source"
       dataSourceService="neo4jDataSource"
-      url="http://geppetto-unittests.virtualflybrain.org/db/data/transaction"
+      url="http://VFB_PDB_SERVER/db/data/transaction"
       dependenciesLibrary="//@libraries.3"
       targetLibrary="//@libraries.4">
     <libraryConfigurations
@@ -126,8 +126,8 @@
           name="Get images from Neo4j for class examples"
           description="fetch Individual instances from ID list"
           runForCount="false"
-          query="MATCH (n:Class) WHERE n.short_form IN $ARRAY_ID_RESULTS OPTIONAL MATCH (n)&lt;-[:SUBCLASSOF|INSTANCEOF*..]-(i:Individual)&lt;-[:depicts]-(j:Individual)-[k:in_register_with]->(m:Individual) OPTIONAL MATCH (n)-[:SUBCLASSOF]->(c:Class) RETURN n.short_form as class_Id, COLLECT(DISTINCT c.label) as class_Type, COLLECT (DISTINCT { image_name: i.label, image_id: i.short_form, image_thumb: replace(k.folder,'http:','https:') + '/thumbnailT.png', template_id: m.short_form}) AS inds"
-          countQuery="MATCH (n:VFB:Class) WHERE n.short_form IN $ARRAY_ID_RESULTS RETURN count(n) AS count"/>
+          query="MATCH (n:Class) WHERE n.short_form IN $ARRAY_ID_RESULTS OPTIONAL MATCH (n)&lt;-[:SUBCLASSOF|INSTANCEOF*..]-(i:Individual)&lt;-[:depicts]-(j:Individual)-[k:in_register_with]->(m:Individual) OPTIONAL MATCH (n)-[:SUBCLASSOF]->(c:Class) with n.short_form as class_Id, n.label as class_Name, n.description[0] as class_Desc, COLLECT(DISTINCT c.label) as class_Type, i.label as image_name, i.short_form as image_id, replace(k.folder,'http:','https:') + '/thumbnailT.png' as image_thumb, m.short_form as template_id LIMIT 6 RETURN class_Id, class_Name, class_Desc, class_Type, COLLECT(DISTINCT {image_name: image_name, image_id: image_id, image_thumb: image_thumb, template_id: template_id})"
+          countQuery="MATCH (n:Class) WHERE n.short_form IN $ARRAY_ID_RESULTS RETURN count(n) AS count"/>
       <queryChain
           xsi:type="gep_2:ProcessQuery"
           name="Process images"
@@ -265,7 +265,7 @@
       id="aberOWLDataSource"
       name="Aber OWL Data Source"
       dataSourceService="aberOWLDataSource"
-      url="http://geppetto-unittests.virtualflybrain.org/api/runQuery.groovy"
+      url="http://VFB_OWL_SERVER/api/runQuery.groovy"
       dependenciesLibrary="//@libraries.3"
       targetLibrary="//@libraries.4">
     <queries
@@ -395,19 +395,14 @@
       <matchingCriteria
           type="//@libraries.3/@types.1 //@libraries.3/@types.5"/>
     </queries>
-</dataSources>
-
-<dataSources
+  </dataSources>
+  <dataSources
       id="owleryDataSourceSubclass"
       name="owlery Data Source (subclasses)"
-      dataSourceService="owleryDataSource"
-      url="http://owl.virtualflybrain.org/kbs/vfb/subclasses"
+      dataSourceService="owleryDataSourceSubclass"
+      url="http://VFB_OWL_SERVER/kbs/vfb/subclasses"
       dependenciesLibrary="//@libraries.3"
       targetLibrary="//@libraries.4">
-    <queries
-        xsi:type="gep_2:ProcessQuery"
-        name="Retains subclasses id"
-        queryProcessorId="owleryIdOnlyQueryProcessor"/>
     <queries
         xsi:type="gep_2:SimpleQuery"
         name="Part of"
@@ -510,25 +505,24 @@
           type="//@libraries.3/@types.1 //@libraries.3/@types.5"/>
     </queries>
   </dataSources>
-
-<dataSources
+  <dataSources
       id="owleryDataSourceRealise"
       name="owlery Data Source (instances)"
       dataSourceService="owleryDataSourceRealise"
-      url="http://owl.virtualflybrain.org/kbs/vfb/instances"
+      url="http://VFB_OWL_SERVER/kbs/vfb/instances"
       dependenciesLibrary="//@libraries.3"
       targetLibrary="//@libraries.4">
     <queries
         xsi:type="gep_2:ProcessQuery"
-        name="Retains id of instances"
-        queryProcessorId="owleryIdOnlyQueryProcessor"/>
+        name="Retains id, name and definition"
+        queryProcessorId="owleryDataSourceRealiseQueryProcessor"/>
     <queries
         xsi:type="gep_2:SimpleQuery"
-        id="OwleryImagesOfNeuronsWithSomePartHereClustered"
+        id="ImagesOfNeuronsWithSomePartHereClustered"
         name="Images of neurons with some part here (clustered)"
         description="Images of neurons with some part here (clustered)"
         returnType="//@libraries.3/@types.2"
-        query="object=%3Chttp://purl.obolibrary.org/obo/BFO_0000050%3E%20some%20%3Chttp://purl.obolibrary.org/obo/$ID%3E&amp;direct=false"
+        query="object=%3Chttp://purl.obolibrary.org/obo/C888C3DB-AEFA-447F-BD4C-858DFE33DBE7%3E%20some%20(%3Chttp://purl.obolibrary.org/obo/FBbt_00005106%3E%20and%20%3Chttp://purl.obolibrary.org/obo/RO_0002131%3E%20some%20%3Chttp://purl.obolibrary.org/obo/$ID%3E)&amp;direct=false"
         countQuery="">
       <matchingCriteria
           type="//@libraries.3/@types.5 //@libraries.3/@types.1"/>
@@ -545,7 +539,6 @@
           type="//@libraries.3/@types.5 //@libraries.3/@types.1"/>
     </queries>
   </dataSources>
-
   <queries xsi:type="gep_2:CompoundRefQuery"
       id="FindFellowClustMembers"
       name="Fellow Cluster Members"
@@ -569,7 +562,7 @@
       name="Subclasses of"
       description="Subclasses of $NAME"
       returnType="//@libraries.3/@types.1"
-      queryChain="//@dataSources.1/@queries.9 //@dataSources.1/@queries.0 //@dataSources.0/@queries.0">
+      queryChain="//@dataSources.2/@queries.8 //@dataSources.1/@queries.0 //@dataSources.0/@queries.0">
     <matchingCriteria
         type="//@libraries.3/@types.1"/>
   </queries>
@@ -579,24 +572,6 @@
       description="Parts of $NAME"
       returnType="//@libraries.3/@types.1"
       queryChain="//@dataSources.1/@queries.1 //@dataSources.1/@queries.0 //@dataSources.0/@queries.0">
-    <matchingCriteria
-        type="//@libraries.3/@types.1"/>
-  </queries>
-  <queries xsi:type="gep_2:CompoundRefQuery"
-      id="partsofOWL"
-      name="Parts of"
-      description="Parts of $NAME"
-      returnType="//@libraries.3/@types.1"
-      queryChain="//@dataSources.2/@queries.1 //@dataSources.2/@queries.0 //@dataSources.0/@queries.0">
-    <matchingCriteria
-        type="//@libraries.3/@types.1"/>
-  </queries>
-  <queries xsi:type="gep_2:CompoundRefQuery"
-      id="partsofOWL2"
-      name="Parts of"
-      description="Parts of $NAME"
-      returnType="//@libraries.3/@types.1"
-      queryChain="//@dataSources.3/@queries.1 //@dataSources.3/@queries.0 //@dataSources.0/@queries.0">
     <matchingCriteria
         type="//@libraries.3/@types.1"/>
   </queries>
@@ -644,7 +619,7 @@
   <queries xsi:type="gep_2:CompoundRefQuery"
       id="neuronssynaptic"
       name="Neurons Synaptic"
-      description="Neurons with synaptic dario dario dario terminals in $NAME"
+      description="Neurons with synaptic terminals in $NAME"
       queryChain="//@dataSources.1/@queries.3 //@dataSources.1/@queries.0 //@dataSources.0/@queries.0">
     <matchingCriteria
         type="//@libraries.3/@types.1 //@libraries.3/@types.5"/>
