@@ -195,7 +195,7 @@ public class CrossDataSourceVFBQueryTest
 		Assert.assertEquals("Definition", results.getHeader().get(2));
 		Assert.assertEquals("Type", results.getHeader().get(3));
 		Assert.assertEquals("Images", results.getHeader().get(4));
-		Assert.assertEquals(84, results.getResults().size());
+		Assert.assertEquals(85, results.getResults().size());
 
 		System.out.println(GeppettoSerializer.serializeToJSON(results, false));
 

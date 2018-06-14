@@ -182,7 +182,7 @@ public class PartsOfAdultBrainTest
 		aberDataSource.initialize(model.getDataSources().get(1), geppettoModelAccess);
 
 		OWLeryDataSourceService owleryDataSource = new OWLeryDataSourceService();
-		owleryDataSource.initialize(model.getDataSources().get(1), geppettoModelAccess);
+		owleryDataSource.initialize(model.getDataSources().get(2), geppettoModelAccess);
 		
 		//Build list of available query indexs against ids:
 		Map<String,Integer> avQ = new HashMap();
@@ -202,18 +202,6 @@ public class PartsOfAdultBrainTest
 
 		Variable variable = geppettoModelAccess.getPointer("FBbt_00003624").getElements().get(0).getVariable();
 
-		int countAber = aberDataSource.getNumberOfResults(getRunnableQueries(model.getQueries().get(avQ.get("partsof")), variable));
-		Assert.assertEquals(1626, countAber);
-
-		QueryResults results = aberDataSource.execute(getRunnableQueries(model.getQueries().get(avQ.get("partsof")), variable));
-
-		Assert.assertEquals("ID", results.getHeader().get(0));
-		Assert.assertEquals("Name", results.getHeader().get(1));
-		Assert.assertEquals("Definition", results.getHeader().get(2));
-		Assert.assertEquals("Type", results.getHeader().get(3));
-		Assert.assertEquals("Images", results.getHeader().get(4));
-		Assert.assertEquals(1626, results.getResults().size());
-
 		int countOWL = owleryDataSource.getNumberOfResults(getRunnableQueries(model.getQueries().get(avQ.get("partsof")), variable));
 		try{
 			Assert.assertTrue(1600<countOWL);
@@ -225,21 +213,6 @@ public class PartsOfAdultBrainTest
 		QueryResults results2 = owleryDataSource.execute(getRunnableQueries(model.getQueries().get(avQ.get("partsof")), variable));
 		
 		Assert.assertEquals("ID", results2.getHeader().get(0));
-		Assert.assertEquals("Name", results2.getHeader().get(1));
-		Assert.assertEquals("Definition", results2.getHeader().get(2));
-		Assert.assertEquals("Type", results.getHeader().get(3));
-		Assert.assertEquals("Images", results.getHeader().get(4));
-		Assert.assertEquals(1626, results2.getResults().size());
-		
-//		countOWL = owleryDataSource.getNumberOfResults(getRunnableQueries(model.getQueries().get(avQ.get("partsofOWL2")), variable));
-//		Assert.assertEquals(1627, countOWL);
-		
-//		results2 = owleryDataSource.execute(getRunnableQueries(model.getQueries().get(avQ.get("partsofOWL2")), variable));
-//		
-//		Assert.assertEquals("ID", results2.getHeader().get(0));
-//		Assert.assertNotEquals("Name", results2.getHeader().get(1));
-//		Assert.assertNotEquals("Definition", results2.getHeader().get(2));
-//		Assert.assertEquals(1627, results2.getResults().size());
 	}
 
 	private List<RunnableQuery> getRunnableQueries(Query query, Variable variable)
