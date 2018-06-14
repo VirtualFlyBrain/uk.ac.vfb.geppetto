@@ -271,7 +271,7 @@
   <dataSources
       id="owleryDataSourceSubclass"
       name="owlery Data Source (subclasses)"
-      dataSourceService="owleryDataSourceSubclass"
+      dataSourceService="owleryDataSource"
       url="http://geppetto-unittests.virtualflybrain.org/kbs/vfb/subclasses"
       dependenciesLibrary="//@libraries.3"
       targetLibrary="//@libraries.4">
@@ -380,7 +380,7 @@
   <dataSources
       id="owleryDataSourceRealise"
       name="owlery Data Source (instances)"
-      dataSourceService="owleryDataSourceRealise"
+      dataSourceService="owleryDataSource"
       url="http://geppetto-unittests.virtualflybrain.org/kbs/vfb/instances"
       dependenciesLibrary="//@libraries.3"
       targetLibrary="//@libraries.4">
