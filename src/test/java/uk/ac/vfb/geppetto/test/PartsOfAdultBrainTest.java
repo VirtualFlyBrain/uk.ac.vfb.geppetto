@@ -225,8 +225,10 @@ public class PartsOfAdultBrainTest
 		QueryResults results2 = owleryDataSource.execute(getRunnableQueries(model.getQueries().get(avQ.get("partsof")), variable));
 		
 		Assert.assertEquals("ID", results2.getHeader().get(0));
-		Assert.assertNotEquals("Name", results2.getHeader().get(1));
-		Assert.assertNotEquals("Definition", results2.getHeader().get(2));
+		Assert.assertEquals("Name", results2.getHeader().get(1));
+		Assert.assertEquals("Definition", results2.getHeader().get(2));
+		Assert.assertEquals("Type", results.getHeader().get(3));
+		Assert.assertEquals("Images", results.getHeader().get(4));
 		Assert.assertEquals(1626, results2.getResults().size());
 		
 //		countOWL = owleryDataSource.getNumberOfResults(getRunnableQueries(model.getQueries().get(avQ.get("partsofOWL2")), variable));
