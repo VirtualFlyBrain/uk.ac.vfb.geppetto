@@ -89,7 +89,7 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 				processedResult.getValues().add(id);
 				String name = null;
 				try{
-					name = cleanType((List<String>) results.getValue("class_Name", i));
+					name = (String) results.getValue("class_Name", i);
 				}catch (Exception e){
 					System.out.println(e);
 					e.printStackTrace();
@@ -97,7 +97,7 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 				}
 				String desc = null;
 				try{
-					desc = cleanType((List<String>) results.getValue("class_Desc", i));
+					desc = (String) results.getValue("class_Desc", i);
 				}catch (Exception e){
 					System.out.println(e);
 					e.printStackTrace();

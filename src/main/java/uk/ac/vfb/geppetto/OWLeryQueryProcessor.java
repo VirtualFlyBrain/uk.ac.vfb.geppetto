@@ -112,7 +112,7 @@ public class OWLeryQueryProcessor extends AQueryProcessor
 						List<String> idsList = (ArrayList)((QueryResult) result).getValues().get(idIndex);
 						for(String id : idsList) {
 							SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
-							String subID = id.substring((id.lastIndexOf('/')+1) , id.length());
+							String subID = id.substring((id.lastIndexOf('/')+1) , id.length()).toString();
 							processedResult.getValues().add(subID);
 							ids.add("'" + subID + "'");
 							processedResults.getResults().add(processedResult);

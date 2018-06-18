@@ -43,6 +43,7 @@ import org.geppetto.core.model.GeppettoSerializer;
 import org.geppetto.core.services.registry.ApplicationListenerBean;
 import org.geppetto.datasources.aberowl.AberOWLDataSourceService;
 import org.geppetto.datasources.neo4j.Neo4jDataSourceService;
+import org.geppetto.datasources.owlery.OWLeryDataSourceService;
 import org.geppetto.model.GeppettoModel;
 import org.geppetto.model.datasources.DatasourcesFactory;
 import org.geppetto.model.datasources.Query;
@@ -125,6 +126,10 @@ public class CrossDataSourceVFBQueryTest
 		context.registerBeanDefinition("aberOWLDataSource", aberOWLDataSourceBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.aberOWLDataSource", aberOWLDataSourceBeanDefinition);
 
+		BeanDefinition owleryDataSourceBeanDefinition = new RootBeanDefinition(OWLeryDataSourceService.class);
+		context.registerBeanDefinition("owleryDataSource", owleryDataSourceBeanDefinition);
+		context.registerBeanDefinition("scopedTarget.owleryDataSource", owleryDataSourceBeanDefinition);
+		
 		ContextRefreshedEvent event = new ContextRefreshedEvent(context);
 		ApplicationListenerBean listener = new ApplicationListenerBean();
 		listener.onApplicationEvent(event);
@@ -146,6 +151,8 @@ public class CrossDataSourceVFBQueryTest
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbCreateImagesForQueryResultsQueryProcessor"));
 		retrievedContext = ApplicationListenerBean.getApplicationContext("vfbProcessTermInfo");
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbProcessTermInfo"));
+		retrievedContext = ApplicationListenerBean.getApplicationContext("owleryIdOnlyQueryProcessor");
+		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.owleryIdOnlyQueryProcessor"));
 
 	}
 
@@ -163,6 +170,9 @@ public class CrossDataSourceVFBQueryTest
 
 		AberOWLDataSourceService aberDataSource = new AberOWLDataSourceService();
 		aberDataSource.initialize(model.getDataSources().get(1), geppettoModelAccess);
+		
+		OWLeryDataSourceService owleryDataSource = new OWLeryDataSourceService();
+		owleryDataSource.initialize(model.getDataSources().get(2), geppettoModelAccess);
 
 		//Build list of available query indexs against ids:
 		Map<String,Integer> avQ = new HashMap();
@@ -185,17 +195,23 @@ public class CrossDataSourceVFBQueryTest
 
 		Variable variable = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
 
-		int count = aberDataSource.getNumberOfResults(getRunnableQueries(model.getQueries().get(avQ.get("partsof")), variable));
-		Assert.assertEquals(84, count);
+		int count = owleryDataSource.getNumberOfResults(getRunnableQueries(model.getQueries().get(avQ.get("partsof")), variable));
 
-		QueryResults results = aberDataSource.execute(getRunnableQueries(model.getQueries().get(avQ.get("partsof")), variable));
+		try{
+			Assert.assertTrue(84<count);
+		}catch (AssertionError e) {
+			System.out.println("Fail: only " + count + " results returned, there should be more than than 84 results");
+			throw new AssertionError(e);
+		}
+
+		QueryResults results = owleryDataSource.execute(getRunnableQueries(model.getQueries().get(avQ.get("partsof")), variable));
 
 		Assert.assertEquals("ID", results.getHeader().get(0));
 		Assert.assertEquals("Name", results.getHeader().get(1));
 		Assert.assertEquals("Definition", results.getHeader().get(2));
 		Assert.assertEquals("Type", results.getHeader().get(3));
 		Assert.assertEquals("Images", results.getHeader().get(4));
-		Assert.assertEquals(85, results.getResults().size());
+		Assert.assertTrue(results.getResults().size() > 80);
 
 		System.out.println(GeppettoSerializer.serializeToJSON(results, false));
 

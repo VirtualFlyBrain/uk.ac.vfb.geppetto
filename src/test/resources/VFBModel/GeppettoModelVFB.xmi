@@ -126,8 +126,8 @@
           name="Get images from Neo4j for class examples"
           description="fetch Individual instances from ID list"
           runForCount="false"
-          query="MATCH (n:Class) WHERE n.short_form IN $ARRAY_ID_RESULTS OPTIONAL MATCH (n)&lt;-[:SUBCLASSOF|INSTANCEOF*..]-(i:Individual)&lt;-[:depicts]-(j:Individual)-[k:in_register_with]->(m:Individual) OPTIONAL MATCH (n)-[:SUBCLASSOF]->(c:Class) with n.short_form as class_Id, n.label as class_Name, n.description[0] as class_Desc, COLLECT(DISTINCT c.label) as class_Type, i.label as image_name, i.short_form as image_id, replace(k.folder,'http:','https:') + '/thumbnailT.png' as image_thumb, m.short_form as template_id LIMIT 6 RETURN class_Id, class_Name, class_Desc, class_Type, COLLECT(DISTINCT {image_name: image_name, image_id: image_id, image_thumb: image_thumb, template_id: template_id})"
-          countQuery="MATCH (n:Class) WHERE n.short_form IN $ARRAY_ID_RESULTS RETURN count(n) AS count"/>
+          query="MATCH (n:Class) WHERE n.short_form IN $ARRAY_ID_RESULTS OPTIONAL MATCH (n)&lt;-[:SUBCLASSOF|INSTANCEOF*..]-(i:Individual)&lt;-[:depicts]-(j:Individual)-[k:in_register_with]->(m:Individual) OPTIONAL MATCH (n)-[:SUBCLASSOF]->(c:Class) RETURN n.short_form as class_Id, n.label as class_Name, n.description[0] as class_Desc, COLLECT(DISTINCT c.label) as class_Type, COLLECT (DISTINCT { image_name: i.label, image_id: i.short_form, image_thumb: replace(k.folder,'http:','https:') + '/thumbnailT.png', template_id: m.short_form}) AS inds"
+          countQuery="MATCH (n:VFB:Class) WHERE n.short_form IN $ARRAY_ID_RESULTS RETURN count(n) AS count"/>
       <queryChain
           xsi:type="gep_2:ProcessQuery"
           name="Process images"
@@ -277,7 +277,7 @@
       targetLibrary="//@libraries.4">
     <queries
         xsi:type="gep_2:SimpleQuery"
-        name="Part of"
+        name="OWLery Part of"
         description="Part of $NAME"
         query="object=%3Chttp://purl.obolibrary.org/obo/BFO_0000050%3E%20some%20%3Chttp://purl.obolibrary.org/obo/$ID%3E&amp;direct=false"
         countQuery="">
@@ -286,7 +286,7 @@
     </queries>
     <queries
         xsi:type="gep_2:SimpleQuery"
-        name="Neuron class with part here"
+        name="OWLery Neuron class with part here"
         description="Neurons with some part here"
         query="object=%3Chttp://purl.obolibrary.org/obo/FBbt_00005106%3E%20and%20%3Chttp://purl.obolibrary.org/obo/RO_0002131%3E%20some%20%3Chttp://purl.obolibrary.org/obo/$ID%3E&amp;direct=false"
         countQuery="">
@@ -295,7 +295,7 @@
     </queries>
     <queries
         xsi:type="gep_2:SimpleQuery"
-        name="Neurons Synaptic"
+        name="OWLery Neurons Synaptic"
         description="Neurons with synaptic terminals here"
         query="object=%3Chttp://purl.obolibrary.org/obo/FBbt_00005106%3E%20and%20%3Chttp://purl.obolibrary.org/obo/RO_0002130%3E%20some%20%3Chttp://purl.obolibrary.org/obo/$ID%3E&amp;direct=false"
         countQuery="">
@@ -304,7 +304,7 @@
     </queries>
     <queries
         xsi:type="gep_2:SimpleQuery"
-        name="Neurons Presynaptic"
+        name="OWLery Neurons Presynaptic"
         description="Neurons with presynaptic terminals here"
         query="object=%3Chttp://purl.obolibrary.org/obo/FBbt_00005106%3E%20and%20%3Chttp://purl.obolibrary.org/obo/RO_0002113%3E%20some%20%3Chttp://purl.obolibrary.org/obo/$ID%3E&amp;direct=false"
         countQuery="">
@@ -313,7 +313,7 @@
     </queries>
     <queries
         xsi:type="gep_2:SimpleQuery"
-        name="Neurons Postsynaptic"
+        name="OWLery Neurons Postsynaptic"
         description="Neurons with postsynaptic terminals here"
         query="object=%3Chttp://purl.obolibrary.org/obo/FBbt_00005106%3E%20and%20%3Chttp://purl.obolibrary.org/obo/RO_0002110%3E%20some%20%3Chttp://purl.obolibrary.org/obo/$ID%3E&amp;direct=false"
         countQuery="">
@@ -323,13 +323,13 @@
     <queries
         xsi:type="gep_2:ProcessQuery"
         id="owlPassIdListOnly"
-        name="Pass id list only"
+        name="OWLery Pass id list only"
         description="Keep nothing slimply pass ids"
         queryProcessorId="owleryIdOnlyQueryProcessor"/>
     <queries
         xsi:type="gep_2:SimpleQuery"
         id="AberNeuronClassesFasciculatingHere"
-        name="Neuron classes fasciculating here"
+        name="OWLery Neuron classes fasciculating here"
         description="Neuron classes fasciculating here"
         returnType="//@libraries.3/@types.1"
         query="object=%3Chttp://purl.obolibrary.org/obo/FBbt_00005106%3E%20and%20%3Chttp://purl.obolibrary.org/obo/RO_0002101%3E%20some%20%3Chttp://purl.obolibrary.org/obo/$ID%3E&amp;direct=false"
@@ -340,7 +340,7 @@
     <queries
         xsi:type="gep_2:SimpleQuery"
         id="innervatesX"
-        name="tracts in"
+        name="OWLery tracts in"
         description="tracts in"
         returnType="//@libraries.3/@types.1"
         query="object=%3Chttp://purl.obolibrary.org/obo/FBbt_00005099%3E%20and%20%3Chttp://purl.obolibrary.org/obo/RO_0002134%3E%20some%20%3Chttp://purl.obolibrary.org/obo/$ID%3E&amp;direct=false"
@@ -351,7 +351,7 @@
     <queries
         xsi:type="gep_2:SimpleQuery"
         id="subclasses"
-        name="Subclasses of"
+        name="OWLery Subclasses of"
         description="Subclasses of $NAME"
         returnType="//@libraries.3/@types.1"
         query="object=%3Chttp://purl.obolibrary.org/obo/$ID%3E&amp;direct=false"
@@ -362,14 +362,14 @@
     <queries
         xsi:type="gep_2:SimpleQuery"
         id="TransgenesExpressedInX "
-        name="Transgenes expressed in "
+        name="OWLery Transgenes expressed in "
         description="Transgenes expressed in "
         returnType="//@libraries.3/@types.1"
         query=""/>
     <queries
         xsi:type="gep_2:SimpleQuery"
         id="lineageClones"
-        name="Lineage Clones"
+        name="OWLery Lineage Clones"
         description="Lineage clones found in"
         query="object=%3Chttp://purl.obolibrary.org/obo/FBbt_00007683%3E%20and%20%3Chttp://purl.obolibrary.org/obo/RO_0002131%3E%20some%20%3Chttp://purl.obolibrary.org/obo/$ID%3E&amp;direct=false"
         countQuery="">
@@ -387,7 +387,7 @@
     <queries
         xsi:type="gep_2:SimpleQuery"
         id="ImagesOfNeuronsWithSomePartHereClustered"
-        name="Images of neurons with some part here (clustered)"
+        name="OWLery Images of neurons with some part here (clustered)"
         description="Images of neurons with some part here (clustered)"
         returnType="//@libraries.3/@types.2"
         query="object=%3Chttp://purl.obolibrary.org/obo/C888C3DB-AEFA-447F-BD4C-858DFE33DBE7%3E%20some%20(%3Chttp://purl.obolibrary.org/obo/FBbt_00005106%3E%20and%20%3Chttp://purl.obolibrary.org/obo/RO_0002131%3E%20some%20%3Chttp://purl.obolibrary.org/obo/$ID%3E)&amp;direct=false"
@@ -398,7 +398,7 @@
     <queries
         xsi:type="gep_2:SimpleQuery"
         id="ImagesOfNeuronsWithSomePartHere"
-        name="Images of neurons with some part here"
+        name="OWLery Images of neurons with some part here"
         description="Images of neurons with some part here"
         returnType="//@libraries.3/@types.2"
         query="object=%3Chttp://purl.obolibrary.org/obo/FBbt_00005106%3E%20and%20%3Chttp://purl.obolibrary.org/obo/RO_0002131%3E%20some%20%3Chttp://purl.obolibrary.org/obo/$ID%3E&amp;direct=false"

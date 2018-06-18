@@ -43,6 +43,7 @@ import org.geppetto.core.model.GeppettoSerializer;
 import org.geppetto.core.services.registry.ApplicationListenerBean;
 import org.geppetto.datasources.aberowl.AberOWLDataSourceService;
 import org.geppetto.datasources.neo4j.Neo4jDataSourceService;
+import org.geppetto.datasources.owlery.OWLeryDataSourceService;
 import org.geppetto.model.GeppettoModel;
 import org.geppetto.model.datasources.Query;
 import org.geppetto.model.datasources.BooleanOperator;
@@ -127,6 +128,10 @@ public class MultipleQueriesVFBQueryTest
 		BeanDefinition aberOWLDataSourceBeanDefinition = new RootBeanDefinition(AberOWLDataSourceService.class);
 		context.registerBeanDefinition("aberOWLDataSource", aberOWLDataSourceBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.aberOWLDataSource", aberOWLDataSourceBeanDefinition);
+		
+		BeanDefinition owleryDataSourceBeanDefinition = new RootBeanDefinition(OWLeryDataSourceService.class);
+		context.registerBeanDefinition("owleryDataSource", owleryDataSourceBeanDefinition);
+		context.registerBeanDefinition("scopedTarget.owleryDataSource", owleryDataSourceBeanDefinition);
 
 		ContextRefreshedEvent event = new ContextRefreshedEvent(context);
 		ApplicationListenerBean listener = new ApplicationListenerBean();
@@ -149,6 +154,8 @@ public class MultipleQueriesVFBQueryTest
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbCreateImagesForQueryResultsQueryProcessor"));
 		retrievedContext = ApplicationListenerBean.getApplicationContext("vfbProcessTermInfo");
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbProcessTermInfo"));
+		retrievedContext = ApplicationListenerBean.getApplicationContext("owleryIdOnlyQueryProcessor");
+		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.owleryIdOnlyQueryProcessor"));
 
 	}
 
@@ -167,6 +174,9 @@ public class MultipleQueriesVFBQueryTest
 		AberOWLDataSourceService aberDataSource = new AberOWLDataSourceService();
 		aberDataSource.initialize(model.getDataSources().get(1), geppettoModelAccess);
 
+		OWLeryDataSourceService owleryDataSource = new OWLeryDataSourceService();
+		owleryDataSource.initialize(model.getDataSources().get(2), geppettoModelAccess);
+		
 		//Build list of available query indexs against ids:
 		Map<String,Integer> avQ = new HashMap();
 		Integer i = 0;
@@ -202,7 +212,7 @@ public class MultipleQueriesVFBQueryTest
 		runnableQueriesEMF.add(rqEMF2);
 
 		
-		int count = aberDataSource.getNumberOfResults(runnableQueriesEMF);
+		int count = owleryDataSource.getNumberOfResults(runnableQueriesEMF);
 		try{
 			Assert.assertTrue(87<count);
 		}catch (AssertionError e) {
@@ -210,7 +220,7 @@ public class MultipleQueriesVFBQueryTest
 			throw new AssertionError(e);
 		}
 
-		QueryResults results = aberDataSource.execute(runnableQueriesEMF);
+		QueryResults results = owleryDataSource.execute(runnableQueriesEMF);
 
 		Assert.assertEquals("ID", results.getHeader().get(0));
 		Assert.assertEquals("Name", results.getHeader().get(1));
@@ -243,6 +253,9 @@ public class MultipleQueriesVFBQueryTest
 		AberOWLDataSourceService aberDataSource = new AberOWLDataSourceService();
 		aberDataSource.initialize(model.getDataSources().get(1), geppettoModelAccess);
 
+		OWLeryDataSourceService owleryDataSource = new OWLeryDataSourceService();
+		owleryDataSource.initialize(model.getDataSources().get(2), geppettoModelAccess);
+		
         //Build list of available query indexs against ids:
         Map<String,Integer> avQ = new HashMap();
         Integer i = 0;
@@ -280,7 +293,7 @@ public class MultipleQueriesVFBQueryTest
 		rqEMF2.setBooleanOperator(BooleanOperator.NAND);
 		runnableQueriesEMF.add(rqEMF2);
 		
-		int count = aberDataSource.getNumberOfResults(runnableQueriesEMF);
+		int count = owleryDataSource.getNumberOfResults(runnableQueriesEMF);
 		try{
 			Assert.assertTrue(83<count);
 		}catch (AssertionError e) {
@@ -288,14 +301,14 @@ public class MultipleQueriesVFBQueryTest
 			throw new AssertionError(e);
 		}
 			
-		QueryResults results = aberDataSource.execute(runnableQueriesEMF);
+		QueryResults results = owleryDataSource.execute(runnableQueriesEMF);
 
 		Assert.assertEquals("ID", results.getHeader().get(0));
 		Assert.assertEquals("Name", results.getHeader().get(1));
 		Assert.assertEquals("Definition", results.getHeader().get(2));
 		Assert.assertEquals("Type", results.getHeader().get(3));
 		Assert.assertEquals("Images", results.getHeader().get(4));
-		Assert.assertEquals(84, results.getResults().size());
+		Assert.assertTrue(results.getResults().size() > 80);
 
 		System.out.println(GeppettoSerializer.serializeToJSON(results, true));
 

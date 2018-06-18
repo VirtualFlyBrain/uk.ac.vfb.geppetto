@@ -213,6 +213,10 @@ public class PartsOfAdultBrainTest
 		QueryResults results2 = owleryDataSource.execute(getRunnableQueries(model.getQueries().get(avQ.get("partsof")), variable));
 		
 		Assert.assertEquals("ID", results2.getHeader().get(0));
+		Assert.assertEquals("Name", results2.getHeader().get(1));
+		Assert.assertEquals("Definition", results2.getHeader().get(2));
+		Assert.assertEquals("Type", results2.getHeader().get(3));
+		Assert.assertEquals("Images", results2.getHeader().get(4));
 	}
 
 	private List<RunnableQuery> getRunnableQueries(Query query, Variable variable)
