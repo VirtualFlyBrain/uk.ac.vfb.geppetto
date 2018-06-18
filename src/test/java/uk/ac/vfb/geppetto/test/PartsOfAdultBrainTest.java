@@ -128,6 +128,10 @@ public class PartsOfAdultBrainTest
 		context.registerBeanDefinition("vfbCreateImagesForQueryResultsQueryProcessor", createImagesForQueryBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.vfbCreateImagesForQueryResultsQueryProcessor", createImagesForQueryBeanDefinition);
 
+		BeanDefinition queryProcessorOwleryBeanDefinition = new RootBeanDefinition(OWLeryQueryProcessor.class);
+		context.registerBeanDefinition("owleryIdOnlyQueryProcessor", queryProcessorOwleryBeanDefinition);
+		context.registerBeanDefinition("scopedTarget.owleryIdOnlyQueryProcessor", queryProcessorOwleryBeanDefinition);
+		
 		BeanDefinition neo4jDataSourceBeanDefinition = new RootBeanDefinition(Neo4jDataSourceService.class);
 		context.registerBeanDefinition("neo4jDataSource", neo4jDataSourceBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.neo4jDataSource", neo4jDataSourceBeanDefinition);
