@@ -83,47 +83,31 @@ public class OWLeryQueryProcessor extends AQueryProcessor
 		switch(queryID) 
 		{
 			case "owleryDataSourceSubclass":
-				idIndex = results.getHeader().indexOf("superClassOf");
-				processedResults.getHeader().add("ID");
+				idIndex = results.getHeader().indexOf("superClassOf");					
 				
-				if (idIndex > -1){
-					for(AQueryResult result : results.getResults())
-					{
-						List<String> idsList = (ArrayList)((QueryResult) result).getValues().get(idIndex);
-						for(String id : idsList) {
-							SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
-							String subID = id.substring((id.lastIndexOf('/')+1) , id.length());
-							processedResult.getValues().add(subID);
-							ids.add("'" + subID + "'");
-							processedResults.getResults().add(processedResult);
-						}
-					}
-					
-				}
 				break;
-				
 			case "owleryDataSourceRealise":
-				idIndex = results.getHeader().indexOf("hasInstance");
-				processedResults.getHeader().add("ID");
+				idIndex = results.getHeader().indexOf("hasInstance");					
 				
-				if (idIndex > -1){
-					for(AQueryResult result : results.getResults())
-					{
-						List<String> idsList = (ArrayList)((QueryResult) result).getValues().get(idIndex);
-						for(String id : idsList) {
-							SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
-							String subID = id.substring((id.lastIndexOf('/')+1) , id.length()).toString();
-							processedResult.getValues().add(subID);
-							ids.add("'" + subID + "'");
-							processedResults.getResults().add(processedResult);
-						}
-					}
-					
-				}
 				break;
 			default:
 				throw new GeppettoDataSourceException("Results header not in hasInstance, superClassOf, subClassOf");
 				
+		}
+		processedResults.getHeader().add("ID");
+	
+		if (idIndex > -1){
+			for(AQueryResult result : results.getResults())
+			{
+				List<String> idsList = (ArrayList)((QueryResult) result).getValues().get(idIndex);
+				for(String id : idsList) {
+					SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
+					String subID = id.substring((id.lastIndexOf('/')+1) , id.length()).toString();
+					processedResult.getValues().add(subID);
+					ids.add("'" + subID + "'");
+					processedResults.getResults().add(processedResult);
+				}
+			}
 		}
 		
 		processingOutputMap.put("ARRAY_ID_RESULTS", ids);
