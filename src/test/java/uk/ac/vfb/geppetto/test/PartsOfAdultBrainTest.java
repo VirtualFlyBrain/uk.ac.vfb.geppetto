@@ -72,6 +72,8 @@ import uk.ac.vfb.geppetto.AddImportTypesSynonymQueryProcessor;
 import uk.ac.vfb.geppetto.AddImportTypesThumbnailQueryProcessor;
 import uk.ac.vfb.geppetto.AddTypesQueryProcessor;
 import uk.ac.vfb.geppetto.CreateImagesForQueryResultsQueryProcessor;
+import uk.ac.vfb.geppetto.CreateResultListForIndividualsForQueryResultsQueryProcessor;
+import uk.ac.vfb.geppetto.NBLASTQueryProcessor;
 import uk.ac.vfb.geppetto.VFBAberOWLQueryProcessor;
 import uk.ac.vfb.geppetto.VFBProcessTermInfo;
 import uk.ac.vfb.geppetto.OWLeryQueryProcessor;
@@ -167,6 +169,7 @@ public class PartsOfAdultBrainTest
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbProcessTermInfo"));
 		retrievedContext = ApplicationListenerBean.getApplicationContext("owleryIdOnlyQueryProcessor");
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.owleryIdOnlyQueryProcessor"));
+		
 
 	}
 
@@ -187,6 +190,7 @@ public class PartsOfAdultBrainTest
 
 		OWLeryDataSourceService owleryDataSource = new OWLeryDataSourceService();
 		owleryDataSource.initialize(model.getDataSources().get(2), geppettoModelAccess);
+		
 		
 		//Build list of available query indexs against ids:
 		Map<String,Integer> avQ = new HashMap();
@@ -221,6 +225,9 @@ public class PartsOfAdultBrainTest
 		Assert.assertEquals("Definition", results2.getHeader().get(2));
 		Assert.assertEquals("Type", results2.getHeader().get(3));
 		Assert.assertEquals("Images", results2.getHeader().get(4));
+		
+
+
 	}
 
 	private List<RunnableQuery> getRunnableQueries(Query query, Variable variable)
