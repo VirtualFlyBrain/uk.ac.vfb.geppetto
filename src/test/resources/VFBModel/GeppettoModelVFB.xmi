@@ -408,9 +408,9 @@
     </queries>
   </dataSources>
   <dataSources
-      id="nblastDataSource"
+      id="opencpuDataSource"
       name="NBLAST Data Source"
-      dataSourceService="nblastDataSource"
+      dataSourceService="opencpuDataSource"
       url="http://r.virtualflybrain.org/ocpu/library/vfbr/R/vfb_nblast/json"
       dependenciesLibrary="//@libraries.3"
       targetLibrary="//@libraries.4">

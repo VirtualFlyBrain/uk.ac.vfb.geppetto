@@ -49,8 +49,8 @@ import org.geppetto.core.model.GeppettoSerializer;
 import org.geppetto.core.services.registry.ApplicationListenerBean;
 import org.geppetto.datasources.aberowl.AberOWLDataSourceService;
 import org.geppetto.datasources.neo4j.Neo4jDataSourceService;
+import org.geppetto.datasources.opencpu.OpenCPUDataSourceService;
 import org.geppetto.datasources.owlery.OWLeryDataSourceService;
-import org.geppetto.datasources.nblast.NBLASTDataSourceService;
 import org.geppetto.model.GeppettoModel;
 import org.geppetto.model.GeppettoPackage;
 import org.geppetto.model.util.GeppettoVisitingException;
@@ -141,9 +141,9 @@ public class VFBQueryTest
 		context.registerBeanDefinition("owleryDataSource", owleryDataSourceBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.owleryDataSource", owleryDataSourceBeanDefinition);
 		
-		BeanDefinition nblastDataSourceBeanDefinition = new RootBeanDefinition(NBLASTDataSourceService.class);
-		context.registerBeanDefinition("nblastDataSource", nblastDataSourceBeanDefinition);
-		context.registerBeanDefinition("scopedTarget.nblastDataSource", nblastDataSourceBeanDefinition);
+		BeanDefinition nblastDataSourceBeanDefinition = new RootBeanDefinition(OpenCPUDataSourceService.class);
+		context.registerBeanDefinition("opencpuDataSource", nblastDataSourceBeanDefinition);
+		context.registerBeanDefinition("scopedTarget.opencpuDataSource", nblastDataSourceBeanDefinition);
 
 		ContextRefreshedEvent event = new ContextRefreshedEvent(context);
 		ApplicationListenerBean listener = new ApplicationListenerBean();
@@ -186,7 +186,7 @@ public class VFBQueryTest
 		Neo4jDataSourceService dataSource = new Neo4jDataSourceService();
 		dataSource.initialize(model.getDataSources().get(0), geppettoModelAccess);
 		
-		NBLASTDataSourceService dataSource2 = new NBLASTDataSourceService();
+		OpenCPUDataSourceService dataSource2 = new OpenCPUDataSourceService();
 		dataSource2.initialize(model.getDataSources().get(4), geppettoModelAccess);
 
 

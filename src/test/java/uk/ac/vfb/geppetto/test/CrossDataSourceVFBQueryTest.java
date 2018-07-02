@@ -42,8 +42,8 @@ import org.geppetto.core.model.GeppettoModelReader;
 import org.geppetto.core.model.GeppettoSerializer;
 import org.geppetto.core.services.registry.ApplicationListenerBean;
 import org.geppetto.datasources.aberowl.AberOWLDataSourceService;
-import org.geppetto.datasources.nblast.NBLASTDataSourceService;
 import org.geppetto.datasources.neo4j.Neo4jDataSourceService;
+import org.geppetto.datasources.opencpu.OpenCPUDataSourceService;
 import org.geppetto.datasources.owlery.OWLeryDataSourceService;
 import org.geppetto.model.GeppettoModel;
 import org.geppetto.model.datasources.DatasourcesFactory;
@@ -143,9 +143,9 @@ public class CrossDataSourceVFBQueryTest
 		context.registerBeanDefinition("owleryDataSource", owleryDataSourceBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.owleryDataSource", owleryDataSourceBeanDefinition);
 		
-		BeanDefinition nblastDataSourceBeanDefinition = new RootBeanDefinition(NBLASTDataSourceService.class);
-		context.registerBeanDefinition("nblastDataSource", nblastDataSourceBeanDefinition);
-		context.registerBeanDefinition("scopedTarget.nblastDataSource", nblastDataSourceBeanDefinition);
+		BeanDefinition nblastDataSourceBeanDefinition = new RootBeanDefinition(OpenCPUDataSourceService.class);
+		context.registerBeanDefinition("opencpuDataSource", nblastDataSourceBeanDefinition);
+		context.registerBeanDefinition("scopedTarget.opencpuDataSource", nblastDataSourceBeanDefinition);
 		
 		ContextRefreshedEvent event = new ContextRefreshedEvent(context);
 		ApplicationListenerBean listener = new ApplicationListenerBean();
@@ -195,7 +195,7 @@ public class CrossDataSourceVFBQueryTest
 		OWLeryDataSourceService owleryDataSource = new OWLeryDataSourceService();
 		owleryDataSource.initialize(model.getDataSources().get(2), geppettoModelAccess);
 		
-		NBLASTDataSourceService nblastDataSource = new NBLASTDataSourceService();
+		OpenCPUDataSourceService nblastDataSource = new OpenCPUDataSourceService();
 		nblastDataSource.initialize(model.getDataSources().get(4), geppettoModelAccess);
 
 		//Build list of available query indexs against ids:
