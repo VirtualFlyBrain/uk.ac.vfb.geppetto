@@ -77,8 +77,6 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 			int i = 0;
 			QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
 			processedResults.getHeader().add("ID");
-			processedResults.getHeader().add("Name");
-			processedResults.getHeader().add("Definition");
 			processedResults.getHeader().add("Type");
 			processedResults.getHeader().add("Images");
 			while(results.getValue("inds", i) != null)
@@ -87,22 +85,6 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 				SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 				String id = (String) results.getValue("class_Id", i);
 				processedResult.getValues().add(id);
-				String name = null;
-				try{
-					name = (String) results.getValue("class_Name", i);
-				}catch (Exception e){
-					System.out.println(e);
-					e.printStackTrace();
-					System.out.println(results.toString());
-				}
-				String desc = null;
-				try{
-					desc = (String) results.getValue("class_Desc", i);
-				}catch (Exception e){
-					System.out.println(e);
-					e.printStackTrace();
-					System.out.println(results.toString());
-				}
 				String type = null;
 				try{
 					type = cleanType((List<String>) results.getValue("class_Type", i));
@@ -110,17 +92,6 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 					System.out.println(e);
 					e.printStackTrace();
 					System.out.println(results.toString());
-				}
-				
-				if (name != null){
-					processedResult.getValues().add(name);
-				}else{
-					processedResult.getValues().add("");
-				}
-				if (desc != null){
-					processedResult.getValues().add(desc);
-				}else{
-					processedResult.getValues().add("");
 				}
 				if (type != null){
 					processedResult.getValues().add(type);

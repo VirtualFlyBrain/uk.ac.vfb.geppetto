@@ -47,7 +47,6 @@ import org.geppetto.core.model.GeppettoModelReader;
 import org.geppetto.core.services.registry.ApplicationListenerBean;
 import org.geppetto.datasources.aberowl.AberOWLDataSourceService;
 import org.geppetto.datasources.neo4j.Neo4jDataSourceService;
-import org.geppetto.datasources.owlery.OWLeryDataSourceService;
 import org.geppetto.model.GeppettoModel;
 import org.geppetto.model.datasources.DatasourcesFactory;
 import org.geppetto.model.datasources.Query;
@@ -72,12 +71,8 @@ import uk.ac.vfb.geppetto.AddImportTypesSynonymQueryProcessor;
 import uk.ac.vfb.geppetto.AddImportTypesThumbnailQueryProcessor;
 import uk.ac.vfb.geppetto.AddTypesQueryProcessor;
 import uk.ac.vfb.geppetto.CreateImagesForQueryResultsQueryProcessor;
-import uk.ac.vfb.geppetto.CreateResultListForIndividualsForQueryResultsQueryProcessor;
-import uk.ac.vfb.geppetto.NBLASTQueryProcessor;
 import uk.ac.vfb.geppetto.VFBAberOWLQueryProcessor;
 import uk.ac.vfb.geppetto.VFBProcessTermInfo;
-import uk.ac.vfb.geppetto.OWLeryQueryProcessor;
-
 
 /**
  * @author matteocantarelli
@@ -130,10 +125,6 @@ public class PartsOfAdultBrainTest
 		context.registerBeanDefinition("vfbCreateImagesForQueryResultsQueryProcessor", createImagesForQueryBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.vfbCreateImagesForQueryResultsQueryProcessor", createImagesForQueryBeanDefinition);
 
-		BeanDefinition queryProcessorOwleryBeanDefinition = new RootBeanDefinition(OWLeryQueryProcessor.class);
-		context.registerBeanDefinition("owleryIdOnlyQueryProcessor", queryProcessorOwleryBeanDefinition);
-		context.registerBeanDefinition("scopedTarget.owleryIdOnlyQueryProcessor", queryProcessorOwleryBeanDefinition);
-		
 		BeanDefinition neo4jDataSourceBeanDefinition = new RootBeanDefinition(Neo4jDataSourceService.class);
 		context.registerBeanDefinition("neo4jDataSource", neo4jDataSourceBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.neo4jDataSource", neo4jDataSourceBeanDefinition);
@@ -141,10 +132,6 @@ public class PartsOfAdultBrainTest
 		BeanDefinition aberOWLDataSourceBeanDefinition = new RootBeanDefinition(AberOWLDataSourceService.class);
 		context.registerBeanDefinition("aberOWLDataSource", aberOWLDataSourceBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.aberOWLDataSource", aberOWLDataSourceBeanDefinition);
-		
-		BeanDefinition owleryDataSourceBeanDefinition = new RootBeanDefinition(OWLeryDataSourceService.class);
-		context.registerBeanDefinition("owleryDataSource", owleryDataSourceBeanDefinition);
-		context.registerBeanDefinition("scopedTarget.owleryDataSource", owleryDataSourceBeanDefinition);
 
 		ContextRefreshedEvent event = new ContextRefreshedEvent(context);
 		ApplicationListenerBean listener = new ApplicationListenerBean();
@@ -167,9 +154,6 @@ public class PartsOfAdultBrainTest
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbCreateImagesForQueryResultsQueryProcessor"));
 		retrievedContext = ApplicationListenerBean.getApplicationContext("vfbProcessTermInfo");
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbProcessTermInfo"));
-		retrievedContext = ApplicationListenerBean.getApplicationContext("owleryIdOnlyQueryProcessor");
-		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.owleryIdOnlyQueryProcessor"));
-		
 
 	}
 
@@ -188,10 +172,6 @@ public class PartsOfAdultBrainTest
 		AberOWLDataSourceService aberDataSource = new AberOWLDataSourceService();
 		aberDataSource.initialize(model.getDataSources().get(1), geppettoModelAccess);
 
-		OWLeryDataSourceService owleryDataSource = new OWLeryDataSourceService();
-		owleryDataSource.initialize(model.getDataSources().get(2), geppettoModelAccess);
-		
-		
 		//Build list of available query indexs against ids:
 		Map<String,Integer> avQ = new HashMap();
 		Integer i = 0;
@@ -210,23 +190,17 @@ public class PartsOfAdultBrainTest
 
 		Variable variable = geppettoModelAccess.getPointer("FBbt_00003624").getElements().get(0).getVariable();
 
-		int countOWL = owleryDataSource.getNumberOfResults(getRunnableQueries(model.getQueries().get(avQ.get("partsof")), variable));
-		try{
-			Assert.assertTrue(1600<countOWL);
-		}catch (AssertionError e) {
-			System.out.println("Fail: only " + countOWL + " results returned, there should be more than than 1600 results");
-			throw new AssertionError(e);
-		}
-		
-		QueryResults results2 = owleryDataSource.execute(getRunnableQueries(model.getQueries().get(avQ.get("partsof")), variable));
-		
-		Assert.assertEquals("ID", results2.getHeader().get(0));
-		Assert.assertEquals("Name", results2.getHeader().get(1));
-		Assert.assertEquals("Definition", results2.getHeader().get(2));
-		Assert.assertEquals("Type", results2.getHeader().get(3));
-		Assert.assertEquals("Images", results2.getHeader().get(4));
-		
+		int count = aberDataSource.getNumberOfResults(getRunnableQueries(model.getQueries().get(avQ.get("partsof")), variable));
+		Assert.assertEquals(1626, count);
 
+		QueryResults results = aberDataSource.execute(getRunnableQueries(model.getQueries().get(avQ.get("partsof")), variable));
+
+		Assert.assertEquals("ID", results.getHeader().get(0));
+		Assert.assertEquals("Name", results.getHeader().get(1));
+		Assert.assertEquals("Definition", results.getHeader().get(2));
+		Assert.assertEquals("Type", results.getHeader().get(3));
+		Assert.assertEquals("Images", results.getHeader().get(4));
+		Assert.assertEquals(1626, results.getResults().size());
 
 	}
 

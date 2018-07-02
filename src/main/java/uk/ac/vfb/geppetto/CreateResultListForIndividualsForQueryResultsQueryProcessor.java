@@ -46,7 +46,6 @@ import org.geppetto.model.variables.VariablesFactory;
 import java.util.List;
 import java.util.Map;
 
-
 /**
  * @author robertcourt
  *
@@ -72,7 +71,6 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 			processedResults.getHeader().add("Definition");
 			processedResults.getHeader().add("Type");
 			processedResults.getHeader().add("Images");
-
 			while(results.getValue("id", i) != null)
 			{
 				SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();

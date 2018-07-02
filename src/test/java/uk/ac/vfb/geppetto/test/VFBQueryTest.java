@@ -49,8 +49,6 @@ import org.geppetto.core.model.GeppettoSerializer;
 import org.geppetto.core.services.registry.ApplicationListenerBean;
 import org.geppetto.datasources.aberowl.AberOWLDataSourceService;
 import org.geppetto.datasources.neo4j.Neo4jDataSourceService;
-import org.geppetto.datasources.owlery.OWLeryDataSourceService;
-import org.geppetto.datasources.nblast.NBLASTDataSourceService;
 import org.geppetto.model.GeppettoModel;
 import org.geppetto.model.GeppettoPackage;
 import org.geppetto.model.util.GeppettoVisitingException;
@@ -69,10 +67,7 @@ import uk.ac.vfb.geppetto.AddImportTypesRefsQueryProcessor;
 import uk.ac.vfb.geppetto.AddImportTypesQueryProcessor;
 import uk.ac.vfb.geppetto.AddImportTypesSynonymQueryProcessor;
 import uk.ac.vfb.geppetto.AddTypesQueryProcessor;
-import uk.ac.vfb.geppetto.CreateResultListForIndividualsForQueryResultsQueryProcessor;
 import uk.ac.vfb.geppetto.VFBProcessTermInfo;
-import uk.ac.vfb.geppetto.OWLeryQueryProcessor;
-import uk.ac.vfb.geppetto.NBLASTQueryProcessor;
 
 /**
  * @author matteocantarelli
@@ -116,18 +111,6 @@ public class VFBQueryTest
 		BeanDefinition queryProcessorImportTypesRefsBeanDefinition = new RootBeanDefinition(AddImportTypesRefsQueryProcessor.class);
 		context.registerBeanDefinition("vfbImportTypesRefsQueryProcessor", queryProcessorImportTypesRefsBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.vfbImportTypesRefsQueryProcessor", queryProcessorImportTypesRefsBeanDefinition);
-		
-		BeanDefinition createResultListForQueryBeanDefinition = new RootBeanDefinition(CreateResultListForIndividualsForQueryResultsQueryProcessor.class);
-		context.registerBeanDefinition("vfbCreateResultListForIndividualsForQueryResultsQueryProcessor", createResultListForQueryBeanDefinition);
-		context.registerBeanDefinition("scopedTarget.vfbCreateResultListForIndividualsForQueryResultsQueryProcessor", createResultListForQueryBeanDefinition);
-		
-		BeanDefinition queryProcessorOwleryBeanDefinition = new RootBeanDefinition(OWLeryQueryProcessor.class);
-		context.registerBeanDefinition("owleryIdOnlyQueryProcessor", queryProcessorOwleryBeanDefinition);
-		context.registerBeanDefinition("scopedTarget.owleryIdOnlyQueryProcessor", queryProcessorOwleryBeanDefinition);
-		
-		BeanDefinition queryProcessorNBLASTBeanDefinition = new RootBeanDefinition(NBLASTQueryProcessor.class);
-		context.registerBeanDefinition("nblastQueryProcessor", queryProcessorNBLASTBeanDefinition);
-		context.registerBeanDefinition("scopedTarget.nblastQueryProcessor", queryProcessorNBLASTBeanDefinition);
 
 		BeanDefinition neo4jDataSourceBeanDefinition = new RootBeanDefinition(Neo4jDataSourceService.class);
 		context.registerBeanDefinition("neo4jDataSource", neo4jDataSourceBeanDefinition);
@@ -136,14 +119,6 @@ public class VFBQueryTest
 		BeanDefinition aberOWLDataSourceBeanDefinition = new RootBeanDefinition(AberOWLDataSourceService.class);
 		context.registerBeanDefinition("aberOWLDataSource", aberOWLDataSourceBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.aberOWLDataSource", aberOWLDataSourceBeanDefinition);
-		
-		BeanDefinition owleryDataSourceBeanDefinition = new RootBeanDefinition(OWLeryDataSourceService.class);
-		context.registerBeanDefinition("owleryDataSource", owleryDataSourceBeanDefinition);
-		context.registerBeanDefinition("scopedTarget.owleryDataSource", owleryDataSourceBeanDefinition);
-		
-		BeanDefinition nblastDataSourceBeanDefinition = new RootBeanDefinition(NBLASTDataSourceService.class);
-		context.registerBeanDefinition("nblastDataSource", nblastDataSourceBeanDefinition);
-		context.registerBeanDefinition("scopedTarget.nblastDataSource", nblastDataSourceBeanDefinition);
 
 		ContextRefreshedEvent event = new ContextRefreshedEvent(context);
 		ApplicationListenerBean listener = new ApplicationListenerBean();
@@ -161,11 +136,7 @@ public class VFBQueryTest
 		retrievedContext = ApplicationListenerBean.getApplicationContext("vfbImportTypesRefsQueryProcessor");
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbImportTypesRefsQueryProcessor"));
 		retrievedContext = ApplicationListenerBean.getApplicationContext("vfbProcessTermInfo");
-		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbProcessTermInfo"));		
-		retrievedContext = ApplicationListenerBean.getApplicationContext("owleryIdOnlyQueryProcessor");
-		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.owleryIdOnlyQueryProcessor"));
-		retrievedContext = ApplicationListenerBean.getApplicationContext("nblastQueryProcessor");
-		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.nblastQueryProcessor"));
+		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbProcessTermInfo"));
 	}
 
 	/**
@@ -185,16 +156,13 @@ public class VFBQueryTest
 		GeppettoModelAccess geppettoModelAccess = new GeppettoModelAccess(model);
 		Neo4jDataSourceService dataSource = new Neo4jDataSourceService();
 		dataSource.initialize(model.getDataSources().get(0), geppettoModelAccess);
-		
-		NBLASTDataSourceService dataSource2 = new NBLASTDataSourceService();
-		dataSource2.initialize(model.getDataSources().get(4), geppettoModelAccess);
 
 
 		dataSource.fetchVariable("FBbt_00100219");
 
+
 		dataSource.fetchVariable("VFB_00000001");
 
-		//dataSource2.fetchVariable("VFB_00014755");		
 
 		// // Initialize the factory and the resource set
 		GeppettoPackage.eINSTANCE.eClass();
