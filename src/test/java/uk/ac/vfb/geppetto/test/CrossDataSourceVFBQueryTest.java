@@ -202,7 +202,7 @@ public class CrossDataSourceVFBQueryTest
 		int count = owleryDataSource.getNumberOfResults(getRunnableQueries(model.getQueries().get(avQ.get("partsof")), variable));
 
 		try{
-			Assert.assertTrue(84<count);
+			Assert.assertTrue(83<count);
 		}catch (AssertionError e) {
 			System.out.println("Fail: only " + count + " results returned, there should be more than than 84 results");
 			throw new AssertionError(e);
