@@ -43,6 +43,7 @@ import org.geppetto.core.model.GeppettoSerializer;
 import org.geppetto.core.services.registry.ApplicationListenerBean;
 import org.geppetto.datasources.aberowl.AberOWLDataSourceService;
 import org.geppetto.datasources.neo4j.Neo4jDataSourceService;
+import org.geppetto.datasources.opencpu.OpenCPUDataSourceService;
 import org.geppetto.datasources.owlery.OWLeryDataSourceService;
 import org.geppetto.model.GeppettoModel;
 import org.geppetto.model.datasources.DatasourcesFactory;
@@ -118,10 +119,18 @@ public class CrossDataSourceVFBQueryTest
 		context.registerBeanDefinition("vfbCreateImagesForQueryResultsQueryProcessor", createImagesForQueryBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.vfbCreateImagesForQueryResultsQueryProcessor", createImagesForQueryBeanDefinition);
 		
+		BeanDefinition createResultListForQueryBeanDefinition = new RootBeanDefinition(CreateResultListForIndividualsForQueryResultsQueryProcessor.class);
+		context.registerBeanDefinition("vfbCreateResultListForIndividualsForQueryResultsQueryProcessor", createResultListForQueryBeanDefinition);
+		context.registerBeanDefinition("scopedTarget.vfbCreateResultListForIndividualsForQueryResultsQueryProcessor", createResultListForQueryBeanDefinition);
+		
 		BeanDefinition queryProcessorOwleryBeanDefinition = new RootBeanDefinition(OWLeryQueryProcessor.class);
 		context.registerBeanDefinition("owleryIdOnlyQueryProcessor", queryProcessorOwleryBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.owleryIdOnlyQueryProcessor", queryProcessorOwleryBeanDefinition);
 
+		BeanDefinition queryProcessorNBLASTBeanDefinition = new RootBeanDefinition(NBLASTQueryProcessor.class);
+		context.registerBeanDefinition("nblastQueryProcessor", queryProcessorNBLASTBeanDefinition);
+		context.registerBeanDefinition("scopedTarget.nblastQueryProcessor", queryProcessorNBLASTBeanDefinition);
+		
 		BeanDefinition neo4jDataSourceBeanDefinition = new RootBeanDefinition(Neo4jDataSourceService.class);
 		context.registerBeanDefinition("neo4jDataSource", neo4jDataSourceBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.neo4jDataSource", neo4jDataSourceBeanDefinition);
@@ -133,6 +142,10 @@ public class CrossDataSourceVFBQueryTest
 		BeanDefinition owleryDataSourceBeanDefinition = new RootBeanDefinition(OWLeryDataSourceService.class);
 		context.registerBeanDefinition("owleryDataSource", owleryDataSourceBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.owleryDataSource", owleryDataSourceBeanDefinition);
+		
+		BeanDefinition nblastDataSourceBeanDefinition = new RootBeanDefinition(OpenCPUDataSourceService.class);
+		context.registerBeanDefinition("opencpuDataSource", nblastDataSourceBeanDefinition);
+		context.registerBeanDefinition("scopedTarget.opencpuDataSource", nblastDataSourceBeanDefinition);
 		
 		ContextRefreshedEvent event = new ContextRefreshedEvent(context);
 		ApplicationListenerBean listener = new ApplicationListenerBean();
@@ -153,10 +166,14 @@ public class CrossDataSourceVFBQueryTest
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbAberOWLQueryProcessor"));
 		retrievedContext = ApplicationListenerBean.getApplicationContext("vfbCreateImagesForQueryResultsQueryProcessor");
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbCreateImagesForQueryResultsQueryProcessor"));
+		retrievedContext = ApplicationListenerBean.getApplicationContext("vfbCreateResultListForIndividualsForQueryResultsQueryProcessor");
+		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbCreateResultListForIndividualsForQueryResultsQueryProcessor"));
 		retrievedContext = ApplicationListenerBean.getApplicationContext("vfbProcessTermInfo");
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbProcessTermInfo"));
 		retrievedContext = ApplicationListenerBean.getApplicationContext("owleryIdOnlyQueryProcessor");
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.owleryIdOnlyQueryProcessor"));
+		retrievedContext = ApplicationListenerBean.getApplicationContext("nblastQueryProcessor");
+		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.nblastQueryProcessor"));
 
 	}
 
@@ -177,6 +194,9 @@ public class CrossDataSourceVFBQueryTest
 		
 		OWLeryDataSourceService owleryDataSource = new OWLeryDataSourceService();
 		owleryDataSource.initialize(model.getDataSources().get(2), geppettoModelAccess);
+		
+		OpenCPUDataSourceService nblastDataSource = new OpenCPUDataSourceService();
+		nblastDataSource.initialize(model.getDataSources().get(4), geppettoModelAccess);
 
 		//Build list of available query indexs against ids:
 		Map<String,Integer> avQ = new HashMap();
@@ -204,7 +224,7 @@ public class CrossDataSourceVFBQueryTest
 		try{
 			Assert.assertTrue(83<count);
 		}catch (AssertionError e) {
-			System.out.println("Fail: only " + count + " results returned, there should be more than than 84 results");
+			System.out.println("Fail: only " + count + " results returned, there should be more than than 83 results");
 			throw new AssertionError(e);
 		}
 
@@ -219,6 +239,29 @@ public class CrossDataSourceVFBQueryTest
 
 		System.out.println(GeppettoSerializer.serializeToJSON(results, false));
 
+		
+		neo4JDataSource.fetchVariable("VFB_00014755");
+		
+		Variable variable2 = geppettoModelAccess.getPointer("VFB_00014755").getElements().get(0).getVariable();
+		
+		int countNBLAST = nblastDataSource.getNumberOfResults(getRunnableQueries(model.getQueries().get(avQ.get("similarto")), variable2));
+		
+		try{
+			Assert.assertTrue(50<=countNBLAST);
+		}catch (AssertionError e) {
+			System.out.println("Fail: only " + countNBLAST + " results returned, there should be 50 results or more");
+			throw new AssertionError(e);
+		}
+		
+		QueryResults results3 = nblastDataSource.execute(getRunnableQueries(model.getQueries().get(avQ.get("similarto")), variable2));
+		
+		Assert.assertEquals("ID", results3.getHeader().get(0));
+		Assert.assertEquals("Score", results3.getHeader().get(1));
+		Assert.assertEquals("Name", results3.getHeader().get(2));
+		Assert.assertEquals("Definition", results3.getHeader().get(3));
+		Assert.assertEquals("Type", results3.getHeader().get(4));
+		Assert.assertEquals("Images", results3.getHeader().get(5));
+		
 	}
 
 	private List<RunnableQuery> getRunnableQueries(Query query, Variable variable)

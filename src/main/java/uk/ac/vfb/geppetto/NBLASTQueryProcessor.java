@@ -24,7 +24,7 @@ import org.geppetto.model.variables.Variable;
  */
 
 
-public class OWLeryQueryProcessor extends AQueryProcessor
+public class NBLASTQueryProcessor extends AQueryProcessor
 {
 
 	private Map<String, Object> processingOutputMap = new HashMap<String, Object>();
@@ -39,47 +39,35 @@ public class OWLeryQueryProcessor extends AQueryProcessor
 	{
 		if(results == null)
 		{
-			throw new GeppettoDataSourceException("Results input to " + query.getName() + " is null");
+			throw new GeppettoDataSourceException("Results input to " + query.getName() + "is null");
 		}
-		
-		String queryID = dataSource.getId();
-		
-		QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
-		int idIndex = -1;
-		
+        QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
+        int idIndex = results.getHeader().indexOf("id");
+        int scoreIndex = results.getHeader().indexOf("score");
+
+        processedResults.getHeader().add("ID");
+        processedResults.getHeader().add("Score");
+
 		List<String> ids = new ArrayList<String>();
-		
-		switch(queryID) 
-		{
-			case "owleryDataSourceSubclass":
-				idIndex = results.getHeader().indexOf("superClassOf");					
-				
-				break;
-			case "owleryDataSourceRealise":
-				idIndex = results.getHeader().indexOf("hasInstance");					
-				
-				break;
-			default:
-				throw new GeppettoDataSourceException("Results header not in hasInstance, subClassOf");
-				
-		}
-		processedResults.getHeader().add("ID");
-	
 		if (idIndex > -1){
 			for(AQueryResult result : results.getResults())
 			{
-				List<String> idsList = (ArrayList)((QueryResult) result).getValues().get(idIndex);
-				for(String id : idsList) {
-					SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
-					String subID = id.substring((id.lastIndexOf('/')+1) , id.length()).toString();
-					processedResult.getValues().add(subID);
-					ids.add("'" + subID + "'");
-					processedResults.getResults().add(processedResult);
-				}
+	            SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
+	
+	            String id = ((QueryResult) result).getValues().get(idIndex).toString();
+	            processedResult.getValues().add(id);
+	            
+	            String score = ((QueryResult) result).getValues().get(scoreIndex).toString();
+	            processedResult.getValues().add(score);
+	            
+				ids.add("'" + id + "'");
+	            processedResults.getResults().add(processedResult);
 			}
 		}
-		
+
 		processingOutputMap.put("ARRAY_ID_RESULTS", ids);
+
+		System.out.println("NBLASTQueryProcessor returning " + Integer.toString(ids.size()) + " rows");
 
 		return processedResults;
 	}
@@ -89,5 +77,4 @@ public class OWLeryQueryProcessor extends AQueryProcessor
 	{
 		return processingOutputMap;
 	}
-
 }
