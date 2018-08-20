@@ -64,7 +64,7 @@ public class NBLASTQueryProcessor extends AQueryProcessor
 	            		}catch (Exception e){
 					System.out.println("Error finding id: " + e.toString());
 					e.printStackTrace();
-					System.out.println("id index [" + idIndex.toString() + "]");	
+					System.out.println("id index [" + Integer.toString(idIndex) + "]");	
 					System.out.println("Values: " + ((QueryResult) result).getValues().toString());
 				}
 	            		
