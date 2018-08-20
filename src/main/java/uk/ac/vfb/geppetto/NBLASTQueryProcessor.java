@@ -52,16 +52,21 @@ public class NBLASTQueryProcessor extends AQueryProcessor
 		if (idIndex > -1){
 			for(AQueryResult result : results.getResults())
 			{
-	            SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
-	
-	            String id = ((QueryResult) result).getValues().get(idIndex).toString();
-	            processedResult.getValues().add(id);
-	            
-	            String score = ((QueryResult) result).getValues().get(scoreIndex).toString();
-	            processedResult.getValues().add(score);
+	            		SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
+				try{
+	            			String id = ((QueryResult) result).getValues().get(idIndex).toString();
+	            			processedResult.getValues().add(id);
+	            		}catch (Exception e){
+					System.out.println("Error finding id: " + e.toString());
+					e.printStackTrace();
+					System.out.println("id index [" + idIndex.toString() + "]");	
+					System.out.println("Values: " + ((QueryResult) result).getValues().toString());
+				}
+	            		String score = ((QueryResult) result).getValues().get(scoreIndex).toString();
+	            		processedResult.getValues().add(score);
 	            
 				ids.add("'" + id + "'");
-	            processedResults.getResults().add(processedResult);
+	            		processedResults.getResults().add(processedResult);
 			}
 		}
 
