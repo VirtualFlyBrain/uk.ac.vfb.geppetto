@@ -629,7 +629,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 												vfbFileUrl = checkURL(edgeLabel + "/volume.nrrd");
 												if (vfbFileUrl != null && downloadLink == "") {
 													downloadLink = "Aligned Image: ​<a download=\"" + (String) tempId + ".nrrd\" href=\"" + vfbFileUrl + "\">" + (String) tempId + ".nrrd</a><br/>​​​​​​​​​​​​​​​​​​​​​​​​​​​";
-													downloadLink += "Note: see licensing section for reuse and attribution info.";
+													downloadLink += "Note: see license (under relationships) and references for terms of reuse and propper attribution.";
 												}
 												imagesChecked = true;
 											}
