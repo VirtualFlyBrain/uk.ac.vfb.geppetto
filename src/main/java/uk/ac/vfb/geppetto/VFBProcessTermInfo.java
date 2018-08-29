@@ -162,6 +162,9 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 						if ("Individual".equals(supertype)) {
 							individual = true;
 						}
+						if ("Painted_domain".equals(supertype)) {
+							synapticNP = true;
+						}
 						if ("Synaptic_neuropil_domain".equals(supertype)) {
 							synapticNP = true;
 						}
