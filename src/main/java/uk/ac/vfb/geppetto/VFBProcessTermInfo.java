@@ -162,6 +162,9 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 						if ("Individual".equals(supertype)) {
 							individual = true;
 						}
+						if ("Painted_domain".equals(supertype)) {
+							synapticNP = true;
+						}
 						if ("Synaptic_neuropil_domain".equals(supertype)) {
 							synapticNP = true;
 						}
@@ -629,7 +632,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 												vfbFileUrl = checkURL(edgeLabel + "/volume.nrrd");
 												if (vfbFileUrl != null && downloadLink == "") {
 													downloadLink = "Aligned Image: ​<a download=\"" + (String) tempId + ".nrrd\" href=\"" + vfbFileUrl + "\">" + (String) tempId + ".nrrd</a><br/>​​​​​​​​​​​​​​​​​​​​​​​​​​​";
-													downloadLink += "Note: see licensing section for reuse and attribution info.";
+													downloadLink += "Note: see license (under relationships) as well as references for terms of reuse and correct attribution.";
 												}
 												imagesChecked = true;
 											}
@@ -854,11 +857,10 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 						}
 					}
 				}
-
-				if (NBLAST){
-					badge = "<i class=\"popup-icon-link fa fa-external-link\" />";
-					querys += badge + "<a href=\"http://nblast.virtualflybrain.org:8080/NBLAST_on-the-fly/?all_query=" + tempName + "&amp;all_use_mean=TRUE\" target=\"_blank\">Load live NBLAST query for similar neurons to " + tempName + "</a><br/>";
-					querys += badge + "<a href=\"http://nblast.virtualflybrain.org:8080/NBLAST_on-the-fly/?gal4_query=" + tempName + "&amp;tab=GAL4\" target=\"_blank\">Load live NBLAST query to find GAL4 matches that potentially target " + tempName + "</a><br/>";
+				
+				if (template){
+					badge = "<i class=\"popup-icon-link fa gpt-shapeshow\" />";
+					querys += badge + "<a href=\"#\" title=\"Hide template boundary and show all painted neuroanatomy\" onclick=\""+tempId+".hide();window.addVfbId(JSON.parse("+tempId+"."+tempId+"_slices.getValue().getWrappedObj().value.data).subDomains[1].filter(function(n){ return n != null }));return false;\">Show All Anatomy</a><br/>";
 				}
 
 

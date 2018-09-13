@@ -60,7 +60,7 @@ public class OWLeryQueryProcessor extends AQueryProcessor
 				
 				break;
 			default:
-				throw new GeppettoDataSourceException("Results header not in hasInstance, superClassOf, subClassOf");
+				throw new GeppettoDataSourceException("Results header not in hasInstance, subClassOf");
 				
 		}
 		processedResults.getHeader().add("ID");
