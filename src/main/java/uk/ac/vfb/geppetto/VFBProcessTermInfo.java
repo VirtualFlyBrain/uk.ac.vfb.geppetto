@@ -340,7 +340,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                                 }
                                                 if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) != null)
                                                 {
-                                                    edgeLabel += " <a href=\"http://dx.doi.org/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" target=\"_blank\" >"
+                                                    edgeLabel += " <a href=\"https://doi.org/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" target=\"_blank\" >"
                                                             + "<i class=\"popup-icon-link gpt-doi\" title=\"doi:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" aria-hidden=\"true\"></i></a>";
                                                 }
                                                 for (int s = 0; s < synonyms.size(); s++) {
@@ -397,7 +397,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                                 }
                                                 if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) != null)
                                                 {
-                                                    edgeLabel += " <a href=\"http://dx.doi.org/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" target=\"_blank\" >"
+                                                    edgeLabel += " <a href=\"https://doi.org/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" target=\"_blank\" >"
                                                             + "<i class=\"popup-icon-link gpt-doi\" title=\"doi:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" aria-hidden=\"true\"></i></a>";
                                                 }
                                                 if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).containsKey("label")) {
@@ -443,7 +443,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                                 }
                                                 if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) != null)
                                                 {
-                                                    edgeLabel += " <a href=\"http://dx.doi.org/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" target=\"_blank\" >"
+                                                    edgeLabel += " <a href=\"https://doi.org/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" target=\"_blank\" >"
                                                             + "<i class=\"popup-icon-link gpt-doi\" title=\"doi:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" aria-hidden=\"true\"></i></a>";
                                                 }
                                             }else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http")) != null) {

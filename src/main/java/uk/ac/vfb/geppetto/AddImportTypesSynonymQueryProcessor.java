@@ -147,7 +147,7 @@ public class AddImportTypesSynonymQueryProcessor extends AQueryProcessor
 							}
 							if(results.getValue("relDOI", i) != null)
 							{
-								synonymLinks += " <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >"
+								synonymLinks += " <a href=\" https://doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >"
 										+ "<i class=\"popup-icon-link gpt-doi\" title=\"doi:" + (String) results.getValue("relDOI", i) + "\" aria-hidden=\"true\"></i></a>";
 							}
 
@@ -174,7 +174,7 @@ public class AddImportTypesSynonymQueryProcessor extends AQueryProcessor
 								}
 								if(results.getValue("relDOI", i) != null)
 								{
-									defRefs += " <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >"
+									defRefs += " <a href=\" https://doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >"
 											+ "<i class=\"popup-icon-link gpt-doi\" title=\"doi:" + (String) results.getValue("relDOI", i) + "\" aria-hidden=\"true\"></i></a>";
 								}
 								defRefs += "<br/>";
@@ -222,7 +222,7 @@ public class AddImportTypesSynonymQueryProcessor extends AQueryProcessor
 									}
 									if(results.getValue("relDOI", i) != null)
 									{
-										relat += " <a href=\" http://dx.doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >"
+										relat += " <a href=\" https://doi.org/" + (String) results.getValue("relDOI", i) + "\" target=\"_blank\" >"
 												+ "<i class=\"popup-icon-link gpt-doi\" title=\"doi:" + (String) results.getValue("relDOI", i) + "\" aria-hidden=\"true\"></i>";
 									}
 								}
