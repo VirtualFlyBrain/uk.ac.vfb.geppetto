@@ -860,7 +860,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 				
 				if (template){
 					badge = "<i class=\"popup-icon-link fa gpt-shapeshow\" />";
-					querys += badge + "<a href=\"#\" title=\"Hide template boundary and show all painted neuroanatomy\" onclick=\""+tempId+".hide();window.addVfbId(JSON.parse("+tempId+"."+tempId+"_slices.getValue().getWrappedObj().value.data).subDomains[1].filter(function(n){ return n != null }));return false;\">Show All Anatomy</a><br/>";
+					querys += badge + "<a href=\"\" title=\"Hide template boundary and show all painted neuroanatomy\" onclick=\""+tempId+".hide();window.addVfbId(JSON.parse("+tempId+"."+tempId+"_slices.getValue().getWrappedObj().value.data).subDomains[1].filter(function(n){ return n != null }));return false;\">Show All Anatomy</a><br/>";
 				}
 
 
