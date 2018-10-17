@@ -281,8 +281,8 @@ public class MultipleQueriesVFBQueryTest
 		
 		System.out.println(GeppettoSerializer.serializeToJSON(model, false));
 			
-   		Variable variable1 = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
-		Variable variable2 = geppettoModelAccess.getPointer("FBbt_00045048").getElements().get(0).getVariable();
+   		Variable variable1 = geppettoModelAccess.getPointer("FBbt_00003701").getElements().get(0).getVariable();
+		Variable variable2 = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
 
 		EList<RunnableQuery> runnableQueriesEMF = new BasicEList<RunnableQuery>();
 
@@ -292,16 +292,16 @@ public class MultipleQueriesVFBQueryTest
 		runnableQueriesEMF.add(rqEMF1);
 		
 		RunnableQuery rqEMF2 = DatasourcesFactory.eINSTANCE.createRunnableQuery();
-		rqEMF2.setQueryPath(model.getQueries().get(avQ.get("neuronsparthere")).getPath());
+		rqEMF2.setQueryPath(model.getQueries().get(avQ.get("partsof")).getPath());
 		rqEMF2.setTargetVariablePath(variable2.getPath());
 		rqEMF2.setBooleanOperator(BooleanOperator.NAND);
 		runnableQueriesEMF.add(rqEMF2);
 		
 		int count = owleryDataSource.getNumberOfResults(runnableQueriesEMF);
 		try{
-			Assert.assertTrue(83<count);
+			Assert.assertTrue(count<280);
 		}catch (AssertionError e) {
-			System.out.println("Fail: only " + count + " results returned, there should be 84+ results");
+			System.out.println("Fail: " + count + " results returned, there should be less than 281 results");
 			throw new AssertionError(e);
 		}
 			
