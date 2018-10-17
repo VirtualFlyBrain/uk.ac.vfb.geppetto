@@ -281,8 +281,8 @@ public class MultipleQueriesVFBQueryTest
 		
 		System.out.println(GeppettoSerializer.serializeToJSON(model, false));
 			
-   		Variable variable1 = geppettoModelAccess.getPointer("FBbt_00003701").getElements().get(0).getVariable();
-		Variable variable2 = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
+   		Variable variable1 = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
+		Variable variable2 = geppettoModelAccess.getPointer("FBbt_00045048").getElements().get(0).getVariable();
 
 		EList<RunnableQuery> runnableQueriesEMF = new BasicEList<RunnableQuery>();
 
