@@ -247,7 +247,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 								case "INSTANCEOF":
 									edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
 									if ("type".equals(edgeLabel)) {
-										depictedType += "<a href=\"#\" instancepath=\"" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + " (" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + ")</a><br/>";
+										depictedType += "<a href=\"#\" data-instancepath=\"" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + " (" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + ")</a><br/>";
 										if ((synapticNP || tract) && individual){
 											try{
 												classVariable.setId(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form"));
@@ -269,7 +269,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 								case "SUBCLASSOF":
 									edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
 									if ("is a".equals(edgeLabel) || "is_a".equals(edgeLabel)) {
-										types += "<a href=\"#\" instancepath=\"" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
+										types += "<a href=\"#\" data-instancepath=\"" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
 									}
 									break;
 								case "has_exemplar":
@@ -487,7 +487,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 									NBLAST = true;
 									// then run default:
 								default:
-									relationships = addUniqueToString(relationships, edge.replace("_", " ") + " <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
+									relationships = addUniqueToString(relationships, edge.replace("_", " ") + " <a href=\"#\" data-instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
 								}
 							} else {
 								// edge towards term
@@ -627,7 +627,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 												}
 												if (((Map<String, Object>) resultLinks.get(i)).get("temp") != null) {
 													String supertype = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("short_form");
-													tempLink = "<a href=\"#\" instancepath=\"" + supertype + "\">" + (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("label") + "</a>";
+													tempLink = "<a href=\"#\" data-instancepath=\"" + supertype + "\">" + (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("label") + "</a>";
 												}
 												vfbFileUrl = checkURL(edgeLabel + "/volume.nrrd");
 												if (vfbFileUrl != null && downloadLink == "") {
@@ -643,13 +643,13 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 									}
 									break;
 								case "has_license":
-									relationships = addUniqueToString(relationships, "applies to <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
+									relationships = addUniqueToString(relationships, "applies to <a href=\"#\" data-instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
 									break;	
 								case "connected_to":
-									relationships = addUniqueToString(relationships, "connected to <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
+									relationships = addUniqueToString(relationships, "connected to <a href=\"#\" data-instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
 									break;
 								case "innervates":
-									relationships = addUniqueToString(relationships, "innervated by <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
+									relationships = addUniqueToString(relationships, "innervated by <a href=\"#\" data-instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
 									break;
 								case "SUBCLASSOF":
 									//                                    	Ignore SUBCLASSOF
@@ -783,7 +783,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 					if (results.getValue("node", 1) != null) {
 						resultNode = (Map<String, Object>) results.getValue("node", 1);
 						if (resultNode.get("label") != null) {
-							tempHtml += "<b>Name:</b> <a href=\"#\" instancepath=\"" + (String) resultNode.get("short_form") + "\">" + (String) resultNode.get("label") + " (" + (String) resultNode.get("short_form") + ")</a><br/>";	                			
+							tempHtml += "<b>Name:</b> <a href=\"#\" data-instancepath=\"" + (String) resultNode.get("short_form") + "\">" + (String) resultNode.get("label") + " (" + (String) resultNode.get("short_form") + ")</a><br/>";	                			
 						}
 						if (depictedType != "") {
 							tempHtml += "<b>Types:</b> " + depictedType;
@@ -849,11 +849,11 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 					if(QueryChecker.check(runnableQuery, variable))
 					{
 						badge = "<i class=\"popup-icon-link fa fa-quora\" />";
-						querys += badge + "<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
+						querys += badge + "<a href=\"#\" data-instancepath=\"" + (String) runnableQuery.getPath() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></i></br>";
 					}else if ((synapticNP || tract) && individual && classVariable.getId()!="notSet"){
 						if(QueryChecker.check(runnableQuery, classVariable)){
 							badge = "<i class=\"popup-icon-link fa fa-quora\" />";
-							querys += badge + "<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "," + classVariable.getId() + "," + classVariable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", classVariable.getName()) + "</a></br>";
+							querys += badge + "<a href=\"#\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + classVariable.getId() + "," + classVariable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", classVariable.getName()) + "</a></i></br>";
 						}
 					}
 				}
@@ -960,7 +960,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 	 */
 	private String highlightLinks(String text) {
 		try {
-			text = text.replaceAll("([F,V,G][A-z]*)[:,_](\\d{5}[0-9]*\\b)", "<a href=\"#\" instancepath=\"$1_$2\" title=\"$1_$2\" ><i class=\"fa fa-info-circle\" aria-hidden=\"true\"></i></a>");
+			text = text.replaceAll("([F,V,G][A-z]*)[:,_](\\d{5}[0-9]*\\b)", "<a href=\"#\" data-instancepath=\"$1_$2\" title=\"$1_$2\" ><i class=\"fa fa-info-circle\" aria-hidden=\"true\"></i></a>");
 			return text;
 		} catch (Exception e) {
 			System.out.println("Error highlighting links in (" + text + ") " + e.toString());
