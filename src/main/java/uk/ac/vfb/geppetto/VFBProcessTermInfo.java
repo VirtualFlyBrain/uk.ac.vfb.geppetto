@@ -628,6 +628,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 												if (((Map<String, Object>) resultLinks.get(i)).get("temp") != null) {
 													String supertype = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("short_form");
 													tempLink = "<a href=\"#\" data-instancepath=\"" + supertype + "\">" + (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("label") + "</a>";
+													parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
 												}
 												vfbFileUrl = checkURL(edgeLabel + "/volume.nrrd");
 												if (vfbFileUrl != null && downloadLink == "") {
