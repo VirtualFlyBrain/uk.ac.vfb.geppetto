@@ -137,6 +137,8 @@ public class MultipleQueriesVFBQueryTest
 		context.registerBeanDefinition("owleryDataSource", owleryDataSourceBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.owleryDataSource", owleryDataSourceBeanDefinition);
 
+		context.refresh();
+		
 		ContextRefreshedEvent event = new ContextRefreshedEvent(context);
 		ApplicationListenerBean listener = new ApplicationListenerBean();
 		listener.onApplicationEvent(event);
