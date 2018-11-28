@@ -124,7 +124,7 @@ public class VFBProcessTermInfoCore extends AQueryProcessor {
 					
 					geppettoModelAccess.addTypeToLibrary(metaDataType, dataSource.getTargetLibrary());
 					
-					if (core.getValue("types", 0) != null) {
+					if (core.get("types") != null) {
 						List<String> supertypes = (List<String>) core.getValue("types", 0);
 
 						for (String supertype : supertypes) {
