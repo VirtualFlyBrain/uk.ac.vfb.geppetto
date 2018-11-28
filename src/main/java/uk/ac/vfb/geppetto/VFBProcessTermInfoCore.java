@@ -76,8 +76,8 @@ public class VFBProcessTermInfoCore extends AQueryProcessor {
 			if (results.getValue("term", 0) != null) {
 				Map<String, Object> term = (Map<String, Object>) results.getValue("term", 0);
 				//core
-				if (term.getValue("core", 0) != null) {
-					Map<String, Object> core = (Map<String, Object>) term.getValue("core", 0);
+				if (term.get("core") != null) {
+					Map<String, Object> core = (Map<String, Object>) term.get("core");
 					//ID/short_form
 					if (core.get("short_form") != null) {
 						if (String.valueOf(variable.getId()).equals((String) core.get("short_form"))) {
