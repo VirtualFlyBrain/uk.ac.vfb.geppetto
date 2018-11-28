@@ -124,13 +124,16 @@ public class VFBProcessTermInfoCore extends AQueryProcessor {
 					
 					geppettoModelAccess.addTypeToLibrary(metaDataType, dataSource.getTargetLibrary());
 					
+					// add supertypes: 
+					// provide access to libary of types either dynamically added (as bellow) or loaded from xmi
+					List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
+					
 					if (core.get("types") != null) {
 						List<String> supertypes = (List<String>) core.get("types");
 
 						for (String supertype : supertypes) {
 							if (!supertype.startsWith("_")) { // ignore supertypes starting with _
 								parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
-								superTypes += supertype + ", ";
 							}
 						}
 					} else {
