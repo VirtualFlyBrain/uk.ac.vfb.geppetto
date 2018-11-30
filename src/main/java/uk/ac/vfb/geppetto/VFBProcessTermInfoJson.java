@@ -28,12 +28,13 @@ import org.geppetto.model.variables.VariablesFactory;
  * @author robertcourt
  *
  */
+
 public class VFBProcessTermInfoJson extends AQueryProcessor
 {
-
+	// Synonym Icons are set here:
 	private enum SynonymIcons
 	{
-
+		// Amend icon class here:
 		EXACT("fa-bullseye"), BROAD("fa-expand"), NARROW("fa-compress"), RELATED("fa-link"), DEFAULT("fa-question");
 
 		private SynonymIcons(final String text)
@@ -65,10 +66,34 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			// retrieving the metadatatype
 			CompositeType metadataType = (CompositeType) ModelUtility.getTypeFromLibrary(variable.getId() + "_metadata", dataSource.getTargetLibrary());
 
+			Type textType = geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE);
 			Type htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
+			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
 
-			System.out.println("Processing Items...");
-
+			System.out.println("Processing term info...");
+			
+			
+			
+			// term
+			if (results.getValue("term", 0) != null) {
+				Map<String, Object> term = (Map<String, Object>) results.getValue("term", 0);
+				//core
+				if (term.get("core") != null) {
+					Map<String, Object> core = (Map<String, Object>) term.get("core");
+					//ID/short_form
+					if (core.get("short_form") != null) {
+						if (String.valueOf(variable.getId()).equals((String) core.get("short_form"))) {
+							tempId = (String) core.get("short_form");
+						} else {
+							System.out.println("ERROR: Called ID: " + String.valueOf(variable.getId()) + " does not match returned ID: " + (String) core.get("short_form"));
+							tempId = (String) core.get("short_form");
+						}
+					}
+					//label
+					if (core.get("label") != null) {
+						tempName = (String) core.get("label");
+					}
+			
 			// running through returned items - references.
 			if(results.getValue("relationship", 0) != null)
 			{
@@ -347,6 +372,70 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		return results;
 	}
 
+	/**
+	 * @param entity
+	 * @param showTypes
+	 */
+	private String loadEntity(Map<String, Object> entity, List<String> showTypes)
+	{
+		try{
+			// turning entity into html link [label](short_form) with type labels span. 
+			String short_form = entity.get("short_form");
+			String label = entity.get("label");
+			String types = loadTypes((List<String>) entity.get("types"), showTypes);
+		
+			return "<a href=\"#\" data-instancepath=\"" + short_from + "\">" + label + "</a> " + types;
+			
+		}
+		catch (Exception e)
+		{
+			System.out.println("Error handling JSON for " + variable.getId() + " loading entity (" + entity.toString() + ") " + e.toString());
+			return "";
+		}
+	}
+	/**
+	 * @param types
+	 * @param show
+	 */
+	private String loadTypes(List<String> types, List<String> show)
+	{
+		try{
+			// turning types list into type labels span for thouse in show list.
+			String result = "<span class=\"label types\">";
+			for (String type:types){
+				if (show.contains(type)){
+					result = result + "<span class=\"label label-" + type + "\">" + type + "</span> ";
+				}
+			}
+			return result + "</span>";
+		}
+		catch (Exception e)
+		{
+			System.out.println("Error handling JSON for " + variable.getId() + " loading types (" + types.toString() + ") " + e.toString());
+			return "";
+		}
+	}
+	/**
+	 * @param edge
+	 * @param link
+	 */
+	private String loadEdge(Map<String, Object> edge, boolean link)
+	{
+		try{
+			// turning edge into string or html link [label](iri). 
+			String iri = entity.get("iri");
+			String label = entity.get("label");
+			if (link) {
+				return "<a href=\"" + iri + "\" target=\"_blank\">" + label + "</a>";
+			}
+			return label;
+		}
+		catch (Exception e)
+		{
+			System.out.println("Error handling JSON for " + variable.getId() + " loading edge (" + edge.toString() + ") " + e.toString());
+			return "";
+		}
+	}
 	/**
 	 * @param data
 	 * @param name
