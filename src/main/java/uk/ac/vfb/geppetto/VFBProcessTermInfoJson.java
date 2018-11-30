@@ -371,20 +371,121 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 		return results;
 	}
-
+	
 	/**
-	 * @param entity
+	 * @param xref
 	 * @param showTypes
 	 */
-	private String loadEntity(Map<String, Object> entity, List<String> showTypes)
+	private String loadXref(Map<String, Object> xref)
 	{
 		try{
-			// turning entity into html link [label](short_form) with type labels span. 
+			// turning xref into html link.
+			// add link (String):
+			String result = "<a href=\"" + (String) xref.get("link") + "\" target=\"_blank\">";
+			result = result + (String) xref.get("link_text");
+			// tack site link as comment on xref for later sorting
+			String site = loadEntity((Map<String, Object>) xref.get("site"), false, ["Site"]);
+			result = "<!--" + site + "-->" + result;
+			// also if icon exists then add here:
+			// TODO: is this per site or per xref?
+			if (!xref.get("icon").equals("")){
+				result = result + "<img class=\"terminfo-siteicon\" src=\"" + xref.get("icon") + "\" />";	
+			}
+			return result;
+		}
+		catch (Exception e)
+		{
+			System.out.println("Error handling JSON for " + variable.getId() + " loading realtionship (" + rel.toString() + ") " + e.toString());
+			return "";
+		}
+	}
+	
+	/**
+	 * @param entitys
+	 * @param showTypes
+	 * @param subclass
+	 */
+	private String loadEntitys(List<Object> entitys, List<String> showTypes, String subclass)
+	{
+		try{
+			// turning entity list into list of html links for entitys.
+			String result = "<ul class=\"terminfo-" + subclass + "\">";
+			// itterate to create html list:
+			for (Map<String, Object> entity:entitys) {
+				// TODO: check if entity is really always internal? If not how to differenciate from iri/short_form?  
+				result = result + "<li>" + loadEntity(entity, true, showTypes) + "</li>";
+			}
+			result = result + "</ul>";
+			return result;
+		}
+		catch (Exception e)
+		{
+			System.out.println("Error handling JSON for " + variable.getId() + " loading entitys (" + entitys.toString() + ") " + e.toString());
+			return "";
+		}
+	}
+	
+	/**
+	 * @param rels
+	 * @param showTypes
+	 */
+	private String loadRelationships(List<Object> rels, List<String> showTypes)
+	{
+		try{
+			// turning relationships into list of html with link for entity.
+			String result = "<ul class=\"terminfo-rels\">";
+			// itterate to create html list:
+			for (Map<String, Object> rel:rels) {
+				result = result + "<li>" + loadRelationship(rel, showTypes) + "</li>";
+			}
+			result = result + "</ul>";
+			return result;
+		}
+		catch (Exception e)
+		{
+			System.out.println("Error handling JSON for " + variable.getId() + " loading realtionships (" + rels.toString() + ") " + e.toString());
+			return "";
+		}
+	}
+	
+	/**
+	 * @param rel
+	 * @param showTypes
+	 */
+	private String loadRelationship(Map<String, Object> rel, List<String> showTypes)
+	{
+		try{
+			// turning relationship into html with link for entity.
+			// add relation (edge):
+			String result = loadEdge((Map<String, Object>) rel.get("relation"), false);
+			// add object (entity) link:
+			result = result + " " + loadEntity((Map<String, Object>) rel.get("object"), true, showTypes);
+			return result;
+		}
+		catch (Exception e)
+		{
+			System.out.println("Error handling JSON for " + variable.getId() + " loading realtionship (" + rel.toString() + ") " + e.toString());
+			return "";
+		}
+	}
+	
+	/**
+	 * @param entity
+	 * @param internal
+	 * @param showTypes
+	 */
+	private String loadEntity(Map<String, Object> entity, boolean internal, List<String> showTypes)
+	{
+		try{
+			// turning entity into html link [label](short_form|iri) with type labels span. 
 			String short_form = entity.get("short_form");
 			String label = entity.get("label");
 			String types = loadTypes((List<String>) entity.get("types"), showTypes);
 		
-			return "<a href=\"#\" data-instancepath=\"" + short_from + "\">" + label + "</a> " + types;
+			if (internal) {
+				return "<a href=\"#\" data-instancepath=\"" + short_from + "\">" + label + "</a> " + types;
+			}
+			return "<a href=\"" + iri + "\" target=\"_blank\">" + label + "</a>" + types;
 			
 		}
 		catch (Exception e)
