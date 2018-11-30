@@ -373,8 +373,78 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	}
 	
 	/**
+	 * @param strings
+	 */
+	private String loadString(List<String> strings)
+	{
+		try{
+			// Merging sting list
+			return String.join(" <br /> ", strings);
+		}
+		catch (Exception e)
+		{
+			System.out.println("Error handling JSON for " + variable.getId() + " loading strings (" + strings.toString() + ") " + e.toString());
+			return "";
+		}
+	}
+	
+	/**
+	 * @param string
+	 */
+	private String loadString(String string)
+	{
+		try{
+			// Returning String
+			return string;
+		}
+		catch (Exception e)
+		{
+			System.out.println("Error handling JSON for " + variable.getId() + " loading string (" + string + ") " + e.toString());
+			return "";
+		}
+	}
+	
+	/**
+	 * @param rels
+	 */
+	private String loadXrefs(List<Object> xrefs)
+	{
+		try{
+			// turning xrefs into list of html with link for xrefs.
+			List<String> results = new ArrayList<>();
+			// process xrefs
+			for (Map<String, Object> xref:xrefs) {
+				results.add(loadXref(xref));
+			}
+			// sort xrefs alphabetically (by site) 
+			java.util.Collections.sort(results);
+			// itterate to create html list:
+			String result = "<ul class=\"terminfo-xrefs\">";
+			String site = ""
+			for (String xref:results) {
+				if (xref.substring(25).equals(site)){
+					result = result + "<li>" + xref + "</li>";
+				}else if (site == ""){
+					// embed first sites xrefs
+					result = result + "<li>" + xref.replace("-->","<ul><li>").replace("<!--","") + "</li>";
+				}else{
+					// close previous and start next site xrefs
+					result = result + "</ul></li><li>" + xref.replace("-->","<ul><li>").replace("<!--","") + "</li>";
+				}
+			}
+			result = result + "</ul></li></ul>";
+			
+			return result;
+		}
+		catch (Exception e)
+		{
+			System.out.println("Error handling JSON for " + variable.getId() + " loading xrefs (" + xrefs.toString() + ") " + e.toString());
+			return "";
+		}
+	}
+	
+	/**
 	 * @param xref
-	 * @param showTypes
 	 */
 	private String loadXref(Map<String, Object> xref)
 	{
