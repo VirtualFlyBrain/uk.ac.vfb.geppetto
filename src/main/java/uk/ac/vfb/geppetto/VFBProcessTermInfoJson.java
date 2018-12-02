@@ -373,6 +373,42 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	}
 	
 	/**
+	 * @param data
+	 * @param name
+	 * @param reference
+	 * @param metadataType
+	 */
+	private void addModelHtml(String data, String name, String reference, CompositeType metadataType) {
+		Type htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
+		Variable label = VariablesFactory.eINSTANCE.createVariable();
+		label.setId(reference);
+		label.setName(name);
+		label.getTypes().add(htmlType);
+		HTML labelValue = ValuesFactory.eINSTANCE.createHTML();
+		label.getInitialValues().put(htmlType, labelValue);
+		labelValue.setHtml(labelLink);
+		geppettoModelAccess.addVariableToType(label, metaDataType);
+	}
+	
+	/**
+	 * @param data
+	 * @param name
+	 * @param reference
+	 * @param metadataType
+	 */
+	private void addModelString(String data, String name, String reference, CompositeType metadataType) {
+		Type textType = geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE);
+		Variable label = VariablesFactory.eINSTANCE.createVariable();
+		label.setId(reference);
+		label.setName(name);
+		label.getTypes().add(textType);
+		Text labelValue = ValuesFactory.eINSTANCE.createText();
+		label.getInitialValues().put(textType, descriptionValue);
+		labelValue.setText(data);
+		geppettoModelAccess.addVariableToType(label, metaDataType);
+	}
+	
+	/**
 	 * @param strings
 	 */
 	private String loadString(List<String> strings)
