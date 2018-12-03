@@ -25,6 +25,11 @@ import org.geppetto.model.values.ImageFormat;
 import org.geppetto.model.values.ValuesFactory;
 import org.geppetto.model.variables.Variable;
 import org.geppetto.model.variables.VariablesFactory;
+import org.geppetto.model.types.CompositeType;
+import org.geppetto.model.types.Type;
+import org.geppetto.model.values.HTML;
+import org.geppetto.model.values.Image;
+import org.geppetto.model.datasources.DataSource;
 
 /**
  * @author robertcourt
