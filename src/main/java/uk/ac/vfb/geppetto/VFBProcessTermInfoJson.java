@@ -86,7 +86,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				Map<String, Object> term = (Map<String, Object>) results.getValue("term", 0);
 				// Note: core already handled by VFBProcessTermInfoCore except types labels
 				// Types
-				addModelHtml(loadTypes(((List<String>) ((Map<String, Object>) term.get("core")).get("types")), showTypes), "Types", "types", metadataType);
+				addModelHtml(loadTypes(((List<String>) ((Map<String, Object>) term.get("core")).get("types")), showTypes), "Types", "types", metadataType, geppettoModelAccess);
 				// Description
 				tempData = "";
 				if (term.get("description") != null) {
@@ -110,7 +110,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				}
 				// Adding to model
 				if (!"".equals(tempData)) {
-					addModelHtml(tempData, "Description", "description", metadataType);
+					addModelHtml(tempData, "Description", "description", metadataType, geppettoModelAccess);
 				}
 				term = null;
 			}
@@ -118,19 +118,19 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			// parents
 			if (results.getValue("parents", 0) != null) {
 				tempData = loadEntitys((List<Object>) results.getValue("parents", 0), showTypes, "parents");
-				addModelHtml(tempData, "Parents", "parents", metadataType);
+				addModelHtml(tempData, "Parents", "parents", metadataType, geppettoModelAccess);
 			}
 			
 			// relationships
 			if (results.getValue("relationships", 0) != null) {
 				tempData = loadRelationships((List<Object>) results.getValue("relationships", 0), showTypes);
-				addModelHtml(tempData, "Relationships", "relationships", metadataType);
+				addModelHtml(tempData, "Relationships", "relationships", metadataType, geppettoModelAccess);
 			}
 			
 			// xrefs
 			if (results.getValue("xrefs", 0) != null) {
 				tempData = loadXrefs((List<Object>) results.getValue("xrefs", 0));
-				addModelHtml(tempData, "Cross References", "xrefs", metadataType);
+				addModelHtml(tempData, "Cross References", "xrefs", metadataType, geppettoModelAccess);
 			}
 
 		}
@@ -153,7 +153,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	 * @param reference
 	 * @param metadataType
 	 */
-	private void addModelHtml(String data, String name, String reference, CompositeType metadataType) {
+	private void addModelHtml(String data, String name, String reference, CompositeType metadataType, GeppettoModelAccess geppettoModelAccess) {
 		Type htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
 		Variable label = VariablesFactory.eINSTANCE.createVariable();
 		label.setId(reference);
@@ -162,7 +162,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		HTML labelValue = ValuesFactory.eINSTANCE.createHTML();
 		label.getInitialValues().put(htmlType, labelValue);
 		labelValue.setHtml(data);
-		geppettoModelAccess.addVariableToType(label, metaDataType);
+		geppettoModelAccess.addVariableToType(label, metadataType);
 	}
 	
 	/**
@@ -171,7 +171,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	 * @param reference
 	 * @param metadataType
 	 */
-	private void addModelString(String data, String name, String reference, CompositeType metadataType) {
+	private void addModelString(String data, String name, String reference, CompositeType metadataType, GeppettoModelAccess geppettoModelAccess) {
 		Type textType = geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE);
 		Variable label = VariablesFactory.eINSTANCE.createVariable();
 		label.setId(reference);
@@ -180,7 +180,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		Text labelValue = ValuesFactory.eINSTANCE.createText();
 		label.getInitialValues().put(textType, descriptionValue);
 		labelValue.setText(data);
-		geppettoModelAccess.addVariableToType(label, metaDataType);
+		geppettoModelAccess.addVariableToType(label, metadataType);
 	}
 	
 	/**
