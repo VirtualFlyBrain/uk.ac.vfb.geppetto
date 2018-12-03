@@ -85,7 +85,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				// Description
 				tempData = "";
 				if (term.get("description") != null) {
-					tempData = "<span class=\"terminfo-description\">"
+					tempData = "<span class=\"terminfo-description\">";
 					if (((String) term.get("description")).contains("[")) {
 						tempData = tempData + loadString((List<String>) term.get("description"));
 					} else {
