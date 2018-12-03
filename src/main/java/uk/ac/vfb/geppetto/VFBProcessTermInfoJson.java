@@ -95,7 +95,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				}
 				// Comment
 				if (term.get("comment") != null) {
-					tempData = "<span class=\"terminfo-comment\">"
+					tempData = "<span class=\"terminfo-comment\">";
 					if (((String) term.get("comment")).contains("[")) {
 						tempData = tempData + loadString((List<String>) term.get("comment"));
 					} else {
