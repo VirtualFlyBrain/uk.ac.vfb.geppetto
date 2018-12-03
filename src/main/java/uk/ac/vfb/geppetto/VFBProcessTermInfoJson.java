@@ -8,9 +8,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import javax.management.openmbean.CompositeType;
-import javax.swing.text.html.HTML;
-
 import org.geppetto.core.datasources.GeppettoDataSourceException;
 import org.geppetto.core.model.GeppettoModelAccess;
 import org.geppetto.datasources.AQueryProcessor;
