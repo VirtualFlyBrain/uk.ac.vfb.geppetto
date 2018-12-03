@@ -160,7 +160,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		label.getTypes().add(htmlType);
 		HTML labelValue = ValuesFactory.eINSTANCE.createHTML();
 		label.getInitialValues().put(htmlType, labelValue);
-		labelValue.setHtml(labelLink);
+		labelValue.setHtml(data);
 		geppettoModelAccess.addVariableToType(label, metaDataType);
 	}
 	
