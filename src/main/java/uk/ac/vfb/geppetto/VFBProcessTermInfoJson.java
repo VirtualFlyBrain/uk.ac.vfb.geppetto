@@ -104,6 +104,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 						tempData = tempData + loadString((String) term.get("comment"));
 					}
 					tempData = tempData + "</span><br />";
+				}
 				// Adding to model
 				if (!"".equals(tempData)) {
 					addModelHtml(tempData, "Description", "description", metadataType);
