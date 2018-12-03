@@ -155,15 +155,22 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	 * @param metadataType
 	 */
 	private void addModelHtml(String data, String name, String reference, CompositeType metadataType, GeppettoModelAccess geppettoModelAccess) {
-		Type htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
-		Variable label = VariablesFactory.eINSTANCE.createVariable();
-		label.setId(reference);
-		label.setName(name);
-		label.getTypes().add(htmlType);
-		HTML labelValue = ValuesFactory.eINSTANCE.createHTML();
-		label.getInitialValues().put(htmlType, labelValue);
-		labelValue.setHtml(data);
-		geppettoModelAccess.addVariableToType(label, metadataType);
+		try{
+			Type htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
+			Variable label = VariablesFactory.eINSTANCE.createVariable();
+			label.setId(reference);
+			label.setName(name);
+			label.getTypes().add(htmlType);
+			HTML labelValue = ValuesFactory.eINSTANCE.createHTML();
+			label.getInitialValues().put(htmlType, labelValue);
+			labelValue.setHtml(data);
+			geppettoModelAccess.addVariableToType(label, metadataType);
+		}
+		catch(GeppettoVisitingException e)
+		{
+			System.out.println(e);
+			throw new GeppettoVisitingException(e);
+		}
 	}
 	
 	/**
@@ -173,15 +180,23 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	 * @param metadataType
 	 */
 	private void addModelString(String data, String name, String reference, CompositeType metadataType, GeppettoModelAccess geppettoModelAccess) {
-		Type textType = geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE);
-		Variable label = VariablesFactory.eINSTANCE.createVariable();
-		label.setId(reference);
-		label.setName(name);
-		label.getTypes().add(textType);
-		Text labelValue = ValuesFactory.eINSTANCE.createText();
-		label.getInitialValues().put(textType, labelValue);
-		labelValue.setText(data);
-		geppettoModelAccess.addVariableToType(label, metadataType);
+		try
+		{
+			Type textType = geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE);
+			Variable label = VariablesFactory.eINSTANCE.createVariable();
+			label.setId(reference);
+			label.setName(name);
+			label.getTypes().add(textType);
+			Text labelValue = ValuesFactory.eINSTANCE.createText();
+			label.getInitialValues().put(textType, labelValue);
+			labelValue.setText(data);
+			geppettoModelAccess.addVariableToType(label, metadataType);
+		}
+		catch(GeppettoVisitingException e)
+		{
+			System.out.println(e);
+			throw new GeppettoVisitingException(e);
+		}
 	}
 	
 	/**
