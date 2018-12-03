@@ -1,24 +1,26 @@
 package uk.ac.vfb.geppetto;
 
+import java.awt.Image;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+
+import javax.management.openmbean.CompositeType;
+import javax.swing.text.html.HTML;
 
 import org.geppetto.core.datasources.GeppettoDataSourceException;
 import org.geppetto.core.model.GeppettoModelAccess;
 import org.geppetto.datasources.AQueryProcessor;
-import org.geppetto.model.datasources.DataSource;
 import org.geppetto.model.datasources.ProcessQuery;
 import org.geppetto.model.datasources.QueryResults;
-import org.geppetto.model.types.CompositeType;
-import org.geppetto.model.types.Type;
 import org.geppetto.model.types.TypesPackage;
 import org.geppetto.model.util.GeppettoVisitingException;
 import org.geppetto.model.util.ModelUtility;
 import org.geppetto.model.values.ArrayElement;
 import org.geppetto.model.values.ArrayValue;
-import org.geppetto.model.values.HTML;
-import org.geppetto.model.values.Image;
 import org.geppetto.model.values.ImageFormat;
 import org.geppetto.model.values.ValuesFactory;
 import org.geppetto.model.variables.Variable;
@@ -188,7 +190,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 		catch (Exception e)
 		{
-			System.out.println("Error handling JSON for " + variable.getId() + " loading strings (" + strings.toString() + ") " + e.toString());
+			System.out.println("Error handling JSON loading strings (" + strings.toString() + ") " + e.toString());
 			return "";
 		}
 	}
@@ -204,7 +206,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 		catch (Exception e)
 		{
-			System.out.println("Error handling JSON for " + variable.getId() + " loading string (" + string + ") " + e.toString());
+			System.out.println("Error handling JSON loading string (" + string + ") " + e.toString());
 			return "";
 		}
 	}
@@ -218,14 +220,14 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			// turning xrefs into list of html with link for xrefs.
 			List<String> results = new ArrayList<>();
 			// process xrefs
-			for (Map<String, Object> xref:xrefs) {
-				results.add(loadXref(xref));
+			for (Object xref:xrefs) {
+				results.add(loadXref((Map<String, Object>) xref));
 			}
 			// sort xrefs alphabetically (by site) 
 			java.util.Collections.sort(results);
 			// itterate to create html list:
 			String result = "<ul class=\"terminfo-xrefs\">";
-			String site = ""
+			String site = "";
 			for (String xref:results) {
 				if (xref.substring(25).equals(site)){
 					result = result + "<li>" + xref + "</li>";
@@ -243,7 +245,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 		catch (Exception e)
 		{
-			System.out.println("Error handling JSON for " + variable.getId() + " loading xrefs (" + xrefs.toString() + ") " + e.toString());
+			System.out.println("Error handling JSON loading xrefs (" + xrefs.toString() + ") " + e.toString());
 			return "";
 		}
 	}
@@ -259,7 +261,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			String result = "<a href=\"" + (String) xref.get("link") + "\" target=\"_blank\">";
 			result = result + (String) xref.get("link_text");
 			// tack site link as comment on xref for later sorting
-			String site = loadEntity((Map<String, Object>) xref.get("site"), false, ["Site"]);
+			String site = loadEntity((Map<String, Object>) xref.get("site"), false, Arrays.asList("Site"));
 			result = "<!--" + site + "-->" + result;
 			// also if icon exists then add here:
 			// TODO: is this per site or per xref?
@@ -270,7 +272,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 		catch (Exception e)
 		{
-			System.out.println("Error handling JSON for " + variable.getId() + " loading realtionship (" + rel.toString() + ") " + e.toString());
+			System.out.println("Error handling JSON loading xref (" + xref.toString() + ") " + e.toString());
 			return "";
 		}
 	}
@@ -286,16 +288,16 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			// turning entity list into list of html links for entitys.
 			String result = "<ul class=\"terminfo-" + subclass + "\">";
 			// itterate to create html list:
-			for (Map<String, Object> entity:entitys) {
+			for (Object entity:entitys) {
 				// TODO: check if entity is really always internal? If not how to differenciate from iri/short_form?  
-				result = result + "<li>" + loadEntity(entity, true, showTypes) + "</li>";
+				result = result + "<li>" + loadEntity((Map<String,Object>) entity, true, showTypes) + "</li>";
 			}
 			result = result + "</ul>";
 			return result;
 		}
 		catch (Exception e)
 		{
-			System.out.println("Error handling JSON for " + variable.getId() + " loading entitys (" + entitys.toString() + ") " + e.toString());
+			System.out.println("Error handling JSON loading entitys (" + entitys.toString() + ") " + e.toString());
 			return "";
 		}
 	}
@@ -310,15 +312,15 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			// turning relationships into list of html with link for entity.
 			String result = "<ul class=\"terminfo-rels\">";
 			// itterate to create html list:
-			for (Map<String, Object> rel:rels) {
-				result = result + "<li>" + loadRelationship(rel, showTypes) + "</li>";
+			for (Object rel:rels) {
+				result = result + "<li>" + loadRelationship((Map<String, Object>) rel, showTypes) + "</li>";
 			}
 			result = result + "</ul>";
 			return result;
 		}
 		catch (Exception e)
 		{
-			System.out.println("Error handling JSON for " + variable.getId() + " loading realtionships (" + rels.toString() + ") " + e.toString());
+			System.out.println("Error handling JSON loading realtionships (" + rels.toString() + ") " + e.toString());
 			return "";
 		}
 	}
@@ -339,7 +341,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 		catch (Exception e)
 		{
-			System.out.println("Error handling JSON for " + variable.getId() + " loading realtionship (" + rel.toString() + ") " + e.toString());
+			System.out.println("Error handling JSON loading realtionship (" + rel.toString() + ") " + e.toString());
 			return "";
 		}
 	}
@@ -353,19 +355,20 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	{
 		try{
 			// turning entity into html link [label](short_form|iri) with type labels span. 
-			String short_form = entity.get("short_form");
-			String label = entity.get("label");
+			String short_form = (String) entity.get("short_form");
+			String label = (String) entity.get("label");
+			String iri = (String) entity.get("iri");
 			String types = loadTypes((List<String>) entity.get("types"), showTypes);
 		
 			if (internal) {
-				return "<a href=\"#\" data-instancepath=\"" + short_from + "\">" + label + "</a> " + types;
+				return "<a href=\"#\" data-instancepath=\"" + short_form + "\">" + label + "</a> " + types;
 			}
 			return "<a href=\"" + iri + "\" target=\"_blank\">" + label + "</a>" + types;
 			
 		}
 		catch (Exception e)
 		{
-			System.out.println("Error handling JSON for " + variable.getId() + " loading entity (" + entity.toString() + ") " + e.toString());
+			System.out.println("Error handling JSON loading entity (" + entity.toString() + ") " + e.toString());
 			return "";
 		}
 	}
@@ -387,7 +390,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 		catch (Exception e)
 		{
-			System.out.println("Error handling JSON for " + variable.getId() + " loading types (" + types.toString() + ") " + e.toString());
+			System.out.println("Error handling JSON loading types (" + types.toString() + ") " + e.toString());
 			return "";
 		}
 	}
@@ -399,8 +402,8 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	{
 		try{
 			// turning edge into string or html link [label](iri). 
-			String iri = entity.get("iri");
-			String label = entity.get("label");
+			String iri = (String) edge.get("iri");
+			String label = (String) edge.get("label");
 			if (link) {
 				return "<a href=\"" + iri + "\" target=\"_blank\">" + label + "</a>";
 			}
@@ -408,7 +411,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 		catch (Exception e)
 		{
-			System.out.println("Error handling JSON for " + variable.getId() + " loading edge (" + edge.toString() + ") " + e.toString());
+			System.out.println("Error handling JSON loading edge (" + edge.toString() + ") " + e.toString());
 			return "";
 		}
 	}
