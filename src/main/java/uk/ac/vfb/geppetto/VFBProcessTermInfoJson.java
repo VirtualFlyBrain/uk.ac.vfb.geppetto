@@ -27,6 +27,7 @@ import org.geppetto.model.values.HTML;
 import org.geppetto.model.values.Image;
 import org.geppetto.model.datasources.DataSource;
 import org.geppetto.core.model.GeppettoModelAccess;
+import org.geppetto.model.values.Text;
 
 
 /**
