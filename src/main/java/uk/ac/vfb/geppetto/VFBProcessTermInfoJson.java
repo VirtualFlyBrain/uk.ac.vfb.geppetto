@@ -173,6 +173,31 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			throw new GeppettoVisitingException(e);
 		}
 	}
+
+
+	/**
+	 * @param images
+	 * @param name
+	 * @param reference
+	 * @param metadataType
+	 */
+	private void addModelThumbnails(imageArray images, String name, String reference, CompositeType metadataType, GeppettoModelAccess geppettoModelAccess) throws GeppettoVisitingException
+	{
+		try{
+			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
+			Variable imageVariable = VariablesFactory.eINSTANCE.createVariable();
+			imageVariable.setId(reference);
+			imageVariable.setName(name);
+			imageVariable.getTypes().add(imageType);
+			geppettoModelAccess.addVariableToType(imageVariable, metaDataType);
+			imageVariable.getInitialValues().put(imageType, images);
+		}
+		catch(GeppettoVisitingException e)
+		{
+			System.out.println(e);
+			throw new GeppettoVisitingException(e);
+		}
+	}
 	
 	/**
 	 * @param data
@@ -232,9 +257,31 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			return "";
 		}
 	}
-	
+
 	/**
-	 * @param rels
+	 * @param images
+	 */
+	private ArrayValue loadImages(List<Object> images)
+	{
+		ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
+		try{
+			int j = 0;
+			for (Object image:images){
+				addImage(((String) ((Map<String,Object>) ((Map<String,Object>) ((Map<String,Object>) image).get("channel_image")).get("image")).get("image_folder")), ((String) ((Map<String,Object>) ((Map<String,Object>) image).get("anatomy")).get("label")), ((Map<String,Object>) ((Map<String,Object>) image).get("anatomy")).get("short_form")), imageArray, j);
+			}
+		}
+		catch (Exception e)
+		{
+			System.out.println("Error handling JSON loading images (" + images.toString() + ") " + e.toString());
+		}
+		if (imageArray.getElements().size() > 0) {
+			return imageArray;
+		}
+		return null;
+	}
+
+	/**
+	 * @param xrefs
 	 */
 	private String loadXrefs(List<Object> xrefs)
 	{
