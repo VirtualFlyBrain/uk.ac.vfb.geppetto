@@ -1,6 +1,5 @@
 package uk.ac.vfb.geppetto;
 
-import java.awt.Image;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
