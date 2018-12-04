@@ -29,6 +29,7 @@ import org.geppetto.model.datasources.DataSource;
 import org.geppetto.core.model.GeppettoModelAccess;
 import org.geppetto.model.values.Text;
 import org.geppetto.model.types.ImportType;
+import org.geppetto.model.types.TypesFactory;
 
 
 /**
