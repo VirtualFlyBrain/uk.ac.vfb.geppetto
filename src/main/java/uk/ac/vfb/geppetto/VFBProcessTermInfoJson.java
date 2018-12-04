@@ -168,7 +168,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				}
 			}
 
-			
+
 
 
 
@@ -359,7 +359,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		try{
 			int j = 0;
 			for (Object image:images){
-				addImage(((String) ((Map<String,Object>) ((Map<String,Object>) ((Map<String,Object>) image).get("channel_image")).get("image")).get("image_folder")) + "thumbnail.png", ((String) ((Map<String,Object>) ((Map<String,Object>) image).get("anatomy")).get("label")), ((Map<String,Object>) ((Map<String,Object>) image).get("anatomy")).get("short_form")), imageArray, j);
+				addImage(((String) ((Map<String,Object>) ((Map<String,Object>) ((Map<String,Object>) image).get("channel_image")).get("image")).get("image_folder")) + "thumbnail.png", ((String) ((Map<String,Object>) ((Map<String,Object>) image).get("anatomy")).get("label")), ((String) ((Map<String,Object>) ((Map<String,Object>) image).get("anatomy")).get("short_form")), imageArray, j);
 			}
 		}
 		catch (Exception e)
