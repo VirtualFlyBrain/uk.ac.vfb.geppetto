@@ -273,7 +273,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	 * @param reference
 	 * @param metadataType
 	 */
-	private void addModelThumbnails(imageArray images, String name, String reference, CompositeType metadataType, GeppettoModelAccess geppettoModelAccess) throws GeppettoVisitingException
+	private void addModelThumbnails(ArrayValue images, String name, String reference, CompositeType metadataType, GeppettoModelAccess geppettoModelAccess) throws GeppettoVisitingException
 	{
 		try{
 			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
