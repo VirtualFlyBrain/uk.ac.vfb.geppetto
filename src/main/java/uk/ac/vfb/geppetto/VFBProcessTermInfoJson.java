@@ -134,6 +134,44 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				addModelHtml(tempData, "Cross References", "xrefs", metadataType, geppettoModelAccess);
 			}
 
+			// Images:
+
+			// thumbnail
+			if (results.getValue("channel_image", 0) != null) {
+				addModelThumbnails(loadThumbnails(((List<Object>) results.getValue("channel_image", 0))), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
+			}
+
+			// examples
+			if (results.getValue("anatomy_channel_image", 0) != null) {
+				addModelThumbnails(loadThumbnails(((List<Object>) results.getValue("anatomy_channel_image", 0))), "Examples", "examples", metadataType, geppettoModelAccess);
+			}
+
+			// retrieving the parent composite type for new image variables
+			CompositeType parentType = (CompositeType) variable.getAnonymousTypes().get(0);
+			
+			// OBJ - 3D mesh
+			if (results.getValue("channel_image", 0) != null) {
+				tempData = loadImageFile(((List<Object>) results.getValue("channel_image", 0)), "/volume_man.obj");
+				if (tempData == null){
+					tempData = loadImageFile(((List<Object>) results.getValue("channel_image", 0)), "/volume.obj");
+				}
+				if (tempData != null){
+					addModelObj(tempData, "3D volume", variable.getId() + "_obj", parentType, geppettoModelAccess, dataSource);
+				}
+			}
+
+			// SWC - 3D mesh
+			if (results.getValue("channel_image", 0) != null) {
+				tempData = loadImageFile(((List<Object>) results.getValue("channel_image", 0)), "/volume.swc");
+				if (tempData != null){
+					addModelSwc(tempData, "3D Skeleton", variable.getId() + "_swc", parentType, geppettoModelAccess, dataSource);
+				}
+			}
+
+			
+
+
+
 		}
 		catch(GeppettoVisitingException e)
 		{
@@ -148,6 +186,60 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		return results;
 	}
 	
+/**
+	 * @param url
+	 * @param name
+	 * @param reference
+	 * @param parentType
+	 */
+	private void addModelSwc(String url, String name, String reference, CompositeType parentType, GeppettoModelAccess geppettoModelAccess, DataSource dataSource) throws GeppettoVisitingException
+	{
+		try{
+			Variable Variable = VariablesFactory.eINSTANCE.createVariable();
+			ImportType importType = TypesFactory.eINSTANCE.createImportType();
+			importType.setUrl(url);
+			importType.setId(reference);
+			importType.setModelInterpreterId("swcModelInterpreterService");
+			Variable.getTypes().add(importType);
+			Variable.setId(reference);
+			Variable.setName(name);
+			parentType.getVariables().add(Variable);
+			geppettoModelAccess.addTypeToLibrary(importType, getLibraryFor(dataSource, "swc"));
+		}
+		catch(GeppettoVisitingException e)
+		{
+			System.out.println(e);
+			throw new GeppettoVisitingException(e);
+		}
+	}
+
+	/**
+	 * @param url
+	 * @param name
+	 * @param reference
+	 * @param parentType
+	 */
+	private void addModelObj(String url, String name, String reference, CompositeType parentType, GeppettoModelAccess geppettoModelAccess, DataSource dataSource) throws GeppettoVisitingException
+	{
+		try{
+			Variable Variable = VariablesFactory.eINSTANCE.createVariable();
+			ImportType importType = TypesFactory.eINSTANCE.createImportType();
+			importType.setUrl(url);
+			importType.setId(reference);
+			importType.setModelInterpreterId("objModelInterpreterService");
+			Variable.getTypes().add(importType);
+			Variable.setId(reference);
+			Variable.setName(name);
+			parentType.getVariables().add(Variable);
+			geppettoModelAccess.addTypeToLibrary(importType, getLibraryFor(dataSource, "obj"));
+		}
+		catch(GeppettoVisitingException e)
+		{
+			System.out.println(e);
+			throw new GeppettoVisitingException(e);
+		}
+	}
+
 	/**
 	 * @param data
 	 * @param name
@@ -261,13 +353,13 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	/**
 	 * @param images
 	 */
-	private ArrayValue loadImages(List<Object> images)
+	private ArrayValue loadThumbnails(List<Object> images)
 	{
 		ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
 		try{
 			int j = 0;
 			for (Object image:images){
-				addImage(((String) ((Map<String,Object>) ((Map<String,Object>) ((Map<String,Object>) image).get("channel_image")).get("image")).get("image_folder")), ((String) ((Map<String,Object>) ((Map<String,Object>) image).get("anatomy")).get("label")), ((Map<String,Object>) ((Map<String,Object>) image).get("anatomy")).get("short_form")), imageArray, j);
+				addImage(((String) ((Map<String,Object>) ((Map<String,Object>) ((Map<String,Object>) image).get("channel_image")).get("image")).get("image_folder")) + "thumbnail.png", ((String) ((Map<String,Object>) ((Map<String,Object>) image).get("anatomy")).get("label")), ((Map<String,Object>) ((Map<String,Object>) image).get("anatomy")).get("short_form")), imageArray, j);
 			}
 		}
 		catch (Exception e)
@@ -276,6 +368,30 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 		if (imageArray.getElements().size() > 0) {
 			return imageArray;
+		}
+		return null;
+	}
+
+	/**
+	 * @param images
+	 */
+	private String loadImageFile(List<Object> images, String filename)
+	{
+		// find the first (should only be one record in images) that contains filename:
+		String imageUrl = "";
+		try{
+			imageUrl = checkURL(imageUrl);
+			int j = 0;
+			for (Object image:images){
+				imageUrl = ((String) ((Map<String,Object>) ((Map<String,Object>) image).get("image")).get("image_folder")) + filename;
+				if (checkURL(imageUrl)) {
+					return imageUrl;
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			System.out.println("Error handling JSON loading image files (" + images.toString() + filename + ") " + e.toString());
 		}
 		return null;
 	}
