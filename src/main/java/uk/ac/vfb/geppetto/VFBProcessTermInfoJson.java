@@ -170,6 +170,13 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				}
 			}
 
+			// Slices - 3D slice viewer
+			if (results.getValue("channel_image", 0) != null) {
+				tempData = loadImageFile(((List<Object>) results.getValue("channel_image", 0)), "/volume.wlz");
+				if (tempData != null){
+					addModelSwc(tempData, "3D Skeleton", variable.getId() + "_swc", parentType, geppettoModelAccess, dataSource);
+				}
+			}
 
 
 
@@ -193,6 +200,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	 * @param name
 	 * @param reference
 	 * @param parentType
+	 * @return
 	 */
 	private void addModelSwc(String url, String name, String reference, CompositeType parentType, GeppettoModelAccess geppettoModelAccess, DataSource dataSource) throws GeppettoVisitingException
 	{
@@ -220,6 +228,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	 * @param name
 	 * @param reference
 	 * @param parentType
+	 * @return
 	 */
 	private void addModelObj(String url, String name, String reference, CompositeType parentType, GeppettoModelAccess geppettoModelAccess, DataSource dataSource) throws GeppettoVisitingException
 	{
@@ -247,6 +256,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	 * @param name
 	 * @param reference
 	 * @param metadataType
+	 * @return
 	 */
 	private void addModelHtml(String data, String name, String reference, CompositeType metadataType, GeppettoModelAccess geppettoModelAccess) throws GeppettoVisitingException
 	{
@@ -274,6 +284,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	 * @param name
 	 * @param reference
 	 * @param metadataType
+	 * @return
 	 */
 	private void addModelThumbnails(ArrayValue images, String name, String reference, CompositeType metadataType, GeppettoModelAccess geppettoModelAccess) throws GeppettoVisitingException
 	{
@@ -298,6 +309,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	 * @param name
 	 * @param reference
 	 * @param metadataType
+	 * @return
 	 */
 	private void addModelString(String data, String name, String reference, CompositeType metadataType, GeppettoModelAccess geppettoModelAccess) throws GeppettoVisitingException
 	{
@@ -322,6 +334,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	
 	/**
 	 * @param strings
+	 * @return String
 	 */
 	private String loadString(List<String> strings)
 	{
@@ -338,6 +351,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	
 	/**
 	 * @param string
+	 * @return String
 	 */
 	private String loadString(String string)
 	{
@@ -354,6 +368,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 	/**
 	 * @param images
+	 * @return ArrayValue
 	 */
 	private ArrayValue loadThumbnails(List<Object> images)
 	{
@@ -376,6 +391,8 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 	/**
 	 * @param images
+	 * @param filename
+	 * @return String
 	 */
 	private String loadImageFile(List<Object> images, String filename)
 	{
@@ -400,6 +417,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 	/**
 	 * @param xrefs
+	 * @return String
 	 */
 	private String loadXrefs(List<Object> xrefs)
 	{
@@ -439,6 +457,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	
 	/**
 	 * @param xref
+	 * @return String
 	 */
 	private String loadXref(Map<String, Object> xref)
 	{
@@ -468,6 +487,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	 * @param entitys
 	 * @param showTypes
 	 * @param subclass
+	 * @return String
 	 */
 	private String loadEntitys(List<Object> entitys, List<String> showTypes, String subclass)
 	{
@@ -492,6 +512,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	/**
 	 * @param rels
 	 * @param showTypes
+	 * @return String
 	 */
 	private String loadRelationships(List<Object> rels, List<String> showTypes)
 	{
@@ -515,6 +536,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	/**
 	 * @param rel
 	 * @param showTypes
+	 * @return String
 	 */
 	private String loadRelationship(Map<String, Object> rel, List<String> showTypes)
 	{
@@ -537,6 +559,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	 * @param entity
 	 * @param internal
 	 * @param showTypes
+	 * @return String
 	 */
 	private String loadEntity(Map<String, Object> entity, boolean internal, List<String> showTypes)
 	{
@@ -562,6 +585,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	/**
 	 * @param types
 	 * @param show
+	 * @return String
 	 */
 	private String loadTypes(List<String> types, List<String> show)
 	{
@@ -584,6 +608,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	/**
 	 * @param edge
 	 * @param link
+	 * @return String
 	 */
 	private String loadEdge(Map<String, Object> edge, boolean link)
 	{
@@ -607,6 +632,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	 * @param name
 	 * @param images
 	 * @param i
+	 * @return
 	 */
 	private void addImage(String data, String name, String reference, ArrayValue images, int i)
 	{
@@ -623,6 +649,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 	/**
 	 * @param urlString
+	 * @return boolean
 	 */
 	private boolean checkURL(String urlString)
 	{
@@ -639,6 +666,21 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			System.out.println("Error checking url (" + urlString + ") " + e.toString());
 			return false;
 		}
+	}
+
+	/**
+	 * @param dataSource
+	 * @param format
+	 * @return
+	 */
+	private GeppettoLibrary getLibraryFor(DataSource dataSource, String format) {
+		for (DataSourceLibraryConfiguration lc : dataSource.getLibraryConfigurations()) {
+			if (lc.getFormat().equals(format)) {
+				return lc.getLibrary();
+			}
+		}
+		System.out.println(format + " Not Found!");
+		return null;
 	}
 
 }
