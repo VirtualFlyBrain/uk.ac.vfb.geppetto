@@ -471,7 +471,6 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		// find the first (should only be one record in images) that contains filename:
 		String imageUrl = "";
 		try{
-			imageUrl = checkURL(imageUrl);
 			int j = 0;
 			for (Object image:images){
 				imageUrl = ((String) ((Map<String,Object>) ((Map<String,Object>) image).get("image")).get("image_folder")) + filename;
