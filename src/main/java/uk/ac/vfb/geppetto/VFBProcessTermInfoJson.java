@@ -177,7 +177,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			if (results.getValue("channel_image", 0) != null) {
 				tempData = loadImageFile(((List<Object>) results.getValue("channel_image", 0)), "/volume.wlz");
 				if (tempData != null){
-					addModelSlices(tempData, "3D Stack", variable.getId() + "_wlz", parentType, geppettoModelAccess, dataSource);
+					//addModelSlices(tempData, "3D Stack", variable.getId() + "_wlz", parentType, geppettoModelAccess, dataSource);
 				}
 			}
 
