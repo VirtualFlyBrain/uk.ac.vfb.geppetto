@@ -326,7 +326,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			imageVariable.setId(reference);
 			imageVariable.setName(name);
 			imageVariable.getTypes().add(imageType);
-			geppettoModelAccess.addVariableToType(imageVariable, metaDataType);
+			geppettoModelAccess.addVariableToType(imageVariable, metadataType);
 			imageVariable.getInitialValues().put(imageType, images);
 		}
 		catch(GeppettoVisitingException e)
