@@ -740,6 +740,20 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 	}
 
+	private class IIPJSON {
+		int indexNumber;
+		String serverUrl;
+		String fileLocation;
+		List<List<String>> subDomains;
+
+		public IIPJSON(int indexNumber, String serverUrl, String fileLocation, List<List<String>> subDomains) {
+			this.indexNumber = indexNumber;
+			this.fileLocation = fileLocation;
+			this.serverUrl = serverUrl;
+			this.subDomains = subDomains;
+		}
+	}
+
 	/**
 	 * @param dataSource
 	 * @param format
