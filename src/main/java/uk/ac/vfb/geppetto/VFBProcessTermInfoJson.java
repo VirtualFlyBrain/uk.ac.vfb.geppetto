@@ -130,7 +130,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				tempData = loadEntitys((List<Object>) results.getValue("parents", 0), showTypes, "parents");
 				addModelHtml(tempData, "Parents", "parents", metadataType, geppettoModelAccess);
 				// store first parent as parent type for 3D slice viewer
-				parentId = (String)((List<String, Object>) ((List<Object>) results.getValue("parents", 0)).get(0)).get("short_form");
+				parentId = (String) ((Map<String, Object>) ((List<Object>) results.getValue("parents", 0)).get(0)).get("short_form");
 			}
 			
 			// relationships
