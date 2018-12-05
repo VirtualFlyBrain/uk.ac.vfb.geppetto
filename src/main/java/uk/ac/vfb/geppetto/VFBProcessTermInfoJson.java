@@ -85,14 +85,18 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			
 			String tempId = "";
 			String tempData = "";
-			List<String> showTypes = Arrays.asList("Class","Individual","Anatomy","Template","Motor_neuron"); // TODO: Fill in with passed types
+			String parentId = null;
+			List<String> superTypes = Arrays.asList();
+			List<String> showTypes = Arrays.asList("Class","Individual","Anatomy","Template","Motor_neuron","Cell","Neuron"); // TODO: Fill in with passed types
 			
 			// term
 			if (results.getValue("term", 0) != null) {
 				Map<String, Object> term = (Map<String, Object>) results.getValue("term", 0);
 				// Note: core already handled by VFBProcessTermInfoCore except types labels
 				// Types
-				addModelHtml(loadTypes(((List<String>) ((Map<String, Object>) term.get("core")).get("types")), showTypes), "Types", "types", metadataType, geppettoModelAccess);
+				superTypes = ((List<String>) ((Map<String, Object>) term.get("core")).get("types"));
+				addModelHtml(loadTypes(superTypes, showTypes), "Types", "types", metadataType, geppettoModelAccess);
+				
 				// Description
 				tempData = "";
 				if (term.get("description") != null) {
@@ -125,6 +129,8 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			if (results.getValue("parents", 0) != null) {
 				tempData = loadEntitys((List<Object>) results.getValue("parents", 0), showTypes, "parents");
 				addModelHtml(tempData, "Parents", "parents", metadataType, geppettoModelAccess);
+				// store first parent as parent type for 3D slice viewer
+				parentId = (String)((List<String, Object>) ((List<Object>) results.getValue("parents", 0)).get(0)).get("short_form");
 			}
 			
 			// relationships
@@ -177,12 +183,11 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			if (results.getValue("channel_image", 0) != null) {
 				tempData = loadImageFile(((List<Object>) results.getValue("channel_image", 0)), "/volume.wlz");
 				if (tempData != null){
-					//addModelSlices(tempData, "3D Stack", variable.getId() + "_wlz", parentType, geppettoModelAccess, dataSource);
+					if (!superTypes.contains("Template")) {
+						addModelSlices(tempData, "3D Stack", variable.getId() + "_wlz", parentType, geppettoModelAccess, dataSource, loadBasicDomain(variable.getName(), variable.getId(), parentId));
+					}
 				}
 			}
-
-
-
 
 		}
 		catch(GeppettoVisitingException e)
@@ -198,205 +203,26 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		return results;
 	}
 	
-
-
 	/**
-	 * @param url
-	 * @param name
+	 * @param label
 	 * @param reference
-	 * @param parentType
-	 * @return
-	 */
-	private void addModelSlices(String url, String name, String reference, CompositeType parentType, GeppettoModelAccess geppettoModelAccess, DataSource dataSource, List<List<String>> domains) throws GeppettoVisitingException
-	{
-		try{
-			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
-			Variable slicesVar = VariablesFactory.eINSTANCE.createVariable();
-			Image slicesValue = ValuesFactory.eINSTANCE.createImage();
-			slicesValue.setData(new Gson().toJson(new IIPJSON(0, "https://www.virtualflybrain.org/fcgi/wlziipsrv.fcgi", url.replace("http://www.virtualflybrain.org/data/", "/disk/data/VFB/IMAGE_DATA/"), domains)));
-			slicesValue.setFormat(ImageFormat.IIP);
-			slicesValue.setReference(reference);
-			slicesVar.setId(reference);
-			slicesVar.setName(name);
-			slicesVar.getTypes().add(imageType);
-			slicesVar.getInitialValues().put(imageType, slicesValue);
-			geppettoModelAccess.addVariableToType(slicesVar, parentType);
-		} catch (Exception e) {
-			System.out.println("Error adding slices:");
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * @param url
-	 * @param name
-	 * @param reference
-	 * @param parentType
-	 * @return
-	 */
-	private void addModelSwc(String url, String name, String reference, CompositeType parentType, GeppettoModelAccess geppettoModelAccess, DataSource dataSource)
-	{
-		try{
-			Variable Variable = VariablesFactory.eINSTANCE.createVariable();
-			ImportType importType = TypesFactory.eINSTANCE.createImportType();
-			importType.setUrl(url);
-			importType.setId(reference);
-			importType.setModelInterpreterId("swcModelInterpreterService");
-			Variable.getTypes().add(importType);
-			Variable.setId(reference);
-			Variable.setName(name);
-			parentType.getVariables().add(Variable);
-			geppettoModelAccess.addTypeToLibrary(importType, getLibraryFor(dataSource, "swc"));
-		}
-		catch (Exception e)
-		{
-			System.out.println("Error adding SWC to model (" + reference + ") " + e.toString());
-		}
-	}
-
-	/**
-	 * @param url
-	 * @param name
-	 * @param reference
-	 * @param parentType
-	 * @return
-	 */
-	private void addModelObj(String url, String name, String reference, CompositeType parentType, GeppettoModelAccess geppettoModelAccess, DataSource dataSource)
-	{
-		try{
-			Variable Variable = VariablesFactory.eINSTANCE.createVariable();
-			ImportType importType = TypesFactory.eINSTANCE.createImportType();
-			importType.setUrl(url);
-			importType.setId(reference);
-			importType.setModelInterpreterId("objModelInterpreterService");
-			Variable.getTypes().add(importType);
-			Variable.setId(reference);
-			Variable.setName(name);
-			parentType.getVariables().add(Variable);
-			geppettoModelAccess.addTypeToLibrary(importType, getLibraryFor(dataSource, "obj"));
-		}
-		catch (Exception e)
-		{
-			System.out.println("Error adding OBJ to model (" + reference + ") " + e.toString());
-		}
-	}
-
-	/**
-	 * @param data
-	 * @param name
-	 * @param reference
-	 * @param metadataType
-	 * @return
-	 */
-	private void addModelHtml(String data, String name, String reference, CompositeType metadataType, GeppettoModelAccess geppettoModelAccess) throws GeppettoVisitingException
-	{
-		try{
-			Type htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
-			Variable label = VariablesFactory.eINSTANCE.createVariable();
-			label.setId(reference);
-			label.setName(name);
-			label.getTypes().add(htmlType);
-			HTML labelValue = ValuesFactory.eINSTANCE.createHTML();
-			label.getInitialValues().put(htmlType, labelValue);
-			labelValue.setHtml(data);
-			geppettoModelAccess.addVariableToType(label, metadataType);
-		}
-		catch(GeppettoVisitingException e)
-		{
-			System.out.println(e);
-			throw new GeppettoVisitingException(e);
-		}
-	}
-
-
-	/**
-	 * @param images
-	 * @param name
-	 * @param reference
-	 * @param metadataType
-	 * @return
-	 */
-	private void addModelThumbnails(ArrayValue images, String name, String reference, CompositeType metadataType, GeppettoModelAccess geppettoModelAccess) throws GeppettoVisitingException
-	{
-		try{
-			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
-			Variable imageVariable = VariablesFactory.eINSTANCE.createVariable();
-			imageVariable.setId(reference);
-			imageVariable.setName(name);
-			imageVariable.getTypes().add(imageType);
-			geppettoModelAccess.addVariableToType(imageVariable, metadataType);
-			imageVariable.getInitialValues().put(imageType, images);
-		}
-		catch(GeppettoVisitingException e)
-		{
-			System.out.println(e);
-			throw new GeppettoVisitingException(e);
-		}
-	}
-	
-	/**
-	 * @param data
-	 * @param name
-	 * @param reference
-	 * @param metadataType
-	 * @return
-	 */
-	private void addModelString(String data, String name, String reference, CompositeType metadataType, GeppettoModelAccess geppettoModelAccess) throws GeppettoVisitingException
-	{
-		try
-		{
-			Type textType = geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE);
-			Variable label = VariablesFactory.eINSTANCE.createVariable();
-			label.setId(reference);
-			label.setName(name);
-			label.getTypes().add(textType);
-			Text labelValue = ValuesFactory.eINSTANCE.createText();
-			label.getInitialValues().put(textType, labelValue);
-			labelValue.setText(data);
-			geppettoModelAccess.addVariableToType(label, metadataType);
-		}
-		catch(GeppettoVisitingException e)
-		{
-			System.out.println(e);
-			throw new GeppettoVisitingException(e);
-		}
-	}
-	
-	/**
-	 * @param strings
+	 * @param parentId
 	 * @return List<List<String>>
 	 */
-	private List<List<String>> loadDomains(List<String> strings, boolean template)
+	private List<List<String>> loadBasicDomain(String label, String reference, String parentId)
 	{
 		try{
 			List<List<String>> domains = new ArrayList(new ArrayList());
-			String[] domainId = new String[600];
-			String[] domainName = new String[600];
-			String[] domainType = new String[600];
-			String[] domainCentre = new String[600];
-			String[] voxelSize = new String[4];
-			if (template){
-				domains.add(Arrays.asList(voxelSize));
-				domains.add(Arrays.asList(domainId));
-				domains.add(Arrays.asList(domainName));
-				domains.add(Arrays.asList(domainType));
-				domains.add(Arrays.asList(domainCentre));
-			}else{
-				domains.add(Arrays.asList("0","0","0"));
-				domains.add(Arrays.asList(""));
-				domains.add(Arrays.asList(""));
-				// if (depictedType.indexOf('(') > -1){
-				// 	domains.add(Arrays.asList(((depictedType.split("[(]")[1]).split("[)]")[0])));
-				// }else{
-				// 	domains.add(Arrays.asList(""));
-				// }
-				domains.add(Arrays.asList("0","0","0"));
-			}
+			domains.add(Arrays.asList("0","0","0"));
+			domains.add(Arrays.asList(reference));
+			domains.add(Arrays.asList(label));
+			domains.add(Arrays.asList(parentId));
+			domains.add(Arrays.asList("0","0","0"));
 			return domains;
 		}
 		catch (Exception e)
 		{
-			System.out.println("Error handling JSON loading strings (" + strings.toString() + ") " + e.toString());
+			System.out.println("Error creating basic domains for (" + label.toString() + ") " + e.toString());
 		}
 		return null;
 	}
@@ -695,6 +521,171 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			return "";
 		}
 	}
+
+
+	/**
+	 * @param url
+	 * @param name
+	 * @param reference
+	 * @param parentType
+	 * @return
+	 */
+	private void addModelSlices(String url, String name, String reference, CompositeType parentType, GeppettoModelAccess geppettoModelAccess, DataSource dataSource, List<List<String>> domains) throws GeppettoVisitingException
+	{
+		try{
+			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
+			Variable slicesVar = VariablesFactory.eINSTANCE.createVariable();
+			Image slicesValue = ValuesFactory.eINSTANCE.createImage();
+			slicesValue.setData(new Gson().toJson(new IIPJSON(0, "https://www.virtualflybrain.org/fcgi/wlziipsrv.fcgi", url.replace("http://www.virtualflybrain.org/data/", "/disk/data/VFB/IMAGE_DATA/"), domains)));
+			slicesValue.setFormat(ImageFormat.IIP);
+			slicesValue.setReference(reference);
+			slicesVar.setId(reference);
+			slicesVar.setName(name);
+			slicesVar.getTypes().add(imageType);
+			slicesVar.getInitialValues().put(imageType, slicesValue);
+			geppettoModelAccess.addVariableToType(slicesVar, parentType);
+		} catch (Exception e) {
+			System.out.println("Error adding slices:");
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * @param url
+	 * @param name
+	 * @param reference
+	 * @param parentType
+	 * @return
+	 */
+	private void addModelSwc(String url, String name, String reference, CompositeType parentType, GeppettoModelAccess geppettoModelAccess, DataSource dataSource)
+	{
+		try{
+			Variable Variable = VariablesFactory.eINSTANCE.createVariable();
+			ImportType importType = TypesFactory.eINSTANCE.createImportType();
+			importType.setUrl(url);
+			importType.setId(reference);
+			importType.setModelInterpreterId("swcModelInterpreterService");
+			Variable.getTypes().add(importType);
+			Variable.setId(reference);
+			Variable.setName(name);
+			parentType.getVariables().add(Variable);
+			geppettoModelAccess.addTypeToLibrary(importType, getLibraryFor(dataSource, "swc"));
+		}
+		catch (Exception e)
+		{
+			System.out.println("Error adding SWC to model (" + reference + ") " + e.toString());
+		}
+	}
+
+	/**
+	 * @param url
+	 * @param name
+	 * @param reference
+	 * @param parentType
+	 * @return
+	 */
+	private void addModelObj(String url, String name, String reference, CompositeType parentType, GeppettoModelAccess geppettoModelAccess, DataSource dataSource)
+	{
+		try{
+			Variable Variable = VariablesFactory.eINSTANCE.createVariable();
+			ImportType importType = TypesFactory.eINSTANCE.createImportType();
+			importType.setUrl(url);
+			importType.setId(reference);
+			importType.setModelInterpreterId("objModelInterpreterService");
+			Variable.getTypes().add(importType);
+			Variable.setId(reference);
+			Variable.setName(name);
+			parentType.getVariables().add(Variable);
+			geppettoModelAccess.addTypeToLibrary(importType, getLibraryFor(dataSource, "obj"));
+		}
+		catch (Exception e)
+		{
+			System.out.println("Error adding OBJ to model (" + reference + ") " + e.toString());
+		}
+	}
+
+	/**
+	 * @param data
+	 * @param name
+	 * @param reference
+	 * @param metadataType
+	 * @return
+	 */
+	private void addModelHtml(String data, String name, String reference, CompositeType metadataType, GeppettoModelAccess geppettoModelAccess) throws GeppettoVisitingException
+	{
+		try{
+			Type htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
+			Variable label = VariablesFactory.eINSTANCE.createVariable();
+			label.setId(reference);
+			label.setName(name);
+			label.getTypes().add(htmlType);
+			HTML labelValue = ValuesFactory.eINSTANCE.createHTML();
+			label.getInitialValues().put(htmlType, labelValue);
+			labelValue.setHtml(data);
+			geppettoModelAccess.addVariableToType(label, metadataType);
+		}
+		catch(GeppettoVisitingException e)
+		{
+			System.out.println(e);
+			throw new GeppettoVisitingException(e);
+		}
+	}
+
+
+	/**
+	 * @param images
+	 * @param name
+	 * @param reference
+	 * @param metadataType
+	 * @return
+	 */
+	private void addModelThumbnails(ArrayValue images, String name, String reference, CompositeType metadataType, GeppettoModelAccess geppettoModelAccess) throws GeppettoVisitingException
+	{
+		try{
+			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
+			Variable imageVariable = VariablesFactory.eINSTANCE.createVariable();
+			imageVariable.setId(reference);
+			imageVariable.setName(name);
+			imageVariable.getTypes().add(imageType);
+			geppettoModelAccess.addVariableToType(imageVariable, metadataType);
+			imageVariable.getInitialValues().put(imageType, images);
+		}
+		catch(GeppettoVisitingException e)
+		{
+			System.out.println(e);
+			throw new GeppettoVisitingException(e);
+		}
+	}
+	
+	/**
+	 * @param data
+	 * @param name
+	 * @param reference
+	 * @param metadataType
+	 * @return
+	 */
+	private void addModelString(String data, String name, String reference, CompositeType metadataType, GeppettoModelAccess geppettoModelAccess) throws GeppettoVisitingException
+	{
+		try
+		{
+			Type textType = geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE);
+			Variable label = VariablesFactory.eINSTANCE.createVariable();
+			label.setId(reference);
+			label.setName(name);
+			label.getTypes().add(textType);
+			Text labelValue = ValuesFactory.eINSTANCE.createText();
+			label.getInitialValues().put(textType, labelValue);
+			labelValue.setText(data);
+			geppettoModelAccess.addVariableToType(label, metadataType);
+		}
+		catch(GeppettoVisitingException e)
+		{
+			System.out.println(e);
+			throw new GeppettoVisitingException(e);
+		}
+	}
+	
+
 	/**
 	 * @param data
 	 * @param name
