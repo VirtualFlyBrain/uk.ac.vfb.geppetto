@@ -234,7 +234,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	 * @param parentType
 	 * @return
 	 */
-	private void addModelSwc(String url, String name, String reference, CompositeType parentType, GeppettoModelAccess geppettoModelAccess, DataSource dataSource) throws GeppettoVisitingException
+	private void addModelSwc(String url, String name, String reference, CompositeType parentType, GeppettoModelAccess geppettoModelAccess, DataSource dataSource)
 	{
 		try{
 			Variable Variable = VariablesFactory.eINSTANCE.createVariable();
@@ -248,10 +248,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			parentType.getVariables().add(Variable);
 			geppettoModelAccess.addTypeToLibrary(importType, getLibraryFor(dataSource, "swc"));
 		}
-		catch(GeppettoVisitingException e)
+		catch (Exception e)
 		{
-			System.out.println(e);
-			throw new GeppettoVisitingException(e);
+			System.out.println("Error adding SWC to model (" + reference + ") " + e.toString());
 		}
 	}
 
@@ -262,7 +261,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	 * @param parentType
 	 * @return
 	 */
-	private void addModelObj(String url, String name, String reference, CompositeType parentType, GeppettoModelAccess geppettoModelAccess, DataSource dataSource) throws GeppettoVisitingException
+	private void addModelObj(String url, String name, String reference, CompositeType parentType, GeppettoModelAccess geppettoModelAccess, DataSource dataSource)
 	{
 		try{
 			Variable Variable = VariablesFactory.eINSTANCE.createVariable();
@@ -276,10 +275,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			parentType.getVariables().add(Variable);
 			geppettoModelAccess.addTypeToLibrary(importType, getLibraryFor(dataSource, "obj"));
 		}
-		catch(GeppettoVisitingException e)
+		catch (Exception e)
 		{
-			System.out.println(e);
-			throw new GeppettoVisitingException(e);
+			System.out.println("Error adding OBJ to model (" + reference + ") " + e.toString());
 		}
 	}
 
@@ -399,7 +397,6 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		catch (Exception e)
 		{
 			System.out.println("Error handling JSON loading strings (" + strings.toString() + ") " + e.toString());
-			return null;
 		}
 		return null;
 	}
