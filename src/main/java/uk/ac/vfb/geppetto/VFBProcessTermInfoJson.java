@@ -33,7 +33,7 @@ import org.geppetto.model.values.Text;
 import org.geppetto.model.types.ImportType;
 import org.geppetto.model.types.TypesFactory;
 import org.geppetto.model.GeppettoLibrary;
-
+import org.geppetto.model.datasources.DataSourceLibraryConfiguration;
 
 /**
  * @author robertcourt
