@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gson.Gson;
+
 import org.geppetto.core.datasources.GeppettoDataSourceException;
 import org.geppetto.core.model.GeppettoModelAccess;
 import org.geppetto.datasources.AQueryProcessor;
@@ -174,7 +176,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			if (results.getValue("channel_image", 0) != null) {
 				tempData = loadImageFile(((List<Object>) results.getValue("channel_image", 0)), "/volume.wlz");
 				if (tempData != null){
-					addModelSwc(tempData, "3D Skeleton", variable.getId() + "_swc", parentType, geppettoModelAccess, dataSource);
+					addModelSlices(tempData, "3D Stack", variable.getId() + "_wlz", parentType, geppettoModelAccess, dataSource);
 				}
 			}
 
@@ -195,7 +197,36 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		return results;
 	}
 	
-/**
+
+
+	/**
+	 * @param url
+	 * @param name
+	 * @param reference
+	 * @param parentType
+	 * @return
+	 */
+	private void addModelSlices(String url, String name, String reference, CompositeType parentType, GeppettoModelAccess geppettoModelAccess, DataSource dataSource, List<List<String>> domains) throws GeppettoVisitingException
+	{
+		try{
+			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
+			Variable slicesVar = VariablesFactory.eINSTANCE.createVariable();
+			Image slicesValue = ValuesFactory.eINSTANCE.createImage();
+			slicesValue.setData(new Gson().toJson(new IIPJSON(0, "https://www.virtualflybrain.org/fcgi/wlziipsrv.fcgi", url.replace("http://www.virtualflybrain.org/data/", "/disk/data/VFB/IMAGE_DATA/"), domains)));
+			slicesValue.setFormat(ImageFormat.IIP);
+			slicesValue.setReference(reference);
+			slicesVar.setId(reference);
+			slicesVar.setName(name);
+			slicesVar.getTypes().add(imageType);
+			slicesVar.getInitialValues().put(imageType, slicesValue);
+			geppettoModelAccess.addVariableToType(slicesVar, parentType);
+		} catch (Exception e) {
+			System.out.println("Error adding slices:");
+			e.printStackTrace();
+		}
+	}
+
+	/**
 	 * @param url
 	 * @param name
 	 * @param reference
@@ -332,6 +363,46 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 	}
 	
+	/**
+	 * @param strings
+	 * @return List<List<String>>
+	 */
+	private List<List<String>> loadDomains(List<String> strings, boolean template)
+	{
+		try{
+			List<List<String>> domains = new ArrayList(new ArrayList());
+			String[] domainId = new String[600];
+			String[] domainName = new String[600];
+			String[] domainType = new String[600];
+			String[] domainCentre = new String[600];
+			String[] voxelSize = new String[4];
+			if (template){
+				domains.add(Arrays.asList(voxelSize));
+				domains.add(Arrays.asList(domainId));
+				domains.add(Arrays.asList(domainName));
+				domains.add(Arrays.asList(domainType));
+				domains.add(Arrays.asList(domainCentre));
+			}else{
+				domains.add(Arrays.asList("0","0","0"));
+				domains.add(Arrays.asList(""));
+				domains.add(Arrays.asList(""));
+				if (depictedType.indexOf('(') > -1){
+					domains.add(Arrays.asList(((depictedType.split("[(]")[1]).split("[)]")[0])));
+				}else{
+					domains.add(Arrays.asList(""));
+				}
+				domains.add(Arrays.asList("0","0","0"));
+			}
+			return domains;
+		}
+		catch (Exception e)
+		{
+			System.out.println("Error handling JSON loading strings (" + strings.toString() + ") " + e.toString());
+			return null;
+		}
+		return null;
+	}
+
 	/**
 	 * @param strings
 	 * @return String
