@@ -387,11 +387,11 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				domains.add(Arrays.asList("0","0","0"));
 				domains.add(Arrays.asList(""));
 				domains.add(Arrays.asList(""));
-				if (depictedType.indexOf('(') > -1){
-					domains.add(Arrays.asList(((depictedType.split("[(]")[1]).split("[)]")[0])));
-				}else{
-					domains.add(Arrays.asList(""));
-				}
+				// if (depictedType.indexOf('(') > -1){
+				// 	domains.add(Arrays.asList(((depictedType.split("[(]")[1]).split("[)]")[0])));
+				// }else{
+				// 	domains.add(Arrays.asList(""));
+				// }
 				domains.add(Arrays.asList("0","0","0"));
 			}
 			return domains;
