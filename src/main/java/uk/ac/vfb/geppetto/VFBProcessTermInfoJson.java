@@ -112,7 +112,11 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					// Comment
 					if (term.get("comment") != null) {
 						tempData = "<span class=\"terminfo-comment\">";
-						tempData = tempData + loadString(term.get("comment"));
+						if (term.get("comment") instanceof String) {
+							tempData = tempData + loadString((String) term.get("comment"));
+						} else {
+							tempData = tempData + loadString((List<String>) term.get("comment"));
+						}
 						tempData = tempData + "</span><br />";
 					}
 					// Adding to model
