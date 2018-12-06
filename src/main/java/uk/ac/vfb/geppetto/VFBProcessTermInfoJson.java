@@ -231,6 +231,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		catch (Exception e)
 		{
 			System.out.println("Error creating basic domains for (" + label.toString() + ") " + e.toString());
+			e.printStackTrace();
 		}
 		return null;
 	}
@@ -248,6 +249,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		catch (Exception e)
 		{
 			System.out.println("Error handling JSON loading strings (" + strings.toString() + ") " + e.toString());
+			e.printStackTrace();
 			return "";
 		}
 	}
@@ -265,6 +267,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		catch (Exception e)
 		{
 			System.out.println("Error handling JSON loading string (" + string + ") " + e.toString());
+			e.printStackTrace();
 			return "";
 		}
 	}
@@ -285,6 +288,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		catch (Exception e)
 		{
 			System.out.println("Error handling JSON loading images (" + images.toString() + ") " + e.toString());
+			e.printStackTrace();
 		}
 		if (imageArray.getElements().size() > 0) {
 			return imageArray;
@@ -354,6 +358,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		catch (Exception e)
 		{
 			System.out.println("Error handling JSON loading xrefs (" + xrefs.toString() + ") " + e.toString());
+			e.printStackTrace();
 			return "";
 		}
 	}
@@ -382,6 +387,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		catch (Exception e)
 		{
 			System.out.println("Error handling JSON loading xref (" + xref.toString() + ") " + e.toString());
+			e.printStackTrace();
 			return "";
 		}
 	}
@@ -408,6 +414,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		catch (Exception e)
 		{
 			System.out.println("Error handling JSON loading entitys (" + entitys.toString() + ") " + e.toString());
+			e.printStackTrace();
 			return "";
 		}
 	}
@@ -432,6 +439,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		catch (Exception e)
 		{
 			System.out.println("Error handling JSON loading realtionships (" + rels.toString() + ") " + e.toString());
+			e.printStackTrace();
 			return "";
 		}
 	}
@@ -454,6 +462,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		catch (Exception e)
 		{
 			System.out.println("Error handling JSON loading realtionship (" + rel.toString() + ") " + e.toString());
+			e.printStackTrace();
 			return "";
 		}
 	}
@@ -482,6 +491,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		catch (Exception e)
 		{
 			System.out.println("Error handling JSON loading entity (" + entity.toString() + ") " + e.toString());
+			e.printStackTrace();
 			return "";
 		}
 	}
@@ -505,6 +515,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		catch (Exception e)
 		{
 			System.out.println("Error handling JSON loading types (" + types.toString() + ") " + e.toString());
+			e.printStackTrace();
 			return "";
 		}
 	}
@@ -527,6 +538,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		catch (Exception e)
 		{
 			System.out.println("Error handling JSON loading edge (" + edge.toString() + ") " + e.toString());
+			e.printStackTrace();
 			return "";
 		}
 	}
@@ -583,6 +595,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		catch (Exception e)
 		{
 			System.out.println("Error adding SWC to model (" + reference + ") " + e.toString());
+			e.printStackTrace();
 		}
 	}
 
@@ -610,6 +623,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		catch (Exception e)
 		{
 			System.out.println("Error adding OBJ to model (" + reference + ") " + e.toString());
+			e.printStackTrace();
 		}
 	}
 
@@ -636,6 +650,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		catch(GeppettoVisitingException e)
 		{
 			System.out.println(e);
+			e.printStackTrace();
 			throw new GeppettoVisitingException(e);
 		}
 	}
@@ -662,6 +677,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		catch(GeppettoVisitingException e)
 		{
 			System.out.println(e);
+			e.printStackTrace();
 			throw new GeppettoVisitingException(e);
 		}
 	}
@@ -690,6 +706,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		catch(GeppettoVisitingException e)
 		{
 			System.out.println(e);
+			e.printStackTrace();
 			throw new GeppettoVisitingException(e);
 		}
 	}
@@ -732,6 +749,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		catch(Exception e)
 		{
 			System.out.println("Error checking url (" + urlString + ") " + e.toString());
+			e.printStackTrace();
 			return false;
 		}
 	}
