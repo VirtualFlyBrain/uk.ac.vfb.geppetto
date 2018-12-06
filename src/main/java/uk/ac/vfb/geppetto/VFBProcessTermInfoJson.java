@@ -313,6 +313,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		catch (Exception e)
 		{
 			System.out.println("Error handling JSON loading image files (" + images.toString() + filename + ") " + e.toString());
+			e.printStackTrace();
 		}
 		return null;
 	}
