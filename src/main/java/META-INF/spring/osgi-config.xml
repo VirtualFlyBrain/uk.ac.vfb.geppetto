@@ -88,6 +88,20 @@
 	<aop:scoped-proxy proxy-target-class="false"/>
 	</bean>
 	
+	<osgi:service id="VFBAddProcessTermInfoCore" ref="vfbProcessTermInfoCore"
+		interface="org.geppetto.core.datasources.IQueryProcessor">
+	</osgi:service>
+	<bean id="vfbProcessTermInfoCore" scope="prototype" class="uk.ac.vfb.geppetto.VFBProcessTermInfoCore">
+	<aop:scoped-proxy proxy-target-class="false"/>
+	</bean>
+	
+	<osgi:service id="VFBAddProcessTermInfoJson" ref="vfbProcessTermInfoJson"
+		interface="org.geppetto.core.datasources.IQueryProcessor">
+	</osgi:service>
+	<bean id="vfbProcessTermInfoJson" scope="prototype" class="uk.ac.vfb.geppetto.VFBProcessTermInfoJson">
+	<aop:scoped-proxy proxy-target-class="false"/>
+	</bean>
+	
 	<osgi:service id="VFBAberOWLQueryProcessorExporter" ref="vfbAberOWLQueryProcessor"
 		interface="org.geppetto.core.datasources.IQueryProcessor">
 	</osgi:service>
