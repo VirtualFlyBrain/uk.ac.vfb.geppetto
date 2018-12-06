@@ -98,31 +98,34 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				addModelHtml(loadTypes(superTypes, showTypes), "Types", "types", metadataType, geppettoModelAccess);
 				
 				// Description
-				tempData = "";
-				if (term.get("description") != null) {
-					tempData = "<span class=\"terminfo-description\">";
-					if (((String) term.get("description")).contains("[")) {
-						tempData = tempData + loadString((List<String>) term.get("description"));
-					} else {
-						tempData = tempData + loadString((String) term.get("description"));
+				try{
+					tempData = "";
+					if (term.get("description") != null) {
+						tempData = "<span class=\"terminfo-description\">";
+						if (((String) term.get("description")).contains("[")) {
+							tempData = tempData + loadString((List<String>) term.get("description"));
+						} else {
+							tempData = tempData + loadString((String) term.get("description"));
+						}
+						tempData = tempData + "</span><br />";
 					}
-					tempData = tempData + "</span><br />";
-				}
-				// Comment
-				if (term.get("comment") != null) {
-					tempData = "<span class=\"terminfo-comment\">";
-					if (((String) term.get("comment")).contains("[")) {
-						tempData = tempData + loadString((List<String>) term.get("comment"));
-					} else {
-						tempData = tempData + loadString((String) term.get("comment"));
+					// Comment
+					if (term.get("comment") != null) {
+						tempData = "<span class=\"terminfo-comment\">";
+						tempData = tempData + loadString(term.get("comment"));
+						tempData = tempData + "</span><br />";
 					}
-					tempData = tempData + "</span><br />";
+					// Adding to model
+					if (!"".equals(tempData)) {
+						addModelHtml(tempData, "Description", "description", metadataType, geppettoModelAccess);
+					}
+					term = null;
 				}
-				// Adding to model
-				if (!"".equals(tempData)) {
-					addModelHtml(tempData, "Description", "description", metadataType, geppettoModelAccess);
+				catch (Exception e) 
+				{
+					System.out.println("Error creating description: " + e.toString());
+					e.printStackTrace();
 				}
-				term = null;
 			}
 			
 			// parents
@@ -195,9 +198,10 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			System.out.println(e);
 			throw new GeppettoDataSourceException(e);
 		}
-		catch(Exception e)
+		catch (Exception e) 
 		{
-			System.out.println(e);
+			System.out.println("Error creating metadata: " + e.toString());
+			e.printStackTrace();
 		}
 
 		return results;
