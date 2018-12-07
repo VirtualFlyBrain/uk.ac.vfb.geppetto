@@ -81,7 +81,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			Type htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
 			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
 
-			System.out.println("Processing term info...");
+			System.out.println("Processing JSON...");
 			
 			String tempId = "";
 			String tempData = "";
