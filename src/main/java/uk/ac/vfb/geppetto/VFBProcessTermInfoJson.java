@@ -286,8 +286,8 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			String reference = "";
 			for (Object image:images){
 				url = ((String) ((Map<String,Object>) ((Map<String,Object>) image).get("image")).get("image_folder")) + "thumbnail.png";
-				name = ((String) ((Map<String,Object>) ((Map<String,Object>) image).get("anatomy")).get("label"));
-				reference = ((String) ((Map<String,Object>) ((Map<String,Object>) image).get("anatomy")).get("short_form"));
+				name = ((String) ((Map<String,Object>) ((Map<String,Object>) image).get("channel")).get("label"));
+				reference = ((String) ((Map<String,Object>) ((Map<String,Object>) image).get("channel")).get("short_form"));
 				addImage(url, name, reference, imageArray, j);
 			}
 		}
