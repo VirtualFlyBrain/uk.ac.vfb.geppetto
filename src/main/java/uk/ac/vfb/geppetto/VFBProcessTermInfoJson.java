@@ -86,6 +86,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			String tempId = "";
 			String tempData = "";
 			String parentId = null;
+			String header = "";
 			List<String> superTypes = Arrays.asList();
 			List<String> showTypes = Arrays.asList("Class","Individual","Anatomy","Template","Motor_neuron","Cell","Neuron"); // TODO: Fill in with passed types
 			
@@ -100,22 +101,24 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				// Description
 				try{
 					tempData = "";
-					if (term.get("description") != null) {
+					header = "description";
+					if (term.get(header) != null && !term.get(header).toString().equals("[]")) {
 						tempData = "<span class=\"terminfo-description\">";
-						if (((String) term.get("description")).contains("[")) {
-							tempData = tempData + loadString((List<String>) term.get("description"));
+						if (((String) term.get(header)).contains("[")) {
+							tempData = tempData + loadString((List<String>) term.get(header));
 						} else {
-							tempData = tempData + loadString((String) term.get("description"));
+							tempData = tempData + loadString((String) term.get(header));
 						}
 						tempData = tempData + "</span><br />";
 					}
 					// Comment
-					if (term.get("comment") != null) {
+					header = "comment";
+					if (term.get(header) != null && !term.get(header).toString().equals("[]")) {
 						tempData = "<span class=\"terminfo-comment\">";
-						if (term.get("comment") instanceof String) {
-							tempData = tempData + loadString((String) term.get("comment"));
+						if (term.get(header) instanceof String) {
+							tempData = tempData + loadString((String) term.get(header));
 						} else {
-							tempData = tempData + loadString((List<String>) term.get("comment"));
+							tempData = tempData + loadString((List<String>) term.get(header));
 						}
 						tempData = tempData + "</span><br />";
 					}
@@ -133,67 +136,64 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			}
 			
 			// parents
-			if (results.getValue("parents", 0) != null) {
-				tempData = loadEntitys((List<Object>) results.getValue("parents", 0), showTypes, "parents");
-				addModelHtml(tempData, "Parents", "parents", metadataType, geppettoModelAccess);
+			header = "parents";
+			if (results.getValue(header, 0) != null && !results.getValue(header, 0).toString().equals("[]")) {
+				tempData = loadEntitys((List<Object>) results.getValue(header, 0), showTypes, header);
+				addModelHtml(tempData, "Parents", header, metadataType, geppettoModelAccess);
 				// store first parent as parent type for 3D slice viewer
-				parentId = (String) ((Map<String, Object>) ((List<Object>) results.getValue("parents", 0)).get(0)).get("short_form");
+				parentId = (String) ((Map<String, Object>) ((List<Object>) results.getValue(header, 0)).get(0)).get("short_form");
 			}
 			
 			// relationships
-			if (results.getValue("relationships", 0) != null) {
-				tempData = loadRelationships((List<Object>) results.getValue("relationships", 0), showTypes);
-				addModelHtml(tempData, "Relationships", "relationships", metadataType, geppettoModelAccess);
+			header = "relationships";
+			if (results.getValue(header, 0) != null && !results.getValue(header, 0).toString().equals("[]")) {
+				tempData = loadRelationships((List<Object>) results.getValue(header, 0), showTypes);
+				addModelHtml(tempData, "Relationships", header, metadataType, geppettoModelAccess);
 			}
 			
 			// xrefs
-			if (results.getValue("xrefs", 0) != null) {
-				tempData = loadXrefs((List<Object>) results.getValue("xrefs", 0));
-				addModelHtml(tempData, "Cross References", "xrefs", metadataType, geppettoModelAccess);
+			header = "xrefs";
+			if (results.getValue(header, 0) != null && !results.getValue(header, 0).toString().equals("[]")) {
+				tempData = loadXrefs((List<Object>) results.getValue(header, 0));
+				addModelHtml(tempData, "Cross References", header, metadataType, geppettoModelAccess);
 			}
 
 			// Images:
 
-			// thumbnail
-			if (results.getValue("channel_image", 0) != null) {
-				addModelThumbnails(loadThumbnails(((List<Object>) results.getValue("channel_image", 0))), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
-			}
-
-			// examples
-			if (results.getValue("anatomy_channel_image", 0) != null) {
-				addModelThumbnails(loadThumbnails(((List<Object>) results.getValue("anatomy_channel_image", 0))), "Examples", "examples", metadataType, geppettoModelAccess);
-			}
-
 			// retrieving the parent composite type for new image variables
 			CompositeType parentType = (CompositeType) variable.getAnonymousTypes().get(0);
-			
-			// OBJ - 3D mesh
-			if (results.getValue("channel_image", 0) != null) {
-				tempData = loadImageFile(((List<Object>) results.getValue("channel_image", 0)), "/volume_man.obj");
+			header = "channel_image";
+			if (results.getValue(header, 0) != null && !results.getValue(header, 0).toString().equals("[]")) {
+				// thumbnail
+				addModelThumbnails(loadThumbnails(((List<Object>) results.getValue(header, 0))), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
+				// OBJ - 3D mesh
+				tempData = loadImageFile(((List<Object>) results.getValue(header, 0)), "/volume_man.obj");
 				if (tempData == null){
-					tempData = loadImageFile(((List<Object>) results.getValue("channel_image", 0)), "/volume.obj");
+					tempData = loadImageFile(((List<Object>) results.getValue(header, 0)), "/volume.obj");
 				}
 				if (tempData != null){
 					addModelObj(tempData, "3D volume", variable.getId() + "_obj", parentType, geppettoModelAccess, dataSource);
 				}
-			}
-
-			// SWC - 3D mesh
-			if (results.getValue("channel_image", 0) != null) {
-				tempData = loadImageFile(((List<Object>) results.getValue("channel_image", 0)), "/volume.swc");
+			
+				// SWC - 3D mesh
+				tempData = loadImageFile(((List<Object>) results.getValue(header, 0)), "/volume.swc");
 				if (tempData != null){
 					addModelSwc(tempData, "3D Skeleton", variable.getId() + "_swc", parentType, geppettoModelAccess, dataSource);
 				}
-			}
-
-			// Slices - 3D slice viewer
-			if (results.getValue("channel_image", 0) != null) {
-				tempData = loadImageFile(((List<Object>) results.getValue("channel_image", 0)), "/volume.wlz");
+			
+				// Slices - 3D slice viewer
+				tempData = loadImageFile(((List<Object>) results.getValue(header, 0)), "/volume.wlz");
 				if (tempData != null){
 					if (!superTypes.contains("Template")) {
 						addModelSlices(tempData, "3D Stack", variable.getId() + "_wlz", parentType, geppettoModelAccess, dataSource, loadBasicDomain(variable.getName(), variable.getId(), parentId));
 					}
 				}
+			}
+
+			// examples
+			header = "anatomy_channel_image";
+			if (results.getValue(header, 0) != null && !results.getValue(header, 0).toString().equals("[]")) {
+				addModelThumbnails(loadThumbnails(((List<Object>) results.getValue(header, 0))), "Examples", "examples", metadataType, geppettoModelAccess);
 			}
 
 		}
