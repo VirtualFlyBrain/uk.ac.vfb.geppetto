@@ -281,8 +281,14 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
 		try{
 			int j = 0;
+			String url = "";
+			String name = "";
+			String reference = "";
 			for (Object image:images){
-				addImage(((String) ((Map<String,Object>) ((Map<String,Object>) ((Map<String,Object>) image).get("channel_image")).get("image")).get("image_folder")) + "thumbnail.png", ((String) ((Map<String,Object>) ((Map<String,Object>) image).get("anatomy")).get("label")), ((String) ((Map<String,Object>) ((Map<String,Object>) image).get("anatomy")).get("short_form")), imageArray, j);
+				url = ((String) ((Map<String,Object>) ((Map<String,Object>) ((Map<String,Object>) image).get("channel_image")).get("image")).get("image_folder")) + "thumbnail.png";
+				name = ((String) ((Map<String,Object>) ((Map<String,Object>) image).get("anatomy")).get("label"));
+				reference = ((String) ((Map<String,Object>) ((Map<String,Object>) image).get("anatomy")).get("short_form"));
+				addImage(url, name, reference, imageArray, j);
 			}
 		}
 		catch (Exception e)
@@ -715,6 +721,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	/**
 	 * @param data
 	 * @param name
+	 * @param reference
 	 * @param images
 	 * @param i
 	 * @return
