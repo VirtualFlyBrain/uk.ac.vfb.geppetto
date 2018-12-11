@@ -591,7 +591,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			ImportType importType = TypesFactory.eINSTANCE.createImportType();
 			importType.setUrl(url);
 			importType.setId(reference);
-			importType.setModelInterpreterId("swcModelInterpreterService");
+			importType.setModelInterpreterId("swcModelInterpreter");
 			Variable.getTypes().add(importType);
 			Variable.setId(reference);
 			Variable.setName(name);
