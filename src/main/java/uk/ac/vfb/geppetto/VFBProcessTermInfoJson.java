@@ -42,6 +42,8 @@ import org.geppetto.model.datasources.DataSourceLibraryConfiguration;
 
 public class VFBProcessTermInfoJson extends AQueryProcessor
 {
+	// Template space:
+	String template = "";
 	// Synonym Icons are set here:
 	private enum SynonymIcons
 	{
@@ -281,6 +283,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
 		try{
 			int j = 0;
+			int f = images.size();
 			String url = "";
 			String name = "";
 			String reference = "";
@@ -289,7 +292,16 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				// TODO: replace with anatomy values rather than regex from channel:
 				name = ((String) ((Map<String,Object>) ((Map<String,Object>) image).get("channel")).get("label")).replace("_c", "").replace("-c", "");
 				reference = ((String) ((Map<String,Object>) ((Map<String,Object>) image).get("channel")).get("short_form")).replace("VFBc_","VFB_");
-				addImage(url, name, reference, imageArray, j);
+				if (template == ""){
+					template = ((String) ((Map<String,Object>) ((Map<String,Object>) ((Map<String,Object>) image).get("image")).get("template_anatomy")).get("short_form"));
+				}
+				if (template == ((String) ((Map<String,Object>) ((Map<String,Object>) ((Map<String,Object>) image).get("image")).get("template_anatomy")).get("short_form"))) {
+					addImage(url, name, reference, imageArray, j);
+					j++;
+				} else {
+					f--;
+					addImage(url, name, reference, imageArray, f);
+				}
 			}
 		}
 		catch (Exception e)
