@@ -166,6 +166,11 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			CompositeType parentType = (CompositeType) variable.getAnonymousTypes().get(0);
 			header = "channel_image";
 			if (results.getValue(header, 0) != null && !results.getValue(header, 0).toString().equals("[]")) {
+				// Recording Aligned Template
+				if (!template.equals("")){
+					tempData = addAlignedTemplate(((List<Object>) results.getValue(header, 0)), parentType, geppettoModelAccess, dataSource);
+					addModelHtml(tempData, "Aligned to", "template", metadataType, geppettoModelAccess);
+				}
 				// thumbnail
 				addModelThumbnails(loadThumbnails(((List<Object>) results.getValue(header, 0))), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
 				// OBJ - 3D mesh
@@ -588,6 +593,32 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			System.out.println("Error adding slices:");
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * @param images
+	 * @param parentType
+	 * @param geppettoModelAccess
+	 * @param dataSource
+	 * @return
+	 */
+	private String addAlignedTemplate(List<Object> images, CompositeType parentType, GeppettoModelAccess geppettoModelAccess, DataSource dataSource) 
+	{
+		String tempLink = null;
+		try{
+			List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
+			if (template.equals("")){
+				template = ((String) ((Map<String,Object>) ((Map<String,Object>) ((Map<String,Object>) images.get(0)).get("image")).get("template_anatomy")).get("short_form"));
+			}
+			String tempName = ((String) ((Map<String,Object>) ((Map<String,Object>) ((Map<String,Object>) images.get(0)).get("image")).get("template_anatomy")).get("label"));
+			tempLink = "<a href=\"#\" data-instancepath=\"" + template + "\">" + tempName + "</a>";
+			// add template short_form as supertype
+			parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(template, dependenciesLibrary));
+		} catch (Exception e) {
+			System.out.println("Error adding aligned template:");
+			e.printStackTrace();
+		}
+		return tempLink;
 	}
 
 	/**
