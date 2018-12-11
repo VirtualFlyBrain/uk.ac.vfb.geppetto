@@ -285,7 +285,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			String name = "";
 			String reference = "";
 			for (Object image:images){
-				url = ((String) ((Map<String,Object>) ((Map<String,Object>) image).get("image")).get("image_folder")) + "thumbnail.png";
+				url = ((String) ((Map<String,Object>) ((Map<String,Object>) image).get("image")).get("image_folder")) + "thumbnailT.png";
 				// TODO: replace with anatomy values rather than regex from channel:
 				name = ((String) ((Map<String,Object>) ((Map<String,Object>) image).get("channel")).get("label")).replace("_c", "").replace("-c", "");
 				reference = ((String) ((Map<String,Object>) ((Map<String,Object>) image).get("channel")).get("short_form")).replace("VFBc_","VFB_");
@@ -679,7 +679,11 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			imageVariable.setName(name);
 			imageVariable.getTypes().add(imageType);
 			geppettoModelAccess.addVariableToType(imageVariable, metadataType);
-			imageVariable.getInitialValues().put(imageType, images);
+			if (images.getElements().size() > 1){
+				imageVariable.getInitialValues().put(imageType, images);
+			}else{
+				imageVariable.getInitialValues().put(imageType, images.getElements().get(0));
+			}
 		}
 		catch(GeppettoVisitingException e)
 		{
