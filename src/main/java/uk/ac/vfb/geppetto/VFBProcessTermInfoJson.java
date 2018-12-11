@@ -286,6 +286,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			String reference = "";
 			for (Object image:images){
 				url = ((String) ((Map<String,Object>) ((Map<String,Object>) image).get("image")).get("image_folder")) + "thumbnail.png";
+				// TODO: replace with anatomy values rather than regex from channel:
 				name = ((String) ((Map<String,Object>) ((Map<String,Object>) image).get("channel")).get("label")).replace("_c", "").replace("-c", "");
 				reference = ((String) ((Map<String,Object>) ((Map<String,Object>) image).get("channel")).get("short_form")).replace("VFBc_","VFB_");
 				addImage(url, name, reference, imageArray, j);
