@@ -609,6 +609,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
 			if (template.equals("")){
 				template = ((String) ((Map<String,Object>) ((Map<String,Object>) ((Map<String,Object>) images.get(0)).get("image")).get("template_anatomy")).get("short_form"));
+				System.out.println("Aligned to " + template);
 			}
 			String tempName = ((String) ((Map<String,Object>) ((Map<String,Object>) ((Map<String,Object>) images.get(0)).get("image")).get("template_anatomy")).get("label"));
 			tempLink = "<a href=\"#\" data-instancepath=\"" + template + "\">" + tempName + "</a>";
