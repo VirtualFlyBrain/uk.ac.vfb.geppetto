@@ -333,7 +333,6 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			int j = 0;
 			for (Object image:images){
 				imageUrl = ((String) ((Map<String,Object>) ((Map<String,Object>) image).get("image")).get("image_folder")) + filename;
-				imageUrl = imageUrl.replace("//", "/");
 				if (checkURL(imageUrl)) {
 					return imageUrl;
 				}
