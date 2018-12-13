@@ -174,26 +174,26 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				// thumbnail
 				addModelThumbnails(loadThumbnails(((List<Object>) results.getValue(header, 0))), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
 				// OBJ - 3D mesh
-				tempData = loadImageFile(((List<Object>) results.getValue(header, 0)), "/volume_man.obj");
+				tempData = loadImageFile(((List<Object>) results.getValue(header, 0)), "volume_man.obj");
 				if (tempData == null){
-					tempData = loadImageFile(((List<Object>) results.getValue(header, 0)), "/volume.obj");
+					tempData = loadImageFile(((List<Object>) results.getValue(header, 0)), "volume.obj");
 				}
 				if (tempData != null){
 					addModelObj(tempData, "3D volume", variable.getId() + "_obj", parentType, geppettoModelAccess, dataSource);
 				}
 			
 				// SWC - 3D mesh
-				tempData = loadImageFile(((List<Object>) results.getValue(header, 0)), "/volume.swc");
+				tempData = loadImageFile(((List<Object>) results.getValue(header, 0)), "volume.swc");
 				if (tempData != null){
 					addModelSwc(tempData, "3D Skeleton", variable.getId() + "_swc", parentType, geppettoModelAccess, dataSource);
 				}
 			
 				// Slices - 3D slice viewer
-				tempData = loadImageFile(((List<Object>) results.getValue(header, 0)), "/volume.wlz");
+				tempData = loadImageFile(((List<Object>) results.getValue(header, 0)), "volume.wlz");
 				if (tempData != null){
-					if (!superTypes.contains("Template")) {
+					// if (!superTypes.contains("Template")) {
 						addModelSlices(tempData, "3D Stack", variable.getId() + "_wlz", parentType, geppettoModelAccess, dataSource, loadBasicDomain(variable.getName(), variable.getId(), parentId));
-					}
+					// }
 				}
 			}
 
