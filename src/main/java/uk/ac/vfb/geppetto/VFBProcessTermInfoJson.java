@@ -180,12 +180,14 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				}
 				if (tempData != null){
 					addModelObj(tempData, "3D volume", variable.getId() + "_obj", parentType, geppettoModelAccess, dataSource);
+					System.out.println("Adding OBJ: " + tempData);
 				}
 			
 				// SWC - 3D mesh
 				tempData = loadImageFile(((List<Object>) results.getValue(header, 0)), "volume.swc");
 				if (tempData != null){
 					addModelSwc(tempData, "3D Skeleton", variable.getId() + "_swc", parentType, geppettoModelAccess, dataSource);
+					System.out.println("Adding SWC: " + tempData);
 				}
 			
 				// Slices - 3D slice viewer
@@ -194,6 +196,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					// if (!superTypes.contains("Template")) {
 						addModelSlices(tempData, "3D Stack", variable.getId() + "_wlz", parentType, geppettoModelAccess, dataSource, loadBasicDomain(variable.getName(), variable.getId(), parentId));
 					// }
+					System.out.println("Adding WLZ: " + tempData);
 				}
 			}
 
@@ -581,7 +584,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
 			Variable slicesVar = VariablesFactory.eINSTANCE.createVariable();
 			Image slicesValue = ValuesFactory.eINSTANCE.createImage();
-			slicesValue.setData(new Gson().toJson(new IIPJSON(0, "https://www.virtualflybrain.org/fcgi/wlziipsrv.fcgi", url.replace("http://www.virtualflybrain.org/data/", "/disk/data/VFB/IMAGE_DATA/"), domains)));
+			slicesValue.setData(new Gson().toJson(new IIPJSON(0, "https://www.virtualflybrain.org/fcgi/wlziipsrv.fcgi", url.replace("https://", "http://").replace("www.virtualflybrain.org","virtualflybrain.org").replace("http://.virtualflybrain.org/data/", "/disk/data/VFB/IMAGE_DATA/"), domains)));
 			slicesValue.setFormat(ImageFormat.IIP);
 			slicesValue.setReference(reference);
 			slicesVar.setId(reference);
@@ -664,6 +667,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			ImportType importType = TypesFactory.eINSTANCE.createImportType();
 			importType.setUrl(url);
 			importType.setId(reference);
+			importType.setName(reference);
 			importType.setModelInterpreterId("objModelInterpreterService");
 			Variable.getTypes().add(importType);
 			Variable.setId(reference);
