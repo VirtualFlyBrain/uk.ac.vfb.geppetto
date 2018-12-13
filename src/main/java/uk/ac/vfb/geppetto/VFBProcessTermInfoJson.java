@@ -584,7 +584,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
 			Variable slicesVar = VariablesFactory.eINSTANCE.createVariable();
 			Image slicesValue = ValuesFactory.eINSTANCE.createImage();
-			slicesValue.setData(new Gson().toJson(new IIPJSON(0, "https://www.virtualflybrain.org/fcgi/wlziipsrv.fcgi", url.replace("https://", "http://").replace("www.virtualflybrain.org","virtualflybrain.org").replace("http://.virtualflybrain.org/data/", "/disk/data/VFB/IMAGE_DATA/"), domains)));
+			slicesValue.setData(new Gson().toJson(new IIPJSON(0, "https://www.virtualflybrain.org/fcgi/wlziipsrv.fcgi", url.replace("https://", "http://").replace("www.virtualflybrain.org","virtualflybrain.org").replace("http://virtualflybrain.org/data/", "/disk/data/VFB/IMAGE_DATA/"), domains)));
 			slicesValue.setFormat(ImageFormat.IIP);
 			slicesValue.setReference(reference);
 			slicesVar.setId(reference);
