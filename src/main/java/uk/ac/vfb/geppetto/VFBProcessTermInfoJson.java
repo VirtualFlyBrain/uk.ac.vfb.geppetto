@@ -194,7 +194,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				tempData = loadImageFile(((List<Object>) results.getValue(header, 0)), "volume.wlz");
 				if (tempData != null){
 					// if (!superTypes.contains("Template")) {
-						addModelSlices(tempData, "3D Stack", variable.getId() + "_wlz", parentType, geppettoModelAccess, dataSource, loadBasicDomain(variable.getName(), variable.getId(), parentId));
+						addModelSlices(tempData, "Stack Viewer Slices", variable.getId() + "_slices", parentType, geppettoModelAccess, dataSource, loadBasicDomain(variable.getName(), variable.getId(), parentId));
 					// }
 					System.out.println("Adding WLZ: " + tempData);
 				}
