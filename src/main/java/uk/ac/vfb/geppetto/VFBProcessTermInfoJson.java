@@ -305,8 +305,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		try{
 			String result = "";
 			String links = "";
-			Set<String> sites = Arrays.asList("FlyBase","DOI","PubMed");
-			Map<String,String> siteLinks = new HashMap<String, String>();
+			Map<String,String> siteLinks = new Map<String, String>();
 			// publication links:
 			siteLinks.put("FlyBase", " <a href=\"http://flybase.org/reports/$ID\" target=\"_blank\" ><i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:$ID\" aria-hidden=\"true\"></i></a>");
 			siteLinks.put("DOI", " <a href=\"https://doi.org/$ID\" target=\"_blank\" ><i class=\"popup-icon-link gpt-doi\" title=\"doi:$ID\" aria-hidden=\"true\"></i></a>");
