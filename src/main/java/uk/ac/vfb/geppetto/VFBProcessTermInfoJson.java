@@ -1,11 +1,13 @@
 package uk.ac.vfb.geppetto;
 
+import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.gson.Gson;
 
@@ -89,6 +91,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			String tempData = "";
 			String parentId = "";
 			String header = "";
+			String references = "";
 			List<String> superTypes = Arrays.asList();
 			List<String> showTypes = Arrays.asList("Class","Individual","Anatomy","Template","Motor_neuron","Cell","Neuron"); // TODO: Fill in with passed types
 			
@@ -123,6 +126,12 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 							tempData = tempData + loadString((List<String>) term.get(header));
 						}
 						tempData = tempData + "</span><br />";
+					}
+					// Add description references:
+					header = "def_pubs";
+					if (results.getValue(header, 0) != null && !results.getValue(header, 0).toString().equals("[]")) {
+						references = loadPublication(results.getValue(header, 0));
+						tempData = tempData + "<br />" + references;
 					}
 					// Adding to model
 					if (!"".equals(tempData)) {
@@ -206,6 +215,11 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				addModelThumbnails(loadThumbnails(((List<Object>) results.getValue(header, 0))), "Examples", "examples", metadataType, geppettoModelAccess);
 			}
 
+			// references
+			if (!references.equals("")) {
+				addModelHtml(references, "References", "references", metadataType, geppettoModelAccess);
+			}
+
 		}
 		catch(GeppettoVisitingException e)
 		{
@@ -277,6 +291,50 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		catch (Exception e)
 		{
 			System.out.println("Error handling JSON loading string (" + string + ") " + e.toString());
+			e.printStackTrace();
+			return "";
+		}
+	}
+
+	/**
+	 * @param refs
+	 * @return String
+	 */
+	private String loadPublication(List<Object> refs)
+	{
+		try{
+			String result = "";
+			String links = "";
+			Set<String> sites = Arrays.asList("FlyBase","DOI","PubMed");
+			Map<String,String> siteLinks = new HashMap<String, String>();
+			// publication links:
+			siteLinks.put("FlyBase", " <a href=\"http://flybase.org/reports/$ID\" target=\"_blank\" ><i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:$ID\" aria-hidden=\"true\"></i></a>");
+			siteLinks.put("DOI", " <a href=\"https://doi.org/$ID\" target=\"_blank\" ><i class=\"popup-icon-link gpt-doi\" title=\"doi:$ID\" aria-hidden=\"true\"></i></a>");
+			siteLinks.put("PubMed", " <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=$ID\" target=\"_blank\" ><i class=\"popup-icon-link gpt-pubmed\" title=\"PMID:$ID\" aria-hidden=\"true\"></i></a>");
+			Set<String> sites = siteLinks.keySet();
+			for (Object ref:refs){
+				if (!result.equals("")){
+					result = result + "<br />";
+				}
+				result = result + loadEntity(((Map<String,Object>) ((Map<String,Object>) ref).get("core")), true, Arrays.asList((String) null));
+				links = "";
+				for (String site:sites) {
+					if (((String) ((Map<String,Object>) ref).get(site)) != null && !((String) ((Map<String,Object>) ref).get(site)).equals("")) {
+						links = links + siteLinks.get(site).replace("$ID",((String) ((Map<String,Object>) ref).get(site)));
+					}
+				}
+				if (!links.equals("")) {
+					links = "<span class=\"terminfo-pubxref\">" + links + "</span>";
+					result = result + links;
+				}
+				result = result + loadTypes((List<String>) ((Map<String,Object>) ((Map<String,Object>) ref).get("core")).get("types"), Arrays.asList("Pub"));
+			}
+			// Getting publication ref:
+			return result;
+		}
+		catch (Exception e)
+		{
+			System.out.println("Error handling JSON loading publications (" + refs.toString() + ") " + e.toString());
 			e.printStackTrace();
 			return "";
 		}
@@ -531,20 +589,22 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	{
 		try{
 			// turning types list into type labels span for thouse in show list.
-			String result = "<span class=\"label types\">";
-			for (String type:types){
-				if (show.contains(type)){
-					result = result + "<span class=\"label label-" + type + "\">" + type.replace("_"," ") + "</span> ";
+			if (types.size() > 0 && show.size() > 0){
+				String result = "<span class=\"label types\">";
+				for (String type:types){
+					if (show.contains(type)){
+						result = result + "<span class=\"label label-" + type + "\">" + type.replace("_"," ") + "</span> ";
+					}
 				}
+				return result + "</span>";
 			}
-			return result + "</span>";
 		}
 		catch (Exception e)
 		{
 			System.out.println("Error handling JSON loading types (" + types.toString() + ") " + e.toString());
 			e.printStackTrace();
-			return "";
 		}
+		return "";
 	}
 	/**
 	 * @param edge
