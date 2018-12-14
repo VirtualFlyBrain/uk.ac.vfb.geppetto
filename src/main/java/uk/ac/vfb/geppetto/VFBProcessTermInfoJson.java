@@ -131,7 +131,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					// Add description references:
 					header = "def_pubs";
 					if (results.getValue(header, 0) != null && !results.getValue(header, 0).toString().equals("[]")) {
-						references = loadPublication(results.getValue(header, 0));
+						references = loadPublication((List<Object>) results.getValue(header, 0));
 						tempData = tempData + "<br />" + references;
 					}
 					// Adding to model
