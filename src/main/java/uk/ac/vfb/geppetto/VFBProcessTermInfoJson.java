@@ -87,7 +87,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			
 			String tempId = "";
 			String tempData = "";
-			String parentId = null;
+			String parentId = "";
 			String header = "";
 			List<String> superTypes = Arrays.asList();
 			List<String> showTypes = Arrays.asList("Class","Individual","Anatomy","Template","Motor_neuron","Cell","Neuron"); // TODO: Fill in with passed types
