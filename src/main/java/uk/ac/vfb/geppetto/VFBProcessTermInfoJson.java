@@ -764,6 +764,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 		catch(GeppettoVisitingException e)
 		{
+			System.out.println("Error adding HTML (" + data + ") " + e.toString());
 			System.out.println(e);
 			e.printStackTrace();
 			throw new GeppettoVisitingException(e);
@@ -782,19 +783,22 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	{
 		try{
 			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
+			
 			Variable imageVariable = VariablesFactory.eINSTANCE.createVariable();
 			imageVariable.setId(reference);
 			imageVariable.setName(name);
 			imageVariable.getTypes().add(imageType);
 			geppettoModelAccess.addVariableToType(imageVariable, metadataType);
+			
 			if (images.getElements().size() > 1){
 				imageVariable.getInitialValues().put(imageType, images);
 			}else{
-				imageVariable.getInitialValues().put(imageType, images.getElements().get(0));
+				imageVariable.getInitialValues().put(imageType, images.getElements().get(0).getInitialValue());
 			}
 		}
 		catch(GeppettoVisitingException e)
 		{
+			System.out.println("Error adding Thumbnails (" + name + ") " + e.toString());
 			System.out.println(e);
 			e.printStackTrace();
 			throw new GeppettoVisitingException(e);
@@ -824,6 +828,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 		catch(GeppettoVisitingException e)
 		{
+			System.out.println("Error adding String (" + data + ") " + e.toString());
 			System.out.println(e);
 			e.printStackTrace();
 			throw new GeppettoVisitingException(e);
