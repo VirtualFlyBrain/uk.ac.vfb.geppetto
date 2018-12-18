@@ -183,31 +183,31 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				}
 				// thumbnail
 				addModelThumbnails(loadThumbnails(((List<Object>) results.getValue(header, 0))), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
-				// // OBJ - 3D mesh
-				// tempData = loadImageFile(((List<Object>) results.getValue(header, 0)), "volume_man.obj");
-				// if (tempData == null){
-				// 	tempData = loadImageFile(((List<Object>) results.getValue(header, 0)), "volume.obj");
-				// }
-				// if (tempData != null){
-				// 	addModelObj(tempData, "3D volume", variable.getId() + "_obj", parentType, geppettoModelAccess, dataSource);
-				// 	System.out.println("Adding OBJ: " + tempData);
-				// }
+				// OBJ - 3D mesh
+				tempData = loadImageFile(((List<Object>) results.getValue(header, 0)), "volume_man.obj");
+				if (tempData == null){
+					tempData = loadImageFile(((List<Object>) results.getValue(header, 0)), "volume.obj");
+				}
+				if (tempData != null){
+					addModelObj(tempData, "3D volume", variable.getId() + "_obj", parentType, geppettoModelAccess, dataSource);
+					System.out.println("Adding OBJ: " + tempData);
+				}
 			
-				// // SWC - 3D mesh
-				// tempData = loadImageFile(((List<Object>) results.getValue(header, 0)), "volume.swc");
-				// if (tempData != null){
-				// 	addModelSwc(tempData, "3D Skeleton", variable.getId() + "_swc", parentType, geppettoModelAccess, dataSource);
-				// 	System.out.println("Adding SWC: " + tempData);
-				// }
+				// SWC - 3D mesh
+				tempData = loadImageFile(((List<Object>) results.getValue(header, 0)), "volume.swc");
+				if (tempData != null){
+					addModelSwc(tempData, "3D Skeleton", variable.getId() + "_swc", parentType, geppettoModelAccess, dataSource);
+					System.out.println("Adding SWC: " + tempData);
+				}
 			
-				// // Slices - 3D slice viewer
-				// tempData = loadImageFile(((List<Object>) results.getValue(header, 0)), "volume.wlz");
-				// if (tempData != null){
-				// 	if (!superTypes.contains("Template")) {
-				// 		addModelSlices(tempData, "Stack Viewer Slices", variable.getId() + "_slices", parentType, geppettoModelAccess, dataSource, loadBasicDomain(variable.getName(), variable.getId(), parentId));
-				// 	}
-				// 	System.out.println("Adding WLZ: " + tempData);
-				// }
+				// Slices - 3D slice viewer
+				tempData = loadImageFile(((List<Object>) results.getValue(header, 0)), "volume.wlz");
+				if (tempData != null){
+					if (!superTypes.contains("Template")) {
+						addModelSlices(tempData, "Stack Viewer Slices", variable.getId() + "_slices", parentType, geppettoModelAccess, dataSource, loadBasicDomain(variable.getName(), variable.getId(), parentId));
+					}
+					System.out.println("Adding WLZ: " + tempData);
+				}
 			}
 
 			// examples
