@@ -109,7 +109,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					tempData = "";
 					header = "description";
 					if (term.get(header) != null && !term.get(header).toString().equals("[]")) {
-						tempData = "<span class=\"terminfo-description\">";
+						tempData = tempData + "<span class=\"terminfo-description\">";
 						if (((String) term.get(header)).contains("[")) {
 							tempData = tempData + loadString((List<String>) term.get(header));
 						} else {
@@ -120,7 +120,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					// Comment
 					header = "comment";
 					if (term.get(header) != null && !term.get(header).toString().equals("[]")) {
-						tempData = "<span class=\"terminfo-comment\">";
+						tempData = tempData + "<span class=\"terminfo-comment\">";
 						if (term.get(header) instanceof String) {
 							tempData = tempData + loadString((String) term.get(header));
 						} else {
