@@ -478,9 +478,9 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 									break;
 								case "hasDbXref":
 									if ((((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("accession")) == null || "None".equals((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("accession"))){
-										refs.add("<i class=\"popup-icon-link fa fa-external-link\" /> <a href=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri")) + "\" target=\"_blank\" >" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a>");		
+										refs.add("<i class=\"popup-icon-link fa fa-external-link\" ></i> <a href=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri")) + "\" target=\"_blank\" >" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a>");		
 									}else{
-										refs.add("<i class=\"popup-icon-link fa fa-external-link\" /> <a href=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("link_base")) + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("accession")) + ((Map<String, Object>) resultLinks.get(i)).get("to")).get("link_postfix")) + "\" target=\"_blank\" >" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("accession")) + ")</a>");		
+										refs.add("<i class=\"popup-icon-link fa fa-external-link\" ></i> <a href=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("link_base")) + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("accession")) + ((Map<String, Object>) resultLinks.get(i)).get("to")).get("link_postfix")) + "\" target=\"_blank\" >" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("accession")) + ")</a>");		
 									}
 									break;
 								case "member_of":
@@ -848,18 +848,18 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 				{
 					if(QueryChecker.check(runnableQuery, variable))
 					{
-						badge = "<i class=\"popup-icon-link fa fa-quora\" />";
+						badge = "<i class=\"popup-icon-link fa fa-quora\" ></i>";
 						querys += badge + "<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
 					}else if ((synapticNP || tract) && individual && classVariable.getId()!="notSet"){
 						if(QueryChecker.check(runnableQuery, classVariable)){
-							badge = "<i class=\"popup-icon-link fa fa-quora\" />";
+							badge = "<i class=\"popup-icon-link fa fa-quora\" ></i>";
 							querys += badge + "<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "," + classVariable.getId() + "," + classVariable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", classVariable.getName()) + "</a></br>";
 						}
 					}
 				}
 				
 				if (template){
-					badge = "<i class=\"popup-icon-link fa gpt-shapeshow\" />";
+					badge = "<i class=\"popup-icon-link fa gpt-shapeshow\" ></i>";
 					querys += badge + "<a href=\"#\" title=\"Hide template boundary and show all painted neuroanatomy\" onclick=\""+tempId+".hide();window.addVfbId(JSON.parse("+tempId+"."+tempId+"_slices.getValue().getWrappedObj().value.data).subDomains[1].filter(function(n){ return n != null }));return false;\">Show All Anatomy</a><br/>";
 				}
 
