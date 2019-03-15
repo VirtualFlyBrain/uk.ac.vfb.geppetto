@@ -294,16 +294,16 @@ public class MultipleQueriesVFBQueryTest
 		runnableQueriesEMF.add(rqEMF1);
 		
 		RunnableQuery rqEMF2 = DatasourcesFactory.eINSTANCE.createRunnableQuery();
-		rqEMF2.setQueryPath(model.getQueries().get(avQ.get("neuronsparthere")).getPath());
+		rqEMF2.setQueryPath(model.getQueries().get(avQ.get("partsof")).getPath());
 		rqEMF2.setTargetVariablePath(variable2.getPath());
 		rqEMF2.setBooleanOperator(BooleanOperator.NAND);
 		runnableQueriesEMF.add(rqEMF2);
 		
 		int count = owleryDataSource.getNumberOfResults(runnableQueriesEMF);
 		try{
-			Assert.assertTrue(83<count);
+			Assert.assertTrue(count<280);
 		}catch (AssertionError e) {
-			System.out.println("Fail: only " + count + " results returned, there should be 84+ results");
+			System.out.println("Fail: " + count + " results returned, there should be less than 281 results");
 			throw new AssertionError(e);
 		}
 			
