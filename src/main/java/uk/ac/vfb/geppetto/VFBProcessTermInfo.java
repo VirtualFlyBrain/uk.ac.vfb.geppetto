@@ -708,7 +708,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 							domains.add(Arrays.asList(domainType));
 							domains.add(Arrays.asList(domainCentre));
 						}else{
-							domains.add(Arrays.asList("0","0","0"));
+							domains.add(Arrays.asList("0,0,0"));
 							domains.add(Arrays.asList(tempId));
 							domains.add(Arrays.asList(tempName));
 							if (depictedType.indexOf('(') > -1){
@@ -716,7 +716,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 							}else{
 								domains.add(Arrays.asList(""));
 							}
-							domains.add(Arrays.asList("0","0","0"));
+							domains.add(Arrays.asList("0,0,0"));
 						}
 						Variable slicesVar = VariablesFactory.eINSTANCE.createVariable();
 						Image slicesValue = ValuesFactory.eINSTANCE.createImage();
