@@ -246,11 +246,12 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	{
 		try{
 			List<List<String>> domains = new ArrayList(new ArrayList());
-			domains.add(Arrays.asList("0,0,0"));
+			String z[] = new String[]{"0","0","0"};
+			domains.add(Arrays.asList(z));
 			domains.add(Arrays.asList(reference));
 			domains.add(Arrays.asList(label));
 			domains.add(Arrays.asList(parentId));
-			domains.add(Arrays.asList("0,0,0");
+			domains.add(Arrays.asList(z));
 			return domains;
 		}
 		catch (Exception e)
