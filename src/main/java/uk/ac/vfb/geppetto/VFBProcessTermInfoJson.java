@@ -250,7 +250,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			domains.add(Arrays.asList(reference));
 			domains.add(Arrays.asList(label));
 			domains.add(Arrays.asList(parentId));
-			domains.add("[511, 255, 108]");
+			domains.add(Arrays.asList("511, 255, 108"));
 			return domains;
 		}
 		catch (Exception e)
