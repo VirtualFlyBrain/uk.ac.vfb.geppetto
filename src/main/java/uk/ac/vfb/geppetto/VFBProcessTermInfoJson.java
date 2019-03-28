@@ -458,6 +458,8 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			List<String> showTypes = Arrays.asList("Class","Individual","Anatomy","Template","Motor_neuron","Cell","Neuron"); // TODO: Fill in with passed types
 			String tempData = "";
 			String parentId = "";
+			String header = "loading";
+			String references = ""; 
 
 			System.out.println("Processing JSON...");
 			try{
@@ -591,7 +593,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			
 				// examples
 				header = "anatomy_channel_image";
-				if (results.getValue(header, 0) != null && !results.getValue(header, 0).toString().equals("[]")) {
+				if (vfbTerm.anatomy_channel_image != null && vfbTerm.anatomy_channel_image.size() > 0) {
 					addModelThumbnails(vfbTerm.examples(), "Examples", "examples", metadataType, geppettoModelAccess);
 				}
 
