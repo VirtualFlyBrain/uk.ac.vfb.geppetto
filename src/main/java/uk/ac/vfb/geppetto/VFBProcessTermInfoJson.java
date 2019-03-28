@@ -59,11 +59,11 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		private List<String> types;
 
 		public String intLink() {
-			return intLink(Collections.<String>emptyList());
+			return this.intLink(Collections.<String>emptyList());
 		}
 
 		public String extLink() {
-			return extLink(Collections.<String>emptyList());
+			return this.extLink(Collections.<String>emptyList());
 		}
 
 		public String intLink(List<String> showTypes) {
@@ -146,7 +146,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		private minimal_entity_info object;
 
 		public String intLink() {
-			return intLink(Collections.<String>emptyList());
+			return this.intLink(Collections.<String>emptyList());
 		}
 
 		public String intLink(List<String> showTypes) {
