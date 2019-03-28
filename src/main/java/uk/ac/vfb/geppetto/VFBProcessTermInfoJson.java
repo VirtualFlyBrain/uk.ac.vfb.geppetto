@@ -463,23 +463,15 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 			System.out.println("Processing JSON...");
 			try{
+				header = "results>JSON";
 				Gson gson = new GsonBuilder().create();
 				String json = gson.toJson(results);
-			}catch (Exception e) {
-				System.out.println("Error extracting JSON: " + e.toString());
-				e.printStackTrace();
-			}
-
-			try{
+		
+				header = "JSON>Schema";
 				vfb_terminfo vfbTerm = new gson().fromJson(json , vfb_terminfo.class);
-			}catch (Exception e) {
-				System.out.println("Error mapping JSON: " + e.toString());
-				e.printStackTrace();
-			}
 			
-			// Note: core already handled by VFBProcessTermInfoCore except types labels
+				// Note: core already handled by VFBProcessTermInfoCore except types labels
 
-			try{
 				// Types
 				header = "types";
 				superTypes = vfbTerm.term.core.typeList();
