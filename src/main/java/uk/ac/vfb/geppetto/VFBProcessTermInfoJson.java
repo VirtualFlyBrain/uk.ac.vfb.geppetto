@@ -785,30 +785,30 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		return results;
 	}
 	
-	// /**
-	//  * @param label
-	//  * @param reference
-	//  * @param parentId
-	//  * @return List<List<String>>
-	//  */
-	// private List<List<String>> loadBasicDomain(String label, String reference, String parentId)
-	// {
-	// 	try{
-	// 		List<List<String>> domains = new ArrayList(new ArrayList());
-	// 		domains.add(Arrays.asList(new String[]{"0","0","0",null}));
-	// 		domains.add(Arrays.asList(reference));
-	// 		domains.add(Arrays.asList(label));
-	// 		domains.add(Arrays.asList(parentId));
-	// 		domains.add(Arrays.asList("[511, 255, 108]"));
-	// 		return domains;
-	// 	}
-	// 	catch (Exception e)
-	// 	{
-	// 		System.out.println("Error creating basic domains for (" + label.toString() + ") " + e.toString());
-	// 		e.printStackTrace();
-	// 	}
-	// 	return null;
-	// }
+	/**
+	 * @param label
+	 * @param reference
+	 * @param parentId
+	 * @return List<List<String>>
+	 */
+	private List<List<String>> loadBasicDomain(String label, String reference, String parentId)
+	{
+		try{
+			List<List<String>> domains = new ArrayList(new ArrayList());
+			domains.add(Arrays.asList(new String[]{"0","0","0",null}));
+			domains.add(Arrays.asList(reference));
+			domains.add(Arrays.asList(label));
+			domains.add(Arrays.asList(parentId));
+			domains.add(Arrays.asList("[511, 255, 108]"));
+			return domains;
+		}
+		catch (Exception e)
+		{
+			System.out.println("Error creating basic domains for (" + label.toString() + ") " + e.toString());
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 	// /**
 	//  * @param strings
