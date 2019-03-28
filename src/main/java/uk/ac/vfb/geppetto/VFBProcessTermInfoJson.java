@@ -321,7 +321,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 		public String definition() {
 			if (this.def_pubs != null && this.def_pubs.size() > 0) {
-				return this.term.definition() + "<br />" + def_pubs.join(", ");
+				return this.term.definition() + "<br />" + this.def_pubs.join(", ");
 			}
 			return this.term.definition();
 		}
