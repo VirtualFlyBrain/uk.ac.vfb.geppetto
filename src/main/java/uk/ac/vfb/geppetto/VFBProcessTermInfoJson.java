@@ -368,7 +368,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public ArrayValue thumbnails() {
 			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
 			int j = 0;
-			int f = his.channel_image.size();
+			int f = this.channel_image.size();
 			for (channel_image image : this.channel_image) {
 				// add same template to the begining and others at the end.
 				if (template == image.image.template_anatomy.short_form) {
@@ -389,15 +389,15 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public ArrayValue examples() {
 			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
 			int j = 0;
-			int f = his.channel_image.size();
+			int f = this.channel_image.size();
 			for (anatomy_channel_image anat : this.anatomy_channel_image) {
 				// add same template to the begining and others at the end.
 				if (template == anat.channel_image.image.template_anatomy.short_form) {
-					addImage(anat.channel_image.image.image.image_folder + "thumbnailT.png", anat.channel_image.anatomy.label, anat.channel_image.anatomy.short_form, imageArray, j);
+					addImage(anat.channel_image.image.image_folder + "thumbnailT.png", anat.channel_image.anatomy.label, anat.channel_image.anatomy.short_form, imageArray, j);
 					j++;
 				} else {
 					f--;
-					addImage(anat.channel_image.image.image.image_folder + "thumbnailT.png", anat.channel_image.anatomy.label, anat.channel_image.anatomy.short_form, imageArray, f);
+					addImage(anat.channel_image.image.image_folder + "thumbnailT.png", anat.channel_image.anatomy.label, anat.channel_image.anatomy.short_form, imageArray, f);
 				}
 			}
 			return imageArray;
