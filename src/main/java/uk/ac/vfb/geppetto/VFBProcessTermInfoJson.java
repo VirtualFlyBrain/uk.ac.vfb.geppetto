@@ -475,7 +475,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				String json = gson.toJson(results);
 		
 				header = "JSON>Schema";
-				vfb_terminfo vfbTerm = new gson().fromJson(json , vfb_terminfo.class);
+				vfb_terminfo vfbTerm = new Gson().fromJson(json , vfb_terminfo.class);
 			
 				// Note: core already handled by VFBProcessTermInfoCore except types labels
 
