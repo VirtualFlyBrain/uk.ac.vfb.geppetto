@@ -526,8 +526,8 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				if (vfbTerm.channel_image != null && vfbTerm.channel_image.size() > 0) {
 					// Recording Aligned Template
 					if (!template.equals("")){
-						template = vfbTerm.channel_image.image.template_anatomy.short_form;
-						addModelHtml(vfbTerm.channel_image.image.template_anatomy.intLink(), "Aligned to", "template", metadataType, geppettoModelAccess);
+						template = vfbTerm.channel_image.get(0).image.template_anatomy.short_form;
+						addModelHtml(vfbTerm.channel_image.get(0).image.template_anatomy.intLink(), "Aligned to", "template", metadataType, geppettoModelAccess);
 					}
 					// thumbnail
 					addModelThumbnails(vfbTerm.thumbnails(), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
