@@ -502,8 +502,8 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 				// relationships
 				header = "relationships";
-				if (vfbTerm.realtionships != null && vfbTerm.realtionships.size() > 0) {
-					tempData = vfbTerm.compileList(header, vfbTerm.realtionships, showTypes);
+				if (vfbTerm.relationships != null && vfbTerm.relationships.size() > 0) {
+					tempData = vfbTerm.compileList(header, vfbTerm.relationships, showTypes);
 					addModelHtml(tempData, "Relationships", header, metadataType, geppettoModelAccess);
 				}
 
