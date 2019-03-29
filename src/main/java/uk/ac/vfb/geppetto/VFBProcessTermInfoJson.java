@@ -482,7 +482,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			try{
 				header = "results>JSON";
 				System.out.println("Starting " + header);
-				String json = GeppettoSerializer.serializeToJSON(results, true);
+				String json = GeppettoSerializer.serializeToJSON(results, false);
 				System.out.println("Finished " + header);
 
 				System.out.println("Returned JSON: " + json);
