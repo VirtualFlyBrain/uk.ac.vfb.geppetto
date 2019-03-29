@@ -342,7 +342,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			// turning xrefs into list of html with link for xrefs.
 			List<String> results = new ArrayList<>();
 			// process xrefs
-			for (xrefs xref : this.xrefs) {
+			for (xref xref : this.xrefs) {
 				results.add(xref.extLink(Arrays.asList("Site")));
 			}
 			// sort xrefs alphabetically (by site)
