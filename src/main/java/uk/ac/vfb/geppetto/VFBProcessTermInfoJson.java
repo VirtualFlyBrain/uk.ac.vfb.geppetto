@@ -546,7 +546,6 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 						// if (!superTypes.contains("Template")) {
 							addModelSlices(tempData, "Stack Viewer Slices", variable.getId() + "_slices", parentType, geppettoModelAccess, dataSource, loadBasicDomain(variable.getName(), variable.getId(), parentId));
 						// }
-						System.out.println(vfbTerm.channel_image, "Adding WLZ: " + tempData);
 					}
 				}
 
