@@ -338,6 +338,15 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			return result;
 		}
 
+		public String compileList(String name, List<minimal_entity_info> entitys, List<String> showTypes) {
+			String result = "<ul class=\"terminfo-" + name + "\">";
+			for (minimal_entity_info entity : entitys) {
+				result = result + "<li>" + entity.intLink(showTypes) + "</li>";
+			}
+			result = result + "</ul>";
+			return result;
+		}
+
 		public String xrefList() {
 			// turning xrefs into list of html with link for xrefs.
 			List<String> results = new ArrayList<>();
