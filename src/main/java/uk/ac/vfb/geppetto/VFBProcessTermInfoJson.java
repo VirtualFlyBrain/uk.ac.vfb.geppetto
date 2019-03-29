@@ -39,6 +39,7 @@ import org.geppetto.model.types.ImportType;
 import org.geppetto.model.types.TypesFactory;
 import org.geppetto.model.GeppettoLibrary;
 import org.geppetto.model.datasources.DataSourceLibraryConfiguration;
+import org.geppetto.core.model.GeppettoSerializer;
 
 /**
  * @author robertcourt
@@ -481,8 +482,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			try{
 				header = "results>JSON";
 				System.out.println("Starting " + header);
-				Gson gson = new GsonBuilder().create();
-				String json = gson.toJson(results);
+				String json = GeppettoSerializer.serializeToJSON(results, true);
 				System.out.println("Finished " + header);
 
 				System.out.println("Returned JSON: " + json);
