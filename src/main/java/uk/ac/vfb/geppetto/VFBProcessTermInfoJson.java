@@ -277,6 +277,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public String microref() {
 			return this.microref;
 		}
+
 	}
 
 	class synonym {
@@ -323,7 +324,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 		public String definition() {
 			if (this.def_pubs != null && this.def_pubs.size() > 0) {
-				return this.term.definition() + "<br />" + this.def_pubs.join(", ");
+				return this.term.definition() + "<br />(" + minirefs(this.def_pubs, ", ") + ")";
 			}
 			return this.term.definition();
 		}
@@ -430,7 +431,16 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 	// END VFB term info schema
 
-
+	public String minirefs(List<pub> pubs, String sep) {
+		String result = "";
+		for (pub pub:pubs) {
+			if (!result.equals("")) {
+				result = result + sep;
+			}
+			result = result + pub.microref;
+		}
+		return result;
+	}
 
 	/*
 	 * (non-Javadoc)
