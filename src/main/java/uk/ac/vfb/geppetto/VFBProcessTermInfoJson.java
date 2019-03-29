@@ -329,9 +329,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			return this.term.definition();
 		}
 
-		public String compileList(String name, List<rel> entity, List<String> showTypes) {
+		public String compileList(String name, List<rel> entitys, List<String> showTypes) {
 			String result = "<ul class=\"terminfo-" + name + "\">";
-			for (rel rel : entity) {
+			for (rel rel : entitys) {
 				result = result + "<li>" + rel.intLink(showTypes) + "</li>";
 			}
 			result = result + "</ul>";
@@ -512,7 +512,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				// relationships
 				header = "relationships";
 				if (vfbTerm.relationships != null && vfbTerm.relationships.size() > 0) {
-					tempData = vfbTerm.compileRelList(header, showTypes);
+					tempData = vfbTerm.compileList(header, vfbTerm.relationships, showTypes);
 					addModelHtml(tempData, "Relationships", header, metadataType, geppettoModelAccess);
 				}
 
