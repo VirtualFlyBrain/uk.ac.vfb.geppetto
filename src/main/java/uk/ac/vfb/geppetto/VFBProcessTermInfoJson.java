@@ -480,6 +480,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			System.out.println("Processing JSON...");
 			try{
 				header = "results>JSON";
+				System.out.println("Starting " + header);
 				Gson gson = new GsonBuilder().create();
 				String json = gson.toJson(results);
 				System.out.println("Finished " + header);
