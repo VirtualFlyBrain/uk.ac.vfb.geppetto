@@ -499,6 +499,13 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				// Types
 				header = "types";
 				superTypes = vfbTerm.term.core.typeList();
+
+				//Bypass if template via non template query:
+				if (superTypes.contains("Template") && vfbTerm.template_channel == null){
+					return results;
+				}
+
+
 				addModelHtml(vfbTerm.term.core.types(showTypes), "Types", "types", metadataType, geppettoModelAccess);
 				System.out.println("Finished " + header);
 
