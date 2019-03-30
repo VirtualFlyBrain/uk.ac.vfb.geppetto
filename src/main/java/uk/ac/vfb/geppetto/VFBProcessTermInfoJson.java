@@ -484,7 +484,6 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				System.out.println("Starting " + header);
 				String json = "{";
 				for (String key:results.getHeader()) {
-					System.out.println("building: " + json);
 					if (!json.equals("{")) {
 						json = json + ", ";
 					}
