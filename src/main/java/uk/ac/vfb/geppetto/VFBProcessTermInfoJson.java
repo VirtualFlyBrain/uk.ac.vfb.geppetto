@@ -159,7 +159,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 	class image {
 		String image_folder;
-		private List<Integer> index;
+		private List<Double> index;
 		private minimal_entity_info template_channel;
 		minimal_entity_info template_anatomy;
 	}
@@ -176,7 +176,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	}
 
 	class domain {
-		private List<Integer> index;
+		private List<Double> index;
 		private String center;
 		private String folder;
 		private minimal_entity_info anatomical_individual;
@@ -184,10 +184,10 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	}
 
 	class template_channel {
-		private List<Integer> index;
-		private List<Integer> center;
-		private List<Integer> extent;
-		private List<Float> voxel;
+		private List<Double> index;
+		private List<Double> center;
+		private List<Double> extent;
+		private List<Double> voxel;
 		private String orientation;
 		String image_folder;
 		private minimal_entity_info channel;
