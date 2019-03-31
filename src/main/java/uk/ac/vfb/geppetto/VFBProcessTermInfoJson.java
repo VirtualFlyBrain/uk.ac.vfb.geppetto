@@ -53,6 +53,49 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	// Template space:
 	String template = "";
 
+		/**
+	 * @param urlString
+	 * @return boolean
+	 */
+	private boolean checkURL(String urlString)
+	{
+		try
+		{
+			URL url = new URL(urlString);
+			HttpURLConnection huc = (HttpURLConnection) url.openConnection();
+			huc.setRequestMethod("HEAD");
+			huc.setInstanceFollowRedirects(false);
+			return (huc.getResponseCode() == HttpURLConnection.HTTP_OK);
+		}
+		catch(Exception e)
+		{
+			System.out.println("Error checking url (" + urlString + ") " + e.toString());
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	/**
+	 * @param data
+	 * @param name
+	 * @param reference
+	 * @param images
+	 * @param i
+	 * @return
+	 */
+	private void addImage(String data, String name, String reference, ArrayValue images, int i)
+	{
+		Image image = ValuesFactory.eINSTANCE.createImage();
+		image.setName(name);
+		image.setData(data);
+		image.setReference(reference);
+		image.setFormat(ImageFormat.PNG);
+		ArrayElement element = ValuesFactory.eINSTANCE.createArrayElement();
+		element.setIndex(i);
+		element.setInitialValue(image);
+		images.getElements().add(element);
+	}
+	
 	// START VFB term info schema https://github.com/VirtualFlyBrain/VFB_json_schema/blob/master/json_schema/
 
 	class minimal_entity_info {
@@ -412,27 +455,6 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			System.out.println(this.template_channel.image_folder);
 			addImage(this.template_channel.image_folder + "thumbnailT.png", this.term.core.label, this.term.core.short_form, imageArray, 0);
 			return imageArray;
-		}
-
-		/**
-		 * @param data
-		 * @param name
-		 * @param reference
-		 * @param images
-		 * @param i
-		 * @return
-		 */
-		private void addImage(String data, String name, String reference, ArrayValue images, int i)
-		{
-			Image image = ValuesFactory.eINSTANCE.createImage();
-			image.setName(name);
-			image.setData(data);
-			image.setReference(reference);
-			image.setFormat(ImageFormat.PNG);
-			ArrayElement element = ValuesFactory.eINSTANCE.createArrayElement();
-			element.setIndex(i);
-			element.setInitialValue(image);
-			images.getElements().add(element);
 		}
 
 		public String imageFile(List<channel_image> images, String filename) {
@@ -1263,32 +1285,32 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 	}
 
-	/**
-	 * @param images
-	 * @param parentType
-	 * @param geppettoModelAccess
-	 * @param dataSource
-	 * @return
-	 */
-	private String addAlignedTemplate(List<Object> images, CompositeType parentType, GeppettoModelAccess geppettoModelAccess, DataSource dataSource) 
-	{
-		String tempLink = null;
-		try{
-			List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
-			if (template.equals("")){
-				template = ((String) ((Map<String,Object>) ((Map<String,Object>) ((Map<String,Object>) images.get(0)).get("image")).get("template_anatomy")).get("short_form"));
-				System.out.println("Aligned to " + template);
-			}
-			String tempName = ((String) ((Map<String,Object>) ((Map<String,Object>) ((Map<String,Object>) images.get(0)).get("image")).get("template_anatomy")).get("label"));
-			tempLink = "<a href=\"#\" data-instancepath=\"" + template + "\">" + tempName + "</a>";
-			// add template short_form as supertype
-			parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(template, dependenciesLibrary));
-		} catch (Exception e) {
-			System.out.println("Error adding aligned template:");
-			e.printStackTrace();
-		}
-		return tempLink;
-	}
+	// /**
+	//  * @param images
+	//  * @param parentType
+	//  * @param geppettoModelAccess
+	//  * @param dataSource
+	//  * @return
+	//  */
+	// private String addAlignedTemplate(List<Object> images, CompositeType parentType, GeppettoModelAccess geppettoModelAccess, DataSource dataSource) 
+	// {
+	// 	String tempLink = null;
+	// 	try{
+	// 		List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
+	// 		if (template.equals("")){
+	// 			template = ((String) ((Map<String,Object>) ((Map<String,Object>) ((Map<String,Object>) images.get(0)).get("image")).get("template_anatomy")).get("short_form"));
+	// 			System.out.println("Aligned to " + template);
+	// 		}
+	// 		String tempName = ((String) ((Map<String,Object>) ((Map<String,Object>) ((Map<String,Object>) images.get(0)).get("image")).get("template_anatomy")).get("label"));
+	// 		tempLink = "<a href=\"#\" data-instancepath=\"" + template + "\">" + tempName + "</a>";
+	// 		// add template short_form as supertype
+	// 		parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(template, dependenciesLibrary));
+	// 	} catch (Exception e) {
+	// 		System.out.println("Error adding aligned template:");
+	// 		e.printStackTrace();
+	// 	}
+	// 	return tempLink;
+	// }
 
 	/**
 	 * @param url
@@ -1462,27 +1484,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	// 	images.getElements().add(element);
 	// }
 
-	/**
-	 * @param urlString
-	 * @return boolean
-	 */
-	private boolean checkURL(String urlString)
-	{
-		try
-		{
-			URL url = new URL(urlString);
-			HttpURLConnection huc = (HttpURLConnection) url.openConnection();
-			huc.setRequestMethod("HEAD");
-			huc.setInstanceFollowRedirects(false);
-			return (huc.getResponseCode() == HttpURLConnection.HTTP_OK);
-		}
-		catch(Exception e)
-		{
-			System.out.println("Error checking url (" + urlString + ") " + e.toString());
-			e.printStackTrace();
-			return false;
-		}
-	}
+
 
 	private class IIPJSON {
 		int indexNumber;
