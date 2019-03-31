@@ -407,9 +407,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 		public ArrayValue thumbnail() {
 			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
-			addImage(this.template_channel.image_folder + "thumbnailT.png",
-			this.term.core.label,
-			this.term.core.short_form, imageArray, 0);
+			addImage(this.template_channel.image_folder + "thumbnailT.png", this.term.core.label, this.term.core.short_form, imageArray, 0);
 			return imageArray;
 		}
 
