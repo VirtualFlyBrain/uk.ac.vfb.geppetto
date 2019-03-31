@@ -187,7 +187,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		private List<Integer> index;
 		private List<Integer> center;
 		private List<Integer> extent;
-		private List<Integer> voxel;
+		private List<Float> voxel;
 		private String orientation;
 		String image_folder;
 		private minimal_entity_info channel;
