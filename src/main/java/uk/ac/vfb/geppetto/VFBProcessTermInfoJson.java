@@ -304,10 +304,6 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 	}
 
-	class template_domains {
-		private domain[] domains;
-	}
-
 	class vfb_terminfo {
 		term term;
 		private List<anatomy_channel_image> anatomy_channel_image;
@@ -320,7 +316,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		private List<rel> related_individuals;
 		private List<minimal_entity_info> parents;
 		private List<channel_image> channel_image;
-		private template_domains template_domains;
+		private List<domain> template_domains;
 		private template_channel template_channel;
 
 		public String definition() {
