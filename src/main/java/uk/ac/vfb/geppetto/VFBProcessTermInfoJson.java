@@ -497,8 +497,8 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 				//Bypass if template via non template query:
 				if (superTypes.contains("Template") && vfbTerm.template_channel == null){
-					System.out.println("Skip triggered ");
-					//return results;
+					System.out.println("Template done.");
+					return results;
 				}
 
 
