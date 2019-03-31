@@ -305,7 +305,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	}
 
 	class template_domains {
-		private List<domain> domains;
+		private domain[] domains;
 	}
 
 	class vfb_terminfo {
