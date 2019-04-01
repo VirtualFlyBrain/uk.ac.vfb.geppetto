@@ -317,6 +317,40 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		private List<domain> template_domains;
 		private template_channel template_channel;
 
+		public List<List<String>> getDomains(){
+			List<List<String>> domains = new ArrayList(new ArrayList());
+			if (this.term.core.types.contains("Template") && this.template_channel != null && this.template_domains != null){
+				String wlzUrl = "";
+				String[] domainId = new String[600];
+				String[] domainName = new String[600];
+				String[] domainType = new String[600];
+				String[] domainCentre = new String[600];
+				String[] voxelSize = new String[4];
+				domainId[0] = this.term.core.short_form;
+				domainName[0] = this.parents.get(0).label;
+				domainType[0] = this.parents.get(0).short_form;
+				voxelSize[0] = String.valueOf(this.template_channel.voxel.get(0));
+				voxelSize[1] = String.valueOf(this.template_channel.voxel.get(1));
+				voxelSize[2] = String.valueOf(this.template_channel.voxel.get(2));
+				domainCentre[0] = String.valueOf(this.template_channel.center);
+				for (domain domain:this.template_domains){
+					domainId[Interger.valueOf(domain.index.get(0))] = domain.anatomical_individual.short_form;
+					domainName[Interger.valueOf(domain.index.get(0))] = domain.anatomical_type.label;
+					domainType[Interger.valueOf(domain.index.get(0))] = domain.anatomical_type.short_form;
+					if (domain.center != null && domain.center.size() > 0){
+						domainCentre[Interger.valueOf(domain.index.get(0))] = String.valueOf(domain.center);
+					}
+				}
+			}else{
+				domains.add(Arrays.asList(new String[]{"0.622088","0.622088","0.622088",null}));
+				domains.add(Arrays.asList(this.term.core.short_form));
+				domains.add(Arrays.asList(this.parents.get(0).label));
+				domains.add(Arrays.asList(this.parents.get(0).short_form));
+				domains.add(Arrays.asList("[511, 255, 108]"));
+			}
+			return domains;
+		}
+
 		public String definition() {
 			if (this.def_pubs != null && this.def_pubs.size() > 0) {
 				return this.term.definition() + "<br />(" + minirefs(this.def_pubs, ", ") + ")";
@@ -650,9 +684,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					// Slices - 3D slice viewer
 					tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume.wlz");
 					if (tempData != null){
-						// if (!superTypes.contains("Template")) {
-							addModelSlices(tempData, "Stack Viewer Slices", variable.getId() + "_slices", parentType, geppettoModelAccess, dataSource, loadBasicDomain(variable.getName(), variable.getId(), parentId));
-						// }
+						addModelSlices(tempData, "Stack Viewer Slices", variable.getId() + "_slices", parentType, geppettoModelAccess, dataSource, vfbTerm.getDomains());
 					}
 				}
 				System.out.println("Finished " + header);
