@@ -319,34 +319,44 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 		public List<List<String>> getDomains(){
 			List<List<String>> domains = new ArrayList(new ArrayList());
-			if (this.term.core.types.contains("Template") && this.template_channel != null && this.template_domains != null){
-				String wlzUrl = "";
-				String[] domainId = new String[600];
-				String[] domainName = new String[600];
-				String[] domainType = new String[600];
-				String[] domainCentre = new String[600];
-				String[] voxelSize = new String[4];
-				domainId[0] = this.term.core.short_form;
-				domainName[0] = this.parents.get(0).label;
-				domainType[0] = this.parents.get(0).short_form;
-				voxelSize[0] = String.valueOf(this.template_channel.voxel.get(0));
-				voxelSize[1] = String.valueOf(this.template_channel.voxel.get(1));
-				voxelSize[2] = String.valueOf(this.template_channel.voxel.get(2));
-				domainCentre[0] = String.valueOf(this.template_channel.center);
-				for (domain domain:this.template_domains){
-					domainId[Interger.valueOf(domain.index.get(0))] = domain.anatomical_individual.short_form;
-					domainName[Interger.valueOf(domain.index.get(0))] = domain.anatomical_type.label;
-					domainType[Interger.valueOf(domain.index.get(0))] = domain.anatomical_type.short_form;
-					if (domain.center != null && domain.center.size() > 0){
-						domainCentre[Interger.valueOf(domain.index.get(0))] = String.valueOf(domain.center);
+			try{
+				if (this.term.core.types.contains("Template") && this.template_channel != null && this.template_domains != null){
+					String wlzUrl = "";
+					String[] domainId = new String[600];
+					String[] domainName = new String[600];
+					String[] domainType = new String[600];
+					String[] domainCentre = new String[600];
+					String[] voxelSize = new String[4];
+					domainId[0] = this.term.core.short_form;
+					domainName[0] = this.parents.get(0).label;
+					domainType[0] = this.parents.get(0).short_form;
+					voxelSize[0] = String.valueOf(this.template_channel.voxel.get(0));
+					voxelSize[1] = String.valueOf(this.template_channel.voxel.get(1));
+					voxelSize[2] = String.valueOf(this.template_channel.voxel.get(2));
+					domainCentre[0] = String.valueOf(this.template_channel.center);
+					for (domain domain:this.template_domains){
+						domainId[Interger.valueOf(domain.index.get(0))] = domain.anatomical_individual.short_form;
+						domainName[Interger.valueOf(domain.index.get(0))] = domain.anatomical_type.label;
+						domainType[Interger.valueOf(domain.index.get(0))] = domain.anatomical_type.short_form;
+						if (domain.center != null && domain.center.size() > 0){
+							domainCentre[Interger.valueOf(domain.index.get(0))] = String.valueOf(domain.center);
+						}
 					}
+					domains.add(Arrays.asList(voxelSize));
+					domains.add(Arrays.asList(domainId));
+					domains.add(Arrays.asList(domainName));
+					domains.add(Arrays.asList(domainType));
+					domains.add(Arrays.asList(domainCentre));
+				}else{
+					domains.add(Arrays.asList(new String[]{"0.622088","0.622088","0.622088",null}));
+					domains.add(Arrays.asList(this.term.core.short_form));
+					domains.add(Arrays.asList(this.parents.get(0).label));
+					domains.add(Arrays.asList(this.parents.get(0).short_form));
+					domains.add(Arrays.asList("[511, 255, 108]"));
 				}
-			}else{
-				domains.add(Arrays.asList(new String[]{"0.622088","0.622088","0.622088",null}));
-				domains.add(Arrays.asList(this.term.core.short_form));
-				domains.add(Arrays.asList(this.parents.get(0).label));
-				domains.add(Arrays.asList(this.parents.get(0).short_form));
-				domains.add(Arrays.asList("[511, 255, 108]"));
+			}catch (Exception e) {
+				System.out.println("Error in vfbTerm.getDomains(): " + e.toString());
+				e.printStackTrace();
 			}
 			return domains;
 		}
@@ -405,44 +415,59 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 		public ArrayValue thumbnails() {
 			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
-			int j = 0;
-			int f = this.channel_image.size();
-			for (channel_image ci : this.channel_image) {
-				// add same template to the begining and others at the end.
-				if (ci.image != null && ci.image.template_anatomy != null && ci.image.template_anatomy.short_form != null && template.equals(ci.image.template_anatomy.short_form)) {
-					addImage(ci.image.image_folder + "thumbnailT.png", ci.channel.label.replace("_c", "").replace("-c", ""), ci.channel.short_form.replace("VFBc_", "VFB_"), imageArray, j);
-					j++;
-				} else {
-					f--;
-					addImage(ci.image.image_folder + "thumbnailT.png", ci.channel.label.replace("_c", "").replace("-c", ""), ci.channel.short_form.replace("_c", "").replace("-c", ""), imageArray, f);
+			try{
+				int j = 0;
+				int f = this.channel_image.size();
+				for (channel_image ci : this.channel_image) {
+					// add same template to the begining and others at the end.
+					if (ci.image != null && ci.image.template_anatomy != null && ci.image.template_anatomy.short_form != null && template.equals(ci.image.template_anatomy.short_form)) {
+						addImage(ci.image.image_folder + "thumbnailT.png", ci.channel.label.replace("_c", "").replace("-c", ""), ci.channel.short_form.replace("VFBc_", "VFB_"), imageArray, j);
+						j++;
+					} else {
+						f--;
+						addImage(ci.image.image_folder + "thumbnailT.png", ci.channel.label.replace("_c", "").replace("-c", ""), ci.channel.short_form.replace("_c", "").replace("-c", ""), imageArray, f);
+					}
 				}
+			}catch (Exception e) {
+				System.out.println("Error in vfbTerm.thumbnails(): " + e.toString());
+				e.printStackTrace();
 			}
 			return imageArray;
 		}
 
 		public ArrayValue examples() {
 			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
-			int j = 0;
-			int f = this.channel_image.size();
-			for (anatomy_channel_image anat : this.anatomy_channel_image) {
-				// add same template to the begining and others at the end.
-				if (template == anat.channel_image.image.template_anatomy.short_form) {
-					addImage(anat.channel_image.image.image_folder + "thumbnailT.png", anat.anatomy.label, anat.anatomy.short_form, imageArray, j);
-					j++;
-				} else {
-					f--;
-					addImage(anat.channel_image.image.image_folder + "thumbnailT.png", anat.anatomy.label, anat.anatomy.short_form, imageArray, f);
+			try{
+				int j = 0;
+				int f = this.channel_image.size();
+				for (anatomy_channel_image anat : this.anatomy_channel_image) {
+					// add same template to the begining and others at the end.
+					if (template == anat.channel_image.image.template_anatomy.short_form) {
+						addImage(anat.channel_image.image.image_folder + "thumbnailT.png", anat.anatomy.label, anat.anatomy.short_form, imageArray, j);
+						j++;
+					} else {
+						f--;
+						addImage(anat.channel_image.image.image_folder + "thumbnailT.png", anat.anatomy.label, anat.anatomy.short_form, imageArray, f);
+					}
 				}
+			}catch (Exception e) {
+				System.out.println("Error in vfbTerm.examples(): " + e.toString());
+				e.printStackTrace();
 			}
 			return imageArray;
 		}
 
 		public ArrayValue thumbnail() {
 			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
-			System.out.println(this.term.core.short_form);
-			System.out.println(this.term.core.label);
-			System.out.println(this.template_channel.image_folder);
-			addImage(this.template_channel.image_folder + "thumbnailT.png", this.term.core.label, this.term.core.short_form, imageArray, 0);
+			try{
+				System.out.println(this.term.core.short_form);
+				System.out.println(this.term.core.label);
+				System.out.println(this.template_channel.image_folder);
+				addImage(this.template_channel.image_folder + "thumbnailT.png", this.term.core.label, this.term.core.short_form, imageArray, 0);
+			}catch (Exception e) {
+				System.out.println("Error in vfbTerm.thumbnails(): " + e.toString());
+				e.printStackTrace();
+			}
 			return imageArray;
 		}
 
