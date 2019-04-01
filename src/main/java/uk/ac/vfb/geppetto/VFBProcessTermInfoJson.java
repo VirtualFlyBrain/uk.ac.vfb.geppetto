@@ -52,49 +52,6 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 {
 	// Template space:
 	String template = "";
-
-		/**
-	 * @param urlString
-	 * @return boolean
-	 */
-	private boolean checkURL(String urlString)
-	{
-		try
-		{
-			URL url = new URL(urlString);
-			HttpURLConnection huc = (HttpURLConnection) url.openConnection();
-			huc.setRequestMethod("HEAD");
-			huc.setInstanceFollowRedirects(false);
-			return (huc.getResponseCode() == HttpURLConnection.HTTP_OK);
-		}
-		catch(Exception e)
-		{
-			System.out.println("Error checking url (" + urlString + ") " + e.toString());
-			e.printStackTrace();
-			return false;
-		}
-	}
-
-	/**
-	 * @param data
-	 * @param name
-	 * @param reference
-	 * @param images
-	 * @param i
-	 * @return
-	 */
-	private void addImage(String data, String name, String reference, ArrayValue images, int i)
-	{
-		Image image = ValuesFactory.eINSTANCE.createImage();
-		image.setName(name);
-		image.setData(data);
-		image.setReference(reference);
-		image.setFormat(ImageFormat.PNG);
-		ArrayElement element = ValuesFactory.eINSTANCE.createArrayElement();
-		element.setIndex(i);
-		element.setInitialValue(image);
-		images.getElements().add(element);
-	}
 	
 	// START VFB term info schema https://github.com/VirtualFlyBrain/VFB_json_schema/blob/master/json_schema/
 
@@ -471,6 +428,49 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				return template.image_folder + filename;
 			}
 			return null;
+		}
+
+		/**
+		 * @param urlString
+		 * @return boolean
+		 */
+		private boolean checkURL(String urlString)
+		{
+			try
+			{
+				URL url = new URL(urlString);
+				HttpURLConnection huc = (HttpURLConnection) url.openConnection();
+				huc.setRequestMethod("HEAD");
+				huc.setInstanceFollowRedirects(false);
+				return (huc.getResponseCode() == HttpURLConnection.HTTP_OK);
+			}
+			catch(Exception e)
+			{
+				System.out.println("Error checking url (" + urlString + ") " + e.toString());
+				e.printStackTrace();
+				return false;
+			}
+		}
+
+		/**
+		 * @param data
+		 * @param name
+		 * @param reference
+		 * @param images
+		 * @param i
+		 * @return
+		 */
+		private void addImage(String data, String name, String reference, ArrayValue images, int i)
+		{
+			Image image = ValuesFactory.eINSTANCE.createImage();
+			image.setName(name);
+			image.setData(data);
+			image.setReference(reference);
+			image.setFormat(ImageFormat.PNG);
+			ArrayElement element = ValuesFactory.eINSTANCE.createArrayElement();
+			element.setIndex(i);
+			element.setInitialValue(image);
+			images.getElements().add(element);
 		}
 
 	}
