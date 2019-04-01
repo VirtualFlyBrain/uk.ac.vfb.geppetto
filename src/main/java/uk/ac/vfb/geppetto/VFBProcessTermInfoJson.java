@@ -374,7 +374,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				if (!result.equals("")) {
 					result = result + sep;
 				}
-				result = result + pub.microref;
+				result = result + pub.microref();
 			}
 			return result;
 		}
