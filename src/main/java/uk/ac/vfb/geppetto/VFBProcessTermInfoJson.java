@@ -121,8 +121,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		private List<String> comment;
 
 		public String definition() {
-			if ((this.description != null && this.description.size() > 0)
-					|| (this.comment != null && this.comment.size() > 0)) {
+			if ((this.description != null && this.description.size() > 0) || (this.comment != null && this.comment.size() > 0)) {
 				return this.description() + " <br /> " + this.comment();
 			}
 			return "";
