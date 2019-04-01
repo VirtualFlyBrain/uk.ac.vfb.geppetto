@@ -363,9 +363,20 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 		public String definition() {
 			if (this.def_pubs != null && this.def_pubs.size() > 0) {
-				return this.term.definition() + "<br />(" + minirefs(this.def_pubs, ", ") + ")";
+				return this.term.definition() + "<br />(" + this.minirefs(this.def_pubs, ", ") + ")";
 			}
 			return this.term.definition();
+		}
+
+		public String minirefs(List<pub> pubs, String sep) {
+			String result = "";
+			for (pub pub:pubs) {
+				if (!result.equals("")) {
+					result = result + sep;
+				}
+				result = result + pub.microref;
+			}
+			return result;
 		}
 
 		public String relList(String name, List<rel> entitys, List<String> showTypes) {
@@ -533,17 +544,6 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	}
 
 	// END VFB term info schema
-
-	public String minirefs(List<pub> pubs, String sep) {
-		String result = "";
-		for (pub pub:pubs) {
-			if (!result.equals("")) {
-				result = result + sep;
-			}
-			result = result + pub.microref;
-		}
-		return result;
-	}
 
 	/*
 	 * (non-Javadoc)
