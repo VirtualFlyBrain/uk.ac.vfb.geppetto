@@ -127,16 +127,16 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			return "";
 		}
 
-		public String description() {
+		private String description() {
 			if (this.description != null && this.description.size() > 0) {
 				return "<span class=\"terminfo-description\">" + String.join(" <br /> ", this.description) + "</span>";
 			}
 			return "";
 		}
 
-		public String comment() {
+		private String comment() {
 			if (this.comment != null && this.comment.size() > 0) {
-				return "<span class=\"terminfo-comment\">" + String.join(" <br /> ", this.description) + "</span>";
+				return "<span class=\"terminfo-comment\">" + String.join(" <br /> ", this.comment) + "</span>";
 			}
 			return "";
 		}
