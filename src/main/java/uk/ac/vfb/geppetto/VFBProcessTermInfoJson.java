@@ -675,9 +675,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					// Slices - 3D slice viewer
 					tempData = vfbTerm.imageFile(vfbTerm.channel_image, "volume.wlz");
 					if (tempData != null){
-						// if (!superTypes.contains("Template")) {
-							addModelSlices(tempData, "Stack Viewer Slices", variable.getId() + "_slices", parentType, geppettoModelAccess, dataSource, loadBasicDomain(variable.getName(), variable.getId(), parentId));
-						// }
+						addModelSlices(tempData, "Stack Viewer Slices", variable.getId() + "_slices", parentType, geppettoModelAccess, dataSource, vfbTerm.getDomains());
 					}
 				}
 				System.out.println("Finished " + header);
