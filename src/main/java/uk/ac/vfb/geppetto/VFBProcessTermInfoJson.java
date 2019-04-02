@@ -13,11 +13,17 @@ import java.util.Collections;
 
 import com.google.gson.Gson;
 
-import org.geppetto.core.datasources.GeppettoDataSourceException;
-import org.geppetto.core.model.GeppettoModelAccess;
 import org.geppetto.datasources.AQueryProcessor;
+import org.geppetto.core.datasources.GeppettoDataSourceException;
+import org.geppetto.core.datasources.QueryChecker;
+import org.geppetto.model.datasources.Query;
 import org.geppetto.model.datasources.ProcessQuery;
 import org.geppetto.model.datasources.QueryResults;
+import org.geppetto.model.datasources.DataSource;
+import org.geppetto.model.datasources.DataSourceLibraryConfiguration;
+
+import org.geppetto.core.model.GeppettoModelAccess;
+
 import org.geppetto.model.types.TypesPackage;
 import org.geppetto.model.util.GeppettoVisitingException;
 import org.geppetto.model.util.ModelUtility;
@@ -31,13 +37,12 @@ import org.geppetto.model.types.CompositeType;
 import org.geppetto.model.types.Type;
 import org.geppetto.model.values.HTML;
 import org.geppetto.model.values.Image;
-import org.geppetto.model.datasources.DataSource;
-import org.geppetto.core.model.GeppettoModelAccess;
 import org.geppetto.model.values.Text;
 import org.geppetto.model.types.ImportType;
 import org.geppetto.model.types.TypesFactory;
 import org.geppetto.model.GeppettoLibrary;
-import org.geppetto.model.datasources.DataSourceLibraryConfiguration;
+
+import org.geppetto.core.model.GeppettoModelAccess;
 import org.geppetto.core.model.GeppettoSerializer;
 
 /**
@@ -762,18 +767,11 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				
 				if (superTypes.contains("Template")){
 					badge = "<i class=\"popup-icon-link fa gpt-shapeshow\" ></i>";
-					querys += badge + "<a href=\"\" title=\"Hide template boundary and show all painted neuroanatomy\" onclick=\""+tempId+".hide();window.addVfbId(JSON.parse("+tempId+"."+tempId+"_slices.getValue().getWrappedObj().value.data).subDomains[1].filter(function(n){ return n != null }));return false;\">Show All Anatomy</a><br/>";
+					querys += badge + "<a href=\"\" title=\"Hide template boundary and show all painted neuroanatomy\" onclick=\"" + variable.getId() + ".hide();window.addVfbId(JSON.parse(" + variable.getId() + "." + variable.getId() + "_slices.getValue().getWrappedObj().value.data).subDomains[1].filter(function(n){ return n != null }));return false;\">Show All Anatomy</a><br/>";
 				}
 
 				if (querys != "") {
-					Variable queryVar = VariablesFactory.eINSTANCE.createVariable();
-					queryVar.setId("queries");
-					queryVar.setName("Query for");
-					queryVar.getTypes().add(htmlType);
-					HTML queryValue = ValuesFactory.eINSTANCE.createHTML();
-					queryValue.setHtml(querys);
-					queryVar.getInitialValues().put(htmlType, queryValue);
-					geppettoModelAccess.addVariableToType(queryVar, metaDataType);
+					addModelHtml(querys, "Query for", "queries", metadataType, geppettoModelAccess);
 				}
 
 			}catch (Exception e) {
