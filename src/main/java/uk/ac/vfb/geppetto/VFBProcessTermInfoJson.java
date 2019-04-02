@@ -396,6 +396,25 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			return result;
 		}
 
+		public String getReferences() {
+			String results = "";
+			if ((this.def_pubs != null && this.def_pubs.size() > 0) || (this.pub_syn != null && this.pub_syn.size() > 0)) {
+				result = result + "<ul class=\"terminfo-references\">";
+				if (this.def_pubs != null && this.def_pubs.size() > 0) {
+					for (pub pub:def_pubs) {
+						results = results + "<li>" + pub.miniref() + "</li>";
+					}
+				}
+				if (this.pub_syn != null && this.pub_syn.size() > 0) {
+					for (pub_syn syn:pub_syn) {
+						results = results + "<li>" + syn.pub.miniref() + "</li>";
+					}
+				}
+				result = result + "</ul>";
+			}
+			return result;
+		}
+
 		public String relList(String name, List<rel> entitys, List<String> showTypes) {
 			String result = "<ul class=\"terminfo-" + name + "\">";
 			for (rel rel : entitys) {
@@ -744,6 +763,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 				// references
 				header = "references";
+				references = vfbTerm.getReferences();
 				if (!references.equals("")) {
 					addModelHtml(references, "References", "references", metadataType, geppettoModelAccess);
 				}
