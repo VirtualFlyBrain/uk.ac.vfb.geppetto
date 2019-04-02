@@ -274,7 +274,13 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 
 		public String microref() {
-			return this.microref;
+			if (this.microref != null){
+				return this.microref;
+			}
+			if (this.core.label != null){
+				return this.core.label.replace("  ", " ");
+			}
+			return null;
 		}
 
 	}
@@ -295,7 +301,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		private pub pub;
 
 		public String toString() {
-			if (this.pub != null) {
+			if (this.pub != null && this.pub.microref() != null) {
 				return this.synonym.toString() + " (" + this.pub.microref() + ")";
 			}
 			return this.synonym.toString();
@@ -371,10 +377,12 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public String minirefs(List<pub> pubs, String sep) {
 			String result = "";
 			for (pub pub:pubs) {
-				if (!result.equals("")) {
-					result = result + sep;
+				if (pub.microref() != null){
+					if (!result.equals("")) {
+						result = result + sep;
+					}
+					result = result + pub.microref();
 				}
-				result = result + pub.microref();
 			}
 			return result;
 		}
