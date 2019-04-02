@@ -583,6 +583,12 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			String header = "loading";
 			String references = ""; 
 
+			//	Queries
+			String querys = "";
+			Variable classVariable = VariablesFactory.eINSTANCE.createVariable();
+			CompositeType classParentType = TypesFactory.eINSTANCE.createCompositeType();
+			classVariable.setId("notSet");
+
 			System.out.println("Processing JSON...");
 			try{
 				header = "results>JSON";
@@ -737,6 +743,38 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					addModelHtml(references, "References", "references", metadataType, geppettoModelAccess);
 				}
 				System.out.println("Finished " + header);
+
+				// set queries
+				String badge = "";
+				for(Query runnableQuery : geppettoModelAccess.getQueries())
+				{
+					if(QueryChecker.check(runnableQuery, variable))
+					{
+						badge = "<i class=\"popup-icon-link fa fa-quora\" ></i>";
+						querys += badge + "<a href=\"#\" data-instancepath=\"" + (String) runnableQuery.getPath() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></i></br>";
+					}else if (((superTypes.contains("Painted_domain") || superTypes.contains("Synaptic_neuropil_domain")) || superTypes.contains("Neuron_projection_bundle")) && superTypes.contains("Individual") && classVariable.getId()!="notSet"){
+						if(QueryChecker.check(runnableQuery, classVariable)){
+							badge = "<i class=\"popup-icon-link fa fa-quora\" ></i>";
+							querys += badge + "<a href=\"#\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + classVariable.getId() + "," + classVariable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", classVariable.getName()) + "</a></i></br>";
+						}
+					}
+				}
+				
+				if (superTypes.contains("Template")){
+					badge = "<i class=\"popup-icon-link fa gpt-shapeshow\" ></i>";
+					querys += badge + "<a href=\"\" title=\"Hide template boundary and show all painted neuroanatomy\" onclick=\""+tempId+".hide();window.addVfbId(JSON.parse("+tempId+"."+tempId+"_slices.getValue().getWrappedObj().value.data).subDomains[1].filter(function(n){ return n != null }));return false;\">Show All Anatomy</a><br/>";
+				}
+
+				if (querys != "") {
+					Variable queryVar = VariablesFactory.eINSTANCE.createVariable();
+					queryVar.setId("queries");
+					queryVar.setName("Query for");
+					queryVar.getTypes().add(htmlType);
+					HTML queryValue = ValuesFactory.eINSTANCE.createHTML();
+					queryValue.setHtml(querys);
+					queryVar.getInitialValues().put(htmlType, queryValue);
+					geppettoModelAccess.addVariableToType(queryVar, metaDataType);
+				}
 
 			}catch (Exception e) {
 				System.out.println("Error creating " + header + ": " + e.toString());
