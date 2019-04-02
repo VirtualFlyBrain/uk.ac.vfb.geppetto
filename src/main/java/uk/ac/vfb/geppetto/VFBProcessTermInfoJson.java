@@ -467,17 +467,18 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				int f = this.channel_image.size();
 				for (channel_image ci : this.channel_image) {
 					// add same template to the begining and others at the end.
-					if (ci.image != null && ci.image.template_anatomy != null && ci.image.template_anatomy.short_form != null && template.equals(ci.image.template_anatomy.short_form)) {
+					if (ci.image != null && ci.image.template_anatomy != null && ci.image.template_anatomy.short_form != null && template == ci.image.template_anatomy.short_form) {
 						addImage(ci.image.image_folder + "thumbnailT.png", ci.channel.label.replace("_c", "").replace("-c", ""), ci.channel.short_form.replace("VFBc_", "VFB_"), imageArray, j);
 						j++;
 					} else {
 						f--;
-						addImage(ci.image.image_folder + "thumbnailT.png", ci.channel.label.replace("_c", "").replace("-c", ""), ci.channel.short_form.replace("_c", "").replace("-c", ""), imageArray, f);
+						addImage(ci.image.image_folder + "thumbnailT.png", ci.channel.label.replace("_c", "").replace("-c", ""), ci.channel.short_form.replace("VFBc_", "VFB_"), imageArray, f);
 					}
 				}
 			}catch (Exception e) {
 				System.out.println("Error in vfbTerm.thumbnails(): " + e.toString());
 				e.printStackTrace();
+				return null;
 			}
 			return imageArray;
 		}
@@ -693,12 +694,14 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				header = "channel_image";
 				if (vfbTerm.channel_image != null && vfbTerm.channel_image.size() > 0) {
 					// Recording Aligned Template
-					if (!template.equals("")){
+					if (template.equals("")){
 						template = vfbTerm.channel_image.get(0).image.template_anatomy.short_form;
 						addModelHtml(vfbTerm.channel_image.get(0).image.template_anatomy.intLink(), "Aligned to", "template", metadataType, geppettoModelAccess);
 					}
 					// thumbnail
-					addModelThumbnails(vfbTerm.thumbnails(), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
+					if (vfbTerm.thumbnails() == null){
+						addModelThumbnails(vfbTerm.thumbnails(), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
+					}
 					// OBJ - 3D mesh
 					tempData = vfbTerm.imageFile(vfbTerm.channel_image, "volume_man.obj");
 					if (tempData == null){
