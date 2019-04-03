@@ -175,11 +175,29 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		image image;
 		minimal_entity_info channel;
 		private minimal_entity_info imaging_technique;
+
+		public String getUrl(String pre, String post){
+			String result = "";
+			if (this.image != null && this.image.image_folder != null && !this.image.image_folder.equals("")){
+				result = this.image.image_folder.replace("http://","https://");
+			}
+			if (pre != null && !pre.equals("")){
+				result = pre + result;
+			}
+			if (post != null && !post.equals("")){
+				result = result + post;
+			}
+			return result;
+		}
 	}
 
 	class anatomy_channel_image {
 		minimal_entity_info anatomy;
 		channel_image channel_image;
+
+		public String getUrl(String pre, String post){
+			return channel_image.getUrl(pre, post);
+		}
 	}
 
 	class domain {
@@ -467,12 +485,15 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				int f = this.channel_image.size();
 				for (channel_image ci : this.channel_image) {
 					// add same template to the begining and others at the end.
+					System.out.println(template);
+					System.out.println(ci.image.template_anatomy.short_form);
+					System.out.println(ci.getUrl("",""));
 					if (ci != null && ci.image != null && ci.image.template_anatomy != null && ci.image.template_anatomy.short_form != null && template == ci.image.template_anatomy.short_form) {
-						addImage(ci.image.image_folder + "thumbnailT.png", ci.channel.label.replace("_c", "").replace("-c", ""), ci.channel.short_form.replace("VFBc_", "VFB_"), imageArray, j);
+						addImage(ci.getUrl("", "thumbnailT.png"), ci.channel.label.replace("_c", "").replace("-c", ""), ci.channel.short_form.replace("VFBc_", "VFB_"), imageArray, j);
 						j++;
 					} else {
 						f--;
-						addImage(ci.image.image_folder + "thumbnailT.png", ci.channel.label.replace("_c", "").replace("-c", ""), ci.channel.short_form.replace("VFBc_", "VFB_"), imageArray, f);
+						addImage(ci.getUrl("", "thumbnailT.png"), ci.channel.label.replace("_c", "").replace("-c", ""), ci.channel.short_form.replace("VFBc_", "VFB_"), imageArray, f);
 					}
 				}
 			}catch (Exception e) {
@@ -490,12 +511,15 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				int f = this.anatomy_channel_image.size();
 				for (anatomy_channel_image anat : this.anatomy_channel_image) {
 					// add same template to the begining and others at the end.
+					System.out.println(template);
+					System.out.println(anat.channel_image.image.template_anatomy.short_form);
+					System.out.println(anat.getUrl("",""));
 					if (anat.channel_image != null && anat.channel_image.image != null && anat.channel_image.image.template_anatomy != null && anat.channel_image.image.template_anatomy.short_form != null && template == anat.channel_image.image.template_anatomy.short_form) {
-						addImage(anat.channel_image.image.image_folder + "thumbnailT.png", anat.anatomy.label, anat.anatomy.short_form, imageArray, j);
+						addImage(anat.getUrl("", "thumbnailT.png"), anat.anatomy.label, anat.anatomy.short_form, imageArray, j);
 						j++;
 					} else {
 						f--;
-						addImage(anat.channel_image.image.image_folder + "thumbnailT.png", anat.anatomy.label, anat.anatomy.short_form, imageArray, f);
+						addImage(anat.getUrl("", "thumbnailT.png"), anat.anatomy.label, anat.anatomy.short_form, imageArray, f);
 					}
 				}
 			}catch (Exception e) {
