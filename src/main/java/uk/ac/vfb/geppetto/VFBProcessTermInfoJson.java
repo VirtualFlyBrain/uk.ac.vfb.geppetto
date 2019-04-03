@@ -54,8 +54,6 @@ import org.geppetto.core.model.GeppettoSerializer;
 
 public class VFBProcessTermInfoJson extends AQueryProcessor
 {
-	// Template space:
-	public String template = "";
 	
 	// START VFB term info schema https://github.com/VirtualFlyBrain/VFB_json_schema/blob/master/json_schema/
 
@@ -478,7 +476,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			return result;
 		}
 
-		public ArrayValue thumbnails() {
+		public ArrayValue thumbnails(String template) {
 			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
 			try{
 				int j = 0;
@@ -504,7 +502,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			return imageArray;
 		}
 
-		public ArrayValue examples() {
+		public ArrayValue examples(String template) {
 			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
 			try{
 				int j = 0;
@@ -618,6 +616,8 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 		try
 		{
+			// Template space:
+			String template = "";
 
 			// retrieving the metadatatype
 			CompositeType metadataType = (CompositeType) ModelUtility.getTypeFromLibrary(variable.getId() + "_metadata", dataSource.getTargetLibrary());
@@ -724,8 +724,8 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 						addModelHtml(vfbTerm.channel_image.get(0).image.template_anatomy.intLink(), "Aligned to", "template", metadataType, geppettoModelAccess);
 					}
 					// thumbnail
-					if (vfbTerm.thumbnails() != null){
-						addModelThumbnails(vfbTerm.thumbnails(), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
+					if (vfbTerm.thumbnails(template) != null){
+						addModelThumbnails(vfbTerm.thumbnails(template), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
 					}
 					// OBJ - 3D mesh
 					tempData = vfbTerm.imageFile(vfbTerm.channel_image, "volume_man.obj");
@@ -785,7 +785,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				// examples
 				header = "anatomy_channel_image";
 				if (vfbTerm.anatomy_channel_image != null && vfbTerm.anatomy_channel_image.size() > 0 && vfbTerm.examples() != null) {
-					addModelThumbnails(vfbTerm.examples(), "Examples", "examples", metadataType, geppettoModelAccess);
+					addModelThumbnails(vfbTerm.examples(template), "Examples", "examples", metadataType, geppettoModelAccess);
 				}
 				System.out.println("Finished " + header);
 
