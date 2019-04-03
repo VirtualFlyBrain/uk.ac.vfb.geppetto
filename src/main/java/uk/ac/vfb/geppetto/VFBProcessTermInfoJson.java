@@ -55,7 +55,7 @@ import org.geppetto.core.model.GeppettoSerializer;
 public class VFBProcessTermInfoJson extends AQueryProcessor
 {
 	// Template space:
-	String template = "";
+	public String template = "";
 	
 	// START VFB term info schema https://github.com/VirtualFlyBrain/VFB_json_schema/blob/master/json_schema/
 
