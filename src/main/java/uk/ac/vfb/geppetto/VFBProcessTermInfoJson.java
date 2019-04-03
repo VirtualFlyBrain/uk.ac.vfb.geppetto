@@ -784,7 +784,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			
 				// examples
 				header = "anatomy_channel_image";
-				if (vfbTerm.anatomy_channel_image != null && vfbTerm.anatomy_channel_image.size() > 0 && vfbTerm.examples() != null) {
+				if (vfbTerm.anatomy_channel_image != null && vfbTerm.anatomy_channel_image.size() > 0 && vfbTerm.examples(template) != null) {
 					addModelThumbnails(vfbTerm.examples(template), "Examples", "examples", metadataType, geppettoModelAccess);
 				}
 				System.out.println("Finished " + header);
