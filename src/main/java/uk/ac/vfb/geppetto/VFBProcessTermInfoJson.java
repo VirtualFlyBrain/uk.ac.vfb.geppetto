@@ -487,7 +487,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
 			try{
 				int j = 0;
-				int f = this.channel_image.size();
+				int f = this.anatomy_channel_image.size();
 				for (anatomy_channel_image anat : this.anatomy_channel_image) {
 					// add same template to the begining and others at the end.
 					if (template == anat.channel_image.image.template_anatomy.short_form) {
@@ -501,6 +501,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			}catch (Exception e) {
 				System.out.println("Error in vfbTerm.examples(): " + e.toString());
 				e.printStackTrace();
+				return null;
 			}
 			return imageArray;
 		}
