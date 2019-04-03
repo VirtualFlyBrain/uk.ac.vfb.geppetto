@@ -700,7 +700,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 						addModelHtml(vfbTerm.channel_image.get(0).image.template_anatomy.intLink(), "Aligned to", "template", metadataType, geppettoModelAccess);
 					}
 					// thumbnail
-					if (vfbTerm.thumbnails() == null){
+					if (vfbTerm.thumbnails() != null){
 						addModelThumbnails(vfbTerm.thumbnails(), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
 					}
 					// OBJ - 3D mesh
