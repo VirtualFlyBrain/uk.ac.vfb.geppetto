@@ -365,8 +365,8 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				}else{
 					domains.add(Arrays.asList(new String[]{"0.622088","0.622088","0.622088",null}));
 					domains.add(Arrays.asList(this.term.core.short_form));
-					domains.add(Arrays.asList(this.parents.get(0).label));
-					domains.add(Arrays.asList(this.parents.get(0).short_form));
+					domains.add(Arrays.asList(this.term.core.label));
+					domains.add(Arrays.asList(this.term.core.short_form));
 					domains.add(Arrays.asList("[511, 255, 108]"));
 				}
 			}catch (Exception e) {
