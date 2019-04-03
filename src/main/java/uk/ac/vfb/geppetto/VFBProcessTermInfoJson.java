@@ -490,7 +490,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				int f = this.anatomy_channel_image.size();
 				for (anatomy_channel_image anat : this.anatomy_channel_image) {
 					// add same template to the begining and others at the end.
-					if (template == anat.channel_image.image.template_anatomy.short_form) {
+					if (anat.channel_image != null && anat.channel_image.image != null && anat.channel_image.image.template_anatomy != null && anat.channel_image.image.template_anatomy.short_form != null && template == anat.channel_image.image.template_anatomy.short_form) {
 						addImage(anat.channel_image.image.image_folder + "thumbnailT.png", anat.anatomy.label, anat.anatomy.short_form, imageArray, j);
 						j++;
 					} else {
@@ -760,7 +760,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			
 				// examples
 				header = "anatomy_channel_image";
-				if (vfbTerm.anatomy_channel_image != null && vfbTerm.anatomy_channel_image.size() > 0) {
+				if (vfbTerm.anatomy_channel_image != null && vfbTerm.anatomy_channel_image.size() > 0 && vfbTerm.examples() != null) {
 					addModelThumbnails(vfbTerm.examples(), "Examples", "examples", metadataType, geppettoModelAccess);
 				}
 				System.out.println("Finished " + header);
