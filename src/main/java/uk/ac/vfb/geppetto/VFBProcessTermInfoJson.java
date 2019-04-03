@@ -467,7 +467,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				int f = this.channel_image.size();
 				for (channel_image ci : this.channel_image) {
 					// add same template to the begining and others at the end.
-					if (ci.image != null && ci.image.template_anatomy != null && ci.image.template_anatomy.short_form != null && template == ci.image.template_anatomy.short_form) {
+					if (ci != null && ci.image != null && ci.image.template_anatomy != null && ci.image.template_anatomy.short_form != null && template == ci.image.template_anatomy.short_form) {
 						addImage(ci.image.image_folder + "thumbnailT.png", ci.channel.label.replace("_c", "").replace("-c", ""), ci.channel.short_form.replace("VFBc_", "VFB_"), imageArray, j);
 						j++;
 					} else {
