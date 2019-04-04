@@ -774,18 +774,21 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					if (tempData != null){
 						addModelObj(tempData, "3D volume", variable.getId() + "_obj", parentType, geppettoModelAccess, dataSource);
 					}
+					System.out.println("OBJ " + tempData);
 				
 					// SWC - 3D mesh
 					tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume.swc").replace("https://","http://");
 					if (tempData != null){
 						addModelSwc(tempData, "3D Skeleton", variable.getId() + "_swc", parentType, geppettoModelAccess, dataSource);
 					}
+					System.out.println("SWC " + tempData);
 				
 					// Slices - 3D slice viewer
 					tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume.wlz");
 					if (tempData != null){
 						addModelSlices(tempData, "Stack Viewer Slices", variable.getId() + "_slices", parentType, geppettoModelAccess, dataSource, vfbTerm.getDomains());
 					}
+					System.out.println("WLZ " + tempData);
 				}
 				System.out.println("Finished " + header);
 			
