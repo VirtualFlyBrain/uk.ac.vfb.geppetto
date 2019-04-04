@@ -96,6 +96,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public List<String> typeList() {
 			return this.types;
 		}
+
 	}
 
 	class minimal_edge_info {
@@ -136,16 +137,29 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 		private String description() {
 			if (this.description != null && this.description.size() > 0) {
-				return "<span class=\"terminfo-description\">" + String.join(" <br /> ", this.description) + "</span>";
+				return "<span class=\"terminfo-description\">" + this.highlightLinks(String.join(" <br /> ", this.description)) + "</span>";
 			}
 			return "";
 		}
 
 		private String comment() {
 			if (this.comment != null && this.comment.size() > 0) {
-				return "<span class=\"terminfo-comment\">" + String.join(" <br /> ", this.comment) + "</span>";
+				return "<span class=\"terminfo-comment\">" + this.highlightLinks(String.join(" <br /> ", this.comment)) + "</span>";
 			}
 			return "";
+		}
+
+		/**
+		 * @param text
+		 */
+		private String highlightLinks(String text) {
+			try {
+				text = text.replaceAll("([F,V,G][A-z]*)[:,_](\\d{5}[0-9]*\\b)", "<a href=\"#\" data-instancepath=\"$1_$2\" title=\"$1_$2\" ><i class=\"fa fa-info-circle\"></i></a>");
+				return text;
+			} catch (Exception e) {
+				System.out.println("Error highlighting links in (" + text + ") " + e.toString());
+				return text;
+			}
 		}
 	}
 
@@ -862,7 +876,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			slicesValue.setFormat(ImageFormat.IIP);
 			slicesValue.setReference(reference);
 			slicesVar.setId(reference + "_slices");
-			slicesVar.setName(name);
+			slicesVar.setName("Stack Viewer Slices");
 			slicesVar.getTypes().add(imageType);
 			slicesVar.getInitialValues().put(imageType, slicesValue);
 			geppettoModelAccess.addVariableToType(slicesVar, parentType);
@@ -888,9 +902,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			importType.setId(reference + "_swc");
 			importType.setModelInterpreterId("swcModelInterpreter");
 			Variable.getTypes().add(importType);
-			Variable.setId(reference);
-			Variable.setName(name);
-			parentType.getVariables().add(Variable);
+			Variable.setId(reference + "_swc");
+			Variable.setName("3D Skeleton");
+			geppettoModelAccess.addVariableToType(Variable, parentType);
 			geppettoModelAccess.addTypeToLibrary(importType, getLibraryFor(dataSource, "swc"));
 		}
 		catch (Exception e)
@@ -914,11 +928,10 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			ImportType importType = TypesFactory.eINSTANCE.createImportType();
 			importType.setUrl(url);
 			importType.setId(reference + "_obj");
-			importType.setName(reference);
 			importType.setModelInterpreterId("objModelInterpreterService");
 			Variable.getTypes().add(importType);
-			Variable.setId(reference);
-			Variable.setName(name);
+			Variable.setId(reference + "_obj");
+			Variable.setName("3D Volume");
 			parentType.getVariables().add(Variable);
 			geppettoModelAccess.addTypeToLibrary(importType, getLibraryFor(dataSource, "obj"));
 		}
