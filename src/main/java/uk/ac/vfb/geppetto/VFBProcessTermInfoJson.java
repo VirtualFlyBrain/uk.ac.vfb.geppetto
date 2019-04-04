@@ -717,7 +717,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				// Images:
 				header = "parentType";
 				// retrieving the parent composite type for new image variables
-				CompositeType parentType = (CompositeType) variable.getAnonymousTypes().get(0);
+				javax.management.openmbean.CompositeType parentType = (CompositeType) variable.getAnonymousTypes().get(0);
 				System.out.println("Finished " + header);
 
 				header = "channel_image";
@@ -738,21 +738,21 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					}
 					System.out.println("OBJ " + tempData);
 					if (tempData != null){
-						addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId() + "_obj", parentType, geppettoModelAccess, dataSource);
+						addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId(), parentType, geppettoModelAccess, dataSource);
 					}
 				
 					// SWC - 3D mesh
 					tempData = vfbTerm.imageFile(vfbTerm.channel_image, "volume.swc");
 					System.out.println("SWC " + tempData);
 					if (tempData != null){
-						addModelSwc(tempData.replace("https://","http://"), "3D Skeleton", variable.getId() + "_swc", parentType, geppettoModelAccess, dataSource);
+						addModelSwc(tempData.replace("https://","http://"), "3D Skeleton", variable.getId(), parentType, geppettoModelAccess, dataSource);
 					}
 				
 					// Slices - 3D slice viewer
 					tempData = vfbTerm.imageFile(vfbTerm.channel_image, "volume.wlz");
 					System.out.println("WLZ " + tempData);
 					if (tempData != null){
-						addModelSlices(tempData, "Stack Viewer Slices", variable.getId() + "_slices", parentType, geppettoModelAccess, dataSource, vfbTerm.getDomains());
+						addModelSlices(tempData.replace("http://","https://"), "Stack Viewer Slices", variable.getId(), parentType, geppettoModelAccess, dataSource, vfbTerm.getDomains());
 					}
 				}
 				System.out.println("Finished " + header);
@@ -772,14 +772,14 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 						tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume.obj");
 					}
 					if (tempData != null){
-						addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId() + "_obj", parentType, geppettoModelAccess, dataSource);
+						addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId(), parentType, geppettoModelAccess, dataSource);
 					}
 					System.out.println("OBJ " + tempData);
 			
 					// Slices - 3D slice viewer
 					tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume.wlz");
 					if (tempData != null){
-						addModelSlices(tempData, "Stack Viewer Slices", variable.getId() + "_slices", parentType, geppettoModelAccess, dataSource, vfbTerm.getDomains());
+						addModelSlices(tempData.replace("http://","https://"), "Stack Viewer Slices", variable.getId(), parentType, geppettoModelAccess, dataSource, vfbTerm.getDomains());
 					}
 					System.out.println("WLZ " + tempData);
 				}
@@ -861,7 +861,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			slicesValue.setData(new Gson().toJson(new IIPJSON(0, "https://www.virtualflybrain.org/fcgi/wlziipsrv.fcgi", url.replace("https://", "http://").replace("www.virtualflybrain.org","virtualflybrain.org").replace("http://virtualflybrain.org/data/", "/disk/data/VFB/IMAGE_DATA/"), domains)));
 			slicesValue.setFormat(ImageFormat.IIP);
 			slicesValue.setReference(reference);
-			slicesVar.setId(reference);
+			slicesVar.setId(reference + "_slices");
 			slicesVar.setName(name);
 			slicesVar.getTypes().add(imageType);
 			slicesVar.getInitialValues().put(imageType, slicesValue);
@@ -885,7 +885,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			Variable Variable = VariablesFactory.eINSTANCE.createVariable();
 			ImportType importType = TypesFactory.eINSTANCE.createImportType();
 			importType.setUrl(url);
-			importType.setId(reference);
+			importType.setId(reference + "_swc");
 			importType.setModelInterpreterId("swcModelInterpreter");
 			Variable.getTypes().add(importType);
 			Variable.setId(reference);
@@ -913,7 +913,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			Variable Variable = VariablesFactory.eINSTANCE.createVariable();
 			ImportType importType = TypesFactory.eINSTANCE.createImportType();
 			importType.setUrl(url);
-			importType.setId(reference);
+			importType.setId(reference + "_obj");
 			importType.setName(reference);
 			importType.setModelInterpreterId("objModelInterpreterService");
 			Variable.getTypes().add(importType);
