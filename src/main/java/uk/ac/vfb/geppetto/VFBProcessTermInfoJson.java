@@ -932,7 +932,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			Variable.getTypes().add(importType);
 			Variable.setId(reference + "_obj");
 			Variable.setName("3D Volume");
-			parentType.getVariables().add(Variable);
+			geppettoModelAccess.addVariableToType(Variable, parentType);
 			geppettoModelAccess.addTypeToLibrary(importType, getLibraryFor(dataSource, "obj"));
 		}
 		catch (Exception e)
