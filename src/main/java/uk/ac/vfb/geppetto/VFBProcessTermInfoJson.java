@@ -732,20 +732,20 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 						addModelThumbnails(vfbTerm.thumbnails(template), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
 					}
 					// OBJ - 3D mesh
-					tempData = vfbTerm.imageFile(vfbTerm.channel_image, "volume_man.obj").replace("https://","http://");
+					tempData = vfbTerm.imageFile(vfbTerm.channel_image, "volume_man.obj");
 					if (tempData == null){
-						tempData = vfbTerm.imageFile(vfbTerm.channel_image, "volume.obj").replace("https://","http://");
+						tempData = vfbTerm.imageFile(vfbTerm.channel_image, "volume.obj");
 					}
 					System.out.println("OBJ " + tempData);
 					if (tempData != null){
-						addModelObj(tempData, "3D volume", variable.getId() + "_obj", parentType, geppettoModelAccess, dataSource);
+						addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId() + "_obj", parentType, geppettoModelAccess, dataSource);
 					}
 				
 					// SWC - 3D mesh
-					tempData = vfbTerm.imageFile(vfbTerm.channel_image, "volume.swc").replace("https://","http://");
+					tempData = vfbTerm.imageFile(vfbTerm.channel_image, "volume.swc");
 					System.out.println("SWC " + tempData);
 					if (tempData != null){
-						addModelSwc(tempData, "3D Skeleton", variable.getId() + "_swc", parentType, geppettoModelAccess, dataSource);
+						addModelSwc(tempData.replace("https://","http://"), "3D Skeleton", variable.getId() + "_swc", parentType, geppettoModelAccess, dataSource);
 					}
 				
 					// Slices - 3D slice viewer
@@ -767,22 +767,15 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					// thumbnail
 					addModelThumbnails(vfbTerm.thumbnail(), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
 					// OBJ - 3D mesh
-					tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume_man.obj").replace("https://","http://");
+					tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume_man.obj");
 					if (tempData == null){
-						tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume.obj").replace("https://","http://");
+						tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume.obj");
 					}
 					if (tempData != null){
-						addModelObj(tempData, "3D volume", variable.getId() + "_obj", parentType, geppettoModelAccess, dataSource);
+						addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId() + "_obj", parentType, geppettoModelAccess, dataSource);
 					}
 					System.out.println("OBJ " + tempData);
-				
-					// SWC - 3D mesh
-					tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume.swc").replace("https://","http://");
-					if (tempData != null){
-						addModelSwc(tempData, "3D Skeleton", variable.getId() + "_swc", parentType, geppettoModelAccess, dataSource);
-					}
-					System.out.println("SWC " + tempData);
-				
+			
 					// Slices - 3D slice viewer
 					tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume.wlz");
 					if (tempData != null){
