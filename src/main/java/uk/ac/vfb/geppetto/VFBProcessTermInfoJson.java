@@ -765,16 +765,16 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					// thumbnail
 					addModelThumbnails(vfbTerm.thumbnail(), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
 					// OBJ - 3D mesh
-					tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume_man.obj");
+					tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume_man.obj").replace("https://","http://");
 					if (tempData == null){
-						tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume.obj");
+						tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume.obj").replace("https://","http://");
 					}
 					if (tempData != null){
 						addModelObj(tempData, "3D volume", variable.getId() + "_obj", parentType, geppettoModelAccess, dataSource);
 					}
 				
 					// SWC - 3D mesh
-					tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume.swc");
+					tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume.swc").replace("https://","http://");
 					if (tempData != null){
 						addModelSwc(tempData, "3D Skeleton", variable.getId() + "_swc", parentType, geppettoModelAccess, dataSource);
 					}
