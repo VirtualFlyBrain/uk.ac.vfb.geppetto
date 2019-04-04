@@ -486,6 +486,8 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					System.out.println(template);
 					System.out.println(ci.image.template_anatomy.short_form);
 					System.out.println(ci.getUrl("",""));
+					System.out.println(ci.channel.label.replace("_c", "").replace("-c", ""));
+					System.out.println(ci.channel.short_form.replace("VFBc_", "VFB_"));
 					if (ci != null && ci.image != null && ci.image.template_anatomy != null && ci.image.template_anatomy.short_form != null && template == ci.image.template_anatomy.short_form) {
 						addImage(ci.getUrl("", "thumbnailT.png"), ci.channel.label.replace("_c", "").replace("-c", ""), ci.channel.short_form.replace("VFBc_", "VFB_"), imageArray, j);
 						j++;
