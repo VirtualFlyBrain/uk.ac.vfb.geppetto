@@ -717,7 +717,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				// Images:
 				header = "parentType";
 				// retrieving the parent composite type for new image variables
-				javax.management.openmbean.CompositeType parentType = (CompositeType) variable.getAnonymousTypes().get(0);
+				CompositeType parentType = (CompositeType) variable.getAnonymousTypes().get(0);
 				System.out.println("Finished " + header);
 
 				header = "channel_image";
