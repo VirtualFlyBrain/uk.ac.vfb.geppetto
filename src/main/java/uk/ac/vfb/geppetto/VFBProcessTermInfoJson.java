@@ -723,8 +723,8 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					// Recording Aligned Template
 					if (template.equals("")){
 						template = vfbTerm.channel_image.get(0).image.template_anatomy.short_form;
-						addModelHtml(vfbTerm.channel_image.get(0).image.template_anatomy.intLink(), "Aligned to", "template", metadataType, geppettoModelAccess);
 					}
+					addModelHtml(vfbTerm.channel_image.get(0).image.template_anatomy.intLink(), "Aligned to", "template", metadataType, geppettoModelAccess);
 					// thumbnail
 					if (vfbTerm.thumbnails(template) != null){
 						addModelThumbnails(vfbTerm.thumbnails(template), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
@@ -734,18 +734,21 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					if (tempData == null){
 						tempData = vfbTerm.imageFile(vfbTerm.channel_image, "volume.obj");
 					}
+					System.out.println("OBJ " + tempData);
 					if (tempData != null){
 						addModelObj(tempData, "3D volume", variable.getId() + "_obj", parentType, geppettoModelAccess, dataSource);
 					}
 				
 					// SWC - 3D mesh
 					tempData = vfbTerm.imageFile(vfbTerm.channel_image, "volume.swc");
+					System.out.println("SWC " + tempData);
 					if (tempData != null){
 						addModelSwc(tempData, "3D Skeleton", variable.getId() + "_swc", parentType, geppettoModelAccess, dataSource);
 					}
 				
 					// Slices - 3D slice viewer
 					tempData = vfbTerm.imageFile(vfbTerm.channel_image, "volume.wlz");
+					System.out.println("WLZ " + tempData);
 					if (tempData != null){
 						addModelSlices(tempData, "Stack Viewer Slices", variable.getId() + "_slices", parentType, geppettoModelAccess, dataSource, vfbTerm.getDomains());
 					}
