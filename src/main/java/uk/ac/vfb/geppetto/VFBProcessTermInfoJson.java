@@ -545,9 +545,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 
 		public String imageFile(List<channel_image> images, String filename) {
-			for (channel_image image : images) {
-				if (checkURL(image.image.image_folder + filename)) {
-					return image.image.image_folder + filename;
+			for (channel_image ci : images) {
+				if (checkURL(ci.getUrl("", filename))) {
+					return ci.getUrl("", filename);
 				}
 			}
 			return null;
