@@ -495,6 +495,10 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public ArrayValue thumbnails(String template) {
 			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
 			try{
+				if (template.equals("")){
+					//default to JFRC2 
+					template = "VFB_00017894";
+				}
 				int j = 0;
 				int f = this.channel_image.size();
 				for (channel_image ci : this.channel_image) {
@@ -523,6 +527,10 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public ArrayValue examples(String template) {
 			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
 			try{
+				if (template.equals("")){
+					//default to JFRC2 
+					template = "VFB_00017894";
+				}
 				int j = 0;
 				int f = this.anatomy_channel_image.size();
 				for (anatomy_channel_image anat : this.anatomy_channel_image) {
