@@ -78,8 +78,13 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	}
 
 	public String secureUrl(String url) {
-		if (checkURL(url.replace("http://","https://"))){
-			return url.replace("http://","https://");
+		try{
+			if (checkURL(url.replace("http://","https://"))){
+				return url.replace("http://","https://");
+			}
+		}catch(Exception e){
+			System.out.println("Error securing url (" + urlString + ") " + e.toString());
+			e.printStackTrace();
 		}
 		return url;
 	}
@@ -718,7 +723,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		{
 			Image image = ValuesFactory.eINSTANCE.createImage();
 			image.setName(name);
-			image.setData(VFBProcessTermInfoJson.this.secureUrl(data));
+			image.setData(data);
 			image.setReference(reference);
 			image.setFormat(ImageFormat.PNG);
 			ArrayElement element = ValuesFactory.eINSTANCE.createArrayElement();
