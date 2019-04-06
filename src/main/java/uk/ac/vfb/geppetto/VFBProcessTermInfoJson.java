@@ -251,6 +251,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			if (this.icon != null && !this.icon.equals("")) {
 				result = result + "<img class=\"terminfo-siteicon\" src=\"" + this.icon + "\" />";
 			}
+			result = result + "</a>";
 			return result;
 		}
 	}
@@ -260,6 +261,25 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		private String link;
 		private String icon;
 		private String catmaid_annotation_id;
+
+		public String extLink() {
+			String result = "<a href=\"" + this.link + "\" target=\"_blank\">";
+			if (this.icon != null && !this.icon.equals("")) {
+				result = result + "<img class=\"terminfo-dataseticon\" src=\"" + this.icon + "\" title=\"" + this.core.label + "\"/>";
+			}else{
+				result = result + this.core.label;
+			}
+			result = result + "</a>";
+			return result;
+		}
+
+		public String intLink() {
+			String result = this.core.intLink();
+			if (this.icon != null && !this.icon.equals("")) {
+				result = result.replace(this.core.label,"<img class=\"terminfo-dataseticon\" src=\"" + this.icon + "\" title=\"" + this.core.label + "\"/>");
+			}
+			return result;
+		}
 	}
 
 	class license {
@@ -267,11 +287,56 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		private String link;
 		private String icon;
 		private boolean is_bespoke;
+
+		public String extLink() {
+			String result = "<a href=\"" + this.link + "\" target=\"_blank\">";
+			if (this.icon != null && !this.icon.equals("")) {
+				result = result + "<img class=\"terminfo-licenseicon\" src=\"" + this.icon + "\" title=\"" + this.core.label + "\"/>";
+			}else{
+				result = result + this.core.label;
+			}
+			result = result + "</a>";
+			return result;
+		}
+
+		public String intLink() {
+			String result = this.core.intLink();
+			if (this.icon != null && !this.icon.equals("")) {
+				result = result.replace(this.core.label,"<img class=\"terminfo-licenseicon\" src=\"" + this.icon + "\" title=\"" + this.core.label + "\"/>");
+			}
+			return result;
+		}
+
+		public String definition() {
+			String result = "";
+			if (this.description != null && this.description.size() > 0) {
+				result = result + this.description();
+			}
+			if (this.comment != null && this.comment.size() > 0) {
+				result = result + "<br /><span class=\"terminfo-license-comment-title\">Comment:</span><br />" + this.comment();
+			}
+			return result;
+		}
+
+		private String description() {
+			if (this.description != null && this.description.size() > 0) {
+				return "<span class=\"terminfo-license-description\">" + String.join(" <br /> ", this.description) + "</span>";
+			}
+			return "";
+		}
+
+		private String comment() {
+			if (this.comment != null && this.comment.size() > 0) {
+				return "<span class=\"terminfo-license-comment\">" + String.join(" <br /> ", this.comment) + "</span>";
+			}
+			return "";
+		}
+
 	}
 
 	class dataset_license {
-		private dataset dataset;
-		private license license;
+		dataset dataset;
+		license license;
 	}
 
 	class pub {
@@ -363,6 +428,41 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		private List<channel_image> channel_image;
 		private List<domain> template_domains;
 		private template_channel template_channel;
+
+		public String getSource() {
+			String result = "";
+			if (dataset_license != null && dataset_license.size() > 0) {
+				result = result + "<span class=\"terminfo-source\">";
+				for (dataset_license dsl:dataset_license) {
+					if (this.term.core.short_form.equals(dsl.dataset.core.short_form)){
+						result = result + dsl.dataset.extLink();
+					}else{
+						result = result + dsl.dataset.intLink();
+					}
+				}
+				result = result + "</span>";
+			}
+			return result;
+		}
+
+		public String getLicense() {
+			String result = "";
+			if (dataset_license != null && dataset_license.size() > 0) {
+				result = result + "<span class=\"terminfo-license\">";
+				for (dataset_license dsl:dataset_license) {
+					if (this.term.core.short_form.equals(dsl.dataset.core.short_form)){
+						result = result + dsl.license.extLink();
+					}else{
+						result = result + dsl.license.intLink();
+					}
+					if (!dsl.license.definition().equals("")) {
+						result = result + "<br />" + dsl.license.definition();
+					}
+				}
+				result = result + "</span>";
+			}
+			return result;
+		}
 
 		public List<List<String>> getDomains(){
 			List<List<String>> domains = new ArrayList(new ArrayList());
@@ -713,23 +813,36 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				header = "types";
 				tempData = vfbTerm.term.core.types(showTypes);
 				if (!tempData.equals("")) {
-					addModelHtml(vfbTerm.term.core.types(showTypes), "Types", "types", metadataType, geppettoModelAccess);
+					addModelHtml(vfbTerm.term.core.types(showTypes), "Types", header, metadataType, geppettoModelAccess);
 				}
 
 				// Description
 				header = "description";
 				tempData = vfbTerm.definition();
 				if (!tempData.equals("")) {
-					addModelHtml(tempData, "Description", "description", metadataType, geppettoModelAccess);
+					addModelHtml(tempData, "Description", header, metadataType, geppettoModelAccess);
 				}
 
 				// Synonyms
 				header = "synonyms";
 				tempData = vfbTerm.synonyms();
 				if (!tempData.equals("")) {
-					addModelHtml(tempData, "Alternative Names", "synonyms", metadataType, geppettoModelAccess);
+					addModelHtml(tempData, "Alternative Names", header, metadataType, geppettoModelAccess);
+				}
+
+				// Source
+				header = "source";
+				tempData = vfbTerm.getSource();
+				if (!tempData.equals("")) {
+					addModelHtml(tempData, "Source", header, metadataType, geppettoModelAccess);
 				}
 				
+				// License
+				header = "license";
+				tempData = vfbTerm.getLicense();
+				if (!tempData.equals("")) {
+					addModelHtml(tempData, "License", header, metadataType, geppettoModelAccess);
+				}
 
 				// parents
 				header = "parents";
