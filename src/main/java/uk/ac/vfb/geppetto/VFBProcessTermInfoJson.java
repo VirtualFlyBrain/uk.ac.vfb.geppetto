@@ -83,7 +83,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				return url.replace("http://","https://");
 			}
 		}catch(Exception e){
-			System.out.println("Error securing url (" + urlString + ") " + e.toString());
+			System.out.println("Error securing url (" + url + ") " + e.toString());
 			e.printStackTrace();
 		}
 		return url;
