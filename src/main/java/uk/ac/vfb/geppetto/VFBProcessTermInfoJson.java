@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.Collections;
 
 import com.google.gson.Gson;
-import com.sun.tools.javac.comp.Check;
 
 import org.geppetto.datasources.AQueryProcessor;
 import org.geppetto.core.datasources.GeppettoDataSourceException;
