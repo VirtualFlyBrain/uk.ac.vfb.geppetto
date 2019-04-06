@@ -59,7 +59,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	 * @param urlString
 	 * @return boolean
 	 */
-	boolean checkURL(String urlString)
+	public boolean checkURL(String urlString)
 	{
 		try
 		{
@@ -77,7 +77,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 	}
 
-	String secureUrl(String url) {
+	public String secureUrl(String url) {
 		if (checkURL(url.replace("http://","https://"))){
 			return url.replace("http://","https://");
 		}
