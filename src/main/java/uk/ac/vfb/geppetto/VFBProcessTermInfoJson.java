@@ -434,17 +434,24 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				result = result + "<ul class=\"terminfo-references\">";
 				if (this.def_pubs != null && this.def_pubs.size() > 0) {
 					for (pub pub:def_pubs) {
-						result = result + "<li>" + pub.miniref() + "</li>";
+						result = addUniqueToString(result, "<li>" + pub.miniref() + "</li>");
 					}
 				}
 				if (this.pub_syn != null && this.pub_syn.size() > 0) {
 					for (pub_syn syn:pub_syn) {
-						result = result + "<li>" + syn.pub.miniref() + "</li>";
+						result = addUniqueToString(result, "<li>" + syn.pub.miniref() + "</li>");
 					}
 				}
 				result = result + "</ul>";
 			}
 			return result;
+		}
+
+		private String addUniqueToString(String concatList, String newItem) {
+			if (concatList.indexOf(newItem) > -1){
+				return concatList;
+			}
+			return concatList + newItem;
 		}
 
 		public String relList(String name, List<rel> entitys, List<String> showTypes) {
