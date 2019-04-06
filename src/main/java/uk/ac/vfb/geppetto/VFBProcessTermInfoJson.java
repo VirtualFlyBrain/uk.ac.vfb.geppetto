@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.Collections;
 
 import com.google.gson.Gson;
+import com.sun.tools.javac.comp.Check;
 
 import org.geppetto.datasources.AQueryProcessor;
 import org.geppetto.core.datasources.GeppettoDataSourceException;
@@ -55,6 +56,35 @@ import org.geppetto.core.model.GeppettoSerializer;
 public class VFBProcessTermInfoJson extends AQueryProcessor
 {
 	
+	/**
+	 * @param urlString
+	 * @return boolean
+	 */
+	private boolean checkURL(String urlString)
+	{
+		try
+		{
+			URL url = new URL(urlString);
+			HttpURLConnection huc = (HttpURLConnection) url.openConnection();
+			huc.setRequestMethod("HEAD");
+			huc.setInstanceFollowRedirects(false);
+			return (huc.getResponseCode() == HttpURLConnection.HTTP_OK);
+		}
+		catch(Exception e)
+		{
+			System.out.println("Error checking url (" + urlString + ") " + e.toString());
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	private String secureUrl(String url) {
+		if (checkURL(url.replace("http://","https://"))){
+			return url.replace("http://","https://");
+		}
+		return url;
+	}
+
 	// START VFB term info schema https://github.com/VirtualFlyBrain/VFB_json_schema/blob/master/json_schema/
 
 	class minimal_entity_info {
@@ -249,11 +279,12 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			// also if icon exists then add here:
 			// TODO: is this per site or per xref?
 			if (this.icon != null && !this.icon.equals("")) {
-				result = result + "<img class=\"terminfo-siteicon\" src=\"" + this.icon + "\" />";
+				result = result + "<img class=\"terminfo-siteicon\" src=\"" + secureUrl(this.icon) + "\" />";
 			}
 			result = result + "</a>";
 			return result;
 		}
+
 	}
 
 	class dataset {
@@ -265,7 +296,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public String extLink() {
 			String result = "<a href=\"" + this.link + "\" target=\"_blank\">";
 			if (this.icon != null && !this.icon.equals("")) {
-				result = result + "<img class=\"terminfo-dataseticon\" src=\"" + this.icon + "\" title=\"" + this.core.label + "\"/>";
+				result = result + "<img class=\"terminfo-dataseticon\" src=\"" + secureUrl(this.icon) + "\" title=\"" + this.core.label + "\"/>";
 			}else{
 				result = result + this.core.label;
 			}
@@ -276,10 +307,11 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public String intLink() {
 			String result = this.core.intLink();
 			if (this.icon != null && !this.icon.equals("")) {
-				result = result.replace(this.core.label,"<img class=\"terminfo-dataseticon\" src=\"" + this.icon + "\" title=\"" + this.core.label + "\"/>");
+				result = result.replace(this.core.label,"<img class=\"terminfo-dataseticon\" src=\"" + secureUrl(this.icon) + "\" title=\"" + this.core.label + "\"/>");
 			}
 			return result;
 		}
+
 	}
 
 	class license {
@@ -676,28 +708,6 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 
 		/**
-		 * @param urlString
-		 * @return boolean
-		 */
-		private boolean checkURL(String urlString)
-		{
-			try
-			{
-				URL url = new URL(urlString);
-				HttpURLConnection huc = (HttpURLConnection) url.openConnection();
-				huc.setRequestMethod("HEAD");
-				huc.setInstanceFollowRedirects(false);
-				return (huc.getResponseCode() == HttpURLConnection.HTTP_OK);
-			}
-			catch(Exception e)
-			{
-				System.out.println("Error checking url (" + urlString + ") " + e.toString());
-				e.printStackTrace();
-				return false;
-			}
-		}
-
-		/**
 		 * @param data
 		 * @param name
 		 * @param reference
@@ -709,7 +719,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		{
 			Image image = ValuesFactory.eINSTANCE.createImage();
 			image.setName(name);
-			image.setData(data);
+			image.setData(secureUrl(data));
 			image.setReference(reference);
 			image.setFormat(ImageFormat.PNG);
 			ArrayElement element = ValuesFactory.eINSTANCE.createArrayElement();
