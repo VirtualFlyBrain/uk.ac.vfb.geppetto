@@ -428,6 +428,18 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			return result;
 		}
 
+		public String synonyms() {
+			String result = "";
+			if (this.pub_syn != null && this.pub_syn.size() > 0) {
+				result = result + "<ul class=\"terminfo-synonyms\">";
+				for (pub_syn syn:pub_syn) {
+					result = addUniqueToString(result, syn.toString());
+				}
+				result = result + "</ul>";
+			}
+			return result;
+		}
+
 		public String getReferences() {
 			String result = "";
 			if ((this.def_pubs != null && this.def_pubs.size() > 0) || (this.pub_syn != null && this.pub_syn.size() > 0)) {
@@ -685,13 +697,11 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					json = json + "\"" + key  + "\":" + new Gson().toJson(results.getValue(key, 0));
 				}
 				json = json + "}";
-				System.out.println("Finished " + header);
 
-				System.out.println("Returned JSON: " + json);
+				System.out.println("Returned JSON: " + json.replace("{","\n{").replace("}","\n}").replace("[","\n[").replace("]","\n]"));
 		
 				header = "JSON>Schema";
 				vfb_terminfo vfbTerm = new Gson().fromJson(json , vfb_terminfo.class);
-				System.out.println("Finished " + header);
 
 				// Note: core already handled by VFBProcessTermInfoCore except types labels
 
@@ -699,15 +709,12 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				header = "types";
 				superTypes = vfbTerm.term.core.typeList();
 
-				//Bypass if template via non template query:
-				if (superTypes.contains("Template") && vfbTerm.template_channel == null){
-					System.out.println("Template done.");
-					return results;
+				// Types
+				header = "types";
+				tempData = vfbTerm.term.core.types(showTypes);
+				if (!tempData.equals("")) {
+					addModelHtml(vfbTerm.term.core.types(showTypes), "Types", "types", metadataType, geppettoModelAccess);
 				}
-
-
-				addModelHtml(vfbTerm.term.core.types(showTypes), "Types", "types", metadataType, geppettoModelAccess);
-				System.out.println("Finished " + header);
 
 				// Description
 				header = "description";
@@ -715,7 +722,14 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				if (!tempData.equals("")) {
 					addModelHtml(tempData, "Description", "description", metadataType, geppettoModelAccess);
 				}
-				System.out.println("Finished " + header);
+
+				// Synonyms
+				header = "synonyms";
+				tempData = vfbTerm.synonyms();
+				if (!tempData.equals("")) {
+					addModelHtml(tempData, "Alternative Names", "synonyms", metadataType, geppettoModelAccess);
+				}
+				
 
 				// parents
 				header = "parents";
@@ -725,7 +739,6 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					// store first parent as parent type for 3D slice viewer
 					parentId = vfbTerm.parents.get(0).short_form;
 				}
-				System.out.println("Finished " + header);
 
 				// relationships
 				header = "relationships";
@@ -733,7 +746,6 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					tempData = vfbTerm.relList(header, vfbTerm.relationships, showTypes);
 					addModelHtml(tempData, "Relationships", header, metadataType, geppettoModelAccess);
 				}
-				System.out.println("Finished " + header);
 
 				// xrefs
 				header = "xrefs";
@@ -741,13 +753,11 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					tempData = vfbTerm.xrefList();
 					addModelHtml(tempData, "Cross References", header, metadataType, geppettoModelAccess);
 				}
-				System.out.println("Finished " + header);
 			
 				// Images:
 				header = "parentType";
 				// retrieving the parent composite type for new image variables
 				CompositeType parentType = (CompositeType) variable.getAnonymousTypes().get(0);
-				System.out.println("Finished " + header);
 
 				header = "channel_image";
 				if (vfbTerm.channel_image != null && vfbTerm.channel_image.size() > 0) {
@@ -784,7 +794,6 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 						addModelSlices(tempData.replace("http://","https://"), "Stack Viewer Slices", variable.getId(), parentType, geppettoModelAccess, dataSource, vfbTerm.getDomains());
 					}
 				}
-				System.out.println("Finished " + header);
 
 				header = "template_channel";
 				if (vfbTerm.template_channel != null && vfbTerm.template_channel.image_folder != null && !vfbTerm.template_channel.image_folder.equals("")) {
@@ -812,14 +821,12 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					}
 					System.out.println("WLZ " + tempData);
 				}
-				System.out.println("Finished " + header);
 			
 				// examples
 				header = "anatomy_channel_image";
 				if (vfbTerm.anatomy_channel_image != null && vfbTerm.anatomy_channel_image.size() > 0 && vfbTerm.examples(template) != null) {
 					addModelThumbnails(vfbTerm.examples(template), "Examples", "examples", metadataType, geppettoModelAccess);
 				}
-				System.out.println("Finished " + header);
 
 				// references
 				header = "references";
@@ -827,7 +834,6 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				if (!references.equals("")) {
 					addModelHtml(references, "References", "references", metadataType, geppettoModelAccess);
 				}
-				System.out.println("Finished " + header);
 
 				// set queries
 				String badge = "";
