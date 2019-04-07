@@ -54,40 +54,6 @@ import org.geppetto.core.model.GeppettoSerializer;
 
 public class VFBProcessTermInfoJson extends AQueryProcessor
 {
-	
-	/**
-	 * @param urlString
-	 * @return boolean
-	 */
-	public boolean checkURL(String urlString)
-	{
-		try
-		{
-			URL url = new URL(urlString);
-			HttpURLConnection huc = (HttpURLConnection) url.openConnection();
-			huc.setRequestMethod("HEAD");
-			huc.setInstanceFollowRedirects(false);
-			return (huc.getResponseCode() == HttpURLConnection.HTTP_OK);
-		}
-		catch(Exception e)
-		{
-			System.out.println("Error checking url (" + urlString + ") " + e.toString());
-			e.printStackTrace();
-			return false;
-		}
-	}
-
-	public String secureUrl(String url) {
-		try{
-			if (checkURL(url.replace("http://","https://"))){
-				return url.replace("http://","https://");
-			}
-		}catch(Exception e){
-			System.out.println("Error securing url (" + url + ") " + e.toString());
-			e.printStackTrace();
-		}
-		return url;
-	}
 
 	// START VFB term info schema https://github.com/VirtualFlyBrain/VFB_json_schema/blob/master/json_schema/
 
@@ -283,10 +249,44 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			// also if icon exists then add here:
 			// TODO: is this per site or per xref?
 			if (this.icon != null && !this.icon.equals("")) {
-				result = result + "<img class=\"terminfo-siteicon\" src=\"" + VFBProcessTermInfoJson.this.secureUrl(this.icon) + "\" />";
+				result = result + "<img class=\"terminfo-siteicon\" src=\"" + secureUrl(this.icon) + "\" />";
 			}
 			result = result + "</a>";
 			return result;
+		}
+
+		private String secureUrl(String url) {
+			try{
+				if (checkURL(url.replace("http://","https://"))){
+					return url.replace("http://","https://");
+				}
+			}catch(Exception e){
+				System.out.println("Error securing url (" + url + ") " + e.toString());
+				e.printStackTrace();
+			}
+			return url;
+		}
+
+		/**
+		 * @param urlString
+		 * @return boolean
+		 */
+		private boolean checkURL(String urlString)
+		{
+			try
+			{
+				URL url = new URL(urlString);
+				HttpURLConnection huc = (HttpURLConnection) url.openConnection();
+				huc.setRequestMethod("HEAD");
+				huc.setInstanceFollowRedirects(false);
+				return (huc.getResponseCode() == HttpURLConnection.HTTP_OK);
+			}
+			catch(Exception e)
+			{
+				System.out.println("Error checking url (" + urlString + ") " + e.toString());
+				e.printStackTrace();
+				return false;
+			}
 		}
 
 	}
@@ -300,7 +300,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public String extLink() {
 			String result = "<a href=\"" + this.link + "\" target=\"_blank\">";
 			if (this.icon != null && !this.icon.equals("")) {
-				result = result + "<img class=\"terminfo-dataseticon\" src=\"" + VFBProcessTermInfoJson.this.secureUrl(this.icon) + "\" title=\"" + this.core.label + "\"/>";
+				result = result + "<img class=\"terminfo-dataseticon\" src=\"" + secureUrl(this.icon) + "\" title=\"" + this.core.label + "\"/>";
 			}else{
 				result = result + this.core.label;
 			}
@@ -311,9 +311,43 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public String intLink() {
 			String result = this.core.intLink();
 			if (this.icon != null && !this.icon.equals("")) {
-				result = result.replace(this.core.label,"<img class=\"terminfo-dataseticon\" src=\"" + VFBProcessTermInfoJson.this.secureUrl(this.icon) + "\" title=\"" + this.core.label + "\"/>");
+				result = result.replace(this.core.label,"<img class=\"terminfo-dataseticon\" src=\"" + secureUrl(this.icon) + "\" title=\"" + this.core.label + "\"/>");
 			}
 			return result;
+		}
+
+		private String secureUrl(String url) {
+			try{
+				if (checkURL(url.replace("http://","https://"))){
+					return url.replace("http://","https://");
+				}
+			}catch(Exception e){
+				System.out.println("Error securing url (" + url + ") " + e.toString());
+				e.printStackTrace();
+			}
+			return url;
+		}
+
+		/**
+		 * @param urlString
+		 * @return boolean
+		 */
+		private boolean checkURL(String urlString)
+		{
+			try
+			{
+				URL url = new URL(urlString);
+				HttpURLConnection huc = (HttpURLConnection) url.openConnection();
+				huc.setRequestMethod("HEAD");
+				huc.setInstanceFollowRedirects(false);
+				return (huc.getResponseCode() == HttpURLConnection.HTTP_OK);
+			}
+			catch(Exception e)
+			{
+				System.out.println("Error checking url (" + urlString + ") " + e.toString());
+				e.printStackTrace();
+				return false;
+			}
 		}
 
 	}
@@ -697,7 +731,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 		public String imageFile(List<channel_image> images, String filename) {
 			for (channel_image ci : images) {
-				if (VFBProcessTermInfoJson.this.checkURL(ci.getUrl("", filename))) {
+				if (checkURL(ci.getUrl("", filename))) {
 					return ci.getUrl("", filename);
 				}
 			}
@@ -705,7 +739,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 
 		public String imageFile(template_channel template, String filename) {
-			if (VFBProcessTermInfoJson.this.checkURL(template.image_folder + filename)) {
+			if (checkURL(template.image_folder + filename)) {
 				return template.image_folder + filename;
 			}
 			return null;
@@ -723,13 +757,47 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		{
 			Image image = ValuesFactory.eINSTANCE.createImage();
 			image.setName(name);
-			image.setData(data);
+			image.setData(secureUrl(data));
 			image.setReference(reference);
 			image.setFormat(ImageFormat.PNG);
 			ArrayElement element = ValuesFactory.eINSTANCE.createArrayElement();
 			element.setIndex(i);
 			element.setInitialValue(image);
 			images.getElements().add(element);
+		}
+
+		/**
+		 * @param urlString
+		 * @return boolean
+		 */
+		private boolean checkURL(String urlString)
+		{
+			try
+			{
+				URL url = new URL(urlString);
+				HttpURLConnection huc = (HttpURLConnection) url.openConnection();
+				huc.setRequestMethod("HEAD");
+				huc.setInstanceFollowRedirects(false);
+				return (huc.getResponseCode() == HttpURLConnection.HTTP_OK);
+			}
+			catch(Exception e)
+			{
+				System.out.println("Error checking url (" + urlString + ") " + e.toString());
+				e.printStackTrace();
+				return false;
+			}
+		}
+
+		private String secureUrl(String url) {
+			try{
+				if (checkURL(url.replace("http://","https://"))){
+					return url.replace("http://","https://");
+				}
+			}catch(Exception e){
+				System.out.println("Error securing url (" + url + ") " + e.toString());
+				e.printStackTrace();
+			}
+			return url;
 		}
 
 	}
