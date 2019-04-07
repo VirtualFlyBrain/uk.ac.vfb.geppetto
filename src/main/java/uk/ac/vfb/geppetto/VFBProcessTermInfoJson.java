@@ -130,7 +130,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				result = result + this.description();
 			}
 			if (this.comment != null && this.comment.size() > 0) {
-				result = result + "<br /><span class=\"terminfo-comment-title\">Comment:</span><br />" + this.comment();
+				result = result + "<br /><span class=\"terminfo-comment-title\">Comment</span><br />" + this.comment();
 			}
 			return result;
 		}
