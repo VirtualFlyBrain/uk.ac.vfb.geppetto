@@ -828,7 +828,6 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			List<String> superTypes = Arrays.asList();
 			List<String> showTypes = Arrays.asList("Class","Individual","Anatomy","Template","Motor_neuron","Cell","Neuron"); // TODO: Fill in with passed types
 			String tempData = "";
-			String parentId = "";
 			String header = "loading";
 			String references = ""; 
 
@@ -908,6 +907,8 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					classVariable.setName(vfbTerm.parents.get(0).label);
 					classParentType.setId(classVariable.getId());
 					classVariable.getAnonymousTypes().add(classParentType);
+					// provide access to libary of types either dynamically added (as bellow) or loaded from xmi
+					List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
 					for (String supertype : vfbTerm.parents.get(0).types) {
 						if (!supertype.startsWith("_")) { // ignore supertypes starting with _
 							classParentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
