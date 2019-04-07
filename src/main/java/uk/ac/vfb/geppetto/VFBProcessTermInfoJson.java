@@ -735,6 +735,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					return ci.getUrl("", filename);
 				}
 			}
+			System.out.println("Failed to find: " + ci.getUrl("", filename));
 			return null;
 		}
 
