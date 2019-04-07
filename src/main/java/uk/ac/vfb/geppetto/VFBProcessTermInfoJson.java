@@ -361,7 +361,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public String extLink() {
 			String result = "<a href=\"" + this.link + "\" target=\"_blank\">";
 			if (this.icon != null && !this.icon.equals("")) {
-				result = result + "<img class=\"terminfo-licenseicon\" src=\"" + this.icon + "\" title=\"" + this.core.label + "\"/>";
+				result = result + this.core.label + "<img class=\"terminfo-licenseicon\" src=\"" + this.icon + "\" title=\"" + this.core.label + "\"/>";
 			}else{
 				result = result + this.core.label;
 			}
