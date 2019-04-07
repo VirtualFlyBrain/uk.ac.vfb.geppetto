@@ -903,8 +903,16 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				if (vfbTerm.parents != null && vfbTerm.parents.size() > 0) {
 					tempData = vfbTerm.compileList(header, vfbTerm.parents, showTypes);
 					addModelHtml(tempData, "Parents", "type", metadataType, geppettoModelAccess);
-					// store first parent as parent type for 3D slice viewer
-					parentId = vfbTerm.parents.get(0).short_form;
+					// store first parent as parent type for neuropil/tract queries
+					classVariable.setId(vfbTerm.parents.get(0).short_form);
+					classVariable.setName(vfbTerm.parents.get(0).label);
+					classParentType.setId(classVariable.getId());
+					classVariable.getAnonymousTypes().add(classParentType);
+					for (String supertype : vfbTerm.parents.get(0).types) {
+						if (!supertype.startsWith("_")) { // ignore supertypes starting with _
+							classParentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
+						}
+					}
 				}
 
 				// relationships
