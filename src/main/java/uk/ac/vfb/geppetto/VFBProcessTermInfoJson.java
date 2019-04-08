@@ -111,7 +111,10 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 
 		public String label() {
-			return this.label;
+			if (this.label != null & !this.label.equals("")){
+				return this.label;
+			}
+			return this.type;
 		}
 
 		public String type() {
@@ -169,7 +172,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		private minimal_entity_info object;
 
 		public String intLink() {
-			return this.intLink(Collections.<String>emptyList());
+			return this.intLink();
 		}
 
 		public String intLink(List<String> showTypes) {
