@@ -436,12 +436,12 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 		public String microref() {
 			if (this.microref != null){
-				return this.microref;
+				return this.core.intLink().replace(this.core.label,this.microref);
 			}
 			//if microref doesn't exist create one from the label:
 			if (this.core.label != null){
 				this.microref = this.core.label.split(",")[0] + "," + this.core.label.split(",")[1];
-				return this.microref;
+				return this.core.intLink().replace(this.core.label,this.microref);
 			}
 			return null;
 		}
