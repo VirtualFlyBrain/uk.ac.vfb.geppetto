@@ -831,7 +831,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
 
 			List<String> superTypes = Arrays.asList();
-			List<String> showTypes = Arrays.asList("Class","Individual","Anatomy","Template","Motor_neuron","Cell","Neuron"); // TODO: Fill in with passed types
+			List<String> showTypes = Arrays.asList("Class","Individual","Anatomy","Template","Motor_neuron","Cell","Neuron","Publication","License","Ganglion","Expression Pattern","Neuromere","Dataset","Cluster","FlyBase Biological Imaging Methods","FlyBase Controlled Vocabulary","FlyBase Development CV","Synaptic Neuropil Block","Synaptic Neuropil Subdomain","Synaptic Neuropil Domain","Synaptic Neuropil","Clone","Neuron Projection Bundle","Sensory Neuron","Site","Serotonergic","Person","Peptidergic Neuron","Painted Domain","Octopaminergic","Neuroblast","Motor Neuron","Glutamatergic","Glial Cell","Ganglion","GABAergic","Dopaminergic","Cholinergic"); // TODO: Fill in with passed types
 			String tempData = "";
 			String header = "loading";
 			String references = ""; 
