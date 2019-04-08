@@ -1027,7 +1027,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					if(QueryChecker.check(runnableQuery, variable))
 					{
 						badge = "<i class=\"popup-icon-link fa fa-quora\" ></i>";
-						querys += badge + "<a href=\"#\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + variable.getId() + "," + variable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", classVariable.getName()) + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
+						querys += badge + "<a href=\"#\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + variable.getId() + "," + variable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
 					}else if (((superTypes.contains("Painted_domain") || superTypes.contains("Synaptic_neuropil_domain")) || superTypes.contains("Neuron_projection_bundle")) && superTypes.contains("Individual") && classVariable.getId()!="notSet"){
 						if(QueryChecker.check(runnableQuery, classVariable)){
 							badge = "<i class=\"popup-icon-link fa fa-quora\" ></i>";
