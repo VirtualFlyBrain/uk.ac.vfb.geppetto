@@ -664,11 +664,6 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				int f = this.channel_image.size();
 				for (channel_image ci : this.channel_image) {
 					// add same template to the begining and others at the end.
-					System.out.println(template);
-					System.out.println(ci.image.template_anatomy.short_form);
-					System.out.println(ci.getUrl("",""));
-					System.out.println(ci.channel.label.replace("_c", "").replace("-c", ""));
-					System.out.println(ci.channel.short_form.replace("VFBc_", "VFB_"));
 					if (ci != null && ci.image != null && ci.image.template_anatomy != null && ci.image.template_anatomy.short_form != null && template == ci.image.template_anatomy.short_form) {
 						addImage(ci.getUrl("", "thumbnailT.png"), ci.channel.label.replace("_c", "").replace("-c", ""), ci.channel.short_form.replace("VFBc_", "VFB_"), imageArray, j);
 						j++;
@@ -696,9 +691,6 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				int f = this.anatomy_channel_image.size();
 				for (anatomy_channel_image anat : this.anatomy_channel_image) {
 					// add same template to the begining and others at the end.
-					System.out.println(template);
-					System.out.println(anat.channel_image.image.template_anatomy.short_form);
-					System.out.println(anat.getUrl("",""));
 					if (anat.channel_image != null && anat.channel_image.image != null && anat.channel_image.image.template_anatomy != null && anat.channel_image.image.template_anatomy.short_form != null && template == anat.channel_image.image.template_anatomy.short_form) {
 						addImage(anat.getUrl("", "thumbnailT.png"), anat.anatomy.label, anat.anatomy.short_form, imageArray, j);
 						j++;
@@ -718,9 +710,6 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public ArrayValue thumbnail() {
 			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
 			try{
-				System.out.println(this.term.core.short_form);
-				System.out.println(this.term.core.label);
-				System.out.println(this.template_channel.image_folder);
 				addImage(this.template_channel.image_folder + "thumbnailT.png", this.term.core.label, this.term.core.short_form, imageArray, 0);
 			}catch (Exception e) {
 				System.out.println("Error in vfbTerm.thumbnails(): " + e.toString());
@@ -844,23 +833,21 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			System.out.println("Processing JSON...");
 			try{
 				header = "results>JSON";
-				System.out.println("Starting " + header);
-				System.out.println("Result headers: " + results.getHeader());
 				String json = "{";
 				for (String key:results.getHeader()) {
 					if (!json.equals("{")) {
 						json = json + ", ";
 					}
-					json = json + "\"" + key  + "\":" + new Gson().toJson(results.getValue(key, 0));
+					tempData = new Gson().toJson(results.getValue(key, 0));
+					json = json + "\"" + key  + "\":" + tempData;
+					System.out.println(key + ":" + tempData);
 				}
 				json = json + "}";
 
-				System.out.println("Returned JSON: " + json.replace("{","\n{").replace("[","\n["));
-		
 				header = "JSON>Schema";
 				vfb_terminfo vfbTerm = new Gson().fromJson(json , vfb_terminfo.class);
 
-				// Note: core already handled by VFBProcessTermInfoCore except types labels
+				// Note: term:core already handled by VFBProcessTermInfoCore except types labels
 
 				// Types
 				header = "types";
