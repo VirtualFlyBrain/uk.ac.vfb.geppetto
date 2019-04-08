@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.Collections;
 
 import com.google.gson.Gson;
+import com.sun.org.apache.bcel.internal.generic.Select;
 
 import org.geppetto.datasources.AQueryProcessor;
 import org.geppetto.core.datasources.GeppettoDataSourceException;
@@ -304,14 +305,25 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			}else{
 				result = result + this.core.label;
 			}
-			result = result + "</a>";
+			result = result + "</a>";	
 			return result;
 		}
 
 		public String intLink() {
 			String result = this.core.intLink();
 			if (this.icon != null && !this.icon.equals("")) {
-				result = result.replace(this.core.label,"<img class=\"terminfo-dataseticon\" src=\"" + secureUrl(this.icon) + "\" title=\"" + this.core.label + "\"/>");
+				result = result.replace(this.core.label,this.core.label + " <img class=\"terminfo-dataseticon\" src=\"" + secureUrl(this.icon) + "\" title=\"" + this.core.label + "\"/>");
+			}
+			if (this.link != null && !this.link.equals("")){
+				if (this.link.toLowerCase().contains("flybase.org")) {
+					result = result + "<a href=\"" + this.link + "\" target=\"_blank\"><i class=\"popup-icon-link gpt-fly\"></i></a>";
+				}else if (this.link.toLowerCase().contains("nih.gov")) {
+					result = result + "<a href=\"" + this.link + "\" target=\"_blank\"><i class=\"popup-icon-link gpt-pubmed\"></i></a>";
+				}else if (this.link.toLowerCase().contains("doi.org")) {
+					result = result + "<a href=\"" + this.link + "\" target=\"_blank\"><i class=\"popup-icon-link gpt-doi\"></i></a>";
+				}else{
+					result = result + "<a href=\"" + this.link + "\" target=\"_blank\"><i class=\"popup-icon-link fa fa-external-link\"></i></a>";
+				}
 			}
 			return result;
 		}
