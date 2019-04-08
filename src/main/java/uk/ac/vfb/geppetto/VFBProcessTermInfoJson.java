@@ -834,7 +834,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
 
 			List<String> superTypes = Arrays.asList();
-			List<String> showTypes = Arrays.asList("Class","Individual","Anatomy","Template","Motor_neuron","Cell","Neuron","Publication","License","Ganglion","Expression Pattern","Neuromere","Dataset","Cluster","FlyBase Biological Imaging Methods","FlyBase Controlled Vocabulary","FlyBase Development CV","Synaptic Neuropil Block","Synaptic Neuropil Subdomain","Synaptic Neuropil Domain","Synaptic Neuropil","Clone","Neuron Projection Bundle","Sensory Neuron","Site","Serotonergic","Person","Peptidergic Neuron","Painted Domain","Octopaminergic","Neuroblast","Motor Neuron","Glutamatergic","Glial Cell","Ganglion","GABAergic","Dopaminergic","Cholinergic"); // TODO: Fill in with passed types
+			List<String> showTypes = Arrays.asList("Class","Individual","Anatomy","Template","Motor_neuron","Cell","Neuron","pub","License","Ganglion","Expression_pattern","Neuromere","DataSet","Cluster","Synaptic_neuropil_block","Synaptic_neuropil_subdomain","Synaptic_neuropil_domain","Synaptic_neuropil","Clone","Neuron_projection_bundle","Sensory_neuron","Site","Serotonergic","Person","Peptidergic_neuron","Painted_domain","Octopaminergic","Neuroblast","Motor_neuron","Glutamatergic","Glial_cell","Ganglion","GABAergic","Dopaminergic","Cholinergic"); // TODO: Fill in with passed types
 			String tempData = "";
 			String header = "loading";
 			String references = ""; 
