@@ -822,6 +822,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			// retrieving the metadatatype
 			CompositeType metadataType = (CompositeType) ModelUtility.getTypeFromLibrary(variable.getId() + "_metadata", dataSource.getTargetLibrary());
 
+			// provide access to libary of types either dynamically added (as bellow) or loaded from xmi
+			List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
+
 			Type textType = geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE);
 			Type htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
 			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
@@ -908,8 +911,6 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					classVariable.setName(vfbTerm.parents.get(0).label);
 					classParentType.setId(classVariable.getId());
 					classVariable.getAnonymousTypes().add(classParentType);
-					// provide access to libary of types either dynamically added (as bellow) or loaded from xmi
-					List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
 					for (String supertype : vfbTerm.parents.get(0).types) {
 						if (!supertype.startsWith("_")) { // ignore supertypes starting with _
 							classParentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
@@ -1003,6 +1004,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				header = "anatomy_channel_image";
 				if (vfbTerm.anatomy_channel_image != null && vfbTerm.anatomy_channel_image.size() > 0 && vfbTerm.examples(template) != null) {
 					addModelThumbnails(vfbTerm.examples(template), "Examples", "examples", metadataType, geppettoModelAccess);
+					parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("hasExamples", dependenciesLibrary));
 				}
 
 				// references
@@ -1019,7 +1021,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					if(QueryChecker.check(runnableQuery, variable))
 					{
 						badge = "<i class=\"popup-icon-link fa fa-quora\" ></i>";
-						querys += badge + "<a href=\"#\" data-instancepath=\"" + (String) runnableQuery.getPath() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></i></br>";
+						querys += badge + "<a href=\"#\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + variable.getId() + "," + variable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", classVariable.getName()) + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></i></br>";
 					}else if (((superTypes.contains("Painted_domain") || superTypes.contains("Synaptic_neuropil_domain")) || superTypes.contains("Neuron_projection_bundle")) && superTypes.contains("Individual") && classVariable.getId()!="notSet"){
 						if(QueryChecker.check(runnableQuery, classVariable)){
 							badge = "<i class=\"popup-icon-link fa fa-quora\" ></i>";
