@@ -172,7 +172,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		private minimal_entity_info object;
 
 		public String intLink() {
-			return this.intLink();
+			return this.intLink(Collections.<String>emptyList());
 		}
 
 		public String intLink(List<String> showTypes) {
