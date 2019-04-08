@@ -86,7 +86,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				String result = "<span class=\"label types\">";
 				for (String type : types) {
 					if (show.contains(type)) {
-						result = result + "<span class=\"label label-" + type + "\">" + type.replace("_", " ") + "</span> ";
+						result += "<span class=\"label label-" + type + "\">" + type.replace("_", " ") + "</span> ";
 					}
 				}
 				return result + "</span>";
@@ -128,10 +128,10 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public String definition() {
 			String result = "";
 			if (this.description != null && this.description.size() > 0) {
-				result = result + this.description();
+				result += this.description();
 			}
 			if (this.comment != null && this.comment.size() > 0) {
-				result = result + "<br /><span class=\"terminfo-comment-title\">Comment</span><br />" + this.comment();
+				result += "<br /><span class=\"terminfo-comment-title\">Comment</span><br />" + this.comment();
 			}
 			return result;
 		}
@@ -198,7 +198,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				result = pre + result;
 			}
 			if (post != null && !post.equals("")){
-				result = result + post;
+				result += post;
 			}
 			return result;
 		}
@@ -243,16 +243,16 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 		public String extLink(List<String> showTypes) {
 			String result = "<a href=\"" + this.link + "\" target=\"_blank\">";
-			result = result + this.link_text;
+			result += this.link_text;
 			// tack site link as comment on xref for later sorting
 			String site = this.site.extLink(showTypes);
 			result = "<!--" + site + "-->" + result;
 			// also if icon exists then add here:
 			// TODO: is this per site or per xref?
 			if (this.icon != null && !this.icon.equals("")) {
-				result = result + "<img class=\"terminfo-siteicon\" src=\"" + secureUrl(this.icon) + "\" />";
+				result += "<img class=\"terminfo-siteicon\" src=\"" + secureUrl(this.icon) + "\" />";
 			}
-			result = result + "</a>";
+			result += "</a>";
 			return result;
 		}
 
@@ -301,11 +301,11 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public String extLink() {
 			String result = "<a href=\"" + this.link + "\" target=\"_blank\">";
 			if (this.icon != null && !this.icon.equals("")) {
-				result = result + "<img class=\"terminfo-dataseticon\" src=\"" + secureUrl(this.icon) + "\" title=\"" + this.core.label + "\"/>";
+				result += "<img class=\"terminfo-dataseticon\" src=\"" + secureUrl(this.icon) + "\" title=\"" + this.core.label + "\"/>";
 			}else{
-				result = result + this.core.label;
+				result += this.core.label;
 			}
-			result = result + "</a>";	
+			result += "</a>";	
 			return result;
 		}
 
@@ -316,13 +316,13 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			}
 			if (this.link != null && !this.link.equals("")){
 				if (this.link.toLowerCase().contains("flybase.org")) {
-					result = result + "<a href=\"" + this.link + "\" target=\"_blank\"><i class=\"popup-icon-link gpt-fly\"></i></a>";
+					result += "<a href=\"" + this.link + "\" target=\"_blank\"><i class=\"popup-icon-link gpt-fly\"></i></a>";
 				}else if (this.link.toLowerCase().contains("nih.gov")) {
-					result = result + "<a href=\"" + this.link + "\" target=\"_blank\"><i class=\"popup-icon-link gpt-pubmed\"></i></a>";
+					result += "<a href=\"" + this.link + "\" target=\"_blank\"><i class=\"popup-icon-link gpt-pubmed\"></i></a>";
 				}else if (this.link.toLowerCase().contains("doi.org")) {
-					result = result + "<a href=\"" + this.link + "\" target=\"_blank\"><i class=\"popup-icon-link gpt-doi\"></i></a>";
+					result += "<a href=\"" + this.link + "\" target=\"_blank\"><i class=\"popup-icon-link gpt-doi\"></i></a>";
 				}else{
-					result = result + "<a href=\"" + this.link + "\" target=\"_blank\"><i class=\"popup-icon-link fa fa-external-link\"></i></a>";
+					result += "<a href=\"" + this.link + "\" target=\"_blank\"><i class=\"popup-icon-link fa fa-external-link\"></i></a>";
 				}
 			}
 			return result;
@@ -373,11 +373,11 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public String extLink() {
 			String result = "<a href=\"" + this.link + "\" target=\"_blank\">";
 			if (this.icon != null && !this.icon.equals("")) {
-				result = result + this.core.label + "<img class=\"terminfo-licenseicon\" src=\"" + this.icon + "\" title=\"" + this.core.label + "\"/>";
+				result += this.core.label + "<img class=\"terminfo-licenseicon\" src=\"" + this.icon + "\" title=\"" + this.core.label + "\"/>";
 			}else{
-				result = result + this.core.label;
+				result += this.core.label;
 			}
-			result = result + "</a>";
+			result += "</a>";
 			return result;
 		}
 
@@ -428,9 +428,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			}
 			if (!links.equals("")) {
 				links = "<span class=\"terminfo-pubxref\">" + links + "</span>";
-				result = result + links;
+				result += links;
 			}
-			result = result + this.core.types(Arrays.asList("Pub"));
+			result += this.core.types(Arrays.asList("Pub"));
 			return result;
 		}
 
@@ -489,15 +489,15 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public String getSource() {
 			String result = "";
 			if (dataset_license != null && dataset_license.size() > 0) {
-				result = result + "<span class=\"terminfo-source\">";
+				result += "<span class=\"terminfo-source\">";
 				for (dataset_license dsl:dataset_license) {
 					if (this.term.core.short_form.equals(dsl.dataset.core.short_form)){
-						result = result + dsl.dataset.extLink();
+						result += dsl.dataset.extLink();
 					}else{
-						result = result + dsl.dataset.intLink();
+						result += dsl.dataset.intLink();
 					}
 				}
-				result = result + "</span>";
+				result += "</span>";
 			}
 			return result;
 		}
@@ -505,15 +505,15 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public String getLicense() {
 			String result = "";
 			if (dataset_license != null && dataset_license.size() > 0) {
-				result = result + "<span class=\"terminfo-license\">";
+				result += "<span class=\"terminfo-license\">";
 				for (dataset_license dsl:dataset_license) {
 					if (this.term.core.short_form.equals(dsl.dataset.core.short_form)){
-						result = result + dsl.license.extLink();
+						result += dsl.license.extLink();
 					}else{
-						result = result + dsl.license.intLink();
+						result += dsl.license.intLink();
 					}
 				}
-				result = result + "</span>";
+				result += "</span>";
 			}
 			return result;
 		}
@@ -574,9 +574,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			for (pub pub:pubs) {
 				if (pub.microref() != null){
 					if (!result.equals("")) {
-						result = result + sep;
+						result += sep;
 					}
-					result = result + pub.microref();
+					result += pub.microref();
 				}
 			}
 			return result;
@@ -585,11 +585,11 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public String synonyms() {
 			String result = "";
 			if (this.pub_syn != null && this.pub_syn.size() > 0) {
-				result = result + "<ul class=\"terminfo-synonyms\">";
+				result += "<ul class=\"terminfo-synonyms\">";
 				for (pub_syn syn:pub_syn) {
 					result = addUniqueToString(result, syn.toString());
 				}
-				result = result + "</ul>";
+				result += "</ul>";
 			}
 			return result;
 		}
@@ -597,7 +597,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public String getReferences() {
 			String result = "";
 			if ((this.def_pubs != null && this.def_pubs.size() > 0) || (this.pub_syn != null && this.pub_syn.size() > 0)) {
-				result = result + "<ul class=\"terminfo-references\">";
+				result += "<ul class=\"terminfo-references\">";
 				if (this.def_pubs != null && this.def_pubs.size() > 0) {
 					for (pub pub:def_pubs) {
 						result = addUniqueToString(result, "<li>" + pub.miniref() + "</li>");
@@ -608,7 +608,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 						result = addUniqueToString(result, "<li>" + syn.pub.miniref() + "</li>");
 					}
 				}
-				result = result + "</ul>";
+				result += "</ul>";
 			}
 			return result;
 		}
@@ -623,18 +623,18 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public String relList(String name, List<rel> entitys, List<String> showTypes) {
 			String result = "<ul class=\"terminfo-" + name + "\">";
 			for (rel rel : entitys) {
-				result = result + "<li>" + rel.intLink(showTypes) + "</li>";
+				result += "<li>" + rel.intLink(showTypes) + "</li>";
 			}
-			result = result + "</ul>";
+			result += "</ul>";
 			return result;
 		}
 
 		public String compileList(String name, List<minimal_entity_info> entitys, List<String> showTypes) {
 			String result = "<ul class=\"terminfo-" + name + "\">";
 			for (minimal_entity_info entity : entitys) {
-				result = result + "<li>" + entity.intLink(showTypes) + "</li>";
+				result += "<li>" + entity.intLink(showTypes) + "</li>";
 			}
-			result = result + "</ul>";
+			result += "</ul>";
 			return result;
 		}
 
@@ -652,16 +652,16 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			String site = "";
 			for (String xref : results) {
 				if (xref.substring(25).equals(site)) {
-					result = result + "<li>" + xref + "</li>";
+					result += "<li>" + xref + "</li>";
 				} else if (site == "") {
 					// embed first sites xrefs
-					result = result + "<li>" + xref.replace("-->", "<ul><li>").replace("<!--", "") + "</li>";
+					result += "<li>" + xref.replace("-->", "<ul><li>").replace("<!--", "") + "</li>";
 				} else {
 					// close previous and start next site xrefs
-					result = result + "</ul></li><li>" + xref.replace("-->", "<ul><li>").replace("<!--", "") + "</li>";
+					result += "</ul></li><li>" + xref.replace("-->", "<ul><li>").replace("<!--", "") + "</li>";
 				}
 			}
-			result = result + "</ul></li></ul>";
+			result += "</ul></li></ul>";
 			return result;
 		}
 
