@@ -833,6 +833,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			System.out.println("Processing JSON...");
 			try{
 				header = "results>JSON";
+				System.out.println("{");
 				String json = "{";
 				for (String key:results.getHeader()) {
 					if (!json.equals("{")) {
@@ -840,9 +841,10 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					}
 					tempData = new Gson().toJson(results.getValue(key, 0));
 					json = json + "\"" + key  + "\":" + tempData;
-					System.out.println(key + ":" + tempData);
+					System.out.println(key + ":" + tempData + ",");
 				}
 				json = json + "}";
+				System.out.println("}");
 
 				header = "JSON>Schema";
 				vfb_terminfo vfbTerm = new Gson().fromJson(json , vfb_terminfo.class);
