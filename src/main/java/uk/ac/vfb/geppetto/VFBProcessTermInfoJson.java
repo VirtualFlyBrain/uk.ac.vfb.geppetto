@@ -861,6 +861,11 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				header = "JSON>Schema";
 				vfb_terminfo vfbTerm = new Gson().fromJson(json , vfb_terminfo.class);
 
+				if (vfbTerm.term == null || vfbTerm.term.core == null){
+					System.out.println("ERROR: term:core missing from JSON for " + variable.getId());
+					return results;
+				}
+
 				// Note: term:core already handled by VFBProcessTermInfoCore except types labels
 
 				// Types
