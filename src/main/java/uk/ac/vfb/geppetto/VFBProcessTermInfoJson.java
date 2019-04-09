@@ -590,7 +590,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			if (this.pub_syn != null && this.pub_syn.size() > 0) {
 				result += "<ul class=\"terminfo-synonyms\">";
 				for (pub_syn syn:pub_syn) {
-					result = addUniqueToString(result, syn.toString());
+					result = addUniqueToString(result, "<li>" + syn.toString() + "</li>");
 				}
 				result += "</ul>";
 			}
