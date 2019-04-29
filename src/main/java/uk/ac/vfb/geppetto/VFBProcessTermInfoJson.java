@@ -127,6 +127,8 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		private String iri;
 		private List<String> description;
 		private List<String> comment;
+		private String link;
+		private String icon;
 
 		public String definition() {
 			String result = "";
@@ -299,7 +301,6 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		private minimal_entity_info core;
 		private String link;
 		private String icon;
-		private String catmaid_annotation_id;
 
 		public String extLink() {
 			String result = "<a href=\"" + this.link + "\" target=\"_blank\">";
