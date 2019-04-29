@@ -857,9 +857,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					tempData = new Gson().toJson(results.getValue(key, 0));
 					json = json + "\"" + key  + "\":" + tempData;
 					if (tempData.length() > 1000){
-						System.out.println(key + ":" + tempData.replace("}","}\n") + ",");
+						System.out.println("\"" + key  + "\":" + tempData.replace("}","}\n") + ",");
 					}else{
-						System.out.println(key + ":" + tempData + ",");
+						System.out.println("\"" + key  + "\":" + tempData + ",");
 					}				
 				}
 				json = json + "}";
