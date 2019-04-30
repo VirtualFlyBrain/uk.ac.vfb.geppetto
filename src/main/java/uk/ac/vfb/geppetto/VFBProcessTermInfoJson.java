@@ -261,7 +261,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			// tack site link as comment on xref for later sorting
 			String site = "";
 			if (this.icon != null && !this.icon.equals("")) {
-				site = this.site.extLink(showTypes).replace(this.site.label, "<img class=\"terminfo-siteicon\" src=\"" + secureUrl(this.icon) + "\" />");
+				site = this.site.extLink(showTypes).replace(this.site.label, this.site.label + "<img class=\"terminfo-siteicon\" src=\"" + secureUrl(this.icon) + "\" />");
 			}else{
 				site = this.site.extLink(showTypes);
 			}
