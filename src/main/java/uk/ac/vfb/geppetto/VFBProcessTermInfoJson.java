@@ -237,7 +237,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	}
 
 	class xref {
-		private String link;
+		private String link_base;
+		private String link_postfix;
+		private String accession; 
 		private String link_text;
 		private String icon;
 		private minimal_entity_info site;
@@ -246,8 +248,15 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			return extLink(Collections.<String>emptyList());
 		}
 
+		public String link() {
+			if (this.accession != null && !this.accession.equals("None")) {
+				return this.link_base + this.accession + this.link_postfix;
+			}
+			return this.site.iri;
+		}
+
 		public String extLink(List<String> showTypes) {
-			String result = "<a href=\"" + this.link + "\" target=\"_blank\">";
+			String result = "<a href=\"" + this.link() + "\" target=\"_blank\">";
 			result += this.link_text;
 			// tack site link as comment on xref for later sorting
 			String site = "";
