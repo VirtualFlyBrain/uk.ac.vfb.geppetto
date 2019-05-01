@@ -656,7 +656,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			List<String> results = new ArrayList<>();
 			// process xrefs
 			for (xref xref : this.xrefs) {
-				results.add(xref.extLink(Arrays.asList("Site")));
+				results.add(xref.extLink());
 			}
 			// sort xrefs alphabetically (by site)
 			java.util.Collections.sort(results);
