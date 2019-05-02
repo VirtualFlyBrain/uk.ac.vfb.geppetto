@@ -1223,7 +1223,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	}
 
 	private String returnType(List<String> types) {
-		if (this.types.size() > 0) {
+		if (types.size() > 0) {
 			if (types.contains("Obsolete")){
 				returnType(types, Arrays.asList("Obsolete"));
 			}
