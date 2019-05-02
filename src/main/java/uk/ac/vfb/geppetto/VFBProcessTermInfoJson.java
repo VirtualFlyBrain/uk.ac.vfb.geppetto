@@ -838,7 +838,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
 
 			List<String> superTypes = Arrays.asList();
-			Boolean showTypes = True; //Arrays.asList("Class","Individual","Anatomy","Template","Motor_neuron","Cell","Neuron","pub","License","Ganglion","Expression_pattern","Neuromere","DataSet","Cluster","Synaptic_neuropil_block","Synaptic_neuropil_subdomain","Synaptic_neuropil_domain","Synaptic_neuropil","Clone","Neuron_projection_bundle","Sensory_neuron","Site","Serotonergic","Person","Peptidergic_neuron","Painted_domain","Octopaminergic","Neuroblast","Motor_neuron","Glutamatergic","Glial_cell","Ganglion","GABAergic","Dopaminergic","Cholinergic"); // TODO: Fill in with passed types
+			Boolean showTypes = true; //Arrays.asList("Class","Individual","Anatomy","Template","Motor_neuron","Cell","Neuron","pub","License","Ganglion","Expression_pattern","Neuromere","DataSet","Cluster","Synaptic_neuropil_block","Synaptic_neuropil_subdomain","Synaptic_neuropil_domain","Synaptic_neuropil","Clone","Neuron_projection_bundle","Sensory_neuron","Site","Serotonergic","Person","Peptidergic_neuron","Painted_domain","Octopaminergic","Neuroblast","Motor_neuron","Glutamatergic","Glial_cell","Ganglion","GABAergic","Dopaminergic","Cholinergic"); // TODO: Fill in with passed types
 			String tempData = "";
 			String header = "loading";
 			String references = ""; 
@@ -1223,7 +1223,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	}
 
 	private String returnType(List<String> types) {
-		if (this.types.size() > 0 && show.size() > 0) {
+		if (this.types.size() > 0) {
 			if (types.contains("Obsolete")){
 				returnType(types, Arrays.asList("Obsolete"));
 			}
@@ -1260,7 +1260,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	}
 
 	private String returnType(List<String> types, List<String> show) {
-		if (this.types.size() > 0 && show.size() > 0) {
+		if (types.size() > 0 && show.size() > 0) {
 			String result = "<span class=\"label types\">";
 			for (String type : show) {
 				if (types.contains(type)) {
