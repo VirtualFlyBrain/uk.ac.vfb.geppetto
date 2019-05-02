@@ -65,31 +65,25 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		private List<String> types;
 
 		public String intLink() {
-			return this.intLink(Collections.<String>emptyList());
+			return this.intLink(false);
 		}
 
 		public String extLink() {
-			return this.extLink(Collections.<String>emptyList());
+			return this.extLink(false);
 		}
 
-		public String intLink(List<String> showTypes) {
+		public String intLink(Boolean showTypes) {
 			return "<a href=\"#\" data-instancepath=\"" + this.short_form + "\">" + this.label + "</a> "
 					+ this.types(showTypes);
 		}
 
-		public String extLink(List<String> showTypes) {
+		public String extLink(Boolean showTypes) {
 			return "<a href=\"" + this.iri + "\" target=\"_blank\">" + this.label + "</a> " + this.types(showTypes);
 		}
 
-		public String types(List<String> show) {
-			if (this.types.size() > 0 && show.size() > 0) {
-				String result = "<span class=\"label types\">";
-				for (String type : types) {
-					if (show.contains(type)) {
-						result += "<span class=\"label label-" + type + "\">" + type.replace("_", " ") + "</span> ";
-					}
-				}
-				return result + "</span>";
+		public String types(Boolean show) {
+			if (show) {
+				return returnType(this.types);
 			}
 			return "";
 		}
@@ -174,10 +168,10 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		private minimal_entity_info object;
 
 		public String intLink() {
-			return this.intLink(Collections.<String>emptyList());
+			return this.intLink(false);
 		}
 
-		public String intLink(List<String> showTypes) {
+		public String intLink(Boolean showTypes) {
 			return this.relation.label() + " " + this.object.intLink(showTypes);
 		}
 	}
@@ -245,7 +239,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		private minimal_entity_info site;
 
 		public String extLink() {
-			return extLink(Collections.<String>emptyList());
+			return extLink(false);
 		}
 
 		public String link() {
@@ -255,7 +249,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			return this.site.iri;
 		}
 
-		public String extLink(List<String> showTypes) {
+		public String extLink(Boolean showTypes) {
 			String result = "<a href=\"" + this.link() + "\" target=\"_blank\">";
 			result += this.link_text;
 			// tack site link as comment on xref for later sorting
@@ -443,7 +437,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				links = "<span class=\"terminfo-pubxref\">" + links + "</span>";
 				result += links;
 			}
-			result += this.core.types(Arrays.asList("Pub"));
+			result += this.core.types(true);
 			return result;
 		}
 
@@ -633,7 +627,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			return concatList + newItem;
 		}
 
-		public String relList(String name, List<rel> entitys, List<String> showTypes) {
+		public String relList(String name, List<rel> entitys, Boolean showTypes) {
 			String result = "<ul class=\"terminfo-" + name + "\">";
 			for (rel rel : entitys) {
 				result += "<li>" + rel.intLink(showTypes) + "</li>";
@@ -642,7 +636,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			return result;
 		}
 
-		public String compileList(String name, List<minimal_entity_info> entitys, List<String> showTypes) {
+		public String compileList(String name, List<minimal_entity_info> entitys, Boolean showTypes) {
 			String result = "<ul class=\"terminfo-" + name + "\">";
 			for (minimal_entity_info entity : entitys) {
 				result += "<li>" + entity.intLink(showTypes) + "</li>";
@@ -844,7 +838,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
 
 			List<String> superTypes = Arrays.asList();
-			List<String> showTypes = Arrays.asList("Class","Individual","Anatomy","Template","Motor_neuron","Cell","Neuron","pub","License","Ganglion","Expression_pattern","Neuromere","DataSet","Cluster","Synaptic_neuropil_block","Synaptic_neuropil_subdomain","Synaptic_neuropil_domain","Synaptic_neuropil","Clone","Neuron_projection_bundle","Sensory_neuron","Site","Serotonergic","Person","Peptidergic_neuron","Painted_domain","Octopaminergic","Neuroblast","Motor_neuron","Glutamatergic","Glial_cell","Ganglion","GABAergic","Dopaminergic","Cholinergic"); // TODO: Fill in with passed types
+			Boolean showTypes = True; //Arrays.asList("Class","Individual","Anatomy","Template","Motor_neuron","Cell","Neuron","pub","License","Ganglion","Expression_pattern","Neuromere","DataSet","Cluster","Synaptic_neuropil_block","Synaptic_neuropil_subdomain","Synaptic_neuropil_domain","Synaptic_neuropil","Clone","Neuron_projection_bundle","Sensory_neuron","Site","Serotonergic","Person","Peptidergic_neuron","Painted_domain","Octopaminergic","Neuroblast","Motor_neuron","Glutamatergic","Glial_cell","Ganglion","GABAergic","Dopaminergic","Cholinergic"); // TODO: Fill in with passed types
 			String tempData = "";
 			String header = "loading";
 			String references = ""; 
@@ -1227,6 +1221,57 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			throw new GeppettoVisitingException(e);
 		}
 	}
+
+	private String returnType(List<String> types) {
+		if (this.types.size() > 0 && show.size() > 0) {
+			if (types.contains("Obsolete")){
+				returnType(types, Arrays.asList("Obsolete"));
+			}
+			if (types.contains("Motor_neuron")){
+				return returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Motor_neuron"));
+			}
+			if (types.contains("Sensory_neuron")){
+				return returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Sensory_neuron"));
+			}
+			if (types.contains("Sensory_neuron")){
+				return returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Sensory_neuron"));
+			}
+			if (types.contains("Peptidergic_neuron")){
+				return returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Peptidergic_neuron"));
+			}
+			if (types.contains("Neuron")){
+				return returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Neuron"));
+			}
+			if (types.contains("Glial_cell")){
+				return returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Glial_cell"));
+			}
+			if (types.contains("Cell")){
+				return returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Cell"));
+			}
+			if (types.contains("Neuron_projection_bundle")){
+				return returnType(types, Arrays.asList("Neuron_projection_bundle"));
+			}
+			if (types.contains("pub")){
+				return "<span class=\"label types\">" + "<span class=\"label label-pub\">Publication</span> ";
+			}
+			return returnType(types, Arrays.asList("Person","License","Synaptic_neuropil","Template","Property","Anatomy","Ganglion","Clone","DataSet","Neuromere","Resource","Site"));
+		}
+		return "";
+	}
+
+	private String returnType(List<String> types, List<String> show) {
+		if (this.types.size() > 0 && show.size() > 0) {
+			String result = "<span class=\"label types\">";
+			for (String type : show) {
+				if (types.contains(type)) {
+					result += "<span class=\"label label-" + type + "\">" + type.replace("_", " ") + "</span> ";
+				}
+			}
+			return result + "</span>";
+		}
+		return "";
+	}
+
 	
 	/**
 	 * @param data
