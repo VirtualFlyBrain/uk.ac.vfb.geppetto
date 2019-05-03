@@ -83,13 +83,63 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 		public String types(Boolean show) {
 			if (show) {
-				return returnType(this.types);
+				return this.returnType(this.types);
 			}
 			return "";
 		}
 
 		public List<String> typeList() {
 			return this.types;
+		}
+
+		public String returnType(List<String> types) {
+			if (types.size() > 0) {
+				if (types.contains("Obsolete")){
+					this.returnType(types, Arrays.asList("Obsolete"));
+				}
+				if (types.contains("Motor_neuron")){
+					return this.returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Motor_neuron"));
+				}
+				if (types.contains("Sensory_neuron")){
+					return this.returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Sensory_neuron"));
+				}
+				if (types.contains("Sensory_neuron")){
+					return this.returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Sensory_neuron"));
+				}
+				if (types.contains("Peptidergic_neuron")){
+					return this.returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Peptidergic_neuron"));
+				}
+				if (types.contains("Neuron")){
+					return this.returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Neuron"));
+				}
+				if (types.contains("Glial_cell")){
+					return this.returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Glial_cell"));
+				}
+				if (types.contains("Cell")){
+					return this.returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Cell"));
+				}
+				if (types.contains("Neuron_projection_bundle")){
+					return this.returnType(types, Arrays.asList("Neuron_projection_bundle"));
+				}
+				if (types.contains("pub")){
+					return "<span class=\"label types\">" + "<span class=\"label label-pub\">Publication</span> ";
+				}
+				return this.returnType(types, Arrays.asList("Person","License","Synaptic_neuropil","Template","Property","Anatomy","Ganglion","Clone","DataSet","Neuromere","Resource","Site"));
+			}
+			return "";
+		}
+	
+		private String returnType(List<String> types, List<String> show) {
+			if (types.size() > 0 && show.size() > 0) {
+				String result = "<span class=\"label types\">";
+				for (String type : show) {
+					if (types.contains(type)) {
+						result += "<span class=\"label label-" + type + "\">" + type.replace("_", " ") + "</span> ";
+					}
+				}
+				return result + "</span>";
+			}
+			return "";
 		}
 
 	}
@@ -1220,56 +1270,6 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			e.printStackTrace();
 			throw new GeppettoVisitingException(e);
 		}
-	}
-
-	private String returnType(List<String> types) {
-		if (types.size() > 0) {
-			if (types.contains("Obsolete")){
-				returnType(types, Arrays.asList("Obsolete"));
-			}
-			if (types.contains("Motor_neuron")){
-				return returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Motor_neuron"));
-			}
-			if (types.contains("Sensory_neuron")){
-				return returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Sensory_neuron"));
-			}
-			if (types.contains("Sensory_neuron")){
-				return returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Sensory_neuron"));
-			}
-			if (types.contains("Peptidergic_neuron")){
-				return returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Peptidergic_neuron"));
-			}
-			if (types.contains("Neuron")){
-				return returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Neuron"));
-			}
-			if (types.contains("Glial_cell")){
-				return returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Glial_cell"));
-			}
-			if (types.contains("Cell")){
-				return returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Cell"));
-			}
-			if (types.contains("Neuron_projection_bundle")){
-				return returnType(types, Arrays.asList("Neuron_projection_bundle"));
-			}
-			if (types.contains("pub")){
-				return "<span class=\"label types\">" + "<span class=\"label label-pub\">Publication</span> ";
-			}
-			return returnType(types, Arrays.asList("Person","License","Synaptic_neuropil","Template","Property","Anatomy","Ganglion","Clone","DataSet","Neuromere","Resource","Site"));
-		}
-		return "";
-	}
-
-	private String returnType(List<String> types, List<String> show) {
-		if (types.size() > 0 && show.size() > 0) {
-			String result = "<span class=\"label types\">";
-			for (String type : show) {
-				if (types.contains(type)) {
-					result += "<span class=\"label label-" + type + "\">" + type.replace("_", " ") + "</span> ";
-				}
-			}
-			return result + "</span>";
-		}
-		return "";
 	}
 
 	
