@@ -115,7 +115,14 @@
 	<bean id="vfbAberOWLidOnlyQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.VFBAberOWLidOnlyQueryProcessor">
 	<aop:scoped-proxy proxy-target-class="false"/>
 	</bean>
-	
+
+	<osgi:service id="vfbAberOWL2ndResultsQueryProcessorExporter" ref="vfbAberOWL2ndResultsQueryProcessor"
+		interface="org.geppetto.core.datasources.IQueryProcessor">
+	</osgi:service>
+	<bean id="vfbAberOWL2ndResultsQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.VFBAberOWL2ndResultsQueryProcessor">
+	<aop:scoped-proxy proxy-target-class="false"/>
+	</bean>
+
 	<osgi:service id="owleryIdOnlyQueryProcessorExporter" ref="owleryIdOnlyQueryProcessor"
 		interface="org.geppetto.core.datasources.IQueryProcessor">
 	</osgi:service>
