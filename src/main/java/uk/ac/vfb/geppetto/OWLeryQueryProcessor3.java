@@ -24,7 +24,7 @@ import org.geppetto.model.variables.Variable;
  */
 
 
-public class OWLeryQueryProcessor extends AQueryProcessor
+public class OWLeryQueryProcessor3 extends AQueryProcessor
 {
 
 	private Map<String, Object> processingOutputMap = new HashMap<String, Object>();
