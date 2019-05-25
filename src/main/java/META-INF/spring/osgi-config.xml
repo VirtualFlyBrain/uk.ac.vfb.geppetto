@@ -123,6 +123,13 @@
 	<aop:scoped-proxy proxy-target-class="false"/>
 	</bean>
 
+	<osgi:service id="owleryIdOnlyQueryProcessorExporter1" ref="owleryIdOnlyQueryProcessor1"
+		interface="org.geppetto.core.datasources.IQueryProcessor">
+	</osgi:service>
+	<bean id="owleryIdOnlyQueryProcessor1" scope="prototype" class="uk.ac.vfb.geppetto.OWLeryQueryProcessor2">
+	<aop:scoped-proxy proxy-target-class="false"/>
+	</bean>
+
 	<osgi:service id="owleryIdOnlyQueryProcessorExporter2" ref="owleryIdOnlyQueryProcessor2"
 		interface="org.geppetto.core.datasources.IQueryProcessor">
 	</osgi:service>

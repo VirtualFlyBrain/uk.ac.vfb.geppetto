@@ -24,7 +24,7 @@ import org.geppetto.model.variables.Variable;
  */
 
 
-public class OWLeryQueryProcessor2 extends AQueryProcessor
+public class OWLeryQueryProcessor1 extends AQueryProcessor
 {
 
 	private Map<String, Object> processingOutputMap = new HashMap<String, Object>();
@@ -75,7 +75,7 @@ public class OWLeryQueryProcessor2 extends AQueryProcessor
 			}
 		}
 		
-		processingOutputMap.put("ARRAY_2ND_ID_RESULTS", ids);
+		processingOutputMap.put("ARRAY_ID_RESULTS", ids);
 
 		return processedResults;
 	}
