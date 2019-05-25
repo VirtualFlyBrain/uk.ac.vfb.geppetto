@@ -63,6 +63,8 @@ public class OWLeryQueryProcessor3 extends AQueryProcessor
 				throw new GeppettoDataSourceException("Results header not in hasInstance, subClassOf");
 				
 		}
+
+		processedResults.getHeader().add("ID");
 	
 		if (idIndex > -1){
 			for(AQueryResult result : results.getResults())
