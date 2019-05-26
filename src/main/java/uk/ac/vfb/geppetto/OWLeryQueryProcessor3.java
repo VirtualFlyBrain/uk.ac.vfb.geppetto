@@ -78,8 +78,21 @@ public class OWLeryQueryProcessor3 extends AQueryProcessor
 			}
 		}
 		
-		processingOutputMap.put("ARRAY_3RD_ID_RESULTS", ids);
-
+		if (processingOutputMap.keySet().contains("ARRAY_ID_RESULTS")) {
+			List<List<String>> concatIds = new ArrayList<ArrayList<String>>();
+			if (processingOutputMap.get("ARRAY_ID_RESULTS") instanceof List<String>) {
+				concatIds.add((List<String>) processingOutputMap.get("ARRAY_ID_RESULTS"));
+			} else if (processingOutputMap.get("ARRAY_ID_RESULTS") instanceof List<List<String>>) {
+				concatIds = (List<List<String>>) processingOutputMap.get("ARRAY_ID_RESULTS");	
+			}else{
+				System.out.println("Error identifying perevious result type! ");
+			}
+			concatIds.add(ids);
+			processingOutputMap.clear();
+			processingOutputMap.put("ARRAY_ID_RESULTS", concatIds);
+		}else{
+			processingOutputMap.put("ARRAY_ID_RESULTS", ids);
+		}
 		return processedResults;
 	}
 
