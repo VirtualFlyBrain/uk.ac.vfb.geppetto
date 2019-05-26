@@ -98,6 +98,7 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 				String desc = null;
 				try{
 					desc = (String) results.getValue("class_Desc", i);
+					System.out.println(desc);
 				}catch (Exception e){
 					System.out.println(e);
 					e.printStackTrace();
