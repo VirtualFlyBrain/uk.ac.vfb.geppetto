@@ -93,6 +93,7 @@ public class OWLeryQueryProcessor3 extends AQueryProcessor
 		}else{
 			processingOutputMap.put("ARRAY_ID_RESULTS", ids);
 		}
+		System.out.println(processingOutputMap.get("ARRAY_ID_RESULTS").toString());
 		return processedResults;
 	}
 
