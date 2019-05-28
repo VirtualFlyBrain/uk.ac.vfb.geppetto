@@ -81,7 +81,7 @@ public class OWLeryQueryProcessor3 extends AQueryProcessor
 		if (processingOutputMap.keySet().contains("ARRAY_ID_RESULTS")) {
 			ArrayList<ArrayList<String>> concatIds = new ArrayList<ArrayList<String>>();
 			if (processingOutputMap.get("ARRAY_ID_RESULTS") instanceof List && processingOutputMap.get("ARRAY_ID_RESULTS").size() > 0 && processingOutputMap.get("ARRAY_ID_RESULTS").get(0) instanceof String) {
-				concatIds.add((List<String>) processingOutputMap.get("ARRAY_ID_RESULTS"));
+				concatIds.add((ArrayList<String>) processingOutputMap.get("ARRAY_ID_RESULTS"));
 			} else if (processingOutputMap.get("ARRAY_ID_RESULTS") instanceof List && processingOutputMap.get("ARRAY_ID_RESULTS").size() > 0 && processingOutputMap.get("ARRAY_ID_RESULTS").get(0) instanceof List) {
 				concatIds = (ArrayList<ArrayList<String>>) processingOutputMap.get("ARRAY_ID_RESULTS");	
 			}else{
