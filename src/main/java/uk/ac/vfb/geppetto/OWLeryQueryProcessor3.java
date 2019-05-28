@@ -47,9 +47,11 @@ public class OWLeryQueryProcessor3 extends AQueryProcessor
 		QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
 		int idIndex = -1;
 
-		System.out.println("passed:");
-		System.out.println(processingOutputMap.get("ARRAY_ID_RESULTS").toString());
-		
+		if (processingOutputMap.keySet().contains("ARRAY_ID_RESULTS")) {
+			System.out.println("passed:");
+			System.out.println(processingOutputMap.get("ARRAY_ID_RESULTS").toString());
+		}
+
 		List<String> ids = new ArrayList<String>();
 		
 		switch(queryID) 
@@ -84,7 +86,7 @@ public class OWLeryQueryProcessor3 extends AQueryProcessor
 			System.out.println("passing full");
 			concatIds = (ArrayList<ArrayList<String>>) processingOutputMap.get("ARRAY_ID_RESULTS");	
 		}
-		
+
 		concatIds.add(new ArrayList<String>(ids));
 		processingOutputMap.clear();
 		processingOutputMap.put("ARRAY_ID_RESULTS", concatIds);
