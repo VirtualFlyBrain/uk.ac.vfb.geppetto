@@ -46,6 +46,9 @@ public class OWLeryQueryProcessor3 extends AQueryProcessor
 		
 		QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
 		int idIndex = -1;
+
+		System.out.println("passed:");
+		System.out.println(processingOutputMap.get("ARRAY_ID_RESULTS").toString());
 		
 		List<String> ids = new ArrayList<String>();
 		
@@ -70,7 +73,6 @@ public class OWLeryQueryProcessor3 extends AQueryProcessor
 			for(AQueryResult result : results.getResults())
 			{
 				List<String> idsList = (ArrayList)((QueryResult) result).getValues().get(idIndex);
-				System.out.println(idsList);
 				for(String id : idsList) {
 					String subID = id.substring((id.lastIndexOf('/')+1) , id.length()).toString();
 					ids.add("'" + subID + "'");
@@ -79,10 +81,10 @@ public class OWLeryQueryProcessor3 extends AQueryProcessor
 		}
 		ArrayList<ArrayList<String>> concatIds = new ArrayList<ArrayList<String>>();
 		if (processingOutputMap.keySet().contains("ARRAY_ID_RESULTS")) {
+			System.out.println("passing full");
 			concatIds = (ArrayList<ArrayList<String>>) processingOutputMap.get("ARRAY_ID_RESULTS");	
-		}else{
-			concatIds.add((ArrayList<String>) processingOutputMap.get("ARRAY_ID_RESULTS"));
 		}
+		
 		concatIds.add(new ArrayList<String>(ids));
 		processingOutputMap.clear();
 		processingOutputMap.put("ARRAY_ID_RESULTS", concatIds);
