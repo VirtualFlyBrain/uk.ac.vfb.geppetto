@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.geppetto.core.datasources.IQueryProcessor;
 import org.geppetto.core.datasources.GeppettoDataSourceException;
 import org.geppetto.core.model.GeppettoModelAccess;
 import org.geppetto.datasources.AQueryProcessor;
@@ -17,6 +18,7 @@ import org.geppetto.model.datasources.QueryResult;
 import org.geppetto.model.datasources.QueryResults;
 import org.geppetto.model.datasources.SerializableQueryResult;
 import org.geppetto.model.variables.Variable;
+
 
 /**
  * @author dariodelpiano
@@ -43,6 +45,9 @@ public class OWLeryQueryProcessor3 extends AQueryProcessor
 		}
 		
 		String queryID = dataSource.getId();
+
+		IQueryProcessor queryProcessor = (IQueryProcessor) ServiceCreator.getNewServiceInstance(query.getQueryProcessorId());
+		processingOutputMap = queryProcessor.getProcessingOutputMap();
 		
 		QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
 		int idIndex = -1;
