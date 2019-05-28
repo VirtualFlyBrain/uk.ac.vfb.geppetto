@@ -77,22 +77,15 @@ public class OWLeryQueryProcessor3 extends AQueryProcessor
 				}
 			}
 		}
-		
+		ArrayList<ArrayList<String>> concatIds = new ArrayList<ArrayList<String>>();
 		if (processingOutputMap.keySet().contains("ARRAY_ID_RESULTS")) {
-			ArrayList<ArrayList<String>> concatIds = new ArrayList<ArrayList<String>>();
-			if (processingOutputMap.get("ARRAY_ID_RESULTS") instanceof List && ((ArrayList<Object>) processingOutputMap.get("ARRAY_ID_RESULTS")).size() > 0 && ((ArrayList<Object>) processingOutputMap.get("ARRAY_ID_RESULTS")).get(0) instanceof String) {
-				concatIds.add((ArrayList<String>) processingOutputMap.get("ARRAY_ID_RESULTS"));
-			} else if (processingOutputMap.get("ARRAY_ID_RESULTS") instanceof ArrayList && ((ArrayList<Object>) processingOutputMap.get("ARRAY_ID_RESULTS")).size() > 0 && ((ArrayList<Object>) processingOutputMap.get("ARRAY_ID_RESULTS")).get(0) instanceof ArrayList) {
-				concatIds = (ArrayList<ArrayList<String>>) processingOutputMap.get("ARRAY_ID_RESULTS");	
-			}else{
-				System.out.println("Error identifying perevious result type! ");
-			}
-			concatIds.add(new ArrayList<String>(ids));
-			processingOutputMap.clear();
-			processingOutputMap.put("ARRAY_ID_RESULTS", concatIds);
+			concatIds = (ArrayList<ArrayList<String>>) processingOutputMap.get("ARRAY_ID_RESULTS");	
 		}else{
-			processingOutputMap.put("ARRAY_ID_RESULTS", ids);
+			concatIds.add((ArrayList<String>) processingOutputMap.get("ARRAY_ID_RESULTS"));
 		}
+		concatIds.add(new ArrayList<String>(ids));
+		processingOutputMap.clear();
+		processingOutputMap.put("ARRAY_ID_RESULTS", concatIds);
 		System.out.println(processingOutputMap.get("ARRAY_ID_RESULTS").toString());
 		return processedResults;
 	}
