@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.geppetto.core.services.ServiceCreator;
 import org.geppetto.core.datasources.IQueryProcessor;
 import org.geppetto.core.datasources.GeppettoDataSourceException;
 import org.geppetto.core.model.GeppettoModelAccess;
