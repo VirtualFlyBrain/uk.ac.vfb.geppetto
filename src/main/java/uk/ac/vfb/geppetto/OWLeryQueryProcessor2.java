@@ -81,7 +81,7 @@ public class OWLeryQueryProcessor2 extends AQueryProcessor
 
 		processingOutputMap.put("ARRAY_ID_RESULTS", ids);
 
-		return processedResults;
+		//return processedResults;
 	}
 
 	@Override
