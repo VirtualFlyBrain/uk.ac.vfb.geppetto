@@ -98,7 +98,6 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 				String desc = null;
 				try{
 					desc = (String) results.getValue("class_Desc", i);
-					System.out.println(desc);
 				}catch (Exception e){
 					System.out.println(e);
 					e.printStackTrace();
@@ -163,6 +162,7 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 				i++;
 			}
 			System.out.println("CreateImagesForQueryResultsQueryProcessor returning " + Integer.toString(i) + " rows");
+			System.out.println(GeppettoSerializer.serializeToJSON(processedResult));
 			return processedResults;
 		}
 		catch(GeppettoVisitingException e)
