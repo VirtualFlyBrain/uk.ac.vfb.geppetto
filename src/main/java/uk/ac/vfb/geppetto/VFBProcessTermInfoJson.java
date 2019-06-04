@@ -530,6 +530,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 	class vfb_terminfo {
 		term term;
+		public String query;
 		private List<anatomy_channel_image> anatomy_channel_image;
 		private List<xref> xrefs;
 		private List<pub_syn> pub_syn;
