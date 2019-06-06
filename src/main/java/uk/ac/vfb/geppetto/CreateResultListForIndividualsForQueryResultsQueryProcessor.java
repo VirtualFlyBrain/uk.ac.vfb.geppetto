@@ -140,7 +140,8 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 
 				i++;
 			}
-            System.out.println("CreateResultListForIndividualsForQueryResultsQueryProcessor returning " + Integer.toString(i) + " rows");
+            		System.out.println("CreateResultListForIndividualsForQueryResultsQueryProcessor returning " + Integer.toString(i) + " rows");
+	    		System.out.println(GeppettoSerializer.serializeToJSON(processedResults));
 			return processedResults;
 		}
 		catch(GeppettoVisitingException e)
