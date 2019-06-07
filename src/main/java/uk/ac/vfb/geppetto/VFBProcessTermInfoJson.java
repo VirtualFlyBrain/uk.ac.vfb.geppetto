@@ -556,17 +556,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					}
 				}
 				result += "</span>";
-			} else if (license != null && license.size() > 0) {
-				result += "<span class=\"terminfo-license\">";
-				for (license l:license) {
-					if (this.term.core.short_form.equals(l.core.short_form)){
-						result += l.extLink();
-					}else{
-						result += l.intLink();
-					}
-				}
-				result += "</span>";
-			}
+			} 
 			return result;
 		}
 
