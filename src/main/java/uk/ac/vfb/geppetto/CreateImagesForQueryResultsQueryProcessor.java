@@ -213,7 +213,7 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 	}
 	
 	private String cleanString(String text){
-		return text.replaceAll("\\{","&#123;").replaceAll("\\}","&#124;").replaceAll("\\:","&#58;");
+		return text.replaceAll("\\{","-").replaceAll("\\}","-").replaceAll("\\:","-");
 	}
 
 }
