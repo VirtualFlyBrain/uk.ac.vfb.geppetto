@@ -556,7 +556,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					}
 				}
 				result += "</span>";
-			} else (license != null && license.size() > 0) {
+			} else if (license != null && license.size() > 0) {
 				result += "<span class=\"terminfo-license\">";
 				for (license l:license) {
 					if (this.term.core.short_form.equals(l.core.short_form)){
@@ -582,7 +582,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					}
 				}
 				result += "</span>";
-			} else (license != null && license.size() > 0) {
+			} else if (license != null && license.size() > 0) {
 				result += "<span class=\"terminfo-license\">";
 				for (license l:license) {
 					if (this.term.core.short_form.equals(l.core.short_form)){
@@ -754,7 +754,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				int f = this.channel_image.size();
 				for (channel_image ci : this.channel_image) {
 					// add same template to the begining and others at the end.
-					if (ci != null && ci.image != null && ci.image.template_anatomy != null && ci.image.template_anatomy.short_form != null && template == ci.image.template_anatomy.short_form) {
+					if (ci != null && ci.image != null && ci.image.template_anatomy != null && ci.image.template_anatomy.short_form != null && template.equals(ci.image.template_anatomy.short_form)) {
 						addImage(ci.getUrl("", "thumbnailT.png"), ci.channel.label.replace("_c", "").replace("-c", ""), ci.channel.short_form.replace("VFBc_", "VFB_"), imageArray, j);
 						j++;
 					} else {
@@ -781,7 +781,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				int f = this.anatomy_channel_image.size();
 				for (anatomy_channel_image anat : this.anatomy_channel_image) {
 					// add same template to the begining and others at the end.
-					if (anat.channel_image != null && anat.channel_image.image != null && anat.channel_image.image.template_anatomy != null && anat.channel_image.image.template_anatomy.short_form != null && template == anat.channel_image.image.template_anatomy.short_form) {
+					if (anat.channel_image != null && anat.channel_image.image != null && anat.channel_image.image.template_anatomy != null && anat.channel_image.image.template_anatomy.short_form != null && template.equals(anat.channel_image.image.template_anatomy.short_form)) {
 						addImage(anat.getUrl("", "thumbnailT.png"), anat.anatomy.label, anat.anatomy.short_form, imageArray, j);
 						j++;
 					} else {
