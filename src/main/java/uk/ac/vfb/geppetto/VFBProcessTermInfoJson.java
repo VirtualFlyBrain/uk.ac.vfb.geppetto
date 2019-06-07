@@ -556,6 +556,16 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					}
 				}
 				result += "</span>";
+			} else (license != null && license.size() > 0) {
+				result += "<span class=\"terminfo-license\">";
+				for (license l:license) {
+					if (this.term.core.short_form.equals(l.core.short_form)){
+						result += l.extLink();
+					}else{
+						result += l.intLink();
+					}
+				}
+				result += "</span>";
 			}
 			return result;
 		}
@@ -569,6 +579,16 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 						result += dsl.license.extLink();
 					}else{
 						result += dsl.license.intLink();
+					}
+				}
+				result += "</span>";
+			} else (license != null && license.size() > 0) {
+				result += "<span class=\"terminfo-license\">";
+				for (license l:license) {
+					if (this.term.core.short_form.equals(l.core.short_form)){
+						result += l.extLink();
+					}else{
+						result += l.intLink();
 					}
 				}
 				result += "</span>";
