@@ -155,10 +155,10 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 
 		public String label() {
-			if (this.label != null & !this.label.equals("")){
+			if (this.label != null && !this.label.equals("")){
 				return this.label;
 			}
-			return this.type;
+			return this.type();
 		}
 
 		public String type() {
