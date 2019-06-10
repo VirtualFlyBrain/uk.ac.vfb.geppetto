@@ -293,7 +293,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 
 		public String link() {
-			if (this.accession != null && !this.accession.equals("None")) {
+			if (this.accession != null && !this.accession.equals("None") && !this.accession.equals("")) {
 				return this.link_base + this.accession + this.link_postfix;
 			}
 			return this.site.iri;
