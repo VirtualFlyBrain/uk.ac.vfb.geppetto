@@ -931,7 +931,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				System.out.println("}");
 
 				// Encoding embeded quotes
-				json = json.replaceAll("\\\\\"","&#34;").replaceAll("\\\\'","&#39;");
+				json = json.replaceAll("\\\"","&#34;").replaceAll("\\'","&#39;");
 
 				header = "JSON>Schema";
 				vfb_terminfo vfbTerm = new Gson().fromJson(json , vfb_terminfo.class);
