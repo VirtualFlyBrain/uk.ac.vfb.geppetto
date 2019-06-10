@@ -200,7 +200,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 
 		private String encode(String text){
-			return text.replace("\\\"","&quot;").replace("\\\'","&apos;").replace("\"","&quot;").replace("\'","&apos;")
+			return text.replace("\\\"","&quot;").replace("\\\'","&apos;").replace("\"","&quot;").replace("\'","&apos;");
 		}
 
 		/**
