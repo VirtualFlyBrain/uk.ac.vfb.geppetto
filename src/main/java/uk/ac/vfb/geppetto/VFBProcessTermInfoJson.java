@@ -740,7 +740,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public ArrayValue thumbnails(String template) {
 			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
 			try{
-				if (template.equals("")){
+				if (template == null || template.equals("")){
 					//default to JFRC2 
 					template = "VFB_00017894";
 				}
@@ -1023,7 +1023,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				if (vfbTerm.channel_image != null && vfbTerm.channel_image.size() > 0) {
 					// Recording Aligned Template
 					if (template.equals("")){
-						template = vfbTerm.channel_image.get(0).image.template_anatomy.short_form;
+						template = "VFB_00017894"; //vfbTerm.channel_image.get(0).image.template_anatomy.short_form;
 					}
 					addModelHtml(vfbTerm.channel_image.get(0).image.template_anatomy.intLink(), "Aligned to", "template", metadataType, geppettoModelAccess);
 					// thumbnail
