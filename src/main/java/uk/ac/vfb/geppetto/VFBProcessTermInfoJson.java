@@ -554,7 +554,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				result += "<span class=\"terminfo-source\">";
 				for (dataset_license dsl:dataset_license) {
 					if (!result.equals("<span class=\"terminfo-source\">")){
-						results += "<BR />"
+						result += "<BR />";
 					}
 					if (this.term.core.short_form.equals(dsl.dataset.core.short_form)){
 						if (result.contains(dsl.dataset.extLink())){
@@ -577,7 +577,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				result += "<span class=\"terminfo-license\">";
 				for (dataset_license dsl:dataset_license) {
 					if (!result.equals("<span class=\"terminfo-license\">")){
-						results += "<BR />"
+						result += "<BR />";
 					}
 					if (this.term.core.short_form.equals(dsl.dataset.core.short_form)){
 						if (result.contains(dsl.license.extLink())){
@@ -594,7 +594,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				result += "<span class=\"terminfo-license\">";
 				for (license l:license) {
 					if (!result.equals("<span class=\"terminfo-license\">")){
-						results += "<BR />"
+						result += "<BR />";
 					}
 					if (this.term.core.short_form.equals(l.core.short_form)){
 						if (!result.contains(l.extLink())){
