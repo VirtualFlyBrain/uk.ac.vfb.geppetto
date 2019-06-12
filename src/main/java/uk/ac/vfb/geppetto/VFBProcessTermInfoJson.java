@@ -553,10 +553,17 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			if (dataset_license != null && dataset_license.size() > 0) {
 				result += "<span class=\"terminfo-source\">";
 				for (dataset_license dsl:dataset_license) {
+					if (!result.equals("<span class=\"terminfo-source\">")){
+						results += "<BR />"
+					}
 					if (this.term.core.short_form.equals(dsl.dataset.core.short_form)){
-						result += dsl.dataset.extLink();
+						if (result.contains(dsl.dataset.extLink())){
+							result += dsl.dataset.extLink();
+						}
 					}else{
-						result += dsl.dataset.intLink();
+						if (result.contains(dsl.dataset.intLink())){
+							result += dsl.dataset.intLink();
+						}
 					}
 				}
 				result += "</span>";
@@ -569,6 +576,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			if (dataset_license != null && dataset_license.size() > 0) {
 				result += "<span class=\"terminfo-license\">";
 				for (dataset_license dsl:dataset_license) {
+					if (!result.equals("<span class=\"terminfo-license\">")){
+						results += "<BR />"
+					}
 					if (this.term.core.short_form.equals(dsl.dataset.core.short_form)){
 						if (result.contains(dsl.license.extLink())){
 							result += dsl.license.extLink();
@@ -583,6 +593,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			} else if (license != null && license.size() > 0) {
 				result += "<span class=\"terminfo-license\">";
 				for (license l:license) {
+					if (!result.equals("<span class=\"terminfo-license\">")){
+						results += "<BR />"
+					}
 					if (this.term.core.short_form.equals(l.core.short_form)){
 						if (!result.contains(l.extLink())){
 							result += l.extLink();
