@@ -103,9 +103,6 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				if (types.contains("Sensory_neuron")){
 					return this.returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Sensory_neuron"));
 				}
-				if (types.contains("Sensory_neuron")){
-					return this.returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Sensory_neuron"));
-				}
 				if (types.contains("Peptidergic_neuron")){
 					return this.returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Peptidergic_neuron"));
 				}
