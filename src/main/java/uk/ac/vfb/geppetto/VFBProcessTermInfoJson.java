@@ -1149,7 +1149,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 				//debug query version to term info
 				if (debug) {
-					addModelHtml(vfbTerm.query + " (" + vfbTerm.version + ")", "Debug", "debug", metadataType, geppettoModelAccess);
+					addModelHtml(vfbTerm.query + " (" + vfbTerm.version + ")<br>" + json, "Debug", "debug", metadataType, geppettoModelAccess);
 				}
 
 			}catch (Exception e) {
@@ -1158,7 +1158,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				//debug query version to term info
 				if (debug) {
 					if (vfbTerm!=null && vfbTerm.query!=null) {	
-						addModelHtml(vfbTerm.query + " (" + vfbTerm.version + ")", "Debug", "debug", metadataType, geppettoModelAccess);
+						addModelHtml(vfbTerm.query + " (" + vfbTerm.version + ")" + "<br>" + json + "<br>" + e.toString(), "Debug", "debug", metadataType, geppettoModelAccess);
 					}else{
 						addModelHtml(json + "<br>" + e.toString(), "Debug", "debug", metadataType, geppettoModelAccess);
 					}
