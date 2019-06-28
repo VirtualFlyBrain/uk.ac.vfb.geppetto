@@ -535,6 +535,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	class vfb_terminfo {
 		term term;
 		public String query;
+		public String version;
 		private List<anatomy_channel_image> anatomy_channel_image;
 		private List<xref> xrefs;
 		private List<pub_syn> pub_syn;
@@ -568,6 +569,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				}
 				result += "</span>";
 			} 
+			if (result.equals("<span class=\"terminfo-source\"></span>")) return "";
 			return result;
 		}
 
@@ -608,6 +610,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				}
 				result += "</span>";
 			}
+			if (result.equals("<span class=\"terminfo-license\"></span>")) return "";
 			return result;
 		}
 
@@ -907,7 +910,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	@Override
 	public QueryResults process(ProcessQuery query, DataSource dataSource, Variable variable, QueryResults results, GeppettoModelAccess geppettoModelAccess) throws GeppettoDataSourceException
 	{
-
+		Boolean debug=true;
+		String json = "{";
+		vfb_terminfo vfbTerm = null;
 		try
 		{
 			// Template space:
@@ -939,7 +944,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			try{
 				header = "results>JSON";
 				System.out.println("{");
-				String json = "{";
+				
 				for (String key:results.getHeader()) {
 					if (!json.equals("{")) {
 						json = json + ", ";
@@ -956,7 +961,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				System.out.println("}");
 
 				header = "JSON>Schema";
-				vfb_terminfo vfbTerm = new Gson().fromJson(json , vfb_terminfo.class);
+				vfbTerm = new Gson().fromJson(json , vfb_terminfo.class);
 
 				if (vfbTerm.term == null || vfbTerm.term.core == null){
 					System.out.println("ERROR: term:core missing from JSON for " + variable.getId());
@@ -1142,9 +1147,22 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					addModelHtml(querys, "Query for", "queries", metadataType, geppettoModelAccess);
 				}
 
+				//debug query version to term info
+				if (debug) {
+					addModelHtml(vfbTerm.query + " (" + vfbTerm.version + ")", "Debug", "debug", metadataType, geppettoModelAccess);
+				}
+
 			}catch (Exception e) {
 				System.out.println("Error creating " + header + ": " + e.toString());
 				e.printStackTrace();
+				//debug query version to term info
+				if (debug) {
+					if (vfbTerm!=null && vfbTerm.query!=null) {	
+						addModelHtml(vfbTerm.query + " (" + vfbTerm.version + ")", "Debug", "debug", metadataType, geppettoModelAccess);
+					}else{
+						addModelHtml(json + ")", "Debug", "debug", metadataType, geppettoModelAccess);
+					}
+				}
 			}
 
 		}
