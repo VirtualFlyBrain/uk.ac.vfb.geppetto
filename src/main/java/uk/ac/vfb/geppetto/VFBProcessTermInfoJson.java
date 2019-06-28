@@ -1160,7 +1160,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					if (vfbTerm!=null && vfbTerm.query!=null) {	
 						addModelHtml(vfbTerm.query + " (" + vfbTerm.version + ")", "Debug", "debug", metadataType, geppettoModelAccess);
 					}else{
-						addModelHtml(json + ")", "Debug", "debug", metadataType, geppettoModelAccess);
+						addModelHtml(json + "<br>" + e.toString(), "Debug", "debug", metadataType, geppettoModelAccess);
 					}
 				}
 			}
