@@ -558,11 +558,11 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 						result += "<BR />";
 					}
 					if (this.term.core.short_form.equals(dsl.dataset.core.short_form)){
-						if (result.contains(dsl.dataset.extLink())){
+						if (!result.contains(dsl.dataset.extLink())){
 							result += dsl.dataset.extLink();
 						}
 					}else{
-						if (result.contains(dsl.dataset.intLink())){
+						if (!result.contains(dsl.dataset.intLink())){
 							result += dsl.dataset.intLink();
 						}
 					}
@@ -582,11 +582,11 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 						result += "<BR />";
 					}
 					if (this.term.core.short_form.equals(dsl.dataset.core.short_form)){
-						if (result.contains(dsl.license.extLink())){
+						if (!result.contains(dsl.license.extLink())){
 							result += dsl.license.extLink();
 						}
 					}else{
-						if (result.contains(dsl.license.intLink())){
+						if (!result.contains(dsl.license.intLink())){
 							result += dsl.license.intLink();
 						}
 					}
