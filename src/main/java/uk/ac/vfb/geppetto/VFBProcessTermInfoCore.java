@@ -110,18 +110,6 @@ public class VFBProcessTermInfoCore extends AQueryProcessor {
 					metaDataVar.setName(tempName);
 					geppettoModelAccess.addVariableToType(metaDataVar, parentType);
 					
-					// Label: {label} ({short_form}) (all on one line)
-					String labelLink = "<b>" + tempName + "</b> (" + tempId + ")";
-					// set meta label/name:
-					Variable label = VariablesFactory.eINSTANCE.createVariable();
-					label.setId("label");
-					label.setName("Label");
-					label.getTypes().add(htmlType);
-					HTML labelValue = ValuesFactory.eINSTANCE.createHTML();
-					label.getInitialValues().put(htmlType, labelValue);
-					labelValue.setHtml(labelLink);
-					geppettoModelAccess.addVariableToType(label, metaDataType);
-					
 					geppettoModelAccess.addTypeToLibrary(metaDataType, dataSource.getTargetLibrary());
 					
 					// add supertypes: 

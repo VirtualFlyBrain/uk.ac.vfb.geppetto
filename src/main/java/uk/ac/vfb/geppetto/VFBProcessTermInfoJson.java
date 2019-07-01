@@ -968,18 +968,14 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					return results;
 				}
 
-				// Note: term:core already handled by VFBProcessTermInfoCore except types labels
+				// Label: {label} ({short_form}) TYPES (all on one line)
+				header = "label";
+				tempData = "<b>" + vfbTerm.term.core.label + "</b> (" + vfbTerm.term.core.short_form + ") " + vfbTerm.term.core.types(showTypes);
+				addModelHtml(tempData, "Name", header, metadataType, geppettoModelAccess);
 
 				// Types
 				header = "types";
 				superTypes = vfbTerm.term.core.typeList();
-
-				// Types
-				header = "types";
-				tempData = vfbTerm.term.core.types(showTypes);
-				if (!tempData.equals("")) {
-					addModelHtml(tempData, "Types", header, metadataType, geppettoModelAccess);
-				}
 
 				// Description
 				header = "description";
