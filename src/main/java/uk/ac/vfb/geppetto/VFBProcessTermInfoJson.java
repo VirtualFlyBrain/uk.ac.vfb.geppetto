@@ -978,7 +978,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				header = "types";
 				tempData = vfbTerm.term.core.types(showTypes);
 				if (!tempData.equals("")) {
-					addModelHtml(vfbTerm.term.core.types(showTypes), "Types", header, metadataType, geppettoModelAccess);
+					addModelHtml(tempData, "Types", header, metadataType, geppettoModelAccess);
 				}
 
 				// Description
@@ -1009,11 +1009,11 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					addModelHtml(tempData, "License", header, metadataType, geppettoModelAccess);
 				}
 
-				// parents
-				header = "parents";
+				// Classification
+				header = "Classification";
 				if (vfbTerm.parents != null && vfbTerm.parents.size() > 0) {
 					tempData = vfbTerm.compileList(header, vfbTerm.parents, showTypes);
-					addModelHtml(tempData, "Parents", "type", metadataType, geppettoModelAccess);
+					addModelHtml(tempData, "Classification", "type", metadataType, geppettoModelAccess);
 					// store first parent as parent type for neuropil/tract queries
 					classVariable.setId(vfbTerm.parents.get(0).short_form);
 					classVariable.setName(vfbTerm.parents.get(0).label);
@@ -1049,7 +1049,14 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				if (vfbTerm.channel_image != null && vfbTerm.channel_image.size() > 0) {
 					// Recording Aligned Template
 					if (template.equals("")){
-						template = "VFB_00017894"; //vfbTerm.channel_image.get(0).image.template_anatomy.short_form;
+						try {
+						template = vfbTerm.channel_image.get(0).image.template_anatomy.short_form;
+						classParentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(template, dependenciesLibrary));
+						}catch (Exception e) 
+						{
+							System.out.println("Error determining template: " + e.toString());
+							e.printStackTrace();
+						}
 					}
 					addModelHtml(vfbTerm.channel_image.get(0).image.template_anatomy.intLink(), "Aligned to", "template", metadataType, geppettoModelAccess);
 					// thumbnail
