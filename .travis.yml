@@ -27,7 +27,7 @@ install:
     - mvn  -Dhttps.protocols=TLSv1.2 -DskipTests --quiet install
     - cd .. 
     - cd uk.ac.vfb.geppetto
-    - mvn install
+    - mvn -Dhttps.protocols=TLSv1.2 -DskipTests --quiet install
 
     
     
