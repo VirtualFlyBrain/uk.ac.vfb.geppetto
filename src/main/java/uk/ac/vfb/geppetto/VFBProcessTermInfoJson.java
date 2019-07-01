@@ -445,7 +445,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public String intLink() {
 			String result = this.core.intLink(false);
 			if (this.icon != null && !this.icon.equals("")) {
-				result += result.replace(this.core.label,this.core.label + " <img class=\"terminfo-licenseicon\" src=\"" + this.icon + "\" title=\"" + this.core.label + "\"/>");
+				result = result.replace(this.core.label,this.core.label + " <img class=\"terminfo-licenseicon\" src=\"" + this.icon + "\" title=\"" + this.core.label + "\"/>");
 			}
 			return result;
 		}
