@@ -113,17 +113,17 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 				}
 				
 				if (name != null){
-					processedResult.getValues().add(name);
+					processedResult.getValues().add(cleanString(name));
 				}else{
 					processedResult.getValues().add("");
 				}
 				if (desc != null){
-					processedResult.getValues().add(desc);
+					processedResult.getValues().add(cleanString(desc));
 				}else{
 					processedResult.getValues().add("");
 				}
 				if (type != null){
-					processedResult.getValues().add(type);
+					processedResult.getValues().add(cleanString(type));
 				}else{
 					processedResult.getValues().add("");
 				}
@@ -162,6 +162,7 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 				i++;
 			}
 			System.out.println("CreateImagesForQueryResultsQueryProcessor returning " + Integer.toString(i) + " rows");
+			//System.out.println(GeppettoSerializer.serializeToJSON(processedResults));
 			return processedResults;
 		}
 		catch(GeppettoVisitingException e)
@@ -209,6 +210,10 @@ public class CreateImagesForQueryResultsQueryProcessor extends AQueryProcessor
 			type+=types.get(i);
 		}
 		return type;
+	}
+	
+	private String cleanString(String text){
+		return text.replaceAll("\\{","-").replaceAll("\\}","-").replaceAll("\\:","-");
 	}
 
 }
