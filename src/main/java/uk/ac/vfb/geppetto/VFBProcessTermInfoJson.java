@@ -56,6 +56,8 @@ import org.geppetto.core.model.GeppettoSerializer;
 public class VFBProcessTermInfoJson extends AQueryProcessor
 {
 
+	Boolean debug=false;
+	
 	// START VFB term info schema https://github.com/VirtualFlyBrain/VFB_json_schema/blob/master/json_schema/
 
 	class minimal_entity_info {
@@ -832,7 +834,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					return ci.getUrl("", filename);
 				}
 			}
-			System.out.println("Failed to find: " + filename);
+			if (debug) System.out.println("Failed to find: " + filename);
 			return null;
 		}
 
@@ -910,7 +912,6 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	@Override
 	public QueryResults process(ProcessQuery query, DataSource dataSource, Variable variable, QueryResults results, GeppettoModelAccess geppettoModelAccess) throws GeppettoDataSourceException
 	{
-		Boolean debug=true;
 		String json = "{";
 		vfb_terminfo vfbTerm = null;
 		try
@@ -940,10 +941,10 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			CompositeType classParentType = TypesFactory.eINSTANCE.createCompositeType();
 			classVariable.setId("notSet");
 
-			System.out.println("Processing JSON...");
+			if (debug) System.out.println("Processing JSON...");
 			try{
 				header = "results>JSON";
-				System.out.println("{");
+				if (debug) System.out.println("{");
 				
 				for (String key:results.getHeader()) {
 					if (!json.equals("{")) {
@@ -951,20 +952,23 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					}
 					tempData = new Gson().toJson(results.getValue(key, 0));
 					json = json + "\"" + key  + "\":" + tempData;
-					if (tempData.length() > 1000){
-						System.out.println("\"" + key  + "\":" + tempData.replace("}","}\n") + ",");
-					}else{
-						System.out.println("\"" + key  + "\":" + tempData + ",");
-					}				
+					if (debug){
+						if (tempData.length() > 1000){
+							System.out.println("\"" + key  + "\":" + tempData.replace("}","}\n") + ",");
+						}else{
+							System.out.println("\"" + key  + "\":" + tempData + ",");
+						}	
+					}
 				}
 				json = json + "}";
-				System.out.println("}");
+				if (debug) System.out.println("}");
 
 				header = "JSON>Schema";
 				vfbTerm = new Gson().fromJson(json , vfb_terminfo.class);
 
 				if (vfbTerm.term == null || vfbTerm.term.core == null){
 					System.out.println("ERROR: term:core missing from JSON for " + variable.getId());
+					System.out.println(json.replace("}","}\n"));
 					return results;
 				}
 
@@ -1058,21 +1062,21 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					if (tempData == null){
 						tempData = vfbTerm.imageFile(vfbTerm.channel_image, "volume.obj");
 					}
-					System.out.println("OBJ " + tempData);
+					if (debug) System.out.println("OBJ " + tempData);
 					if (tempData != null){
 						addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId(), parentType, geppettoModelAccess, dataSource);
 					}
 				
 					// SWC - 3D mesh
 					tempData = vfbTerm.imageFile(vfbTerm.channel_image, "volume.swc");
-					System.out.println("SWC " + tempData);
+					if (debug) System.out.println("SWC " + tempData);
 					if (tempData != null){
 						addModelSwc(tempData.replace("https://","http://"), "3D Skeleton", variable.getId(), parentType, geppettoModelAccess, dataSource);
 					}
 				
 					// Slices - 3D slice viewer
 					tempData = vfbTerm.imageFile(vfbTerm.channel_image, "volume.wlz");
-					System.out.println("WLZ " + tempData);
+					if (debug) System.out.println("WLZ " + tempData);
 					if (tempData != null){
 						addModelSlices(tempData.replace("http://","https://"), "Stack Viewer Slices", variable.getId(), parentType, geppettoModelAccess, dataSource, vfbTerm.getDomains());
 					}
@@ -1095,14 +1099,14 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					if (tempData != null){
 						addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId(), parentType, geppettoModelAccess, dataSource);
 					}
-					System.out.println("OBJ " + tempData);
+					if (debug) System.out.println("OBJ " + tempData);
 			
 					// Slices - 3D slice viewer
 					tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume.wlz");
 					if (tempData != null){
 						addModelSlices(tempData.replace("http://","https://"), "Stack Viewer Slices", variable.getId(), parentType, geppettoModelAccess, dataSource, vfbTerm.getDomains());
 					}
-					System.out.println("WLZ " + tempData);
+					if (debug) System.out.println("WLZ " + tempData);
 				}
 			
 				// examples
@@ -1152,6 +1156,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			}catch (Exception e) {
 				System.out.println("Error creating " + header + ": " + e.toString());
 				e.printStackTrace();
+				System.out.println(json.replace("}","}\n"));
 				//debug query version to term info
 				if (debug) {
 					if (vfbTerm!=null && vfbTerm.query!=null) {	
