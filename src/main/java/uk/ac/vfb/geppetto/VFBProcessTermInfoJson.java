@@ -1060,31 +1060,31 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					// OBJ - 3D mesh
 					tempData = vfbTerm.imageFile(vfbTerm.channel_image, "volume_man.obj");
 					if (tempData == null){
+						if (debug) System.out.println("OBJ " + tempData);
 						tempData = vfbTerm.imageFile(vfbTerm.channel_image, "volume.obj");
 					}
-					if (debug) System.out.println("OBJ " + tempData);
 					if (tempData != null){
 						addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId(), parentType, geppettoModelAccess, dataSource);
 					}
 				
 					// SWC - 3D mesh
 					tempData = vfbTerm.imageFile(vfbTerm.channel_image, "volume.swc");
-					if (debug) System.out.println("SWC " + tempData);
 					if (tempData != null){
+						if (debug) System.out.println("SWC " + tempData);
 						addModelSwc(tempData.replace("https://","http://"), "3D Skeleton", variable.getId(), parentType, geppettoModelAccess, dataSource);
 					}
 				
 					// Slices - 3D slice viewer
 					tempData = vfbTerm.imageFile(vfbTerm.channel_image, "volume.wlz");
-					if (debug) System.out.println("WLZ " + tempData);
 					if (tempData != null){
+						if (debug) System.out.println("WLZ " + tempData);
 						addModelSlices(tempData.replace("http://","https://"), "Stack Viewer Slices", variable.getId(), parentType, geppettoModelAccess, dataSource, vfbTerm.getDomains());
 					}
 					
 					// Download - NRRD stack
 					tempData = vfbTerm.imageFile(vfbTerm.channel_image, "volume.nrrd");
-					if (debug) System.out.println("NRRD " + tempData);
 					if (tempData != null){
+						if (debug) System.out.println("NRRD " + tempData);
 						addModelHtml("Aligned Image: <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://") + "\">" + variable.getId() + ".nrrd</a><br>Note: see source & license above for terms of reuse and correct attribution.", "Downloads", "downloads", metadataType, geppettoModelAccess);
 					}
 				}
