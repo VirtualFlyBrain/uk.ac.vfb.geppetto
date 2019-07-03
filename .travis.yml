@@ -29,7 +29,11 @@ install:
     - cd uk.ac.vfb.geppetto
     - mvn -Dhttps.protocols=TLSv1.2 -DskipTests --quiet install
 
-    
+before_script:
+- npm install travis-ci
+
+after_success:
+- node travis/trigger-build.js
     
     
  
