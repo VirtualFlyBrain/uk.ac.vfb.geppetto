@@ -1080,6 +1080,13 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					if (tempData != null){
 						addModelSlices(tempData.replace("http://","https://"), "Stack Viewer Slices", variable.getId(), parentType, geppettoModelAccess, dataSource, vfbTerm.getDomains());
 					}
+					
+					// Download - NRRD stack
+					tempData = vfbTerm.imageFile(vfbTerm.channel_image, "volume.nrrd");
+					if (debug) System.out.println("NRRD " + tempData);
+					if (tempData != null){
+						addModelHtml("Aligned Image: <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://") + "\">" + variable.getId() + ".nrrd</a><br>Note: see source & license above for terms of reuse and correct attribution.", "Downloads", "downloads", metadataType, geppettoModelAccess);
+					}
 				}
 
 				header = "template_channel";
@@ -1107,6 +1114,13 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 						addModelSlices(tempData.replace("http://","https://"), "Stack Viewer Slices", variable.getId(), parentType, geppettoModelAccess, dataSource, vfbTerm.getDomains());
 					}
 					if (debug) System.out.println("WLZ " + tempData);
+					
+					// Download - NRRD stack
+					tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume.nrrd");
+					if (debug) System.out.println("NRRD " + tempData);
+					if (tempData != null){
+						addModelHtml("Aligned Image: <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://") + "\">" + variable.getId() + ".nrrd</a><br>Note: see source & license above for terms of reuse and correct attribution.", "Downloads", "downloads", metadataType, geppettoModelAccess);
+					}
 				}
 			
 				// examples
