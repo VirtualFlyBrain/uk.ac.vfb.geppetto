@@ -222,9 +222,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			String result = "";
 			if (this.icon != null && !this.icon.equals("")) {
 				if (this.link != null && !this.link.equals("")) {
-					result = "<span class=\"terminfo-icon\"><a href=\"" + this.link + "\" target=\"_blank\" ><img class=\"terminfo-siteicon\" src=\"" + this.icon + "\" /></a></span>";
+					result = "<span class=\"terminfo-logo\"><a href=\"" + this.link + "\" target=\"_blank\" ><img class=\"terminfo-logo\" src=\"" + this.icon + "\" /></a></span>";
 				}else{
-					result = "<span class=\"terminfo-icon\"><img class=\"terminfo-siteicon\" src=\"" + this.icon + "\" /></span>";
+					result = "<span class=\"terminfo-logo\"><img class=\"terminfo-logo\" src=\"" + this.icon + "\" /></span>";
 				}
 			}
 			return result;
