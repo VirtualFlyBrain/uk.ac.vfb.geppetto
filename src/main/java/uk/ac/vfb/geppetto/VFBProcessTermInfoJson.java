@@ -229,6 +229,14 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			}
 			return result;
 		}
+
+		public String link() {
+			String result = "";
+			if (this.link != null && !this.link.equals("")) {
+				result = "<span class=\"terminfo-link\"><a href=\"" + this.link + "\" target=\"_blank\" ><i class=\"popup-icon-link fa fa-external-link\"></i> " + this.link + "</a></span>";
+			}
+			return result;
+		}
 	}
 
 	class rel {
@@ -999,6 +1007,13 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				tempData = vfbTerm.term.logo();
 				if (!tempData.equals("")) {
 					addModelHtml(tempData, "Logo", header, metadataType, geppettoModelAccess);
+				}
+
+				// Link
+				header = "link";
+				tempData = vfbTerm.term.link();
+				if (!tempData.equals("")) {
+					addModelHtml(tempData, "Link", header, metadataType, geppettoModelAccess);
 				}
 
 				// Types
