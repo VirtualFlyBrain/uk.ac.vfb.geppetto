@@ -813,7 +813,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public ArrayValue examples(String template) {
 			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
 			try{
-				if (template.equals("")){
+				if (template == null || template.equals("")){
 					//default to JFRC2 
 					template = "VFB_00017894";
 				}
