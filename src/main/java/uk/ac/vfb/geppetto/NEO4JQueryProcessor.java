@@ -19,6 +19,7 @@ import org.geppetto.model.datasources.SerializableQueryResult;
 import org.geppetto.model.variables.Variable;
 import org.geppetto.model.values.ArrayValue;
 import org.geppetto.model.values.ValuesFactory;
+import org.geppetto.model.values.ImageFormat;
 
 import com.google.gson.Gson;
 import com.sun.org.apache.xpath.internal.operations.Bool;
