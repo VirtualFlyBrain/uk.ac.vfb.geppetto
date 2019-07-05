@@ -168,6 +168,10 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			return result;
 		}
 
+		public ArrayValue images() {
+			return this.images("");
+		}
+
 		public ArrayValue images(String template) {
 			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
 			try{
