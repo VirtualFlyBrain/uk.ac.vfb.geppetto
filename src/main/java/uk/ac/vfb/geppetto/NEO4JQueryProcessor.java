@@ -23,6 +23,7 @@ import org.geppetto.model.values.ImageFormat;
 import org.geppetto.model.values.Image;
 import org.geppetto.core.model.GeppettoSerializer;
 import org.geppetto.model.values.ArrayElement;
+import org.geppetto.model.variables.VariablesFactory;
 
 import com.google.gson.Gson;
 import com.sun.org.apache.xpath.internal.operations.Bool;

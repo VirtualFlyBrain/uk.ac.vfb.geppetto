@@ -27,8 +27,7 @@ import org.geppetto.core.model.GeppettoModelAccess;
 
 import org.geppetto.model.types.TypesPackage;
 import org.geppetto.model.util.GeppettoVisitingException;
-import org.geppetto.model.util.ModelUtility;
-import org.geppetto.model.values.ArrayElement;
+import org.geppetto.model.util.ModelUtility;VariablesFactory
 import org.geppetto.model.values.ArrayValue;
 import org.geppetto.model.values.ImageFormat;
 import org.geppetto.model.values.ValuesFactory;
