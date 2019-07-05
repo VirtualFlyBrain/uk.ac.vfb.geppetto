@@ -210,6 +210,27 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			return imageArray;
 		}
 
+		/**
+		 * @param data
+		 * @param name
+		 * @param reference
+		 * @param images
+		 * @param i
+		 * @return
+		 */
+		private void addImage(String data, String name, String reference, ArrayValue images, int i)
+		{
+			Image image = ValuesFactory.eINSTANCE.createImage();
+			image.setName(name);
+			image.setData(secureUrl(data));
+			image.setReference(reference);
+			image.setFormat(ImageFormat.PNG);
+			ArrayElement element = ValuesFactory.eINSTANCE.createArrayElement();
+			element.setIndex(i);
+			element.setInitialValue(image);
+			images.getElements().add(element);
+		}
+
 	}
 
 	// END VFB term info schema
