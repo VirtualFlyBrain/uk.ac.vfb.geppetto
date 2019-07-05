@@ -20,6 +20,9 @@ import org.geppetto.model.variables.Variable;
 import org.geppetto.model.values.ArrayValue;
 import org.geppetto.model.values.ValuesFactory;
 import org.geppetto.model.values.ImageFormat;
+import org.geppetto.model.values.Image;
+import org.geppetto.core.model.GeppettoSerializer;
+import org.geppetto.model.values.ArrayElement;
 
 import com.google.gson.Gson;
 import com.sun.org.apache.xpath.internal.operations.Bool;
@@ -233,15 +236,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		}
 
 		private String secureUrl(String url) {
-			try{
-				if (checkURL(url.replace("http://","https://"))){
-					return url.replace("http://","https://");
-				}
-			}catch(Exception e){
-				System.out.println("Error securing url (" + url + ") " + e.toString());
-				e.printStackTrace();
-			}
-			return url;
+			return url.replace("http://","https://");
 		}
 
 	}
