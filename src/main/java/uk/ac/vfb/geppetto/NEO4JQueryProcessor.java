@@ -231,6 +231,18 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			images.getElements().add(element);
 		}
 
+		private String secureUrl(String url) {
+			try{
+				if (checkURL(url.replace("http://","https://"))){
+					return url.replace("http://","https://");
+				}
+			}catch(Exception e){
+				System.out.println("Error securing url (" + url + ") " + e.toString());
+				e.printStackTrace();
+			}
+			return url;
+		}
+
 	}
 
 	// END VFB term info schema
