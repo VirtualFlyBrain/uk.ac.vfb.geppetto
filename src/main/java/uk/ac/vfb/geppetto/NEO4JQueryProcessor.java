@@ -146,7 +146,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			if (this.stages != null && this.stages.size() > 0) {
 				for (minimal_entity_info stage:this.stages){
 					if (!result.equals("")) result += "; ";
-					result += this.stage.label;
+					result += stage.label;
 				}
 			}
 			return result;
