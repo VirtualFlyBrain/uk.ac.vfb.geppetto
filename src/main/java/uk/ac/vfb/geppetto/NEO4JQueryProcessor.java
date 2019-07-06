@@ -163,7 +163,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			if (this.pubs != null && this.pubs.size() > 0) {
 				for (pub pub:this.pubs){
 					if (!result.equals("")) result += "; ";
-					result += this.pub.core.label;
+					result += pub.core.label;
 				}
 			}
 			return result;
