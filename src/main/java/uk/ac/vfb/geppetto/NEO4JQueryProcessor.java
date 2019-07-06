@@ -330,7 +330,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 				header = "JSON>Schema";
 				vfbQuery = new Gson().fromJson(json , vfb_query.class);
 
-				table.add(count, vfbQuery);
+				table.add(vfbQuery);
 
 			}catch (Exception e) {
 				System.out.println("Row: " + count.toString() + " Error creating " + header + ": " + e.toString());
