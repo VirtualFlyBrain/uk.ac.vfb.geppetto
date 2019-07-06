@@ -272,7 +272,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		Boolean	hasReference = false;
 		Boolean	hasStage = false;
 		Boolean hasImage = false;
-		List<vfb_query> table = null;
+		List<vfb_query> table = new ArrayList<vfb_query>();
 		vfb_query vfbQuery = null;
 
 		if (debug) System.out.println("Processing JSON...");
