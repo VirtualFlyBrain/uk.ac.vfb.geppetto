@@ -123,6 +123,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				if (types.contains("Neuron_projection_bundle")){
 					return this.returnType(types, Arrays.asList("Neuron_projection_bundle"));
 				}
+				if (types.contains("Expression_pattern")){
+					return "<span class=\"label types\">" + "<span class=\"label label-Expression_pattern\">Expression Pattern</span> ";
+				}
 				if (types.contains("pub")){
 					return "<span class=\"label types\">" + "<span class=\"label label-pub\">Publication</span> ";
 				}
