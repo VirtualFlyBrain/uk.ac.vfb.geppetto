@@ -72,7 +72,7 @@ public class OWLeryQueryProcessor2 extends AQueryProcessor
 				List<String> idsList = (ArrayList)((QueryResult) result).getValues().get(idIndex);
 				for(String id : idsList) {
 					String subID = id.substring((id.lastIndexOf('/')+1) , id.length()).toString();
-					ids.add("'" + subID + "'");
+					ids.add("\"" + subID + "\"");
 				}
 			}
 		}
