@@ -1075,6 +1075,13 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					addModelHtml(tempData, "Relationships", header, metadataType, geppettoModelAccess);
 				}
 
+				// related individuals
+				header = "related_individuals";
+				if (vfbTerm.related_individuals != null && vfbTerm.related_individuals.size() > 0) {
+					tempData = vfbTerm.relList(header, vfbTerm.related_individuals, showTypes);
+					addModelHtml(tempData, "Related Individuals", header, metadataType, geppettoModelAccess);
+				}
+
 				// xrefs
 				header = "xrefs";
 				if (vfbTerm.xrefs != null && vfbTerm.xrefs.size() > 0) {
