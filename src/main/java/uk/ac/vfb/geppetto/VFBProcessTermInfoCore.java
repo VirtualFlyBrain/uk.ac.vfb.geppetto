@@ -28,7 +28,6 @@ import org.geppetto.model.values.Text;
 import org.geppetto.model.values.ValuesFactory;
 import org.geppetto.model.variables.Variable;
 import org.geppetto.model.variables.VariablesFactory;
-import org.geppetto.core.model.GeppettoSerializer;
 
 import com.google.gson.Gson;
 
@@ -79,6 +78,7 @@ public class VFBProcessTermInfoCore extends AQueryProcessor {
 				if (term.get("core") != null) {
 					Map<String, Object> core = (Map<String, Object>) term.get("core");
 					//ID/short_form
+					tempId = String.valueOf(variable.getId());
 					if (core.get("short_form") != null) {
 						if (String.valueOf(variable.getId()).equals((String) core.get("short_form"))) {
 							tempId = (String) core.get("short_form");
@@ -132,6 +132,7 @@ public class VFBProcessTermInfoCore extends AQueryProcessor {
 				}
 			} else {
 				System.out.println("Error term not returned for: " + String.valueOf(variable.getId()));
+				System.out.println(GeppettoSerializer.serializeToJSON(results,false));
 			}
 
 		} catch (GeppettoVisitingException e) {
