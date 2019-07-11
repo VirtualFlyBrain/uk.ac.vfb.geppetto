@@ -132,7 +132,11 @@ public class VFBProcessTermInfoCore extends AQueryProcessor {
 				}
 			} else {
 				System.out.println("Error term not returned for: " + String.valueOf(variable.getId()));
-				System.out.println(GeppettoSerializer.serializeToJSON(results,false));
+				try{
+					System.out.println(GeppettoSerializer.serializeToJSON(results,false));
+				}catch(IOException e) {
+					e.printStackTrace();
+				}
 			}
 
 		} catch (GeppettoVisitingException e) {
