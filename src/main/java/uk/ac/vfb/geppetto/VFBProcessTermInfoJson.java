@@ -777,9 +777,11 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				} else if (site == "") {
 					// embed first sites xrefs
 					result += "<li>" + xref.replace("-->", "<ul><li>").replace("<!--", "") + "</li>";
+					site = xref.substring(25);
 				} else {
 					// close previous and start next site xrefs
 					result += "</ul></li><li>" + xref.replace("-->", "<ul><li>").replace("<!--", "") + "</li>";
+					site = xref.substring(25);
 				}
 			}
 			result += "</ul></li></ul>";
