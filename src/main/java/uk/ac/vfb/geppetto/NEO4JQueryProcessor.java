@@ -132,7 +132,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		private List<anatomy_channel_image> expressed_in;
 	
 		public String id(){
-			if (this.expression_pattern != null && this.anatomy != null) return this.expression_pattern.short_form + "&" + this.anatomy.short_form;
+			if (this.expression_pattern != null && this.anatomy != null) return this.expression_pattern.short_form + "," + this.anatomy.short_form;
 			if (this.expression_pattern != null) return this.expression_pattern.short_form;
 			return this.anatomy.short_form;
 		}
