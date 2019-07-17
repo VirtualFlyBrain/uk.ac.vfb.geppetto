@@ -73,7 +73,9 @@ public class OWLeryQueryProcessor2 extends AQueryProcessor
 			for(AQueryResult result : results.getResults())
 			{
 				String id = (String)((QueryResult) result).getValues().get(selfIdIndex);
+				System.out.println(id);
 				String subID = id.substring((id.lastIndexOf('/')+1) , id.length()).toString();
+				System.out.println(subID);
 				ids.add("\"" + subID + "\"");
 			}
 		}
