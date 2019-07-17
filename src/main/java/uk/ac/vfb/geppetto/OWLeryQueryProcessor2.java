@@ -51,7 +51,6 @@ public class OWLeryQueryProcessor2 extends AQueryProcessor
 		List<String> ids = new ArrayList<String>();
 
 		selfIdIndex = results.getHeader().indexOf("value");
-		System.out.println(results.getHeader());
 		
 		switch(queryID) 
 		{
@@ -74,9 +73,7 @@ public class OWLeryQueryProcessor2 extends AQueryProcessor
 			for(AQueryResult result : results.getResults())
 			{
 				String id = (String)((QueryResult) result).getValues().get(selfIdIndex);
-				System.out.println(id);
-				String subID = id.substring((id.lastIndexOf('/')+1) , id.length()).toString();
-				System.out.println(subID);
+				String subID = id.substring((id.lastIndexOf('/')+1) , id.length()).toString().replace(">))", "");
 				ids.add("\"" + subID + "\"");
 			}
 		}
