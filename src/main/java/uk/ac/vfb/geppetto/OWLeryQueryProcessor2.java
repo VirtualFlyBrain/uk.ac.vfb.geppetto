@@ -72,7 +72,7 @@ public class OWLeryQueryProcessor2 extends AQueryProcessor
 		if (selfIdIndex > -1){
 			for(AQueryResult result : results.getResults())
 			{
-				String id = (ArrayList)((QueryResult) result).getValues().get(selfIdIndex);
+				String id = (String)((QueryResult) result).getValues().get(selfIdIndex);
 				String subID = id.substring((id.lastIndexOf('/')+1) , id.length()).toString();
 				ids.add("\"" + subID + "\"");
 			}
