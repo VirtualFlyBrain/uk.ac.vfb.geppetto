@@ -50,7 +50,7 @@ public class OWLeryQueryProcessor2 extends AQueryProcessor
 		
 		List<String> ids = new ArrayList<String>();
 
-		selfIdIndex = results.getHeader().indexOf("@id");
+		selfIdIndex = results.getHeader().indexOf("value");
 		System.out.println(results.getHeader());
 		
 		switch(queryID) 
