@@ -46,8 +46,11 @@ public class OWLeryQueryProcessor2 extends AQueryProcessor
 		
 		QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
 		int idIndex = -1;
+		int selfIdIndex = -1;
 		
 		List<String> ids = new ArrayList<String>();
+
+		selfIdIndex = results.getHeader().indexOf("@id");
 		
 		switch(queryID) 
 		{
@@ -65,6 +68,15 @@ public class OWLeryQueryProcessor2 extends AQueryProcessor
 		}
 
 		processedResults.getHeader().add("ID");
+
+		if (selfIdIndex > -1){
+			for(AQueryResult result : results.getResults())
+			{
+				String id = (ArrayList)((QueryResult) result).getValues().get(selfIdIndex);
+				String subID = id.substring((id.lastIndexOf('/')+1) , id.length()).toString();
+				ids.add("\"" + subID + "\"");
+			}
+		}
 
 		if (idIndex > -1){
 			for(AQueryResult result : results.getResults())
