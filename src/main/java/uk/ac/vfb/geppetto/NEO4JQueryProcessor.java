@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.geppetto.core.datasources.GeppettoDataSourceException;
+import org.geppetto.model.util.GeppettoVisitingException;
 import org.geppetto.core.model.GeppettoModelAccess;
 import org.geppetto.datasources.AQueryProcessor;
 import org.geppetto.model.datasources.AQueryResult;
