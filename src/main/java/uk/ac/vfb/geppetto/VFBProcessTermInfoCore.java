@@ -74,9 +74,11 @@ public class VFBProcessTermInfoCore extends AQueryProcessor {
 			// term
 			if (results.getValue("term", 0) != null) {
 				Map<String, Object> term = (Map<String, Object>) results.getValue("term", 0);
+				System.out.println("DEBUG: term: " + String.valueOf(term));
 				//core
 				if (term.get("core") != null) {
 					Map<String, Object> core = (Map<String, Object>) term.get("core");
+					System.out.println("DEBUG: core: " + String.valueOf(core));
 					//ID/short_form
 					tempId = String.valueOf(variable.getId());
 					if (core.get("short_form") != null) {
@@ -86,6 +88,8 @@ public class VFBProcessTermInfoCore extends AQueryProcessor {
 							System.out.println("ERROR: Called ID: " + String.valueOf(variable.getId()) + " does not match returned ID: " + (String) core.get("short_form"));
 							tempId = (String) core.get("short_form");
 						}
+					}else{
+						System.out.println("ERROR: No ID returned: " + String.valueOf(core));
 					}
 					//label
 					if (core.get("label") != null) {
