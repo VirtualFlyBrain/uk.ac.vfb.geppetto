@@ -417,6 +417,8 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			System.out.println(e);
 			e.printStackTrace();
 		}
+
+		return null;
 	}
 
 	@Override
