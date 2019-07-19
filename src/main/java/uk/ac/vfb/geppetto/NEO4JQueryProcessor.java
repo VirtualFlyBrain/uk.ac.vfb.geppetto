@@ -374,7 +374,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
 					exampleVar.setId("images");
 					exampleVar.setName("Images");
-					exampleVar.getTypes().add(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE));
+					exampleVar.getTypes().add(imageType);
 					ArrayValue images = row.images();
 					if (!images.getElements().isEmpty())
 					{
@@ -384,6 +384,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 							exampleVar.getInitialValues().put(imageType, images.getElements().get(0).getInitialValue());
 						}
 						processedResult.getValues().add(GeppettoSerializer.serializeToJSON(exampleVar));
+						System.out.println("DEBUG: Image: " + GeppettoSerializer.serializeToJSON(exampleVar) );
 					}
 					else
 					{
