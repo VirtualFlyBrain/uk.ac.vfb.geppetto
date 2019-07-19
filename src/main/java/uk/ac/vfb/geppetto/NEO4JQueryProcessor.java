@@ -25,6 +25,7 @@ import org.geppetto.core.model.GeppettoSerializer;
 import org.geppetto.model.values.ArrayElement;
 import org.geppetto.model.variables.VariablesFactory;
 import org.geppetto.model.types.TypesPackage;
+import org.geppetto.model.types.Type;
 
 import com.google.gson.Gson;
 
