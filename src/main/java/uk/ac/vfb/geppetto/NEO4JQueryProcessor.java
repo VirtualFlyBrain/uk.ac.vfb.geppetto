@@ -285,6 +285,8 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		List<vfb_query> table = new ArrayList<vfb_query>();
 		vfb_query vfbQuery = null;
 
+		Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);Variable imageVariable = VariablesFactory.eINSTANCE.createVariable();
+
 		if (debug) System.out.println("Processing JSON...");
 		// Match to vfb_query schema:	
 		for(AQueryResult result : results.getResults()){
@@ -376,7 +378,11 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					ArrayValue images = row.images();
 					if (!images.getElements().isEmpty())
 					{
-						exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), images);
+						if (images.getElements().size() > 1){
+							exampleVar.getInitialValues().put(imageType, images);
+						}else{
+							exampleVar.getInitialValues().put(imageType, images.getElements().get(0).getInitialValue());
+						}
 						processedResult.getValues().add(GeppettoSerializer.serializeToJSON(exampleVar));
 					}
 					else
