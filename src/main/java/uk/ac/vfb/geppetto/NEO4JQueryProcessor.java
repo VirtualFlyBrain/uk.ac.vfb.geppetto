@@ -267,141 +267,155 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 	@Override
 	public QueryResults process(ProcessQuery query, DataSource dataSource, Variable variable, QueryResults results, GeppettoModelAccess geppettoModelAccess) throws GeppettoDataSourceException
 	{
-		if(results == null)
-		{
-			throw new GeppettoDataSourceException("Results input to " + query.getName() + "is null");
-		}
-        QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
-		
-		String json = "{";
-		String tempData = "";
-		String header = "start";
-		Integer count = 0;
-		Boolean	hasId = false;
-		Boolean	hasName = false;
-		Boolean	hasExpressed_in = false;
-		Boolean	hasReference = false;
-		Boolean	hasStage = false;
-		Boolean hasImage = false;
-		List<vfb_query> table = new ArrayList<vfb_query>();
-		vfb_query vfbQuery = null;
-
-		Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);Variable imageVariable = VariablesFactory.eINSTANCE.createVariable();
-
-		if (debug) System.out.println("Processing JSON...");
-		// Match to vfb_query schema:	
-		for(AQueryResult result : results.getResults()){
-			try{
-
-				header = "results>JSON";
-				json = "{";
-				if (debug) System.out.println("{");
-				
-				for (String key:results.getHeader()) {
-					if (!json.equals("{")) {
-						json = json + ", ";
-					}
-					switch(key) {
-						case "anatomy":
-							hasId = true;
-							hasName = true;
-							break;
-						case "expression_pattern":
-							hasId = true;
-							hasName = true;
-							hasExpressed_in=true;
-							break;
-						case "pubs":
-							hasReference = true;
-							break;
-						case "pub":
-							hasReference = true;
-							break;
-						case "stages":
-							hasStage = true;
-							break;
-						case "anatomy_channel_image":
-							hasImage = true;
-							break;
-						case "expressed_in":
-							hasImage = true;
-							break;	
-					}
-					tempData = new Gson().toJson(results.getValue(key, count));
-					json = json + "\"" + key  + "\":" + tempData;
-					if (debug){
-						if (tempData.length() > 1000){
-							System.out.println("\"" + key  + "\":" + tempData.replace("}","}\n") + ",");
-						}else{
-							System.out.println("\"" + key  + "\":" + tempData + ",");
-						}	
-					}
-				}
-				json = json + "}";
-				if (debug) System.out.println("}");
-
-				header = "JSON>Schema";
-				vfbQuery = new Gson().fromJson(json , vfb_query.class);
-
-				table.add(vfbQuery);
-
-			}catch (Exception e) {
-				System.out.println("Row: " + count.toString() + " Error creating " + header + ": " + e.toString());
-				e.printStackTrace();
-				System.out.println(json.replace("}","}\n"));				
+		try{
+			if(results == null)
+			{
+				throw new GeppettoDataSourceException("Results input to " + query.getName() + "is null");
 			}
-			count ++;
-		}
-		vfbQuery = null;
-		count = 0;
+			QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
+			
+			String json = "{";
+			String tempData = "";
+			String header = "start";
+			Integer count = 0;
+			Boolean	hasId = false;
+			Boolean	hasName = false;
+			Boolean	hasExpressed_in = false;
+			Boolean	hasReference = false;
+			Boolean	hasStage = false;
+			Boolean hasImage = false;
+			List<vfb_query> table = new ArrayList<vfb_query>();
+			vfb_query vfbQuery = null;
 
-		// set headers
-		if (hasId) processedResults.getHeader().add("ID");
-		if (hasName) processedResults.getHeader().add("Name");
-		if (hasExpressed_in) processedResults.getHeader().add("Expressed_in");
-		if (hasReference) processedResults.getHeader().add("Reference");
-		if (hasStage) processedResults.getHeader().add("Stage");
-		if (hasImage) processedResults.getHeader().add("Images");
+			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);Variable imageVariable = VariablesFactory.eINSTANCE.createVariable();
+			
+			if (debug) System.out.println("Processing JSON...");
+			// Match to vfb_query schema:	
+			for(AQueryResult result : results.getResults()){
+				try{
 
-		for (vfb_query row:table){
-			try{
-				SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
-				if (hasId) processedResult.getValues().add(row.id());
-				if (hasName) processedResult.getValues().add(row.name());
-				if (hasExpressed_in) processedResult.getValues().add(row.expressed_in());
-				if (hasReference) processedResult.getValues().add(row.reference());
-				if (hasStage) processedResult.getValues().add(row.stages());
-				if (hasImage){
-					Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
-					exampleVar.setId("images");
-					exampleVar.setName("Images");
-					exampleVar.getTypes().add(imageType);
-					ArrayValue images = row.images();
-					if (!images.getElements().isEmpty())
-					{
-						if (images.getElements().size() > 1){
-							exampleVar.getInitialValues().put(imageType, images);
-						}else{
-							exampleVar.getInitialValues().put(imageType, images.getElements().get(0).getInitialValue());
+					header = "results>JSON";
+					json = "{";
+					if (debug) System.out.println("{");
+					
+					for (String key:results.getHeader()) {
+						if (!json.equals("{")) {
+							json = json + ", ";
 						}
-						processedResult.getValues().add(GeppettoSerializer.serializeToJSON(exampleVar));
-						System.out.println("DEBUG: Image: " + GeppettoSerializer.serializeToJSON(exampleVar) );
+						switch(key) {
+							case "anatomy":
+								hasId = true;
+								hasName = true;
+								break;
+							case "expression_pattern":
+								hasId = true;
+								hasName = true;
+								hasExpressed_in=true;
+								break;
+							case "pubs":
+								hasReference = true;
+								break;
+							case "pub":
+								hasReference = true;
+								break;
+							case "stages":
+								hasStage = true;
+								break;
+							case "anatomy_channel_image":
+								hasImage = true;
+								break;
+							case "expressed_in":
+								hasImage = true;
+								break;	
+						}
+						tempData = new Gson().toJson(results.getValue(key, count));
+						json = json + "\"" + key  + "\":" + tempData;
+						if (debug){
+							if (tempData.length() > 1000){
+								System.out.println("\"" + key  + "\":" + tempData.replace("}","}\n") + ",");
+							}else{
+								System.out.println("\"" + key  + "\":" + tempData + ",");
+							}	
+						}
 					}
-					else
-					{
-						processedResult.getValues().add("");
-					}
-				}
-				processedResults.getResults().add(processedResult);
-			}catch (Exception e) {
-				System.out.println("Error creating results row: " + count.toString() + " - " + e.toString());
-				e.printStackTrace();				
-			}
-			count ++;
-		}
-		System.out.println("NEO4JQueryProcessor returning " + count.toString() + " rows");
+					json = json + "}";
+					if (debug) System.out.println("}");
 
-		return processedResults;
+					header = "JSON>Schema";
+					vfbQuery = new Gson().fromJson(json , vfb_query.class);
+
+					table.add(vfbQuery);
+
+				}catch (Exception e) {
+					System.out.println("Row: " + count.toString() + " Error creating " + header + ": " + e.toString());
+					e.printStackTrace();
+					System.out.println(json.replace("}","}\n"));				
+				}
+				count ++;
+			}
+			vfbQuery = null;
+			count = 0;
+
+			// set headers
+			if (hasId) processedResults.getHeader().add("ID");
+			if (hasName) processedResults.getHeader().add("Name");
+			if (hasExpressed_in) processedResults.getHeader().add("Expressed_in");
+			if (hasReference) processedResults.getHeader().add("Reference");
+			if (hasStage) processedResults.getHeader().add("Stage");
+			if (hasImage) processedResults.getHeader().add("Images");
+
+			for (vfb_query row:table){
+				try{
+					SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
+					if (hasId) processedResult.getValues().add(row.id());
+					if (hasName) processedResult.getValues().add(row.name());
+					if (hasExpressed_in) processedResult.getValues().add(row.expressed_in());
+					if (hasReference) processedResult.getValues().add(row.reference());
+					if (hasStage) processedResult.getValues().add(row.stages());
+					if (hasImage){
+						Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
+						exampleVar.setId("images");
+						exampleVar.setName("Images");
+						exampleVar.getTypes().add(imageType);
+						ArrayValue images = row.images();
+						if (!images.getElements().isEmpty())
+						{
+							if (images.getElements().size() > 1){
+								exampleVar.getInitialValues().put(imageType, images);
+							}else{
+								exampleVar.getInitialValues().put(imageType, images.getElements().get(0).getInitialValue());
+							}
+							processedResult.getValues().add(GeppettoSerializer.serializeToJSON(exampleVar));
+							System.out.println("DEBUG: Image: " + GeppettoSerializer.serializeToJSON(exampleVar) );
+						}
+						else
+						{
+							processedResult.getValues().add("");
+						}
+					}
+					processedResults.getResults().add(processedResult);
+				}catch (Exception e) {
+					System.out.println("Error creating results row: " + count.toString() + " - " + e.toString());
+					e.printStackTrace();				
+				}
+				count ++;
+			}
+			System.out.println("NEO4JQueryProcessor returning " + count.toString() + " rows");
+
+			return processedResults;
+
+		}
+		catch(GeppettoVisitingException e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+			throw new GeppettoDataSourceException(e);
+		}
+		catch(Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
 	}
 
 	@Override
