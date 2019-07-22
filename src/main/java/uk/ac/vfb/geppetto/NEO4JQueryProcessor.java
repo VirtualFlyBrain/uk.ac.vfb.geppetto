@@ -134,13 +134,13 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		private List<anatomy_channel_image> expressed_in;
 	
 		public String id(){
-			String delim = "....";
+			String delim = "----";
 			if (this.expression_pattern != null && this.anatomy != null && this.pub != null) return this.expression_pattern.short_form + delim + this.anatomy.short_form + delim + this.pub.core.short_form;
 			if (this.expression_pattern != null && this.anatomy != null && this.pubs != null && this.pubs.size() == 1) return this.expression_pattern.short_form + delim + this.anatomy.short_form + delim + this.pubs.get(0).core.short_form;
 			if (this.expression_pattern != null && this.anatomy != null && this.pubs != null && this.pubs.size() > 1) {
 				String result = this.expression_pattern.short_form + delim + this.anatomy.short_form;
 				for (pub pub:this.pubs){
-					result += "...." + pub.core.short_form;
+					result += delim + pub.core.short_form;
 				}
 				return result;
 			}
