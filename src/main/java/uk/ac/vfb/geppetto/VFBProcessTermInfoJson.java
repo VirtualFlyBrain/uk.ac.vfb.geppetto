@@ -56,7 +56,7 @@ import org.geppetto.core.model.GeppettoSerializer;
 public class VFBProcessTermInfoJson extends AQueryProcessor
 {
 
-	Boolean debug=false;
+	Boolean debug=true;
 	
 	// START VFB term info schema https://github.com/VirtualFlyBrain/VFB_json_schema/blob/master/json_schema/
 
@@ -781,6 +781,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					// close previous and start next site xrefs
 					result += "</ul></li><li>" + xref.replace("-->", "<ul><li>").replace("<!--", "") + "</li>";
 				}
+				site = xref.substring(25);
 			}
 			result += "</ul></li></ul>";
 			return result;
@@ -800,10 +801,14 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					if (ci != null && ci.image != null && ci.image.template_anatomy != null && ci.image.template_anatomy.short_form != null && template.equals(ci.image.template_anatomy.short_form)) {
 						addImage(ci.getUrl("", "thumbnailT.png"), ci.channel.label.replace("_c", "").replace("-c", ""), ci.channel.short_form.replace("VFBc_", "VFB_"), imageArray, j);
 						j++;
-					} else {
-						f--;
-						addImage(ci.getUrl("", "thumbnailT.png"), ci.channel.label.replace("_c", "").replace("-c", ""), ci.channel.short_form.replace("VFBc_", "VFB_"), imageArray, f);
-					}
+					} 
+				}
+				for (channel_image ci : this.channel_image) {
+					// add same template to the begining and others at the end.
+					if (ci != null && ci.image != null && ci.image.template_anatomy != null && ci.image.template_anatomy.short_form != null && !template.equals(ci.image.template_anatomy.short_form)) {
+						addImage(ci.getUrl("", "thumbnailT.png"), ci.channel.label.replace("_c", "").replace("-c", ""), ci.channel.short_form.replace("VFBc_", "VFB_"), imageArray, j);
+						j++;
+					} 
 				}
 			}catch (Exception e) {
 				System.out.println("Error in vfbTerm.thumbnails(): " + e.toString());
@@ -827,9 +832,13 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					if (anat.channel_image != null && anat.channel_image.image != null && anat.channel_image.image.template_anatomy != null && anat.channel_image.image.template_anatomy.short_form != null && template.equals(anat.channel_image.image.template_anatomy.short_form)) {
 						addImage(anat.getUrl("", "thumbnailT.png"), anat.anatomy.label, anat.anatomy.short_form, imageArray, j);
 						j++;
-					} else {
-						f--;
-						addImage(anat.getUrl("", "thumbnailT.png"), anat.anatomy.label, anat.anatomy.short_form, imageArray, f);
+					}
+				}
+				for (anatomy_channel_image anat : this.anatomy_channel_image) {
+					// add same template to the begining and others at the end.
+					if (anat.channel_image != null && anat.channel_image.image != null && anat.channel_image.image.template_anatomy != null && anat.channel_image.image.template_anatomy.short_form != null && !template.equals(anat.channel_image.image.template_anatomy.short_form)) {
+						addImage(anat.getUrl("", "thumbnailT.png"), anat.anatomy.label, anat.anatomy.short_form, imageArray, j);
+						j++;
 					}
 				}
 			}catch (Exception e) {
@@ -1073,6 +1082,13 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				if (vfbTerm.relationships != null && vfbTerm.relationships.size() > 0) {
 					tempData = vfbTerm.relList(header, vfbTerm.relationships, showTypes);
 					addModelHtml(tempData, "Relationships", header, metadataType, geppettoModelAccess);
+				}
+
+				// related individuals
+				header = "related_individuals";
+				if (vfbTerm.related_individuals != null && vfbTerm.related_individuals.size() > 0) {
+					tempData = vfbTerm.relList(header, vfbTerm.related_individuals, showTypes);
+					addModelHtml(tempData, "Related Individuals", header, metadataType, geppettoModelAccess);
 				}
 
 				// xrefs
