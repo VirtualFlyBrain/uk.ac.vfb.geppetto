@@ -388,7 +388,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 								exampleVar.getInitialValues().put(imageType, images.getElements().get(0).getInitialValue());
 							}
 							processedResult.getValues().add(GeppettoSerializer.serializeToJSON(exampleVar));
-							System.out.println("DEBUG: Image: " + GeppettoSerializer.serializeToJSON(exampleVar) );
+							if (debug) System.out.println("DEBUG: Image: " + GeppettoSerializer.serializeToJSON(exampleVar) );
 						}
 						else
 						{
