@@ -400,7 +400,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			if (this.icon != null && !this.icon.equals("")) {
 				result += result.replace(this.core.label,this.core.label + " <img class=\"terminfo-dataseticon\" src=\"" + secureUrl(this.icon) + "\" title=\"" + this.core.label + "\"/>");
 			}
-			if (this.link != null && !this.link.equals("")){
+			if (this.link != null && !this.link.equals("") && !this.link.equals("unspec")){
 				if (this.link.toLowerCase().contains("flybase.org")) {
 					result += "<a href=\"" + this.link + "\" target=\"_blank\"><i class=\"popup-icon-link gpt-fly\"></i></a>";
 				}else if (this.link.toLowerCase().contains("nih.gov")) {
