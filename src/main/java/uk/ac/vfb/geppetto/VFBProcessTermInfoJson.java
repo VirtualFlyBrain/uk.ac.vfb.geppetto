@@ -1208,6 +1208,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 							badge = "<i class=\"popup-icon-link fa fa-quora\" ></i>";
 							querys += badge + "<a href=\"#\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + classVariable.getId() + "," + classVariable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", classVariable.getName()) + "</a></br>";
 						}
+						addModelString(classVariable.getId(), "ClassQueriesFrom", "classqueriesfrom", metadataType, geppettoModelAccess);
 					}
 				}
 				
