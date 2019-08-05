@@ -61,7 +61,7 @@ public class NBLASTQueryProcessor extends AQueryProcessor
 					String score = ((QueryResult) result).getValues().get(scoreIndex).toString();
 	            			processedResult.getValues().add(score);
 	            
-					ids.add("'" + id + "'");
+					ids.add("\"" + id + "\"");
 	            			processedResults.getResults().add(processedResult);
 	            		}catch (Exception e){
 					System.out.println("Error finding id: " + e.toString());
