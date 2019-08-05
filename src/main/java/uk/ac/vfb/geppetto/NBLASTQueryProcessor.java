@@ -29,6 +29,8 @@ public class NBLASTQueryProcessor extends AQueryProcessor
 
 	private Map<String, Object> processingOutputMap = new HashMap<String, Object>();
 
+	Boolean debug=false;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -71,10 +73,12 @@ public class NBLASTQueryProcessor extends AQueryProcessor
 			}
 		}
 
-		processingOutputMap.put("ARRAY_ID_RESULTS", ids);
+		processingOutputMap.put("ARRAY_ID_RESULTS", ids);		
 
-		System.out.println("NBLASTQueryProcessor returning " + Integer.toString(ids.size()) + " rows");
-
+		if (debug) {
+			System.out.println("NBLASTQueryProcessor returning " + Integer.toString(ids.size()) + " rows");
+			System.out.println("NBLASTQueryProcessor returning " + ids);
+		}
 		return processedResults;
 	}
 
