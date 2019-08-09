@@ -1218,7 +1218,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				
 				if (superTypes.contains("Template")){
 					badge = "<i class=\"popup-icon-link fa gpt-shapeshow\" ></i>";
-					querys += badge + "<a href=\"\" title=\"Hide template boundary and show all painted neuroanatomy\" onclick=\"" + variable.getId() + ".hide();$(\"body\").css(\"cursor\", \"progress\");window.addVfbId(JSON.parse(" + variable.getId() + "." + variable.getId() + "_slices.getValue().getWrappedObj().value.data).subDomains[1].filter(function(n){ return n != null }));$(\"body\").css(\"cursor\", \"default\");return false;\">Show All Anatomy</a><br/>";
+					querys += badge + "<a href=\"\" title=\"Hide template boundary and show all painted neuroanatomy\" onclick=\"" + variable.getId() + ".hide();$('body').css('cursor', 'progress');window.addVfbId(JSON.parse(" + variable.getId() + "." + variable.getId() + "_slices.getValue().getWrappedObj().value.data).subDomains[1].filter(function(n){ return n != null }));$('body').css('cursor', 'default');return false;\">Show All Anatomy</a><br/>";
 				}
 
 				if (querys != "") {
