@@ -310,7 +310,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	}
 
 	class xref {
-		String link_base;
+		public String link_base;
 		private String link_postfix;
 		String accession; 
 		private String link_text;
@@ -562,7 +562,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public String query;
 		public String version;
 		private List<anatomy_channel_image> anatomy_channel_image;
-		List<xref> xrefs;
+		public List<xref> xrefs;
 		private List<pub_syn> pub_syn;
 		private List<pub> def_pubs;
 		private List<license> license;
@@ -1201,7 +1201,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 				// NBLAST Cluster
 				header = "cluster";
-				if (vfbTerm.xrefs != null && vfbTerm.xrefs.size() > 0 && vfbTerm.xrefs.get(0) != null && vfbTerm.xrefs.get(0).link_base == "http://flybrain.mrc-lmb.cam.ac.uk/vfb/fc/clusterv/3/") {
+				if (vfbTerm.xrefs != null && vfbTerm.xrefs.size() > 0 && vfbTerm.xrefs.get(0).link_base.indexOf("flybrain.mrc-lmb.cam.ac.uk/vfb/fc/clusterv/3") > -1) {
 					addModelThumbnails(vfbTerm.clusterImage(), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
 				}
 
