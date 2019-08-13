@@ -860,6 +860,17 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			return imageArray;
 		}
 
+		public ArrayValue clusterImage() {
+			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
+			try{
+				addImage(this.xrefs.get(0).link_base + this.xrefs.get(0).accession + "snapshot.png", this.term.core.label, this.term.core.short_form, imageArray, 0);
+			}catch (Exception e) {
+				System.out.println("Error in vfbTerm.clusterImage(): " + e.toString());
+				e.printStackTrace();
+			}
+			return imageArray;
+		}
+
 		public String imageFile(List<channel_image> images, String filename) {
 			try{
 				for (channel_image ci : images) {
@@ -1186,6 +1197,12 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				if (vfbTerm.anatomy_channel_image != null && vfbTerm.anatomy_channel_image.size() > 0 && vfbTerm.examples(template) != null) {
 					addModelThumbnails(vfbTerm.examples(template), "Examples", "examples", metadataType, geppettoModelAccess);
 					parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("hasExamples", dependenciesLibrary));
+				}
+
+				// NBLAST Cluster
+				header = "cluster";
+				if (vfbTerm.xrefs != null && vfbTerm.xrefs.size() > 0 && vfbTerm.xrefs.get(0) != null && vfbTerm.xrefs.get(0).link_base == "http://flybrain.mrc-lmb.cam.ac.uk/vfb/fc/clusterv/3/") {
+					addModelThumbnails(vfbTerm.clusterImage(), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
 				}
 
 				// references
