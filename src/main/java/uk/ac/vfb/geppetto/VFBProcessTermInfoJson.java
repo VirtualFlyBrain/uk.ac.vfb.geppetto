@@ -310,9 +310,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	}
 
 	class xref {
-		private String link_base;
+		String link_base;
 		private String link_postfix;
-		private String accession; 
+		String accession; 
 		private String link_text;
 		private String icon;
 		private minimal_entity_info site;
@@ -562,7 +562,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public String query;
 		public String version;
 		private List<anatomy_channel_image> anatomy_channel_image;
-		private List<xref> xrefs;
+		List<xref> xrefs;
 		private List<pub_syn> pub_syn;
 		private List<pub> def_pubs;
 		private List<license> license;
