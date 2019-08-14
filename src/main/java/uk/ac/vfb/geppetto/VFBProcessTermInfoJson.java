@@ -863,7 +863,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public ArrayValue clusterImage() {
 			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
 			try{
-				addImage(this.xrefs.get(0).link_base + this.xrefs.get(0).accession + "snapshot.png", this.term.core.label, this.term.core.short_form, imageArray, 0);
+				addImage(this.xrefs.get(0).link_base + this.xrefs.get(0).accession + "/snapshot.png", this.term.core.label, this.term.core.short_form, imageArray, 0);
 			}catch (Exception e) {
 				System.out.println("Error in vfbTerm.clusterImage(): " + e.toString());
 				e.printStackTrace();
