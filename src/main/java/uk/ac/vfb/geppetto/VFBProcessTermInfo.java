@@ -247,7 +247,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 								case "INSTANCEOF":
 									edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
 									if ("type".equals(edgeLabel)) {
-										depictedType += "<a href=\"#\" instancepath=\"" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + " (" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + ")</a><br/>";
+										depictedType += "<a href=\"#\" data-instancepath=\"" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + " (" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + ")</a><br/>";
 										if ((synapticNP || tract) && individual){
 											try{
 												classVariable.setId(((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form"));
@@ -269,7 +269,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 								case "SUBCLASSOF":
 									edgeLabel = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("label");
 									if ("is a".equals(edgeLabel) || "is_a".equals(edgeLabel)) {
-										types += "<a href=\"#\" instancepath=\"" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
+										types += "<a href=\"#\" data-instancepath=\"" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form") + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>";
 									}
 									break;
 								case "has_exemplar":
@@ -331,17 +331,17 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                                 if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) != null)
                                                 {
                                                     edgeLabel += " <a href=\"http://flybase.org/reports/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) + "\" target=\"_blank\" >"
-                                                            + "<i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) + "\" aria-hidden=\"true\"></i></a>";
+                                                            + "<i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) + "\" ></i></a>";
                                                 }
                                                 if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) != null)
                                                 {
                                                     edgeLabel += " <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" target=\"_blank\" >"
-                                                            + "<i class=\"popup-icon-link gpt-pubmed\" title=\"PMID:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" aria-hidden=\"true\"></i></a>";
+                                                            + "<i class=\"popup-icon-link gpt-pubmed\" title=\"PMID:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" ></i></a>";
                                                 }
                                                 if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) != null)
                                                 {
                                                     edgeLabel += " <a href=\"https://doi.org/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" target=\"_blank\" >"
-                                                            + "<i class=\"popup-icon-link gpt-doi\" title=\"doi:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" aria-hidden=\"true\"></i></a>";
+                                                            + "<i class=\"popup-icon-link gpt-doi\" title=\"doi:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" ></i></a>";
                                                 }
                                                 for (int s = 0; s < synonyms.size(); s++) {
                                                     if (synonyms.get(s).equals((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("synonym"))) {
@@ -360,7 +360,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                                 // TODO check link works!? (grey out if broken?)
                                                 String[] bits = edgeLabel.replace("http://", "").split("/");
                                                 edgeLabel = "<a href=\"" + edgeLabel + "\" target=\"_blank\" title=\""+edgeLabel+"\">"
-                                                        + bits[0] + "<i class=\"popup-icon-link fa fa-external-link\" aria-hidden=\"true\"></i>" + "</a>";
+                                                        + bits[0] + "<i class=\"popup-icon-link fa fa-external-link\" ></i>" + "</a>";
                                                 for (int s = 0; s < synonyms.size(); s++) {
                                                     if (synonyms.get(s).equals((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("synonym"))) {
                                                         synonyms.set(s, synonyms.get(s) + " (" + edgeLabel + ")"); 
@@ -388,17 +388,17 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                                 if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) != null)
                                                 {
                                                     edgeLabel += " <a href=\"http://flybase.org/reports/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) + "\" target=\"_blank\" >"
-                                                            + "<i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) + "\" aria-hidden=\"true\"></i></a>";
+                                                            + "<i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) + "\" ></i></a>";
                                                 }
                                                 if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) != null)
                                                 {
                                                     edgeLabel += " <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" target=\"_blank\" >"
-                                                            + "<i class=\"popup-icon-link gpt-pubmed\" title=\"PMID:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" aria-hidden=\"true\"></i></a>";
+                                                            + "<i class=\"popup-icon-link gpt-pubmed\" title=\"PMID:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" ></i></a>";
                                                 }
                                                 if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) != null)
                                                 {
                                                     edgeLabel += " <a href=\"https://doi.org/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" target=\"_blank\" >"
-                                                            + "<i class=\"popup-icon-link gpt-doi\" title=\"doi:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" aria-hidden=\"true\"></i></a>";
+                                                            + "<i class=\"popup-icon-link gpt-doi\" title=\"doi:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" ></i></a>";
                                                 }
                                                 if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).containsKey("label")) {
                                                     desc += " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")) + ")"; // TODO: add hyperlink
@@ -413,7 +413,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                                 // TODO check link works!? (grey out if broken?)
                                                 String[] bits = edgeLabel.replace("http://", "").split("/");
                                                 edgeLabel = "<a href=\"" + edgeLabel + "\" target=\"_blank\" title=\""+edgeLabel+"\">"
-                                                        + bits[0] + "<i class=\"popup-icon-link fa fa-external-link\" aria-hidden=\"true\"></i>" + "</a>";
+                                                        + bits[0] + "<i class=\"popup-icon-link fa fa-external-link\" ></i>" + "</a>";
                                                 desc += " (" + edgeLabel + ")";
                                             }else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) != null) {
                                                 edgeLabel = "<a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" target=\"_blank\" >"
@@ -434,17 +434,17 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                                 if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) != null)
                                                 {
                                                     edgeLabel += " <a href=\"http://flybase.org/reports/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) + "\" target=\"_blank\" >"
-                                                            + "<i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) + "\" aria-hidden=\"true\"></i></a>";
+                                                            + "<i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("FlyBase")) + "\" ></i></a>";
                                                 }
                                                 if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) != null)
                                                 {
                                                     edgeLabel += " <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" target=\"_blank\" >"
-                                                            + "<i class=\"popup-icon-link gpt-pubmed\" title=\"PMID:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" aria-hidden=\"true\"></i></a>";
+                                                            + "<i class=\"popup-icon-link gpt-pubmed\" title=\"PMID:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" ></i></a>";
                                                 }
                                                 if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) != null)
                                                 {
                                                     edgeLabel += " <a href=\"https://doi.org/" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" target=\"_blank\" >"
-                                                            + "<i class=\"popup-icon-link gpt-doi\" title=\"doi:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" aria-hidden=\"true\"></i></a>";
+                                                            + "<i class=\"popup-icon-link gpt-doi\" title=\"doi:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" ></i></a>";
                                                 }
                                             }else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http")) != null) {
                                                 edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("http"));
@@ -454,7 +454,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                                 // TODO check link works!? (grey out if broken?)
                                                 String[] bits = edgeLabel.replace("http://", "").split("/");
                                                 edgeLabel = "<a href=\"" + edgeLabel + "\" target=\"_blank\" title=\""+edgeLabel+"\">"
-                                                        + bits[0] + "<i class=\"popup-icon-link fa fa-external-link\" aria-hidden=\"true\"></i>" + "</a>";
+                                                        + bits[0] + "<i class=\"popup-icon-link fa fa-external-link\" ></i>" + "</a>";
 
                                             }else if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) != null) {
                                                 edgeLabel = "<a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" target=\"_blank\" >"
@@ -477,17 +477,22 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 									//Ignoring RelatedTree data
 									break;
 								case "hasDbXref":
+									edgeLabel = "<i class=\"popup-icon-link fa fa-external-link\" ></i> <a href=\"";
 									if ((((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("accession")) == null || "None".equals((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("accession"))){
-										refs.add("<i class=\"popup-icon-link fa fa-external-link\" /> <a href=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri")) + "\" target=\"_blank\" >" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a>");		
+										edgeLabel += ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("iri")) + "\" target=\"_blank\" >" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a>";		
 									}else{
-										refs.add("<i class=\"popup-icon-link fa fa-external-link\" /> <a href=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("link_base")) + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("accession")) + "\" target=\"_blank\" >" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("accession")) + ")</a>");		
+										edgeLabel += ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("link_base"));
+										edgeLabel += ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("accession"));
+										if(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("link_postfix")) != null) {edgeLabel += ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("link_postfix"));}
+										edgeLabel += "\" target=\"_blank\" >" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("accession")) + ")</a>";		
 									}
+									refs.add(edgeLabel);
 									break;
 								case "member_of":
 									NBLAST = true;
 									// then run default:
 								default:
-									relationships = addUniqueToString(relationships, edge.replace("_", " ") + " <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
+									relationships = addUniqueToString(relationships, edge.replace("_", " ") + " <a href=\"#\" data-instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
 								}
 							} else {
 								// edge towards term
@@ -627,7 +632,8 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 												}
 												if (((Map<String, Object>) resultLinks.get(i)).get("temp") != null) {
 													String supertype = (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("short_form");
-													tempLink = "<a href=\"#\" instancepath=\"" + supertype + "\">" + (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("label") + "</a>";
+													tempLink = "<a href=\"#\" data-instancepath=\"" + supertype + "\">" + (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("temp")).get("label") + "</a>";
+													parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
 												}
 												vfbFileUrl = checkURL(edgeLabel + "/volume.nrrd");
 												if (vfbFileUrl != null && downloadLink == "") {
@@ -643,13 +649,15 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 									}
 									break;
 								case "has_license":
-									relationships = addUniqueToString(relationships, "applies to <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
+									if (listContains(((List<String>) ((Map<String, Object>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("labels")), "DataSet")){
+										relationships = addUniqueToString(relationships, "applies to <a href=\"#\" data-instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
+									}
 									break;	
 								case "connected_to":
-									relationships = addUniqueToString(relationships, "connected to <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
+									relationships = addUniqueToString(relationships, "connected to <a href=\"#\" data-instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
 									break;
 								case "innervates":
-									relationships = addUniqueToString(relationships, "innervated by <a href=\"#\" instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
+									relationships = addUniqueToString(relationships, "innervated by <a href=\"#\" data-instancepath=\"" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("short_form")) + "\">" + ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label") + "</a><br/>");
 									break;
 								case "SUBCLASSOF":
 									//                                    	Ignore SUBCLASSOF
@@ -783,7 +791,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 					if (results.getValue("node", 1) != null) {
 						resultNode = (Map<String, Object>) results.getValue("node", 1);
 						if (resultNode.get("label") != null) {
-							tempHtml += "<b>Name:</b> <a href=\"#\" instancepath=\"" + (String) resultNode.get("short_form") + "\">" + (String) resultNode.get("label") + " (" + (String) resultNode.get("short_form") + ")</a><br/>";	                			
+							tempHtml += "<b>Name:</b> <a href=\"#\" data-instancepath=\"" + (String) resultNode.get("short_form") + "\">" + (String) resultNode.get("label") + " (" + (String) resultNode.get("short_form") + ")</a><br/>";	                			
 						}
 						if (depictedType != "") {
 							tempHtml += "<b>Types:</b> " + depictedType;
@@ -848,19 +856,19 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 				{
 					if(QueryChecker.check(runnableQuery, variable))
 					{
-						badge = "<i class=\"popup-icon-link fa fa-quora\" />";
-						querys += badge + "<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
+						badge = "<i class=\"popup-icon-link fa fa-quora\" ></i>";
+						querys += badge + "<a href=\"#\" data-instancepath=\"" + (String) runnableQuery.getPath() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></i></br>";
 					}else if ((synapticNP || tract) && individual && classVariable.getId()!="notSet"){
 						if(QueryChecker.check(runnableQuery, classVariable)){
-							badge = "<i class=\"popup-icon-link fa fa-quora\" />";
-							querys += badge + "<a href=\"#\" instancepath=\"" + (String) runnableQuery.getPath() + "," + classVariable.getId() + "," + classVariable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", classVariable.getName()) + "</a></br>";
+							badge = "<i class=\"popup-icon-link fa fa-quora\" ></i>";
+							querys += badge + "<a href=\"#\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + classVariable.getId() + "," + classVariable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", classVariable.getName()) + "</a></i></br>";
 						}
 					}
 				}
 				
 				if (template){
-					badge = "<i class=\"popup-icon-link fa gpt-shapeshow\" />";
-					querys += badge + "<a href=\"#\" title=\"Hide template boundary and show all painted neuroanatomy\" onclick=\""+tempId+".hide();window.addVfbId(JSON.parse("+tempId+"."+tempId+"_slices.getValue().getWrappedObj().value.data).subDomains[1].filter(function(n){ return n != null }));return false;\">Show All Anatomy</a><br/>";
+					badge = "<i class=\"popup-icon-link fa gpt-shapeshow\" ></i>";
+					querys += badge + "<a href=\"\" title=\"Hide template boundary and show all painted neuroanatomy\" onclick=\""+tempId+".hide();window.addVfbId(JSON.parse("+tempId+"."+tempId+"_slices.getValue().getWrappedObj().value.data).subDomains[1].filter(function(n){ return n != null }));return false;\">Show All Anatomy</a><br/>";
 				}
 
 
@@ -960,7 +968,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 	 */
 	private String highlightLinks(String text) {
 		try {
-			text = text.replaceAll("([F,V,G][A-z]*)[:,_](\\d{5}[0-9]*\\b)", "<a href=\"#\" instancepath=\"$1_$2\" title=\"$1_$2\" ><i class=\"fa fa-info-circle\" aria-hidden=\"true\"></i></a>");
+			text = text.replaceAll("([F,V,G][A-z]*)[:,_](\\d{5}[0-9]*\\b)", "<a href=\"#\" data-instancepath=\"$1_$2\" title=\"$1_$2\" ><i class=\"fa fa-info-circle\"></i></a>");
 			return text;
 		} catch (Exception e) {
 			System.out.println("Error highlighting links in (" + text + ") " + e.toString());

@@ -147,6 +147,8 @@ public class CrossDataSourceVFBQueryTest
 		context.registerBeanDefinition("opencpuDataSource", nblastDataSourceBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.opencpuDataSource", nblastDataSourceBeanDefinition);
 		
+		context.refresh();
+		
 		ContextRefreshedEvent event = new ContextRefreshedEvent(context);
 		ApplicationListenerBean listener = new ApplicationListenerBean();
 		listener.onApplicationEvent(event);

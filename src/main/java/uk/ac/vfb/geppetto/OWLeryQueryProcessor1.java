@@ -24,7 +24,7 @@ import org.geppetto.model.variables.Variable;
  */
 
 
-public class OWLeryQueryProcessor extends AQueryProcessor
+public class OWLeryQueryProcessor1 extends AQueryProcessor
 {
 
 	private Map<String, Object> processingOutputMap = new HashMap<String, Object>();
@@ -63,18 +63,17 @@ public class OWLeryQueryProcessor extends AQueryProcessor
 				throw new GeppettoDataSourceException("Results header not in hasInstance, subClassOf");
 				
 		}
+
 		processedResults.getHeader().add("ID");
-	
+		
 		if (idIndex > -1){
 			for(AQueryResult result : results.getResults())
 			{
 				List<String> idsList = (ArrayList)((QueryResult) result).getValues().get(idIndex);
+				//System.out.println(idsList);
 				for(String id : idsList) {
-					SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 					String subID = id.substring((id.lastIndexOf('/')+1) , id.length()).toString();
-					processedResult.getValues().add(subID);
 					ids.add("\"" + subID + "\"");
-					processedResults.getResults().add(processedResult);
 				}
 			}
 		}

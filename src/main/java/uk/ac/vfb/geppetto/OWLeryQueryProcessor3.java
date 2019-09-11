@@ -6,7 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.geppetto.core.services.ServiceCreator;
+import org.geppetto.core.datasources.IQueryProcessor;
 import org.geppetto.core.datasources.GeppettoDataSourceException;
+import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.model.GeppettoModelAccess;
 import org.geppetto.datasources.AQueryProcessor;
 import org.geppetto.model.datasources.AQueryResult;
@@ -18,13 +21,14 @@ import org.geppetto.model.datasources.QueryResults;
 import org.geppetto.model.datasources.SerializableQueryResult;
 import org.geppetto.model.variables.Variable;
 
+
 /**
  * @author dariodelpiano
  *
  */
 
 
-public class OWLeryQueryProcessor extends AQueryProcessor
+public class OWLeryQueryProcessor3 extends AQueryProcessor
 {
 
 	private Map<String, Object> processingOutputMap = new HashMap<String, Object>();
@@ -43,10 +47,22 @@ public class OWLeryQueryProcessor extends AQueryProcessor
 		}
 		
 		String queryID = dataSource.getId();
+
+		try{
+			IQueryProcessor queryProcessor = (IQueryProcessor) ServiceCreator.getNewServiceInstance(query.getQueryProcessorId());
+			processingOutputMap = queryProcessor.getProcessingOutputMap();
+		}catch (GeppettoInitializationException e){
+			System.out.println(e.toString());
+		} 
 		
 		QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
 		int idIndex = -1;
-		
+
+		if (processingOutputMap.keySet().contains("ARRAY_ID_RESULTS")) {
+			System.out.println("passed:");
+			System.out.println(processingOutputMap.get("ARRAY_ID_RESULTS").toString());
+		}
+
 		List<String> ids = new ArrayList<String>();
 		
 		switch(queryID) 
@@ -63,6 +79,7 @@ public class OWLeryQueryProcessor extends AQueryProcessor
 				throw new GeppettoDataSourceException("Results header not in hasInstance, subClassOf");
 				
 		}
+
 		processedResults.getHeader().add("ID");
 	
 		if (idIndex > -1){
@@ -70,17 +87,21 @@ public class OWLeryQueryProcessor extends AQueryProcessor
 			{
 				List<String> idsList = (ArrayList)((QueryResult) result).getValues().get(idIndex);
 				for(String id : idsList) {
-					SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 					String subID = id.substring((id.lastIndexOf('/')+1) , id.length()).toString();
-					processedResult.getValues().add(subID);
 					ids.add("\"" + subID + "\"");
-					processedResults.getResults().add(processedResult);
 				}
 			}
 		}
-		
-		processingOutputMap.put("ARRAY_ID_RESULTS", ids);
+		ArrayList<ArrayList<String>> concatIds = new ArrayList<ArrayList<String>>();
+		if (processingOutputMap.keySet().contains("ARRAY_ID_RESULTS")) {
+			System.out.println("passing full");
+			concatIds = (ArrayList<ArrayList<String>>) processingOutputMap.get("ARRAY_ID_RESULTS");	
+		}
 
+		concatIds.add(new ArrayList<String>(ids));
+		processingOutputMap.clear();
+		processingOutputMap.put("ARRAY_ID_RESULTS", concatIds);
+		System.out.println(processingOutputMap.get("ARRAY_ID_RESULTS").toString());
 		return processedResults;
 	}
 

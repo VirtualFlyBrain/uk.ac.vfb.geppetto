@@ -4,11 +4,11 @@
 		xmlns:osgi="http://www.springframework.org/schema/osgi"	
 		xmlns:aop="http://www.springframework.org/schema/aop"
 		xsi:schemaLocation="http://www.springframework.org/schema/beans
-							http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+							http://www.springframework.org/schema/beans/spring-beans.xsd
 							http://www.springframework.org/schema/osgi
-							http://www.springframework.org/schema/osgi/spring-osgi-1.2.xsd
+							http://www.springframework.org/schema/osgi/spring-osgi.xsd
 							http://www.springframework.org/schema/aop 
-       						http://www.springframework.org/schema/aop/spring-aop-3.1.xsd">
+       						http://www.springframework.org/schema/aop/spring-aop.xsd">
 
 
 	<osgi:service id="VFBImportTypesThumbnailQueryProcessorExporter" ref="vfbImportTypesThumbnailQueryProcessor"
@@ -88,6 +88,20 @@
 	<aop:scoped-proxy proxy-target-class="false"/>
 	</bean>
 	
+	<osgi:service id="VFBAddProcessTermInfoCore" ref="vfbProcessTermInfoCore"
+		interface="org.geppetto.core.datasources.IQueryProcessor">
+	</osgi:service>
+	<bean id="vfbProcessTermInfoCore" scope="prototype" class="uk.ac.vfb.geppetto.VFBProcessTermInfoCore">
+	<aop:scoped-proxy proxy-target-class="false"/>
+	</bean>
+	
+	<osgi:service id="VFBAddProcessTermInfoJson" ref="vfbProcessTermInfoJson"
+		interface="org.geppetto.core.datasources.IQueryProcessor">
+	</osgi:service>
+	<bean id="vfbProcessTermInfoJson" scope="prototype" class="uk.ac.vfb.geppetto.VFBProcessTermInfoJson">
+	<aop:scoped-proxy proxy-target-class="false"/>
+	</bean>
+	
 	<osgi:service id="VFBAberOWLQueryProcessorExporter" ref="vfbAberOWLQueryProcessor"
 		interface="org.geppetto.core.datasources.IQueryProcessor">
 	</osgi:service>
@@ -108,6 +122,28 @@
 	<bean id="owleryIdOnlyQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.OWLeryQueryProcessor">
 	<aop:scoped-proxy proxy-target-class="false"/>
 	</bean>
+
+	<osgi:service id="owleryIdOnlyQueryProcessorExporter1" ref="owleryIdOnlyQueryProcessor1"
+		interface="org.geppetto.core.datasources.IQueryProcessor">
+	</osgi:service>
+	<bean id="owleryIdOnlyQueryProcessor1" scope="prototype" class="uk.ac.vfb.geppetto.OWLeryQueryProcessor2">
+	<aop:scoped-proxy proxy-target-class="false"/>
+	</bean>
+
+	<osgi:service id="owleryIdOnlyQueryProcessorExporter2" ref="owleryIdOnlyQueryProcessor2"
+		interface="org.geppetto.core.datasources.IQueryProcessor">
+	</osgi:service>
+	<bean id="owleryIdOnlyQueryProcessor2" scope="prototype" class="uk.ac.vfb.geppetto.OWLeryQueryProcessor2">
+	<aop:scoped-proxy proxy-target-class="false"/>
+	</bean>
+
+	<osgi:service id="owleryIdOnlyQueryProcessorExporter3" ref="owleryIdOnlyQueryProcessor3"
+		interface="org.geppetto.core.datasources.IQueryProcessor">
+	</osgi:service>
+	<bean id="owleryIdOnlyQueryProcessor3" scope="prototype" class="uk.ac.vfb.geppetto.OWLeryQueryProcessor3">
+	<aop:scoped-proxy proxy-target-class="false"/>
+	</bean>
+
 	
 	<osgi:service id="nblastQueryProcessorExporter" ref="nblastQueryProcessor"
 		interface="org.geppetto.core.datasources.IQueryProcessor">
@@ -115,9 +151,14 @@
 	<bean id="nblastQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.NBLASTQueryProcessor">
 	<aop:scoped-proxy proxy-target-class="false"/>
 	</bean>
+
+	<osgi:service id="neo4jQueryProcessorExporter" ref="neo4jQueryProcessor"
+		interface="org.geppetto.core.datasources.IQueryProcessor">
+	</osgi:service>
+	<bean id="neo4jQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.NEO4JQueryProcessor">
+	<aop:scoped-proxy proxy-target-class="false"/>
+	</bean>
 	
 	<bean id="eventListenerBean" class="org.geppetto.core.services.registry.ApplicationListenerBean" />
-	
-	
 	
 </beans>

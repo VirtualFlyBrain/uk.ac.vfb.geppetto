@@ -130,6 +130,7 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 				{
 					exampleVar.getInitialValues().put(geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE), images);
 					processedResult.getValues().add(GeppettoSerializer.serializeToJSON(exampleVar));
+					//System.out.println("DEBUG: Image: " + GeppettoSerializer.serializeToJSON(exampleVar) );
 				}
 				else
 				{
