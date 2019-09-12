@@ -359,7 +359,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			count = 0;
 
 			// set headers
-			if (hasId) processedResults.getHeader().add("ID");
+			processedResults.getHeader().add("ID");
 			if (hasName) processedResults.getHeader().add("Name");
 			if (hasExpressed_in) processedResults.getHeader().add("Expressed_in");
 			if (hasReference) processedResults.getHeader().add("Reference");
