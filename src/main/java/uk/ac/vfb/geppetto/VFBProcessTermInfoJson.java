@@ -493,6 +493,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public String miniref() {
 			String result = "";
 			String links = "";
+			if (core.short_form.equals("Unattributed")) {
+				return result;
+			}
 			Map<String, String> siteLinks = new HashMap<String, String>();
 			// publication links:
 			siteLinks.put("FlyBase",
@@ -742,6 +745,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 		private String addUniqueToString(String concatList, String newItem) {
 			if (concatList.indexOf(newItem) > -1){
+				return concatList;
+			}
+			if (newItem.length() < 10){
 				return concatList;
 			}
 			return concatList + newItem;
