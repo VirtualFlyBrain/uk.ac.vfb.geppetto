@@ -1224,7 +1224,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				header = "references";
 				references = vfbTerm.getReferences();
 				if (!references.equals("")) {
-					addModelHtml(references, "References", "references", metadataType, geppettoModelAccess);
+					addModelHtml(references, "Attribution", "references", metadataType, geppettoModelAccess);
 				}
 
 				// set queries
