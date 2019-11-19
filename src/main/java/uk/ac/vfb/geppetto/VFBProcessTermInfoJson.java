@@ -577,6 +577,8 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public List<xref> xrefs;
 		private List<pub_syn> pub_syn;
 		private List<pub> def_pubs;
+		private List<pub> pubs;
+		private pub pub;
 		private List<license> license;
 		private List<dataset_license> dataset_license;
 		private List<rel> relationships;
@@ -729,7 +731,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 		public String getReferences() {
 			String result = "";
-			if ((this.def_pubs != null && this.def_pubs.size() > 0) || (this.pub_syn != null && this.pub_syn.size() > 0)) {
+			if ((this.def_pubs != null && this.def_pubs.size() > 0) || (this.pub_syn != null && this.pub_syn.size() > 0) || (this.pubs != null && this.pubs.size() > 0) || (this.pub != null)) {
 				result += "<ul class=\"terminfo-references\">";
 				if (this.def_pubs != null && this.def_pubs.size() > 0) {
 					for (pub pub:def_pubs) {
@@ -740,6 +742,14 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					for (pub_syn syn:pub_syn) {
 						result = addUniqueToString(result, "<li>" + syn.pub.miniref() + "</li>");
 					}
+				}
+				if (this.pubs != null && this.pubs.size() > 0) {
+					for (pub pub:pubs) {
+						result = addUniqueToString(result, "<li>" + pub.miniref() + "</li>");
+					}
+				}
+				if (this.pub != null) {
+					result = addUniqueToString(result, "<li>" + this.pub.miniref() + "</li>");
 				}
 				result += "</ul>";
 			}
