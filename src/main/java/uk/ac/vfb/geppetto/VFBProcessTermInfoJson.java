@@ -560,12 +560,25 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	class pub_syn {
 		private synonym synonym;
 		private pub pub;
+		private List<pub> pubs;
 
 		public String toString() {
 			if (this.pub != null && this.pub.microref() != null) {
 				return this.synonym.toString() + " (" + this.pub.microref() + ")";
 			}
+			if (this.pubs != null && this.pubs.size() > 0) {
+				return this.synonym.toString() + " " + this.microrefs();
+			}
 			return this.synonym.toString();
+		}
+		
+		private String microrefs() {
+			String result="(";
+			for (pub pub:pubs) {
+				result += this.pub.microref() + ", "
+			}
+			results += ")";
+			return result.replace(", )",")")
 		}
 	}
 
