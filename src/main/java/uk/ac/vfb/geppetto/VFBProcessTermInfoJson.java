@@ -575,10 +575,10 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		private String microrefs() {
 			String result="(";
 			for (pub pub:pubs) {
-				result += this.pub.microref() + ", "
+				result += this.pub.microref() + ", ";
 			}
 			results += ")";
-			return result.replace(", )",")")
+			return result.replace(", )",")");
 		}
 	}
 
