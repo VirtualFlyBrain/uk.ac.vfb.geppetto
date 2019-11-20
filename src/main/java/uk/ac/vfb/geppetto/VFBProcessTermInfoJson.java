@@ -577,7 +577,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			for (pub pub:pubs) {
 				result += this.pub.microref() + ", ";
 			}
-			results += ")";
+			result += ")";
 			return result.replace(", )",")");
 		}
 	}
