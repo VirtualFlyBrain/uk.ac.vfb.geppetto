@@ -113,6 +113,109 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		private minimal_entity_info channel;
 	}
 
+	class dataset {
+		private minimal_entity_info core;
+		private String link;
+		private String icon;
+
+		public String extLink() {
+			String result = "<a href=\"" + this.link + "\" target=\"_blank\">";
+			if (this.icon != null && !this.icon.equals("")) {
+				result += "<img class=\"terminfo-dataseticon\" src=\"" + secureUrl(this.icon) + "\" title=\"" + this.core.label + "\"/>";
+			}else{
+				result += this.core.label;
+			}
+			result += "</a>";	
+			return result;
+		}
+
+		public String intLink() {
+			String result = this.core.intLink(false);
+			if (this.icon != null && !this.icon.equals("")) {
+				result += result.replace(this.core.label,this.core.label + " <img class=\"terminfo-dataseticon\" src=\"" + secureUrl(this.icon) + "\" title=\"" + this.core.label + "\"/>");
+			}
+			if (this.link != null && !this.link.equals("") && !this.link.equals("unspec")){
+				if (this.link.toLowerCase().contains("flybase.org")) {
+					result += "<a href=\"" + this.link + "\" target=\"_blank\"><i class=\"popup-icon-link gpt-fly\"></i></a>";
+				}else if (this.link.toLowerCase().contains("nih.gov")) {
+					result += "<a href=\"" + this.link + "\" target=\"_blank\"><i class=\"popup-icon-link gpt-pubmed\"></i></a>";
+				}else if (this.link.toLowerCase().contains("doi.org")) {
+					result += "<a href=\"" + this.link + "\" target=\"_blank\"><i class=\"popup-icon-link gpt-doi\"></i></a>";
+				}else{
+					result += "<a href=\"" + this.link + "\" target=\"_blank\"><i class=\"popup-icon-link fa fa-external-link\"></i></a>";
+				}
+			}
+			return result;
+		}
+
+		private String secureUrl(String url) {
+			try{
+				if (checkURL(url.replace("http://","https://"))){
+					return url.replace("http://","https://");
+				}
+			}catch(Exception e){
+				System.out.println("Error securing url (" + url + ") " + e.toString());
+				e.printStackTrace();
+			}
+			return url;
+		}
+
+		/**
+		 * @param urlString
+		 * @return boolean
+		 */
+		private boolean checkURL(String urlString)
+		{
+			try
+			{
+				URL url = new URL(urlString);
+				HttpURLConnection huc = (HttpURLConnection) url.openConnection();
+				huc.setRequestMethod("HEAD");
+				huc.setInstanceFollowRedirects(false);
+				return (huc.getResponseCode() == HttpURLConnection.HTTP_OK);
+			}
+			catch(Exception e)
+			{
+				System.out.println("Error checking url (" + urlString + ") " + e.toString());
+				e.printStackTrace();
+				return false;
+			}
+		}
+
+	}
+
+	class license {
+		private minimal_entity_info core;
+		private String link;
+		private String icon;
+		private boolean is_bespoke;
+
+		public String extLink() {
+			String result = "<a href=\"" + this.link + "\" target=\"_blank\">";
+			if (this.icon != null && !this.icon.equals("")) {
+				result += this.core.label + "<img class=\"terminfo-licenseicon\" src=\"" + this.icon + "\" title=\"" + this.core.label + "\"/>";
+			}else{
+				result += this.core.label;
+			}
+			result += "</a>";
+			return result;
+		}
+
+		public String intLink() {
+			String result = this.core.intLink(false);
+			if (this.icon != null && !this.icon.equals("")) {
+				result = result.replace(this.core.label,this.core.label + " <img class=\"terminfo-licenseicon\" src=\"" + this.icon + "\" title=\"" + this.core.label + "\"/>");
+			}
+			return result;
+		}
+
+	}
+
+	class dataset_license {
+		dataset dataset;
+		license license;
+	}
+
 	class pub {
 		public minimal_entity_info core;
 		public String microref;
@@ -122,6 +225,11 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		private String ISBN;
 	}
 
+	class dataset_counts{
+		public Integer images;
+		public Integer types;
+	}
+
 	class vfb_query {
 		private minimal_entity_info anatomy;
 		public String query;
@@ -129,33 +237,46 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		private List<anatomy_channel_image> anatomy_channel_image;
 		private List<pub> pubs;
 		private pub pub;
+		private dataset dataset;
+		private dataset_counts dataset_counts;
+		private List<license> license;
 		private List<minimal_entity_info> stages;
 		private minimal_entity_info expression_pattern;
 		private List<anatomy_channel_image> expressed_in;
 	
 		public String id(){
 			String delim = "----";
-			if (this.expression_pattern != null && this.anatomy != null && this.pub != null) return this.expression_pattern.short_form + delim + this.anatomy.short_form + delim + this.pub.core.short_form;
-			if (this.expression_pattern != null && this.anatomy != null && this.pubs != null && this.pubs.size() == 1) return this.expression_pattern.short_form + delim + this.anatomy.short_form + delim + this.pubs.get(0).core.short_form;
-			if (this.expression_pattern != null && this.anatomy != null && this.pubs != null && this.pubs.size() > 1) {
-				String result = this.expression_pattern.short_form + delim + this.anatomy.short_form;
+			String mainID = "";
+			if (this.expression_pattern != null) mainID = this.expression_pattern.short_form;
+			if (this.dataset != null) mainID = this.dataset.core.short_form;
+			if (this.anatomy != null) mainID += delim + this.anatomy.short_form;
+			if (this.anatomy != null && this.pub != null) return mainID + delim + this.pub.core.short_form;
+			if (this.anatomy != null && this.pubs != null && this.pubs.size() == 1) return mainID + delim + this.pubs.get(0).core.short_form;
+			if (this.anatomy != null && this.pubs != null && this.pubs.size() > 1) {
+				String result = mainID;
+				if (this.anatomy)
 				for (pub pub:this.pubs){
 					result += delim + pub.core.short_form;
 				}
 				return result;
 			}
-			if (this.expression_pattern != null && this.anatomy != null) return this.expression_pattern.short_form + delim + this.anatomy.short_form;
-			if (this.expression_pattern != null) return this.expression_pattern.short_form;
+			if (this.expression_pattern != null) return mainID;
 			return this.anatomy.short_form;
 		}
 
 		public String name(){
 			if (this.expression_pattern != null) return this.expression_pattern.label;
+			if (this.dataset != null) return this.dataset.core.label;
 			return this.anatomy.label;
 		}
 
 		public String expressed_in(){
 			if (this.expression_pattern != null) return this.anatomy.label;
+			return "";
+		}
+
+		public String licenseLabel(){
+			if (this.license != null) return this.license.core.label;
 			return "";
 		}
 
@@ -282,6 +403,8 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			Integer count = 0;
 			Boolean	hasId = false;
 			Boolean	hasName = false;
+			Boolean hasLicense = false;
+			Boolean hasDatasetCount = false;
 			Boolean	hasExpressed_in = false;
 			Boolean	hasReference = false;
 			Boolean	hasStage = false;
@@ -319,6 +442,12 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 								break;
 							case "pub":
 								hasReference = true;
+								break;
+							case "license":
+								hasLicense = true;
+								break;
+							case "dataset_counts":
+								hasDatasetCount = true;
 								break;
 							case "stages":
 								hasStage = true;
@@ -362,9 +491,11 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			processedResults.getHeader().add("ID");
 			if (hasName) processedResults.getHeader().add("Name");
 			if (hasExpressed_in) processedResults.getHeader().add("Expressed_in");
+			if (hasLicense) processedResults.getHeader().add("License");
 			if (hasReference) processedResults.getHeader().add("Reference");
 			if (hasStage) processedResults.getHeader().add("Stage");
 			if (hasImage) processedResults.getHeader().add("Images");
+			if (!hasImages && hasDatasetCount) processedResults.getHeader().add("Images");
 
 			for (vfb_query row:table){
 				try{
@@ -372,6 +503,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					if (hasId) processedResult.getValues().add(row.id());
 					if (hasName) processedResult.getValues().add(row.name());
 					if (hasExpressed_in) processedResult.getValues().add(row.expressed_in());
+					if (hasLicense) processedResult.getValues().add(row.licenseLabel());
 					if (hasReference) processedResult.getValues().add(row.reference());
 					if (hasStage) processedResult.getValues().add(row.stages());
 					if (hasImage){
@@ -395,6 +527,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 							processedResult.getValues().add("");
 						}
 					}
+					if (!hasImages && hasDatasetCount) processedResult.getValues().add(row.dataset_counts.images);
 					processedResults.getResults().add(processedResult);
 				}catch (Exception e) {
 					System.out.println("Error creating results row: " + count.toString() + " - " + e.toString());
