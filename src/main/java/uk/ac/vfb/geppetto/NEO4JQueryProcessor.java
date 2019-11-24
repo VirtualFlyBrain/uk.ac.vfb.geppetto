@@ -125,7 +125,6 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		private String link;
 		private String icon;
 		private boolean is_bespoke;
-
 	}
 
 	class dataset_license {
