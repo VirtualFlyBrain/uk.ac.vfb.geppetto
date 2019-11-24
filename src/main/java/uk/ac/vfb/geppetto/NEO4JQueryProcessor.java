@@ -416,7 +416,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			if (hasReference) processedResults.getHeader().add("Reference");
 			if (hasStage) processedResults.getHeader().add("Stage");
 			if (hasImage) processedResults.getHeader().add("Images");
-			if (!hasImages && hasDatasetCount) processedResults.getHeader().add("Images");
+			if (!hasImage && hasDatasetCount) processedResults.getHeader().add("Images");
 
 			for (vfb_query row:table){
 				try{
@@ -448,7 +448,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 							processedResult.getValues().add("");
 						}
 					}
-					if (!hasImages && hasDatasetCount) processedResult.getValues().add(row.dataset_counts.images);
+					if (!hasImage && hasDatasetCount) processedResult.getValues().add(row.dataset_counts.images);
 					processedResults.getResults().add(processedResult);
 				}catch (Exception e) {
 					System.out.println("Error creating results row: " + count.toString() + " - " + e.toString());
