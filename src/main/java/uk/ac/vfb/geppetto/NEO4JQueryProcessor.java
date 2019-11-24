@@ -191,8 +191,14 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		}
 
 		public String licenseLabel(){
-			if (this.license != null) return this.license.core.label;
-			return "";
+			String result = "";
+			if (this.license != null) {
+				for (license l:this.license){
+					if (!result.equals("")) result += "; ";
+					result += l.core.label;
+				}
+			} 
+			return result;
 		}
 
 		public String stages(){
