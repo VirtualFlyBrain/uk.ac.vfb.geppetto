@@ -114,100 +114,17 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 	}
 
 	class dataset {
-		private minimal_entity_info core;
+		public minimal_entity_info core;
 		private String link;
 		private String icon;
-
-		public String extLink() {
-			String result = "<a href=\"" + this.link + "\" target=\"_blank\">";
-			if (this.icon != null && !this.icon.equals("")) {
-				result += "<img class=\"terminfo-dataseticon\" src=\"" + secureUrl(this.icon) + "\" title=\"" + this.core.label + "\"/>";
-			}else{
-				result += this.core.label;
-			}
-			result += "</a>";	
-			return result;
-		}
-
-		public String intLink() {
-			String result = this.core.intLink(false);
-			if (this.icon != null && !this.icon.equals("")) {
-				result += result.replace(this.core.label,this.core.label + " <img class=\"terminfo-dataseticon\" src=\"" + secureUrl(this.icon) + "\" title=\"" + this.core.label + "\"/>");
-			}
-			if (this.link != null && !this.link.equals("") && !this.link.equals("unspec")){
-				if (this.link.toLowerCase().contains("flybase.org")) {
-					result += "<a href=\"" + this.link + "\" target=\"_blank\"><i class=\"popup-icon-link gpt-fly\"></i></a>";
-				}else if (this.link.toLowerCase().contains("nih.gov")) {
-					result += "<a href=\"" + this.link + "\" target=\"_blank\"><i class=\"popup-icon-link gpt-pubmed\"></i></a>";
-				}else if (this.link.toLowerCase().contains("doi.org")) {
-					result += "<a href=\"" + this.link + "\" target=\"_blank\"><i class=\"popup-icon-link gpt-doi\"></i></a>";
-				}else{
-					result += "<a href=\"" + this.link + "\" target=\"_blank\"><i class=\"popup-icon-link fa fa-external-link\"></i></a>";
-				}
-			}
-			return result;
-		}
-
-		private String secureUrl(String url) {
-			try{
-				if (checkURL(url.replace("http://","https://"))){
-					return url.replace("http://","https://");
-				}
-			}catch(Exception e){
-				System.out.println("Error securing url (" + url + ") " + e.toString());
-				e.printStackTrace();
-			}
-			return url;
-		}
-
-		/**
-		 * @param urlString
-		 * @return boolean
-		 */
-		private boolean checkURL(String urlString)
-		{
-			try
-			{
-				URL url = new URL(urlString);
-				HttpURLConnection huc = (HttpURLConnection) url.openConnection();
-				huc.setRequestMethod("HEAD");
-				huc.setInstanceFollowRedirects(false);
-				return (huc.getResponseCode() == HttpURLConnection.HTTP_OK);
-			}
-			catch(Exception e)
-			{
-				System.out.println("Error checking url (" + urlString + ") " + e.toString());
-				e.printStackTrace();
-				return false;
-			}
-		}
 
 	}
 
 	class license {
-		private minimal_entity_info core;
+		public minimal_entity_info core;
 		private String link;
 		private String icon;
 		private boolean is_bespoke;
-
-		public String extLink() {
-			String result = "<a href=\"" + this.link + "\" target=\"_blank\">";
-			if (this.icon != null && !this.icon.equals("")) {
-				result += this.core.label + "<img class=\"terminfo-licenseicon\" src=\"" + this.icon + "\" title=\"" + this.core.label + "\"/>";
-			}else{
-				result += this.core.label;
-			}
-			result += "</a>";
-			return result;
-		}
-
-		public String intLink() {
-			String result = this.core.intLink(false);
-			if (this.icon != null && !this.icon.equals("")) {
-				result = result.replace(this.core.label,this.core.label + " <img class=\"terminfo-licenseicon\" src=\"" + this.icon + "\" title=\"" + this.core.label + "\"/>");
-			}
-			return result;
-		}
 
 	}
 
