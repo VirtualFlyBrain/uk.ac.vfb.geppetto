@@ -448,7 +448,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 							processedResult.getValues().add("");
 						}
 					}
-					if (!hasImage && hasDatasetCount) processedResult.getValues().add(row.dataset_counts.images);
+					if (!hasImage && hasDatasetCount) processedResult.getValues().add(row.dataset_counts.images.toString());
 					processedResults.getResults().add(processedResult);
 				}catch (Exception e) {
 					System.out.println("Error creating results row: " + count.toString() + " - " + e.toString());
