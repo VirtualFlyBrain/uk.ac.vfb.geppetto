@@ -154,9 +154,9 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			if (this.expression_pattern != null) mainID = this.expression_pattern.short_form;
 			if (this.dataset != null) mainID = this.dataset.short_form;
 			if (this.anatomy != null) mainID += delim + this.anatomy.short_form;
-			if (this.anatomy != null && this.pub != null) return mainID + delim + this.pub.core.short_form;
-			if (this.anatomy != null && this.pubs != null && this.pubs.size() == 1) return mainID + delim + this.pubs.get(0).core.short_form;
-			if (this.anatomy != null && this.pubs != null && this.pubs.size() > 1) {
+			if (this.pub != null) return mainID + delim + this.pub.core.short_form;
+			if (this.pubs != null && this.pubs.size() == 1) return mainID + delim + this.pubs.get(0).core.short_form;
+			if (this.pubs != null && this.pubs.size() > 1) {
 				String result = mainID;
 				for (pub pub:this.pubs){
 					result += delim + pub.core.short_form;
