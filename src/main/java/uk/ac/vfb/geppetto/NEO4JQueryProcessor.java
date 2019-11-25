@@ -163,7 +163,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 				}
 				return result;
 			}
-			if (this.expression_pattern != null) return mainID;
+			if (this.expression_pattern != null || this.dataset != null) return mainID;
 			return this.anatomy.short_form;
 		}
 
