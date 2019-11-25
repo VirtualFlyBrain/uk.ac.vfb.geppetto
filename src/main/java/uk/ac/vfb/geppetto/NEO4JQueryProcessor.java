@@ -127,11 +127,6 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		private boolean is_bespoke;
 	}
 
-	class dataset_license {
-		dataset dataset;
-		license license;
-	}
-
 	class pub {
 		public minimal_entity_info core;
 		public String microref;
