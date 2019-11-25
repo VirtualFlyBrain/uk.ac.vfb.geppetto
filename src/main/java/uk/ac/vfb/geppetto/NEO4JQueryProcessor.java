@@ -113,13 +113,6 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		private minimal_entity_info channel;
 	}
 
-	class dataset {
-		public minimal_entity_info core;
-		private String link;
-		private String icon;
-
-	}
-
 	class license {
 		public minimal_entity_info core;
 		private String link;
@@ -148,7 +141,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		private List<anatomy_channel_image> anatomy_channel_image;
 		private List<pub> pubs;
 		private pub pub;
-		private dataset dataset;
+		private minimal_entity_info dataset;
 		private dataset_counts dataset_counts;
 		private List<license> license;
 		private List<minimal_entity_info> stages;
@@ -159,7 +152,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			String delim = "----";
 			String mainID = "";
 			if (this.expression_pattern != null) mainID = this.expression_pattern.short_form;
-			if (this.dataset != null) mainID = this.dataset.core.short_form;
+			if (this.dataset != null) mainID = this.dataset.short_form;
 			if (this.anatomy != null) mainID += delim + this.anatomy.short_form;
 			if (this.anatomy != null && this.pub != null) return mainID + delim + this.pub.core.short_form;
 			if (this.anatomy != null && this.pubs != null && this.pubs.size() == 1) return mainID + delim + this.pubs.get(0).core.short_form;
@@ -176,7 +169,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 
 		public String name(){
 			if (this.expression_pattern != null) return this.expression_pattern.label;
-			if (this.dataset != null) return this.dataset.core.label;
+			if (this.dataset != null) return this.dataset.label;
 			return this.anatomy.label;
 		}
 
