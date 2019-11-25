@@ -353,6 +353,10 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 								hasId = true;
 								hasName = true;
 								break;
+							case "dataset":
+								hasId = true;
+								hasName = true;
+								break;
 							case "expression_pattern":
 								hasId = true;
 								hasName = true;
