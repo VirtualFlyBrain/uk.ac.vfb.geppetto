@@ -41,7 +41,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 
 	private Map<String, Object> processingOutputMap = new HashMap<String, Object>();
 
-	private Boolean debug=false;
+	private Boolean debug=true;
 
 	// START VFB term info schema https://github.com/VirtualFlyBrain/VFB_json_schema/blob/master/src/json_schema/vfb_query.json
 
