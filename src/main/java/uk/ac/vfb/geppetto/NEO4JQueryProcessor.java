@@ -150,21 +150,26 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 	
 		public String id(){
 			String delim = "----";
-			String mainID = "";
-			if (this.expression_pattern != null) mainID = this.expression_pattern.short_form;
-			if (this.dataset != null) mainID = this.dataset.short_form;
-			if (this.anatomy != null) mainID += delim + this.anatomy.short_form;
-			if (this.pub != null) return mainID + delim + this.pub.core.short_form;
-			if (this.pubs != null && this.pubs.size() == 1) return mainID + delim + this.pubs.get(0).core.short_form;
+			String result = "undefined";
+			if (this.expression_pattern != null){
+				result = this.expression_pattern.short_form;
+			}else if (this.dataset != null){ 
+				result = this.dataset.short_form;
+			}
+			if (this.anatomy != null) {
+				result += delim + this.anatomy.short_form;
+			}else{
+				result += delim + "undefined";
+			}
+			if (this.pub != null) result += delim + this.pub.core.short_form;
+			if (this.pubs != null && this.pubs.size() == 1) result += delim + this.pubs.get(0).core.short_form;
 			if (this.pubs != null && this.pubs.size() > 1) {
-				String result = mainID;
 				for (pub pub:this.pubs){
 					result += delim + pub.core.short_form;
 				}
-				return result;
+				
 			}
-			if (this.expression_pattern != null || this.dataset != null) return mainID;
-			return this.anatomy.short_form;
+			return result;
 		}
 
 		public String name(){
