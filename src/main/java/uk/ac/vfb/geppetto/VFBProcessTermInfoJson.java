@@ -782,7 +782,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public String relList(String name, List<rel> entitys, Boolean showTypes) {
 			String result = "<ul class=\"terminfo-" + name + "\">";
 			for (rel rel : entitys) {
-				result += "<li>" + rel.intLink(showTypes) + "</li>";
+				if (result.indexOf(rel.intLink(showTypes))<0){
+					result += "<li>" + rel.intLink(showTypes) + "</li>";
+				}
 			}
 			result += "</ul>";
 			return result;
@@ -791,7 +793,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public String compileList(String name, List<minimal_entity_info> entitys, Boolean showTypes) {
 			String result = "<ul class=\"terminfo-" + name + "\">";
 			for (minimal_entity_info entity : entitys) {
-				result += "<li>" + entity.intLink(showTypes) + "</li>";
+				if (result.indexOf(entity.intLink(showTypes))<0){
+					result += "<li>" + entity.intLink(showTypes) + "</li>";
+				}
 			}
 			result += "</ul>";
 			return result;
@@ -810,16 +814,18 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			String result = "<ul class=\"terminfo-xrefs\">";
 			String site = "";
 			for (String xref : results) {
-				if (xref.substring(25).equals(site)) {
-					result += "<li>" + xref + "</li>";
-				} else if (site == "") {
-					// embed first sites xrefs
-					result += "<li>" + xref.replace("-->", "<ul><li>").replace("<!--", "") + "</li>";
-				} else {
-					// close previous and start next site xrefs
-					result += "</ul></li><li>" + xref.replace("-->", "<ul><li>").replace("<!--", "") + "</li>";
+				if (result.indexOf(xref)<0){
+					if (xref.substring(25).equals(site)) {
+						result += "<li>" + xref + "</li>";
+					} else if (site == "") {
+						// embed first sites xrefs
+						result += "<li>" + xref.replace("-->", "<ul><li>").replace("<!--", "") + "</li>";
+					} else {
+						// close previous and start next site xrefs
+						result += "</ul></li><li>" + xref.replace("-->", "<ul><li>").replace("<!--", "") + "</li>";
+					}
+					site = xref.substring(25);
 				}
-				site = xref.substring(25);
 			}
 			result += "</ul></li></ul>";
 			return result;
