@@ -413,6 +413,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			for (vfb_query row:table){
 				try{
 					SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
+					String length = "8";
 					if (hasId) processedResult.getValues().add(row.id());
 					if (hasName) processedResult.getValues().add(row.name());
 					if (hasExpressed_in) processedResult.getValues().add(row.expressed_in());
@@ -440,7 +441,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 							processedResult.getValues().add("");
 						}
 					}
-					if (hasDatasetCount) processedResult.getValues().add(row.dataset_counts.images.toString());
+					if (hasDatasetCount) processedResult.getValues().add(String.format("%1$" + length + "s", row.dataset_counts.images.toString()));
 					processedResults.getResults().add(processedResult);
 				}catch (Exception e) {
 					System.out.println("Error creating results row: " + count.toString() + " - " + e.toString());
