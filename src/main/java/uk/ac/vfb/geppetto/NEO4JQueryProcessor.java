@@ -158,6 +158,9 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			}
 			if (this.anatomy != null) {
 				result += delim + this.anatomy.short_form;
+			}else if (this.license != null && this.license.size() > 0){
+				// single license per DataSet assumed:
+				result += delim + this.license[0].short_form;
 			}else{
 				result += delim + "undefined";
 			}
