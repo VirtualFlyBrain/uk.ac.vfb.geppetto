@@ -964,20 +964,23 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		 */
 		private boolean checkURL(String urlString)
 		{
-			try
+			if (urlString.indexOf(":") > 0) 
 			{
-				URL url = new URL(urlString);
-				HttpURLConnection huc = (HttpURLConnection) url.openConnection();
-				huc.setRequestMethod("HEAD");
-				huc.setInstanceFollowRedirects(false);
-				return (huc.getResponseCode() == HttpURLConnection.HTTP_OK);
+				try
+				{
+					URL url = new URL(urlString);
+					HttpURLConnection huc = (HttpURLConnection) url.openConnection();
+					huc.setRequestMethod("HEAD");
+					huc.setInstanceFollowRedirects(false);
+					return (huc.getResponseCode() == HttpURLConnection.HTTP_OK);
+				}
+				catch(Exception e)
+				{
+					System.out.println("Error checking url (" + urlString + ") " + e.toString());
+					e.printStackTrace();
+				}
 			}
-			catch(Exception e)
-			{
-				System.out.println("Error checking url (" + urlString + ") " + e.toString());
-				e.printStackTrace();
-				return false;
-			}
+			return false;
 		}
 
 		private String secureUrl(String url) {
