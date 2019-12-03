@@ -155,6 +155,8 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 				result = this.expression_pattern.short_form;
 			}else if (this.dataset != null){ 
 				result = this.dataset.short_form;
+			}else if (this.anatomy != null) {
+				result = this.anatomy.short_form;
 			}
 			if (this.anatomy != null) {
 				result += delim + this.anatomy.short_form;
