@@ -720,11 +720,11 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 
 		public String targetingSplits() {
-			String result = null;
+			String result = "";
 			if (this.targeting_splits != null && this.targeting_splits.size() > 0) {
 				result += "<ul class=\"terminfo-targetingSplits\">";
 				for (minimal_edge_info split:targeting_splits) {
-					result += "<li>" + split.toString() + "</li>";
+					result = addUniqueToString(result, "<li>" + split.toString() + "</li>");
 				}
 				result += "</ul>";
 			}
@@ -732,11 +732,11 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 
 		public String targetingNeurons() {
-			String result = null;
+			String result = "";
 			if (this.target_neurons != null && this.target_neurons.size() > 0) {
 				result += "<ul class=\"terminfo-targetNeurons\">";
 				for (minimal_edge_info neuron:target_neurons) {
-					result += "<li>" + neuron.toString() + "</li>";
+					result = addUniqueToString(result, "<li>" + neuron.toString() + "</li>");
 				}
 				result += "</ul>";
 			}
