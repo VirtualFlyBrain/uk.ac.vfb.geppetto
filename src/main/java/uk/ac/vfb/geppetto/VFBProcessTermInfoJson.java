@@ -724,7 +724,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			if (this.targeting_splits != null && this.targeting_splits.size() > 0) {
 				result += "<ul class=\"terminfo-targetingSplits\">";
 				for (minimal_entity_info split:targeting_splits) {
-					result = addUniqueToString(result, "<li>" + split.intLink() + "</li>");
+					result = addUniqueToString(result, "<li>" + split.intLink(true) + "</li>");
 				}
 				result += "</ul>";
 			}
@@ -736,7 +736,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			if (this.target_neurons != null && this.target_neurons.size() > 0) {
 				result += "<ul class=\"terminfo-targetNeurons\">";
 				for (minimal_entity_info neuron:target_neurons) {
-					result = addUniqueToString(result, "<li>" + neuron.intLink() + "</li>");
+					result = addUniqueToString(result, "<li>" + neuron.intLink(true) + "</li>");
 				}
 				result += "</ul>";
 			}
