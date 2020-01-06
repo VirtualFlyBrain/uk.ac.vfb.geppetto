@@ -600,8 +600,8 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		private List<channel_image> channel_image;
 		private List<domain> template_domains;
 		private template_channel template_channel;
-		private List<minimal_edge_info> targeting_splits; 
-		private List<minimal_edge_info> target_neurons; 
+		private List<minimal_entity_info> targeting_splits; 
+		private List<minimal_entity_info> target_neurons; 
 
 		public String getSource() {
 			String result = "";
@@ -723,8 +723,8 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			String result = "";
 			if (this.targeting_splits != null && this.targeting_splits.size() > 0) {
 				result += "<ul class=\"terminfo-targetingSplits\">";
-				for (minimal_edge_info split:targeting_splits) {
-					result = addUniqueToString(result, "<li>" + split.toString() + "</li>");
+				for (minimal_entity_info split:targeting_splits) {
+					result = addUniqueToString(result, "<li>" + split.intLink() + "</li>");
 				}
 				result += "</ul>";
 			}
@@ -735,8 +735,8 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			String result = "";
 			if (this.target_neurons != null && this.target_neurons.size() > 0) {
 				result += "<ul class=\"terminfo-targetNeurons\">";
-				for (minimal_edge_info neuron:target_neurons) {
-					result = addUniqueToString(result, "<li>" + neuron.toString() + "</li>");
+				for (minimal_entity_info neuron:target_neurons) {
+					result = addUniqueToString(result, "<li>" + neuron.intLink() + "</li>");
 				}
 				result += "</ul>";
 			}
