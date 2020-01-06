@@ -601,6 +601,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		private List<domain> template_domains;
 		private template_channel template_channel;
 		private List<minimal_edge_info> targeting_splits; 
+		private List<minimal_edge_info> target_neurons; 
 
 		public String getSource() {
 			String result = "";
@@ -724,6 +725,18 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				result += "<ul class=\"terminfo-targetingSplits\">";
 				for (minimal_edge_info split:targeting_splits) {
 					result += "<li>" + split.toString() + "</li>";
+				}
+				result += "</ul>";
+			}
+			return result;
+		}
+
+		public String targetingNeurons() {
+			String result = null;
+			if (this.target_neurons != null && this.target_neurons.size() > 0) {
+				result += "<ul class=\"terminfo-targetNeurons\">";
+				for (minimal_edge_info neuron:target_neurons) {
+					result += "<li>" + neuron.toString() + "</li>";
 				}
 				result += "</ul>";
 			}
@@ -1108,6 +1121,13 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				tempData = vfbTerm.targetingSplits();
 				if (tempData != null && !tempData.equals("")) {
 					addModelHtml(tempData, "Targeting Splits", header, metadataType, geppettoModelAccess);
+				}
+
+				// Targeting Neurons
+				header = "targetingNeurons";
+				tempData = vfbTerm.targetingNeurons();
+				if (tempData != null && !tempData.equals("")) {
+					addModelHtml(tempData, "Targeting Neurons", header, metadataType, geppettoModelAccess);
 				}
 
 				// Description
