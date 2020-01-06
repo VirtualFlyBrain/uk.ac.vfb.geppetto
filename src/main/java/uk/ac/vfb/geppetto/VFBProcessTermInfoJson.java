@@ -600,6 +600,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		private List<channel_image> channel_image;
 		private List<domain> template_domains;
 		private template_channel template_channel;
+		private List<minimal_edge_info> targeting_splits; 
 
 		public String getSource() {
 			String result = "";
@@ -715,6 +716,18 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				return this.term.definition() + "<br />(" + this.minirefs(this.def_pubs, ", ") + ")";
 			}
 			return this.term.definition();
+		}
+
+		public String targetingSplits() {
+			String result = null;
+			if (this.targeting_splits != null && this.targeting_splits.size() > 0) {
+				result += "<ul class=\"terminfo-targetingSplits\">";
+				for (minimal_edge_info split:targeting_splits) {
+					result += "<li>" + split.toString() + "</li>";
+				}
+				result += "</ul>";
+			}
+			return result;
 		}
 
 		public String minirefs(List<pub> pubs, String sep) {
@@ -1089,6 +1102,13 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				// Types
 				header = "types";
 				superTypes = vfbTerm.term.core.typeList();
+
+				// Targeting Splits
+				header = "targetingSplits";
+				tempData = vfbTerm.targetingSplits();
+				if (tempData != null && !tempData.equals("")) {
+					addModelHtml(tempData, "Targeting Splits", header, metadataType, geppettoModelAccess);
+				}
 
 				// Description
 				header = "description";
