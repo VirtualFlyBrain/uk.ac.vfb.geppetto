@@ -84,7 +84,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 
 		public String types(Boolean show) {
-			if (show) {
+			if (show && this.types != null) {
 				return " " + this.returnType(this.types);
 			}
 			return "";
