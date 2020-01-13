@@ -1127,7 +1127,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				header = "targetingNeurons";
 				tempData = vfbTerm.targetingNeurons();
 				if (tempData != null && !tempData.equals("")) {
-					addModelHtml(tempData, "Targeting Neurons", header, metadataType, geppettoModelAccess);
+					addModelHtml(tempData, "Targeted neurons", header, metadataType, geppettoModelAccess);
 				}
 
 				// Description
