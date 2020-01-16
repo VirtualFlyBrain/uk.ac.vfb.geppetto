@@ -370,6 +370,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				HttpURLConnection huc = (HttpURLConnection) url.openConnection();
 				huc.setRequestMethod("HEAD");
 				huc.setInstanceFollowRedirects(false);
+				huc.setConnectTimeout(5000);
 				return (huc.getResponseCode() == HttpURLConnection.HTTP_OK);
 			}
 			catch(Exception e)
