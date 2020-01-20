@@ -313,6 +313,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	}
 
 	class xref {
+		public String homepage;
 		public String link_base;
 		private String link_postfix;
 		String accession; 
@@ -327,6 +328,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public String link() {
 			if (this.accession != null && !this.accession.equals("None") && !this.accession.equals("")) {
 				return this.link_base + this.accession + this.link_postfix;
+			}
+			if (this.site.homepage != null && this.site.homepage.equals("")) {
+				return this.homepage;
 			}
 			return this.site.iri;
 		}
@@ -380,7 +384,6 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				return false;
 			}
 		}
-
 	}
 
 	class dataset {
