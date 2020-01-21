@@ -796,6 +796,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				}
 				result += "</ul>";
 			}
+			if (result.equals("<ul class=\"terminfo-references\"></ul>")) return "";
 			return result;
 		}
 
