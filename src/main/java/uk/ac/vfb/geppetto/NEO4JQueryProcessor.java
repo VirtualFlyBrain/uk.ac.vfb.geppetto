@@ -41,7 +41,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 
 	private Map<String, Object> processingOutputMap = new HashMap<String, Object>();
 
-	private Boolean debug=false;
+	private Boolean debug=true;
 
 	// START VFB term info schema https://github.com/VirtualFlyBrain/VFB_json_schema/blob/master/src/json_schema/vfb_query.json
 
@@ -113,6 +113,13 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		private minimal_entity_info channel;
 	}
 
+	class license {
+		public minimal_entity_info core;
+		private String link;
+		private String icon;
+		private boolean is_bespoke;
+	}
+
 	class pub {
 		public minimal_entity_info core;
 		public String microref;
@@ -122,6 +129,11 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		private String ISBN;
 	}
 
+	class dataset_counts{
+		public Integer images;
+		public Integer types;
+	}
+
 	class vfb_query {
 		private minimal_entity_info anatomy;
 		public String query;
@@ -129,34 +141,62 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		private List<anatomy_channel_image> anatomy_channel_image;
 		private List<pub> pubs;
 		private pub pub;
+		private minimal_entity_info dataset;
+		private dataset_counts dataset_counts;
+		private List<license> license;
 		private List<minimal_entity_info> stages;
 		private minimal_entity_info expression_pattern;
 		private List<anatomy_channel_image> expressed_in;
 	
 		public String id(){
 			String delim = "----";
-			if (this.expression_pattern != null && this.anatomy != null && this.pub != null) return this.expression_pattern.short_form + delim + this.anatomy.short_form + delim + this.pub.core.short_form;
-			if (this.expression_pattern != null && this.anatomy != null && this.pubs != null && this.pubs.size() == 1) return this.expression_pattern.short_form + delim + this.anatomy.short_form + delim + this.pubs.get(0).core.short_form;
-			if (this.expression_pattern != null && this.anatomy != null && this.pubs != null && this.pubs.size() > 1) {
-				String result = this.expression_pattern.short_form + delim + this.anatomy.short_form;
+			String result = "undefined";
+			if (this.expression_pattern != null){
+				result = this.expression_pattern.short_form;
+			}else if (this.dataset != null){ 
+				result = this.dataset.short_form;
+			}else if (this.anatomy != null) {
+				result = this.anatomy.short_form;
+			}
+			if (this.anatomy != null) {
+				result += delim + this.anatomy.short_form;
+			}else if (this.license != null && this.license.size() > 0){
+				// single license per DataSet assumed:
+				result += delim + this.license.get(0).core.short_form;
+			}else{
+				result += delim + "undefined";
+			}
+			if (this.pub != null) result += delim + this.pub.core.short_form;
+			if (this.pubs != null && this.pubs.size() == 1) result += delim + this.pubs.get(0).core.short_form;
+			if (this.pubs != null && this.pubs.size() > 1) {
 				for (pub pub:this.pubs){
 					result += delim + pub.core.short_form;
 				}
-				return result;
+				
 			}
-			if (this.expression_pattern != null && this.anatomy != null) return this.expression_pattern.short_form + delim + this.anatomy.short_form;
-			if (this.expression_pattern != null) return this.expression_pattern.short_form;
-			return this.anatomy.short_form;
+			return result;
 		}
 
 		public String name(){
 			if (this.expression_pattern != null) return this.expression_pattern.label;
+			if (this.dataset != null) return this.dataset.label;
 			return this.anatomy.label;
 		}
 
 		public String expressed_in(){
 			if (this.expression_pattern != null) return this.anatomy.label;
 			return "";
+		}
+
+		public String licenseLabel(){
+			String result = "";
+			if (this.license != null) {
+				for (license l:this.license){
+					if (!result.equals("")) result += "; ";
+					result += l.core.label;
+				}
+			} 
+			return result;
 		}
 
 		public String stages(){
@@ -282,6 +322,8 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			Integer count = 0;
 			Boolean	hasId = false;
 			Boolean	hasName = false;
+			Boolean hasLicense = false;
+			Boolean hasDatasetCount = false;
 			Boolean	hasExpressed_in = false;
 			Boolean	hasReference = false;
 			Boolean	hasStage = false;
@@ -309,6 +351,10 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 								hasId = true;
 								hasName = true;
 								break;
+							case "dataset":
+								hasId = true;
+								hasName = true;
+								break;
 							case "expression_pattern":
 								hasId = true;
 								hasName = true;
@@ -319,6 +365,12 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 								break;
 							case "pub":
 								hasReference = true;
+								break;
+							case "license":
+								hasLicense = true;
+								break;
+							case "dataset_counts":
+								hasDatasetCount = true;
 								break;
 							case "stages":
 								hasStage = true;
@@ -359,19 +411,23 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			count = 0;
 
 			// set headers
-			if (hasId) processedResults.getHeader().add("ID");
+			processedResults.getHeader().add("ID");
 			if (hasName) processedResults.getHeader().add("Name");
 			if (hasExpressed_in) processedResults.getHeader().add("Expressed_in");
+			if (hasLicense) processedResults.getHeader().add("License");
 			if (hasReference) processedResults.getHeader().add("Reference");
 			if (hasStage) processedResults.getHeader().add("Stage");
 			if (hasImage) processedResults.getHeader().add("Images");
+			if (hasDatasetCount) processedResults.getHeader().add("Image_count");
 
 			for (vfb_query row:table){
 				try{
 					SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
+					String length = "8";
 					if (hasId) processedResult.getValues().add(row.id());
 					if (hasName) processedResult.getValues().add(row.name());
 					if (hasExpressed_in) processedResult.getValues().add(row.expressed_in());
+					if (hasLicense) processedResult.getValues().add(row.licenseLabel());
 					if (hasReference) processedResult.getValues().add(row.reference());
 					if (hasStage) processedResult.getValues().add(row.stages());
 					if (hasImage){
@@ -395,6 +451,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 							processedResult.getValues().add("");
 						}
 					}
+					if (hasDatasetCount) processedResult.getValues().add(String.format("%1$" + length + "s", row.dataset_counts.images.toString()));
 					processedResults.getResults().add(processedResult);
 				}catch (Exception e) {
 					System.out.println("Error creating results row: " + count.toString() + " - " + e.toString());

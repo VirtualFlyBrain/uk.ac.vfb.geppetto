@@ -9,5 +9,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+    # Install Node.js
+    - uses: actions/setup-node@v1
+      with:
+        node-version: 12
+    # Install your dependencies
+    - run: npm ci
     - name: ESLint checks
       uses: gimenete/eslint-action@1.0

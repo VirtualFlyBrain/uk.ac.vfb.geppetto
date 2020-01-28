@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "eslint:github-action": "eslint src/"
+  }
+}
