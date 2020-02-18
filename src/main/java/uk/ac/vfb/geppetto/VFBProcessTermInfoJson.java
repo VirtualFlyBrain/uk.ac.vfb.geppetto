@@ -339,11 +339,12 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			String result = "<a href=\"" + this.link() + "\" target=\"_blank\">";
 			result += this.link_text;
 			// tack site link as comment on xref for later sorting
-			String site = "";
+			String site = this.site.extLink(showTypes);
+			if (this.homepage != null && this.homepage.equals("")) {
+				site = site.replace(this.site.iri,this.homepage);
+			}
 			if (this.icon != null && !this.icon.equals("")) {
-				site = this.site.extLink(showTypes).replace("target=\"_blank\">" + this.site.label, "target=\"_blank\">" + this.site.label + "<img class=\"terminfo-siteicon\" src=\"" + secureUrl(this.icon) + "\" />");
-			}else{
-				site = this.site.extLink(showTypes);
+				site += "<a href=\"" + this.link() + "\" target=\"_blank\">" + "<img class=\"terminfo-siteicon\" src=\"" + secureUrl(this.icon) + "\" /></a>";
 			}
 			result += "</a>";
 			result = "<!--" + site + "-->" + result;
