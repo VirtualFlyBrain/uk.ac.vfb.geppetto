@@ -1301,9 +1301,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					{
 						querys += badge + "<a href=\"#\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + variable.getId() + "," + variable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
 						if (runnableQuery.getPath().equals("ExpOverlapsX")) {
-							queryExpressedInX = "<br>" + badge + "<a href=\"#\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + variable.getId() + "," + variable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
+							queryExpressedInX = "<a href=\"#\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + variable.getId() + "," + variable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
 						}else if (runnableQuery.getPath().equals("TransgeneExpInX")) {
-							queryExpressedInX = "<br>" + badge + "<a href=\"#\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + variable.getId() + "," + variable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
+							queryExpressedInX = "<a href=\"#\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + variable.getId() + "," + variable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
 						}
 					}else if (((superTypes.contains("Painted_domain") || superTypes.contains("Synaptic_neuropil_domain")) || superTypes.contains("Neuron_projection_bundle")) && superTypes.contains("Individual") && classVariable.getId()!="notSet"){
 						if(QueryChecker.check(runnableQuery, classVariable)){
@@ -1325,11 +1325,14 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					addModelHtml(querys, "Query for", "queries", metadataType, geppettoModelAccess);
 				}
 
+				//Indenting embeded queries
+				badge = "<i class=\"popup-icon-link fa fa-quora\" style=\"text-indent:18px;\"></i>";
+
 				// Targeting Splits
 				header = "targetingSplits";
 				tempData = vfbTerm.targetingSplits();
 				if (tempData != null && !tempData.equals("")) {
-					tempData += queryExpressedInX;
+					tempData += badge + queryExpressedInX;
 					addModelHtml(tempData, "Targeting Splits", header, metadataType, geppettoModelAccess);
 
 				}
@@ -1338,7 +1341,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				header = "targetingNeurons";
 				tempData = vfbTerm.targetingNeurons();
 				if (tempData != null && !tempData.equals("")) {
-					tempData += queryExpressedInX;
+					tempData += badge + queryExpressedInX;
 					addModelHtml(tempData, "Targeted Neurons", header, metadataType, geppettoModelAccess);
 				}
 
