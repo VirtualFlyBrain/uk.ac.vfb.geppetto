@@ -1333,8 +1333,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				tempData = vfbTerm.targetingSplits();
 				if (tempData != null && !tempData.equals("")) {
 					tempData += badge + queryExpressedInX;
+					// Remove emptry record:
+					tempData = tempData.replace("<li><a href=\"#\" data-instancepath=\"null\"></a></li>", "");
 					addModelHtml(tempData, "Targeting Splits", header, metadataType, geppettoModelAccess);
-
 				}
 
 				// Targeting Neurons
@@ -1342,6 +1343,8 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				tempData = vfbTerm.targetingNeurons();
 				if (tempData != null && !tempData.equals("")) {
 					tempData += badge + queryExpressedInX;
+					// Remove emptry record:
+					tempData = tempData.replace("<li><a href=\"#\" data-instancepath=\"null\"></a></li>", "");
 					addModelHtml(tempData, "Targeted Neurons", header, metadataType, geppettoModelAccess);
 				}
 
