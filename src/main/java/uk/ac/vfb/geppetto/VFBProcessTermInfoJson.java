@@ -1054,7 +1054,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				System.out.println("Checking template");
 				CompositeType templateMetadataType = (CompositeType) ModelUtility.getTypeFromLibrary("VFB_00101384_metadata", dataSource.getTargetLibrary());
 				System.out.println(templateMetadataType);
-				System.out.println(test.parent.id);
+				System.out.println(templateMetadataType.parent.id);
 			} catch (Exception e) {
 				System.out.println("Error");
 				System.out.println(e);	
