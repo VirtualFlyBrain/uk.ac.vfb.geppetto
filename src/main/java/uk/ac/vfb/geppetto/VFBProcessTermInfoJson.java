@@ -1052,7 +1052,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			try {
 				// checking the template
 				System.out.println("Checking template");
-				List<Type> templateTypes = (List<Type>) GeppettoModelAccess.GeppettoModel.getLibraries();
+				List<Type> templateTypes = (List<Type>) GeppettoModelAccess.geppettoModel.getLibraries();
 				System.out.println(templateTypes[0].getSuperType());
 				System.out.println(templateTypes);
 			} catch (Exception e) {
