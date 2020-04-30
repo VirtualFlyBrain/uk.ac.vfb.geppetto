@@ -1052,9 +1052,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			try {
 				// checking the template
 				System.out.println("Checking template");
-				List<Type> templateTypes = (List<Type>) GeppettoModelAccess.geppettoModel.getLibraries();
-				System.out.println(templateTypes[0].getSuperType());
-				System.out.println(templateTypes);
+				CompositeType templateMetadataType = (CompositeType) ModelUtility.getTypeFromLibrary("VFB_00101384_metadata", dataSource.getTargetLibrary());
+				System.out.println(templateMetadataType);
+				System.out.println(test.parent.id);
 			} catch (Exception e) {
 				System.out.println("Error");
 				System.out.println(e);	
