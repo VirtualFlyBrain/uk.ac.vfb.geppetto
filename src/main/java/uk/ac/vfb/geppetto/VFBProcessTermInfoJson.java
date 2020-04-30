@@ -1052,12 +1052,13 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			try {
 				// checking the template
 				System.out.println("Checking template");
-				List<Type> templateTypes = (List<Type>) ModelUtility.getAllTypesOf("VFB_00101384");
+				List<Type> templateTypes = (List<Type>) GeppettoModelAccess.GeppettoModel.getLibraries();
 				System.out.println(templateTypes[0].getSuperType());
 				System.out.println(templateTypes);
 			} catch (Exception e) {
 				System.out.println("Error");
 				System.out.println(e);	
+				e.printStackTrace();
 			}
 			
 			// provide access to libary of types either dynamically added (as bellow) or loaded from xmi
