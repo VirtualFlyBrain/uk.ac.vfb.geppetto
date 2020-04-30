@@ -1049,6 +1049,15 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			// retrieving the metadatatype
 			CompositeType metadataType = (CompositeType) ModelUtility.getTypeFromLibrary(variable.getId() + "_metadata", dataSource.getTargetLibrary());
 
+			try {
+				// checking the template
+				List<Type> templateTypes = (List<Type>) ModelUtility.getAllTypesOf("VFB_00101384");
+				System.out.println(templateTypes[0].getSuperType());
+				System.out.println(templateTypes);
+			} catch (Exception e) {
+				System.out.println(e);	
+			}
+			
 			// provide access to libary of types either dynamically added (as bellow) or loaded from xmi
 			List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
 
