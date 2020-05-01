@@ -1197,8 +1197,15 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				if (vfbTerm.channel_image != null && vfbTerm.channel_image.size() > 0) {
 					// Recording Aligned Template
 					template = vfbTerm.channel_image.get(0).image.template_anatomy.short_form;
-					if (null != (CompositeType) ModelUtility.getTypeFromLibrary(template + "_metadata", dataSource.getTargetLibrary()))
+					CompositeType testTemplate = null;
+					try {
+						testTemplate = (CompositeType) ModelUtility.getTypeFromLibrary(template + "_metadata", dataSource.getTargetLibrary());
+					} catch (Exception e) {
+						testTemplate = null;
+					}
+					if (null == testTemplate)
 					{
+						if (debug) System.out.println("Image aligned to a template that isn't loaded: " + template);
 						template = "";
 						// TODO: add alternative aligned images as thumbnails
 					}else{
