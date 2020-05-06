@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.swing.GroupLayout.Alignment;
+
 import java.util.Collections;
 
 import com.google.gson.Gson;
@@ -962,6 +965,19 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			return null;
 		}
 
+		public String imageFile(channel_image ci, String filename) {
+			try{
+				if (checkURL(ci.getUrl("", filename))) {
+					return ci.getUrl("", filename);
+				}
+			} catch (Exception e) {
+				System.out.println("Error in vfbTerm.imageFile: " + e.toString());
+				e.printStackTrace();
+			}
+			System.out.println("Failed to find: " + filename);
+			return null;
+		}
+
 		public String imageFile(template_channel template, String filename) {
 			if (checkURL(template.image_folder + filename)) {
 				return template.image_folder + filename;
@@ -1195,57 +1211,66 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 				header = "channel_image";
 				if (vfbTerm.channel_image != null && vfbTerm.channel_image.size() > 0) {
-					// Recording Aligned Template
-					template = vfbTerm.channel_image.get(0).image.template_anatomy.short_form;
-					CompositeType testTemplate = null;
-					try {
-						testTemplate = (CompositeType) ModelUtility.getTypeFromLibrary(template + "_metadata", dataSource.getTargetLibrary());
-					} catch (Exception e) {
-						testTemplate = null;
-					}
-					if (null == testTemplate)
-					{
-						if (debug) System.out.println("Image aligned to a template that isn't loaded: " + template);
-						template = "";
-						// TODO: add alternative aligned images as thumbnails
-					}else{
-						addModelHtml(vfbTerm.channel_image.get(0).image.template_anatomy.intLink(), "Aligned to", "template", metadataType, geppettoModelAccess);
-						classParentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(vfbTerm.channel_image.get(0).image.template_anatomy.short_form, dependenciesLibrary));
-						// thumbnail
-						if (vfbTerm.thumbnails(template) != null){
-							addModelThumbnails(vfbTerm.thumbnails(template), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
-						}
-						// OBJ - 3D mesh
-						tempData = vfbTerm.imageFile(vfbTerm.channel_image, "volume_man.obj");
-						if (tempData == null){
-							if (debug) System.out.println("OBJ " + tempData);
-							tempData = vfbTerm.imageFile(vfbTerm.channel_image, "volume.obj");
-						}
-						if (tempData != null){
-							addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId(), parentType, geppettoModelAccess, dataSource);
-						}
+					String oldTemplate = template;
 					
-						// SWC - 3D mesh
-						tempData = vfbTerm.imageFile(vfbTerm.channel_image, "volume.swc");
-						if (tempData != null){
-							if (debug) System.out.println("SWC " + tempData);
-							addModelSwc(tempData.replace("https://","http://"), "3D Skeleton", variable.getId(), parentType, geppettoModelAccess, dataSource);
+					for (channel_image alignment:vfbTerm.channel_image) {
+						oldTemplate = template;
+						template = alignment.image.template_anatomy.short_form;
+						// Recording Aligned Template
+						CompositeType testTemplate = null;
+						try {
+							testTemplate = (CompositeType) ModelUtility.getTypeFromLibrary(template + "_metadata", dataSource.getTargetLibrary());
+						} catch (Exception e) {
+							testTemplate = null;
 						}
-					
-						// Slices - 3D slice viewer
-						tempData = vfbTerm.imageFile(vfbTerm.channel_image, "volume.wlz");
-						if (tempData != null){
-							if (debug) System.out.println("WLZ " + tempData);
-							addModelSlices(tempData.replace("http://","https://"), "Stack Viewer Slices", variable.getId(), parentType, geppettoModelAccess, dataSource, vfbTerm.getDomains());
-						}
+
+						if (null == testTemplate)
+						{
+							if (debug) System.out.println("Image aligned to a template that isn't loaded: " + template);
+							addModelThumbnails(vfbTerm.thumbnails(template), "Examples", "examples", metadataType, geppettoModelAccess);
+							parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("hasExamples", dependenciesLibrary));
+							template = oldTemplate;
+						}else{
+							addModelHtml(alignment.image.template_anatomy.intLink(), "Aligned to", "template", metadataType, geppettoModelAccess);
+							classParentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(alignment.image.template_anatomy.short_form, dependenciesLibrary));
+							// thumbnail
+							if (vfbTerm.thumbnails(template) != null){
+								addModelThumbnails(vfbTerm.thumbnails(template), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
+							}
+							// OBJ - 3D mesh
+							tempData = vfbTerm.imageFile(Alignment, "volume_man.obj");
+							if (tempData == null){
+								if (debug) System.out.println("OBJ " + tempData);
+								tempData = vfbTerm.imageFile(Alignment, "volume.obj");
+							}
+							if (tempData != null){
+								addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId(), parentType, geppettoModelAccess, dataSource);
+							}
 						
-						// Download - NRRD stack
-						tempData = vfbTerm.imageFile(vfbTerm.channel_image, "volume.nrrd");
-						if (tempData != null){
-							if (debug) System.out.println("NRRD " + tempData);
-							addModelHtml("Aligned Image: <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a><br>Note: see source & license above for terms of reuse and correct attribution.", "Downloads", "downloads", metadataType, geppettoModelAccess);
+							// SWC - 3D mesh
+							tempData = vfbTerm.imageFile(Alignment, "volume.swc");
+							if (tempData != null){
+								if (debug) System.out.println("SWC " + tempData);
+								addModelSwc(tempData.replace("https://","http://"), "3D Skeleton", variable.getId(), parentType, geppettoModelAccess, dataSource);
+							}
+						
+							// Slices - 3D slice viewer
+							tempData = vfbTerm.imageFile(Alignment, "volume.wlz");
+							if (tempData != null){
+								if (debug) System.out.println("WLZ " + tempData);
+								addModelSlices(tempData.replace("http://","https://"), "Stack Viewer Slices", variable.getId(), parentType, geppettoModelAccess, dataSource, vfbTerm.getDomains());
+							}
+							
+							// Download - NRRD stack
+							tempData = vfbTerm.imageFile(Alignment, "volume.nrrd");
+							if (tempData != null){
+								if (debug) System.out.println("NRRD " + tempData);
+								addModelHtml("Aligned Image: <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a><br>Note: see source & license above for terms of reuse and correct attribution.", "Downloads", "downloads", metadataType, geppettoModelAccess);
+							}
 						}
+
 					}
+	
 				}
 
 				header = "template_channel";
