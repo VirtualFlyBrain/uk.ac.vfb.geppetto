@@ -1238,31 +1238,31 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 								addModelThumbnails(vfbTerm.thumbnails(template), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
 							}
 							// OBJ - 3D mesh
-							tempData = vfbTerm.imageFile(Alignment, "volume_man.obj");
+							tempData = vfbTerm.imageFile(alignment, "volume_man.obj");
 							if (tempData == null){
 								if (debug) System.out.println("OBJ " + tempData);
-								tempData = vfbTerm.imageFile(Alignment, "volume.obj");
+								tempData = vfbTerm.imageFile(alignment, "volume.obj");
 							}
 							if (tempData != null){
 								addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId(), parentType, geppettoModelAccess, dataSource);
 							}
 						
 							// SWC - 3D mesh
-							tempData = vfbTerm.imageFile(Alignment, "volume.swc");
+							tempData = vfbTerm.imageFile(alignment, "volume.swc");
 							if (tempData != null){
 								if (debug) System.out.println("SWC " + tempData);
 								addModelSwc(tempData.replace("https://","http://"), "3D Skeleton", variable.getId(), parentType, geppettoModelAccess, dataSource);
 							}
 						
 							// Slices - 3D slice viewer
-							tempData = vfbTerm.imageFile(Alignment, "volume.wlz");
+							tempData = vfbTerm.imageFile(alignment, "volume.wlz");
 							if (tempData != null){
 								if (debug) System.out.println("WLZ " + tempData);
 								addModelSlices(tempData.replace("http://","https://"), "Stack Viewer Slices", variable.getId(), parentType, geppettoModelAccess, dataSource, vfbTerm.getDomains());
 							}
 							
 							// Download - NRRD stack
-							tempData = vfbTerm.imageFile(Alignment, "volume.nrrd");
+							tempData = vfbTerm.imageFile(alignment, "volume.nrrd");
 							if (tempData != null){
 								if (debug) System.out.println("NRRD " + tempData);
 								addModelHtml("Aligned Image: <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a><br>Note: see source & license above for terms of reuse and correct attribution.", "Downloads", "downloads", metadataType, geppettoModelAccess);
