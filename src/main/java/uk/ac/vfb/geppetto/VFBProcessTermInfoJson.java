@@ -1211,8 +1211,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 				header = "channel_image";
 				if (vfbTerm.channel_image != null && vfbTerm.channel_image.size() > 0) {
-					String oldTemplate = template;
-					
+					String otherTemplate = template;
 					for (channel_image alignment:vfbTerm.channel_image) {
 						oldTemplate = template;
 						template = alignment.image.template_anatomy.short_form;
@@ -1223,18 +1222,20 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 						} catch (Exception e) {
 							testTemplate = null;
 						}
-
 						if (null == testTemplate)
 						{
 							if (debug) System.out.println("Image aligned to a template that isn't loaded: " + template);
+							addModelHtml(alignment.image.template_anatomy.intLink(), "Aligned to", "template", metadataType, geppettoModelAccess);
+							classParentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(template, dependenciesLibrary));
 							template = oldTemplate;
 							// thumbnail
 							if (vfbTerm.thumbnails(template) != null){
 								addModelThumbnails(vfbTerm.thumbnails(template), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
 							}
 						}else{
+							otherTemplate = template;
 							addModelHtml(alignment.image.template_anatomy.intLink(), "Aligned to", "template", metadataType, geppettoModelAccess);
-							classParentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(alignment.image.template_anatomy.short_form, dependenciesLibrary));
+							classParentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(template, dependenciesLibrary));
 							// thumbnail
 							if (vfbTerm.thumbnails(template) != null){
 								addModelThumbnails(vfbTerm.thumbnails(template), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
