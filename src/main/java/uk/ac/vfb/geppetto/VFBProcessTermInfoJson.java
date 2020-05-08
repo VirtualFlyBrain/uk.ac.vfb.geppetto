@@ -1211,7 +1211,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 				header = "channel_image";
 				if (vfbTerm.channel_image != null && vfbTerm.channel_image.size() > 0) {
-					String otherTemplate = template;
+					String oldTemplate = template;
 					for (channel_image alignment:vfbTerm.channel_image) {
 						oldTemplate = template;
 						template = alignment.image.template_anatomy.short_form;
