@@ -1212,6 +1212,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				header = "channel_image";
 				if (vfbTerm.channel_image != null && vfbTerm.channel_image.size() > 0) {
 					String oldTemplate = template;
+					String tempLink = "";
 					for (channel_image alignment:vfbTerm.channel_image) {
 						oldTemplate = template;
 						template = alignment.image.template_anatomy.short_form;
@@ -1226,10 +1227,14 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 						{
 							if (debug) System.out.println("Image aligned to a template that isn't loaded: " + template);
 							
-							if (oldTemplate != null && oldTemplate != "") template = oldTemplate;
+							if (oldTemplate != null && oldTemplate != "") {
+								template = oldTemplate;
+								tempLink = alignment.image.template_anatomy.intLink();
+							}
 							
 						}else{
 							oldTemplate = template;
+							tempLink = alignment.image.template_anatomy.intLink();
 							// OBJ - 3D mesh
 							tempData = vfbTerm.imageFile(alignment, "volume_man.obj");
 							if (tempData == null){
@@ -1239,7 +1244,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 							if (tempData != null){
 								addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId(), parentType, geppettoModelAccess, dataSource);
 							}
-							
+
 							// SWC - 3D mesh
 							tempData = vfbTerm.imageFile(alignment, "volume.swc");
 							if (tempData != null){
@@ -1264,7 +1269,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 					}
 					if (template != null && template != "") {
-						addModelHtml(alignment.image.template_anatomy.intLink(), "Aligned to", "template", metadataType, geppettoModelAccess);
+						addModelHtml(tempLink, "Aligned to", "template", metadataType, geppettoModelAccess);
 						classParentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(template, dependenciesLibrary));
 						// thumbnail
 						if (vfbTerm.thumbnails(template) != null){
