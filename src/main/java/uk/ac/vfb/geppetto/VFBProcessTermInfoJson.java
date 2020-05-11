@@ -1225,21 +1225,11 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 						if (null == testTemplate)
 						{
 							if (debug) System.out.println("Image aligned to a template that isn't loaded: " + template);
-							addModelHtml(alignment.image.template_anatomy.intLink(), "Aligned to", "template", metadataType, geppettoModelAccess);
-							classParentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(template, dependenciesLibrary));
-							template = oldTemplate;
-							// thumbnail
-							if (vfbTerm.thumbnails(template) != null){
-								addModelThumbnails(vfbTerm.thumbnails(template), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
-							}
+							
+							if (oldTemplate != null && oldTemplate != "") template = oldTemplate;
+							
 						}else{
 							oldTemplate = template;
-							addModelHtml(alignment.image.template_anatomy.intLink(), "Aligned to", "template", metadataType, geppettoModelAccess);
-							classParentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(template, dependenciesLibrary));
-							// thumbnail
-							if (vfbTerm.thumbnails(template) != null){
-								addModelThumbnails(vfbTerm.thumbnails(template), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
-							}
 							// OBJ - 3D mesh
 							tempData = vfbTerm.imageFile(alignment, "volume_man.obj");
 							if (tempData == null){
@@ -1249,7 +1239,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 							if (tempData != null){
 								addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId(), parentType, geppettoModelAccess, dataSource);
 							}
-						
+							
 							// SWC - 3D mesh
 							tempData = vfbTerm.imageFile(alignment, "volume.swc");
 							if (tempData != null){
@@ -1272,6 +1262,14 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 							}
 						}
 
+					}
+					if (template != null && template != "") {
+						addModelHtml(alignment.image.template_anatomy.intLink(), "Aligned to", "template", metadataType, geppettoModelAccess);
+						classParentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(template, dependenciesLibrary));
+						// thumbnail
+						if (vfbTerm.thumbnails(template) != null){
+							addModelThumbnails(vfbTerm.thumbnails(template), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
+						}
 					}
 	
 				}
