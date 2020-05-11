@@ -1233,7 +1233,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 								addModelThumbnails(vfbTerm.thumbnails(template), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
 							}
 						}else{
-							otherTemplate = template;
+							oldTemplate = template;
 							addModelHtml(alignment.image.template_anatomy.intLink(), "Aligned to", "template", metadataType, geppettoModelAccess);
 							classParentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(template, dependenciesLibrary));
 							// thumbnail
