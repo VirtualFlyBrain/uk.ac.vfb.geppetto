@@ -1062,6 +1062,20 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			// Template space:
 			String template = "";
 
+			CompositeType testTemplate = null;
+			List<String> availableTemplates = Arrays.asList("VFB_00017894","VFB_00101567","VFB_00101384","VFB_00050000","VFB_00049000","VFB_00100000","VFB_00030786");
+			for (String at:availableTemplates) {
+				try {
+					testTemplate = (CompositeType) ModelUtility.getTypeFromLibrary(at + "_metadata", dataSource.getTargetLibrary());
+				} catch (Exception e) {
+					testTemplate = null;
+				}
+				if (testTemplate != null) {
+					template = at;
+					break;
+				}
+			}
+
 			// retrieving the metadatatype
 			CompositeType metadataType = (CompositeType) ModelUtility.getTypeFromLibrary(variable.getId() + "_metadata", dataSource.getTargetLibrary());
 			
@@ -1216,14 +1230,8 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					for (channel_image alignment:vfbTerm.channel_image) {
 						oldTemplate = template;
 						template = alignment.image.template_anatomy.short_form;
-						// Recording Aligned Template
-						CompositeType testTemplate = null;
-						try {
-							testTemplate = (CompositeType) ModelUtility.getTypeFromLibrary(template + "_metadata", dataSource.getTargetLibrary());
-						} catch (Exception e) {
-							testTemplate = null;
-						}
-						if (null == testTemplate)
+						
+						if (oldTemplate != template)
 						{
 							if (debug) System.out.println("Image aligned to a template that isn't loaded: " + template);
 							
@@ -1289,7 +1297,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					}
 					addModelHtml(vfbTerm.term.core.intLink(), "Aligned to", "template", metadataType, geppettoModelAccess);
 					// thumbnail
-					addModelThumbnails(vfbTerm.thumbnail(), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
+					addModelThumbnails(vfbTerm.thumbnail(template), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
 					// OBJ - 3D mesh
 					tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume_man.obj");
 					if (tempData == null){
