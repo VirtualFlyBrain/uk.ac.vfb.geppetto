@@ -1229,9 +1229,11 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 							
 							if (oldTemplate != null && oldTemplate != "") {
 								template = oldTemplate;
+							}
+
+							if (tempLink != null && tempLink == "") {
 								tempLink = alignment.image.template_anatomy.intLink();
 							}
-							
 						}else{
 							oldTemplate = template;
 							tempLink = alignment.image.template_anatomy.intLink();
