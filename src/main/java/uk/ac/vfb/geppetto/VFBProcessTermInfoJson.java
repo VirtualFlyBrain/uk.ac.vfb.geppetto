@@ -1075,6 +1075,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				if (testTemplate != null) {
 					template = at;
 					loadedTemplate = at;
+					if (debug) System.out.println("Template detected: " + at);
 					break;
 				}
 			}
