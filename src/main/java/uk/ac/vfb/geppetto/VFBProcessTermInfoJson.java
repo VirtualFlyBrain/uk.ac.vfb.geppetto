@@ -1061,6 +1061,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		{
 			// Template space:
 			String template = "";
+			String loadedTemplate = "";
 
 			// Determine loaded template
 			CompositeType testTemplate = null;
@@ -1073,6 +1074,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				}
 				if (testTemplate != null) {
 					template = at;
+					loadedTemplate = at;
 					break;
 				}
 			}
@@ -1232,7 +1234,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 						oldTemplate = template;
 						template = alignment.image.template_anatomy.short_form;
 						
-						if (oldTemplate != template)
+						if (loadedTemplate != "" && loadedTemplate != template)
 						{
 							if (debug) System.out.println("Image aligned to a template that isn't loaded: " + template);
 							
