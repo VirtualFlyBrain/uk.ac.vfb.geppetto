@@ -1235,7 +1235,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 						oldTemplate = template;
 						template = alignment.image.template_anatomy.short_form;
 						
-						if (loadedTemplate != "" && !loadedTemplate.equals(template))
+						if (vfbTerm.channel_image.size() > 1 && loadedTemplate != "" && !loadedTemplate.equals(template))
 						{
 							if (debug) System.out.println("Image aligned to a template that isn't loaded: " + template);
 							
