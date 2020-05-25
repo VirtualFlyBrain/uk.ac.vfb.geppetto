@@ -1091,7 +1091,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
 
 			List<String> superTypes = Arrays.asList();
-			Boolean showTypes = true; //Arrays.asList("Class","Individual","Anatomy","Template","Motor_neuron","Cell","Neuron","pub","License","Ganglion","Expression_pattern","Neuromere","DataSet","Cluster","Synaptic_neuropil_block","Synaptic_neuropil_subdomain","Synaptic_neuropil_domain","Synaptic_neuropil","Clone","Neuron_projection_bundle","Sensory_neuron","Site","Serotonergic","Person","Peptidergic_neuron","Painted_domain","Octopaminergic","Neuroblast","Motor_neuron","Glutamatergic","Glial_cell","Ganglion","GABAergic","Dopaminergic","Cholinergic"); // TODO: Fill in with passed types
+			Boolean showTypes = true; //Arrays.asList("Class","Individual","Anatomy","Template","Motor_neuron","Cell","Neuron","pub","License","Ganglion","Expression_pattern","Neuromere","DataSet","Cluster","Synaptic_neuropil_block","Synaptic_neuropil_subdomain","Synaptic_neuropil_domain","Synaptic_neuropil","Clone","Neuron_projection_bundle","Sensory_neuron","Site","Serotonergic","Person","Peptidergic_neuron","Painted_domain","Octopaminergic","Neuroblast","Motor_neuron","Glutamatergic","Glial_cell","Ganglion","GABAergic","Dopaminergic","Cholinergic"); 
 			String tempData = "";
 			String header = "loading";
 			String references = ""; 
@@ -1235,8 +1235,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 						oldTemplate = template;
 						template = alignment.image.template_anatomy.short_form;
 						
-						if (vfbTerm.channel_image.size() > 1 && loadedTemplate != "" && !loadedTemplate.equals(template))
-						{
+						if ((vfbTerm.channel_image.size() > 1) && ((loadedTemplate != "") && (!loadedTemplate.equals(template)))) {
 							if (debug) System.out.println("Image aligned to a template that isn't loaded: " + template);
 							
 							if (oldTemplate != null && oldTemplate != "") {
@@ -1246,12 +1245,12 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 							if (tempLink != null && tempLink == "") {
 								tempLink = alignment.image.template_anatomy.intLink();
 							}
-						}else{
+						} else {
 							oldTemplate = template;
 							tempLink = alignment.image.template_anatomy.intLink();
 							// OBJ - 3D mesh
 							tempData = vfbTerm.imageFile(alignment, "volume_man.obj");
-							if (tempData == null){
+							if (tempData == null) {
 								if (debug) System.out.println("OBJ " + tempData);
 								tempData = vfbTerm.imageFile(alignment, "volume.obj");
 							}
@@ -1261,14 +1260,14 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 							// SWC - 3D mesh
 							tempData = vfbTerm.imageFile(alignment, "volume.swc");
-							if (tempData != null){
+							if (tempData != null) {
 								if (debug) System.out.println("SWC " + tempData);
 								addModelSwc(tempData.replace("https://","http://"), "3D Skeleton", variable.getId(), parentType, geppettoModelAccess, dataSource);
 							}
 						
 							// Slices - 3D slice viewer
 							tempData = vfbTerm.imageFile(alignment, "volume.wlz");
-							if (tempData != null){
+							if (tempData != null) {
 								if (debug) System.out.println("WLZ " + tempData);
 								addModelSlices(tempData.replace("http://","https://"), "Stack Viewer Slices", variable.getId(), parentType, geppettoModelAccess, dataSource, vfbTerm.getDomains());
 							}
