@@ -1248,6 +1248,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 							}
 						}else{
 							oldTemplate = template;
+							if (loadedTemplate == "") {
+								loadedTemplate = template;
+							}
 							tempLink = alignment.image.template_anatomy.intLink();
 							// OBJ - 3D mesh
 							tempData = vfbTerm.imageFile(alignment, "volume_man.obj");
