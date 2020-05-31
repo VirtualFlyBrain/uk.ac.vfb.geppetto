@@ -33,6 +33,8 @@ public class OWLeryQueryProcessor3 extends AQueryProcessor
 
 	private Map<String, Object> processingOutputMap = new HashMap<String, Object>();
 
+	private Boolean debug=false;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -58,7 +60,7 @@ public class OWLeryQueryProcessor3 extends AQueryProcessor
 		QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
 		int idIndex = -1;
 
-		if (processingOutputMap.keySet().contains("ARRAY_ID_RESULTS")) {
+		if (debug && processingOutputMap.keySet().contains("ARRAY_ID_RESULTS")) {
 			System.out.println("passed:");
 			System.out.println(processingOutputMap.get("ARRAY_ID_RESULTS").toString());
 		}
@@ -94,14 +96,14 @@ public class OWLeryQueryProcessor3 extends AQueryProcessor
 		}
 		ArrayList<ArrayList<String>> concatIds = new ArrayList<ArrayList<String>>();
 		if (processingOutputMap.keySet().contains("ARRAY_ID_RESULTS")) {
-			System.out.println("passing full");
+			if (debug) System.out.println("passing full");
 			concatIds = (ArrayList<ArrayList<String>>) processingOutputMap.get("ARRAY_ID_RESULTS");	
 		}
 
 		concatIds.add(new ArrayList<String>(ids));
 		processingOutputMap.clear();
 		processingOutputMap.put("ARRAY_ID_RESULTS", concatIds);
-		System.out.println(processingOutputMap.get("ARRAY_ID_RESULTS").toString());
+		if (debug) System.out.println(processingOutputMap.get("ARRAY_ID_RESULTS").toString());
 		return processedResults;
 	}
 

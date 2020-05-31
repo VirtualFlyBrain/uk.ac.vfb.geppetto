@@ -29,6 +29,8 @@ public class OWLeryQueryProcessor1 extends AQueryProcessor
 
 	private Map<String, Object> processingOutputMap = new HashMap<String, Object>();
 
+	private Boolean debug=false;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -70,7 +72,7 @@ public class OWLeryQueryProcessor1 extends AQueryProcessor
 			for(AQueryResult result : results.getResults())
 			{
 				List<String> idsList = (ArrayList)((QueryResult) result).getValues().get(idIndex);
-				//System.out.println(idsList);
+				if (debug) System.out.println(idsList);
 				for(String id : idsList) {
 					String subID = id.substring((id.lastIndexOf('/')+1) , id.length()).toString();
 					ids.add("\"" + subID + "\"");

@@ -29,6 +29,8 @@ public class OWLeryQueryProcessor2 extends AQueryProcessor
 
 	private Map<String, Object> processingOutputMap = new HashMap<String, Object>();
 
+	private Boolean debug=false;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -89,7 +91,7 @@ public class OWLeryQueryProcessor2 extends AQueryProcessor
 			}
 		}
 		
-		System.out.println(ids);
+		if (debug) System.out.println(ids);
 
 		processingOutputMap.put("ARRAY_ID_RESULTS", ids);
 
