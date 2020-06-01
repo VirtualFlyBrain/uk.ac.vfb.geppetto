@@ -87,7 +87,6 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 					def = def.substring(0, 250) + "...";
 				}
 				processedResult.getValues().add(def);
-				
 				try{
 					String type = cleanType((List<String>) results.getValue("type", i));
 					processedResult.getValues().add(type);
@@ -96,7 +95,6 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 					e.printStackTrace();
 					processedResult.getValues().add("");
 				}
-				
 				Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
 				exampleVar.setId("images");
 				exampleVar.setName("Images");
@@ -108,8 +106,16 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 				if (results.getValue("file", i) != null) {
 
 					String file = (String) results.getValue("file", i);
-
-					addImage(file, name, id, images, 0);
+					if (file.startsWith("[")) {
+						List<String> files = (List<String>) results.getValue("file", i);
+						int j = 0;
+						for (String f : files) {
+							addImage(f, name, id, images, j);
+							j++;
+						}
+					} else {
+						addImage(file, name, id, images, 0);
+					}
 
 				}else if (results.getValue("inds", i) != null){
 					List<Object> currentObjects = (List<Object>) results.getValue("inds", i);
