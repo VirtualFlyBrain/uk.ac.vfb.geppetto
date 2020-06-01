@@ -110,7 +110,12 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 						List<String> files = (List<String>) results.getValue("file", i);
 						int j = 0;
 						for (String f : files) {
-							addImage(f, name, id, images, j);
+							// Forcing selected template loasding where 2 options exist:
+							if (f.contains("VFB_")) {
+								addImage(f, name, "[" + f.substring(f.indexOf("VFB_"), 8) + id + "]", images, j);
+							}else{
+								addImage(f, name, id, images, j);
+							}
 							j++;
 						}
 					} else {
