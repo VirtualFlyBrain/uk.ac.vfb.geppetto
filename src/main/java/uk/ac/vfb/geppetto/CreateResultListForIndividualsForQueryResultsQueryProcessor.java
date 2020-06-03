@@ -105,8 +105,7 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 				//Check is single file or list of individuals
 				if (results.getValue("file", i) != null) {
 
-					String file = (String) results.getValue("file", i);
-					if (file.startsWith("[")) {
+					if (results.getValue("file", i).getType() == java.util.ArrayList) {
 						List<String> files = (List<String>) results.getValue("file", i);
 						int j = 0;
 						for (String f : files) {
@@ -119,6 +118,7 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 							j++;
 						}
 					} else {
+						String file = (String) results.getValue("file", i);
 						addImage(file, name, id, images, 0);
 					}
 
