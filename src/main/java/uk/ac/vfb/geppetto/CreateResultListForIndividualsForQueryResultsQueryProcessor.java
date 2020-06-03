@@ -43,6 +43,7 @@ import org.geppetto.model.values.*;
 import org.geppetto.model.variables.Variable;
 import org.geppetto.model.variables.VariablesFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -105,7 +106,7 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 				//Check is single file or list of individuals
 				if (results.getValue("file", i) != null) {
 
-					if (results.getValue("file", i).getType() == java.util.ArrayList) {
+					if ((results.getValue("file", i)).getClass() == ArrayList.class) {
 						List<String> files = (List<String>) results.getValue("file", i);
 						int j = 0;
 						for (String f : files) {
