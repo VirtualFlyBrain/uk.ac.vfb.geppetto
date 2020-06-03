@@ -112,7 +112,7 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 						for (String f : files) {
 							// Forcing selected template loasding where 2 options exist:
 							if (f.indexOf("VFB_") > 0) {
-								addImage(f, name, "[" + f.substring(f.indexOf("VFB_"), 8) + "," + id + "]", images, j);
+								addImage(f, name, "[" + f.substring(f.indexOf("VFB_"), (f.indexOf("VFB_") + 8)) + "," + id + "]", images, j);
 							}else{
 								addImage(f, name, id, images, j);
 							}
