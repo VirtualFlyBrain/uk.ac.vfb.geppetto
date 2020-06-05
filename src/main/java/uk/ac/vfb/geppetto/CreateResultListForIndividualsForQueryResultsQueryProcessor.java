@@ -42,11 +42,12 @@ import org.geppetto.model.util.GeppettoVisitingException;
 import org.geppetto.model.values.*;
 import org.geppetto.model.variables.Variable;
 import org.geppetto.model.variables.VariablesFactory;
+import org.geppetto.model.types.CompositeType;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
+import java.lang.reflect.Array;
 
 /**
  * @author robertcourt
