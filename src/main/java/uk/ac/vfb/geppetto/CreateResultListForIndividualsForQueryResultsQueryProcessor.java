@@ -74,6 +74,27 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 			processedResults.getHeader().add("Type");
 			processedResults.getHeader().add("Images");
 
+			// Template space:
+			String template = "";
+			String loadedTemplate = "";
+
+			// Determine loaded template
+			CompositeType testTemplate = null;
+			List<String> availableTemplates = Arrays.asList("VFB_00017894","VFB_00101567","VFB_00101384","VFB_00050000","VFB_00049000","VFB_00100000","VFB_00030786");
+			for (String at:availableTemplates) {
+				try {
+					testTemplate = (CompositeType) ModelUtility.getTypeFromLibrary(at + "_metadata", dataSource.getTargetLibrary());
+				} catch (Exception e) {
+					testTemplate = null;
+				}
+				if (testTemplate != null) {
+					template = at;
+					loadedTemplate = at;
+					if (debug) System.out.println("Template detected: " + at);
+					break;
+				}
+			}
+
 			while(results.getValue("id", i) != null)
 			{
 				SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
@@ -109,14 +130,26 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 					if ((results.getValue("file", i)).getClass() == ArrayList.class) {
 						List<String> files = (List<String>) results.getValue("file", i);
 						int j = 0;
-						for (String f : files) {
-							// Forcing selected template loasding where 2 options exist:
-							if (f.indexOf("VFB_") > 0) {
-								addImage(f, name, f.substring(f.indexOf("VFB_"), (f.indexOf("VFB_") + 12)) + "," + id, images, j);
-							}else{
-								addImage(f, name, id, images, j);
+
+						if (loadedTemplate != "") {
+							for (String f : files) {
+								if (f.contains(loadedTemplate)) {
+									addImage(f, name, f.substring(f.indexOf("VFB_"), (f.indexOf("VFB_") + 12)) + "," + id, images, j);
+									j++;
+								}
 							}
-							j++;
+						}
+
+						for (String f : files) {
+							if (!f.contains(loadedTemplate)) {
+								// Forcing selected template loasding where 2 options exist:
+								if (f.indexOf("VFB_") > 0) {
+									addImage(f, name, f.substring(f.indexOf("VFB_"), (f.indexOf("VFB_") + 12)) + "," + id, images, j);
+								}else{
+									addImage(f, name, id, images, j);
+								}
+								j++;
+							}
 						}
 					} else {
 						String file = (String) results.getValue("file", i);
