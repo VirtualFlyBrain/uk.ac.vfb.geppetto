@@ -43,10 +43,12 @@ import org.geppetto.model.values.*;
 import org.geppetto.model.variables.Variable;
 import org.geppetto.model.variables.VariablesFactory;
 import org.geppetto.model.types.CompositeType;
+import org.geppetto.model.util.ModelUtility;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Arrays;
 import java.lang.reflect.Array;
 
 /**
@@ -74,6 +76,8 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 			processedResults.getHeader().add("Definition");
 			processedResults.getHeader().add("Type");
 			processedResults.getHeader().add("Images");
+
+			Boolean debug=false;
 
 			// Template space:
 			String template = "";
