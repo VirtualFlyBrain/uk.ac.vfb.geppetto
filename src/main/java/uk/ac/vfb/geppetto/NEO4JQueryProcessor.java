@@ -27,6 +27,8 @@ import org.geppetto.model.values.ArrayElement;
 import org.geppetto.model.variables.VariablesFactory;
 import org.geppetto.model.types.TypesPackage;
 import org.geppetto.model.types.Type;
+import org.geppetto.model.types.CompositeType;
+import org.geppetto.model.util.ModelUtility;
 
 import com.google.gson.Gson;
 
@@ -456,13 +458,13 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 						exampleVar.setId("images");
 						exampleVar.setName("Images");
 						exampleVar.getTypes().add(imageType);
-						ArrayValue images = row.images();
+						ArrayValue images = row.images(template);
 						if (!images.getElements().isEmpty())
 						{
 							if (images.getElements().size() > 1){
-								exampleVar.getInitialValues().put(imageType, images(template));
+								exampleVar.getInitialValues().put(imageType, images);
 							}else{
-								exampleVar.getInitialValues().put(imageType, images(template).getElements().get(0).getInitialValue());
+								exampleVar.getInitialValues().put(imageType, images.getElements().get(0).getInitialValue());
 							}
 							processedResult.getValues().add(GeppettoSerializer.serializeToJSON(exampleVar));
 							if (debug) System.out.println("DEBUG: Image: " + GeppettoSerializer.serializeToJSON(exampleVar) );
