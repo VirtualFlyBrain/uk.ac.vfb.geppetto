@@ -147,13 +147,13 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		private List<minimal_entity_info> stages;
 		private minimal_entity_info expression_pattern;
 		private List<anatomy_channel_image> expressed_in;
-	
+
 		public String id(){
 			String delim = "----";
 			String result = "undefined";
 			if (this.expression_pattern != null){
 				result = this.expression_pattern.short_form;
-			}else if (this.dataset != null){ 
+			}else if (this.dataset != null){
 				result = this.dataset.short_form;
 			}else if (this.anatomy != null) {
 				result = this.anatomy.short_form;
@@ -172,7 +172,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 				for (pub pub:this.pubs){
 					result += delim + pub.core.short_form;
 				}
-				
+
 			}
 			return result;
 		}
@@ -195,7 +195,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					if (!result.equals("")) result += "; ";
 					result += l.core.label;
 				}
-			} 
+			}
 			return result;
 		}
 
@@ -303,7 +303,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.geppetto.core.datasources.IQueryProcessor#process(org.geppetto.model.ProcessQuery, org.geppetto.model.variables.Variable, org.geppetto.model.QueryResults)
 	 */
 	@Override
@@ -315,7 +315,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 				throw new GeppettoDataSourceException("Results input to " + query.getName() + "is null");
 			}
 			QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
-			
+
 			String json = "{";
 			String tempData = "";
 			String header = "start";
@@ -331,17 +331,38 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			List<vfb_query> table = new ArrayList<vfb_query>();
 			vfb_query vfbQuery = null;
 
+			// Template space:
+			String template = "";
+			String loadedTemplate = "";
+
+			// Determine loaded template
+			CompositeType testTemplate = null;
+			List<String> availableTemplates = Arrays.asList("VFB_00017894","VFB_00101567","VFB_00101384","VFB_00050000","VFB_00049000","VFB_00100000","VFB_00030786");
+			for (String at:availableTemplates) {
+				try {
+					testTemplate = (CompositeType) ModelUtility.getTypeFromLibrary(at + "_metadata", dataSource.getTargetLibrary());
+				} catch (Exception e) {
+					testTemplate = null;
+				}
+				if (testTemplate != null) {
+					template = at;
+					loadedTemplate = at;
+					if (debug) System.out.println("Template detected: " + at);
+					break;
+				}
+			}
+
 			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);Variable imageVariable = VariablesFactory.eINSTANCE.createVariable();
-			
+
 			if (debug) System.out.println("Processing JSON...");
-			// Match to vfb_query schema:	
+			// Match to vfb_query schema:
 			for(AQueryResult result : results.getResults()){
 				try{
 
 					header = "results>JSON";
 					json = "{";
 					if (debug) System.out.println("{");
-					
+
 					for (String key:results.getHeader()) {
 						if (!json.equals("{")) {
 							json = json + ", ";
@@ -380,7 +401,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 								break;
 							case "expressed_in":
 								hasImage = true;
-								break;	
+								break;
 						}
 						tempData = new Gson().toJson(results.getValue(key, count));
 						json = json + "\"" + key  + "\":" + tempData;
@@ -389,7 +410,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 								System.out.println("\"" + key  + "\":" + tempData.replace("}","}\n") + ",");
 							}else{
 								System.out.println("\"" + key  + "\":" + tempData + ",");
-							}	
+							}
 						}
 					}
 					json = json + "}";
@@ -403,7 +424,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 				}catch (Exception e) {
 					System.out.println("Row: " + count.toString() + " Error creating " + header + ": " + e.toString());
 					e.printStackTrace();
-					System.out.println(json.replace("}","}\n"));				
+					System.out.println(json.replace("}","}\n"));
 				}
 				count ++;
 			}
@@ -439,9 +460,9 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 						if (!images.getElements().isEmpty())
 						{
 							if (images.getElements().size() > 1){
-								exampleVar.getInitialValues().put(imageType, images);
+								exampleVar.getInitialValues().put(imageType, images(template));
 							}else{
-								exampleVar.getInitialValues().put(imageType, images.getElements().get(0).getInitialValue());
+								exampleVar.getInitialValues().put(imageType, images(template).getElements().get(0).getInitialValue());
 							}
 							processedResult.getValues().add(GeppettoSerializer.serializeToJSON(exampleVar));
 							if (debug) System.out.println("DEBUG: Image: " + GeppettoSerializer.serializeToJSON(exampleVar) );
@@ -455,11 +476,11 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					processedResults.getResults().add(processedResult);
 				}catch (Exception e) {
 					System.out.println("Error creating results row: " + count.toString() + " - " + e.toString());
-					e.printStackTrace();				
+					e.printStackTrace();
 				}
 				count ++;
 			}
-			System.out.println("NEO4JQueryProcessor returning " + count.toString() + " rows");
+			if (debug) System.out.println("NEO4JQueryProcessor returning " + count.toString() + " rows");
 
 			return processedResults;
 
