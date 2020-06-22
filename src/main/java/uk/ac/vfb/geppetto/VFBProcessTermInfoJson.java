@@ -139,7 +139,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			}
 			return "";
 		}
-	
+
 		private String returnType(List<String> types, List<String> show) {
 			if (types.size() > 0 && show.size() > 0) {
 				String result = "<span class=\"label types\">";
@@ -579,7 +579,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			}
 			return this.synonym.toString();
 		}
-		
+
 		private String microrefs() {
 			String result="(";
 			for (pub pub:pubs) {
@@ -608,8 +608,8 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		private List<channel_image> channel_image;
 		private List<domain> template_domains;
 		private template_channel template_channel;
-		private List<minimal_entity_info> targeting_splits; 
-		private List<minimal_entity_info> target_neurons; 
+		private List<minimal_entity_info> targeting_splits;
+		private List<minimal_entity_info> target_neurons;
 
 		public String getSource() {
 			String result = "";
@@ -630,7 +630,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					}
 				}
 				result += "</span>";
-			} 
+			}
 			if (result.equals("<span class=\"terminfo-source\"></span>")) return "";
 			return result;
 		}
@@ -870,7 +870,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
 			try{
 				if (template == null || template.equals("")){
-					//default to JFRC2 
+					//default to JFRC2
 					template = "VFB_00017894";
 				}
 				int j = 0;
@@ -880,14 +880,14 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					if (ci != null && ci.image != null && ci.image.template_anatomy != null && ci.image.template_anatomy.short_form != null && template.equals(ci.image.template_anatomy.short_form)) {
 						addImage(ci.getUrl("", "thumbnailT.png"), ci.channel.label.replace("_c", "").replace("-c", ""), ci.channel.short_form.replace("VFBc_", "VFB_"), imageArray, j);
 						j++;
-					} 
+					}
 				}
 				for (channel_image ci : this.channel_image) {
 					// add same template to the begining and others at the end.
 					if (ci != null && ci.image != null && ci.image.template_anatomy != null && ci.image.template_anatomy.short_form != null && !template.equals(ci.image.template_anatomy.short_form)) {
 						addImage(ci.getUrl("", "thumbnailT.png"), ci.channel.label.replace("_c", "").replace("-c", "") + " [" + ci.image.template_anatomy.label + "]", "[" + ci.image.template_anatomy.short_form + "," + ci.channel.short_form.replace("VFBc_", "VFB_") + "]", imageArray, j);
 						j++;
-					} 
+					}
 				}
 			}catch (Exception e) {
 				System.out.println("Error in vfbTerm.thumbnails(): " + e.toString());
@@ -901,7 +901,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
 			try{
 				if (template == null || template.equals("")){
-					//default to JFRC2 
+					//default to JFRC2
 					template = "VFB_00017894";
 				}
 				int j = 0;
@@ -1012,7 +1012,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		 */
 		private boolean checkURL(String urlString)
 		{
-			if (urlString.indexOf(":") > 0) 
+			if (urlString.indexOf(":") > 0)
 			{
 				try
 				{
@@ -1049,7 +1049,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.geppetto.core.datasources.IQueryProcessor#process(org.geppetto.model.ProcessQuery, org.geppetto.model.variables.Variable, org.geppetto.model.QueryResults)
 	 */
 	@Override
@@ -1082,7 +1082,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 			// retrieving the metadatatype
 			CompositeType metadataType = (CompositeType) ModelUtility.getTypeFromLibrary(variable.getId() + "_metadata", dataSource.getTargetLibrary());
-			
+
 			// provide access to libary of types either dynamically added (as bellow) or loaded from xmi
 			List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
 
@@ -1094,7 +1094,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			Boolean showTypes = true; //Arrays.asList("Class","Individual","Anatomy","Template","Motor_neuron","Cell","Neuron","pub","License","Ganglion","Expression_pattern","Neuromere","DataSet","Cluster","Synaptic_neuropil_block","Synaptic_neuropil_subdomain","Synaptic_neuropil_domain","Synaptic_neuropil","Clone","Neuron_projection_bundle","Sensory_neuron","Site","Serotonergic","Person","Peptidergic_neuron","Painted_domain","Octopaminergic","Neuroblast","Motor_neuron","Glutamatergic","Glial_cell","Ganglion","GABAergic","Dopaminergic","Cholinergic"); // TODO: Fill in with passed types
 			String tempData = "";
 			String header = "loading";
-			String references = ""; 
+			String references = "";
 
 			//	Queries
 			String querys = "";
@@ -1106,7 +1106,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			try{
 				header = "results>JSON";
 				if (debug) System.out.println("{");
-				
+
 				for (String key:results.getHeader()) {
 					if (!json.equals("{")) {
 						json = json + ", ";
@@ -1118,7 +1118,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 							System.out.println("\"" + key  + "\":" + tempData.replace("}","}\n") + ",");
 						}else{
 							System.out.println("\"" + key  + "\":" + tempData + ",");
-						}	
+						}
 					}
 				}
 				json = json + "}";
@@ -1176,7 +1176,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				if (!tempData.equals("")) {
 					addModelHtml(tempData, "Source", header, metadataType, geppettoModelAccess);
 				}
-				
+
 				// License
 				header = "license";
 				tempData = vfbTerm.getLicense();
@@ -1221,7 +1221,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					tempData = vfbTerm.xrefList();
 					addModelHtml(tempData, "Cross References", header, metadataType, geppettoModelAccess);
 				}
-			
+
 				// Images:
 				header = "parentType";
 				// retrieving the parent composite type for new image variables
@@ -1234,11 +1234,18 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					for (channel_image alignment:vfbTerm.channel_image) {
 						oldTemplate = template;
 						template = alignment.image.template_anatomy.short_form;
-						
+
+						// Download - NRRD stack
+						tempData = vfbTerm.imageFile(alignment, "volume.nrrd");
+						if (tempData != null){
+							if (debug) System.out.println("NRRD " + tempData);
+							addModelHtml("Aligned Image: <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a><br>Note: see source & license above for terms of reuse and correct attribution.", "Downloads", "downloads", metadataType, geppettoModelAccess);
+						}
+
 						if (loadedTemplate != "" && !loadedTemplate.equals(template))
 						{
 							if (debug) System.out.println("Image aligned to a template that isn't loaded: " + template);
-							
+
 							if (oldTemplate != null && oldTemplate != "") {
 								template = oldTemplate;
 							}
@@ -1281,19 +1288,12 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 								if (debug) System.out.println("SWC " + tempData);
 								addModelSwc(tempData.replace("https://","http://"), "3D Skeleton", variable.getId(), parentType, geppettoModelAccess, dataSource);
 							}
-						
+
 							// Slices - 3D slice viewer
 							tempData = vfbTerm.imageFile(alignment, "volume.wlz");
 							if (tempData != null){
 								if (debug) System.out.println("WLZ " + tempData);
 								addModelSlices(tempData.replace("http://","https://"), "Stack Viewer Slices", variable.getId(), parentType, geppettoModelAccess, dataSource, vfbTerm.getDomains());
-							}
-							
-							// Download - NRRD stack
-							tempData = vfbTerm.imageFile(alignment, "volume.nrrd");
-							if (tempData != null){
-								if (debug) System.out.println("NRRD " + tempData);
-								addModelHtml("Aligned Image: <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a><br>Note: see source & license above for terms of reuse and correct attribution.", "Downloads", "downloads", metadataType, geppettoModelAccess);
 							}
 						}
 
@@ -1306,7 +1306,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 							addModelThumbnails(vfbTerm.thumbnails(template), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
 						}
 					}
-	
+
 				}
 
 				header = "template_channel";
@@ -1327,14 +1327,14 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 						addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId(), parentType, geppettoModelAccess, dataSource);
 					}
 					if (debug) System.out.println("OBJ " + tempData);
-			
+
 					// Slices - 3D slice viewer
 					tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume.wlz");
 					if (tempData != null){
 						addModelSlices(tempData.replace("http://","https://"), "Stack Viewer Slices", variable.getId(), parentType, geppettoModelAccess, dataSource, vfbTerm.getDomains());
 					}
 					if (debug) System.out.println("WLZ " + tempData);
-					
+
 					// Download - NRRD stack
 					tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume.nrrd");
 					if (debug) System.out.println("NRRD " + tempData);
@@ -1342,7 +1342,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 						addModelHtml("Aligned Image: <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a><br>Note: see source & license above for terms of reuse and correct attribution.", "Downloads", "downloads", metadataType, geppettoModelAccess);
 					}
 				}
-			
+
 				// examples
 				header = "anatomy_channel_image";
 				if (vfbTerm.anatomy_channel_image != null && vfbTerm.anatomy_channel_image.size() > 0 && vfbTerm.examples(template) != null) {
@@ -1387,7 +1387,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 						}
 					}
 				}
-				
+
 				if (debug && superTypes.contains("Template")){
 					badge = "<i class=\"popup-icon-link fa gpt-shapeshow\" ></i>";
 					querys += badge + "<a href=\"\" title=\"Hide template boundary and show all painted neuroanatomy\" onclick=\"" + variable.getId() + ".hide();$('body').css('cursor', 'progress');window.addVfbId(JSON.parse(" + variable.getId() + "." + variable.getId() + "_slices.getValue().getWrappedObj().value.data).subDomains[1].filter(function(n){ return n != null }));$('body').css('cursor', 'default');return false;\">Show All Anatomy</a><br/>";
