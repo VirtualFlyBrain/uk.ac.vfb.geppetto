@@ -60,7 +60,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 {
 
 	Boolean debug=false;
-	
+
 	// START VFB term info schema https://github.com/VirtualFlyBrain/VFB_json_schema/blob/master/json_schema/
 
 	class minimal_entity_info {
@@ -1246,6 +1246,19 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 							if (tempLink != null && tempLink == "") {
 								tempLink = alignment.image.template_anatomy.intLink();
 							}
+
+							// Add OBJ only so the template detection is triggered
+
+							// OBJ - 3D mesh
+							tempData = vfbTerm.imageFile(alignment, "volume_man.obj");
+							if (tempData == null){
+								if (debug) System.out.println("OBJ " + tempData);
+								tempData = vfbTerm.imageFile(alignment, "volume.obj");
+							}
+							if (tempData != null){
+								addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId(), parentType, geppettoModelAccess, dataSource);
+							}
+
 						}else{
 							oldTemplate = template;
 							if (loadedTemplate == "") {
