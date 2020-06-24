@@ -239,7 +239,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 				int j = 0;
 				int f = 0;
 				int c = 0;
-				ArrayList<String> loaded = new ArrayList<String>();
+				List<String> loaded = new ArrayList<String>();
 				if (this.anatomy_channel_image != null) {
 					f = this.anatomy_channel_image.size();
 					c = f;
