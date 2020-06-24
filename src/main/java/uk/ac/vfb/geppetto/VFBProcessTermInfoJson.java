@@ -1231,16 +1231,11 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				if (vfbTerm.channel_image != null && vfbTerm.channel_image.size() > 0) {
 					String oldTemplate = template;
 					String tempLink = "";
+					int count = 0;
 					for (channel_image alignment:vfbTerm.channel_image) {
+						count ++;
 						oldTemplate = template;
 						template = alignment.image.template_anatomy.short_form;
-
-						// Download - NRRD stack
-						tempData = vfbTerm.imageFile(alignment, "volume.nrrd");
-						if (tempData != null){
-							if (debug) System.out.println("NRRD " + tempData);
-							addModelHtml("Aligned Image: <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a><br>Note: see source & license above for terms of reuse and correct attribution.", "Downloads", "downloads", metadataType, geppettoModelAccess);
-						}
 
 						if (loadedTemplate != "" && !loadedTemplate.equals(template))
 						{
@@ -1254,16 +1249,25 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 								tempLink = alignment.image.template_anatomy.intLink();
 							}
 
-							// Add OBJ only so the template detection is triggered
+							if (vfbTerm.channel_image.size() == count) {
+								// Add OBJ only so the template detection is triggered
 
-							// OBJ - 3D mesh
-							tempData = vfbTerm.imageFile(alignment, "volume_man.obj");
-							if (tempData == null){
-								if (debug) System.out.println("OBJ " + tempData);
-								tempData = vfbTerm.imageFile(alignment, "volume.obj");
-							}
-							if (tempData != null){
-								addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId(), parentType, geppettoModelAccess, dataSource);
+								// OBJ - 3D mesh
+								tempData = vfbTerm.imageFile(alignment, "volume_man.obj");
+								if (tempData == null){
+									if (debug) System.out.println("OBJ " + tempData);
+									tempData = vfbTerm.imageFile(alignment, "volume.obj");
+								}
+								if (tempData != null){
+									addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId(), parentType, geppettoModelAccess, dataSource);
+								}
+
+								// Download - NRRD stack
+								tempData = vfbTerm.imageFile(alignment, "volume.nrrd");
+								if (tempData != null){
+									if (debug) System.out.println("NRRD " + tempData);
+									addModelHtml("Aligned Image: <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a><br>Note: see source & license above for terms of reuse and correct attribution.", "Downloads", "downloads", metadataType, geppettoModelAccess);
+								}
 							}
 
 						}else{
@@ -1295,6 +1299,15 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 								if (debug) System.out.println("WLZ " + tempData);
 								addModelSlices(tempData.replace("http://","https://"), "Stack Viewer Slices", variable.getId(), parentType, geppettoModelAccess, dataSource, vfbTerm.getDomains());
 							}
+
+							// Download - NRRD stack
+							tempData = vfbTerm.imageFile(alignment, "volume.nrrd");
+							if (tempData != null){
+								if (debug) System.out.println("NRRD " + tempData);
+								addModelHtml("Aligned Image: <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a><br>Note: see source & license above for terms of reuse and correct attribution.", "Downloads", "downloads", metadataType, geppettoModelAccess);
+							}
+							// throwing count out to prevent other OBJ loading
+							count = 1000;
 						}
 
 					}
