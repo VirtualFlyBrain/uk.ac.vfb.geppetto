@@ -131,7 +131,6 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 
 				//Check is single file or list of individuals
 				if (results.getValue("file", i) != null) {
-
 					if ((results.getValue("file", i)).getClass() == ArrayList.class) {
 						List<String> files = (List<String>) results.getValue("file", i);
 						int j = 0;
@@ -141,20 +140,21 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 								if (f.contains(loadedTemplate)) {
 									addImage(f, name, id, images, j);
 									j++;
+									break;
 								}
 							}
-						}
-
-						for (String f : files) {
-							if (!f.contains(loadedTemplate)) {
-								// Forcing selected template loasding where 2 options exist:
-								// if (f.indexOf("VFB_") > 0) {
-								// 	addImage(f, name, f.substring(f.indexOf("VFB_"), (f.indexOf("VFB_") + 12)) + "," + id, images, j);
-								// }else{
-								// 	addImage(f, name, id, images, j);
-								// }
-								addImage(f, name, id, images, j);
-								j++;
+						} else {
+							for (String f : files) {
+								if (!f.contains(loadedTemplate)) {
+									// Forcing selected template loasding where 2 options exist:
+									// if (f.indexOf("VFB_") > 0) {
+									// 	addImage(f, name, f.substring(f.indexOf("VFB_"), (f.indexOf("VFB_") + 12)) + "," + id, images, j);
+									// }else{
+									// 	addImage(f, name, id, images, j);
+									// }
+									addImage(f, name, id, images, j);
+									j++;
+								}
 							}
 						}
 					} else {
