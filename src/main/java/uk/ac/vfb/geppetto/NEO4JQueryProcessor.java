@@ -239,17 +239,29 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 				int j = 0;
 				int f = 0;
 				int c = 0;
+				ArrayList loaded = {};
 				if (this.anatomy_channel_image != null) {
 					f = this.anatomy_channel_image.size();
 					c = f;
 					for (anatomy_channel_image anat : this.anatomy_channel_image) {
 						// add same template to the begining and others at the end.
 						if (anat.channel_image != null && anat.channel_image.image != null && anat.channel_image.image.template_anatomy != null && anat.channel_image.image.template_anatomy.short_form != null && template.equals(anat.channel_image.image.template_anatomy.short_form)) {
+							if (loaded.contains(anat.anatomy.short_form)) {
+								imageArray = ValuesFactory.eINSTANCE.createArrayValue();
+								j = 0;
+							}
 							addImage(anat.getUrl("", "thumbnailT.png"), anat.anatomy.label, anat.anatomy.short_form, imageArray, j);
+							loaded.add(anat.anatomy.short_form);
+							if (loaded.contains(anat.anatomy.short_form)) {
+								return imageArray;
+							}
 							j++;
 						} else {
-							f--;
-							addImage(anat.getUrl("", "thumbnailT.png"), anat.anatomy.label, anat.anatomy.short_form, imageArray, f);
+							if (!loaded.contains(anat.anatomy.short_form)) {
+								f--;
+								addImage(anat.getUrl("", "thumbnailT.png"), anat.anatomy.label, anat.anatomy.short_form, imageArray, f);
+								loaded.add(anat.anatomy.short_form);
+							}
 						}
 					}
 				}
@@ -259,11 +271,20 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					for (anatomy_channel_image anat : this.expressed_in) {
 						// add same template to the begining and others at the end.
 						if (anat.channel_image != null && anat.channel_image.image != null && anat.channel_image.image.template_anatomy != null && anat.channel_image.image.template_anatomy.short_form != null && template.equals(anat.channel_image.image.template_anatomy.short_form)) {
+							if (loaded.contains(anat.anatomy.short_form)) {
+								imageArray = ValuesFactory.eINSTANCE.createArrayValue();
+								j = 0;
+							}
 							addImage(anat.getUrl("", "thumbnailT.png"), anat.anatomy.label, anat.anatomy.short_form, imageArray, j);
+							loaded.add(anat.anatomy.short_form);
+							if (loaded.contains(anat.anatomy.short_form)) {
+								return imageArray;
+							}
 							j++;
 						} else {
 							f--;
 							addImage(anat.getUrl("", "thumbnailT.png"), anat.anatomy.label, anat.anatomy.short_form, imageArray, f);
+							loaded.add(anat.anatomy.short_form);
 						}
 					}
 				}
