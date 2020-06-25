@@ -49,6 +49,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Arrays;
+import java.util.Collections;
 import java.lang.reflect.Array;
 
 /**
@@ -134,7 +135,7 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 					if ((results.getValue("file", i)).getClass() == ArrayList.class) {
 						List<String> files = (List<String>) results.getValue("file", i);
 						int j = 0;
-						files = files.Sort();
+						Collections.sort(files);
 						if (loadedTemplate != "" && files.contains(loadedTemplate)) {
 							for (String f : files) {
 								if (f.contains(loadedTemplate)) {
