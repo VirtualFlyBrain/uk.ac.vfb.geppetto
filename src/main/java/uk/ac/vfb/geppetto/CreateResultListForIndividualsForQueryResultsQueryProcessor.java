@@ -145,16 +145,8 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 							}
 						} else {
 							for (String f : files) {
-								if (!f.contains(loadedTemplate)) {
-									// Forcing selected template loasding where 2 options exist:
-									// if (f.indexOf("VFB_") > 0) {
-									// 	addImage(f, name, f.substring(f.indexOf("VFB_"), (f.indexOf("VFB_") + 12)) + "," + id, images, j);
-									// }else{
-									// 	addImage(f, name, id, images, j);
-									// }
 									addImage(f, name, id, images, j);
 									j++;
-								}
 							}
 						}
 					} else {
