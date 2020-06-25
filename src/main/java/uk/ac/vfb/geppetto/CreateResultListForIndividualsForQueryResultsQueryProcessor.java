@@ -140,7 +140,6 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 								if (f.contains(loadedTemplate)) {
 									addImage(f, name, id, images, j);
 									j++;
-									break;
 								}
 							}
 						} else {
