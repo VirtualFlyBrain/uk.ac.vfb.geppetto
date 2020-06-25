@@ -135,7 +135,7 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 						List<String> files = (List<String>) results.getValue("file", i);
 						int j = 0;
 						files = files.Sort();
-						if (loadedTemplate != "") {
+						if (loadedTemplate != "" && files.contains(loadedTemplate)) {
 							for (String f : files) {
 								if (f.contains(loadedTemplate)) {
 									addImage(f, name, id, images, j);
