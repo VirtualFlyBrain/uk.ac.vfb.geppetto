@@ -134,7 +134,7 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 					if ((results.getValue("file", i)).getClass() == ArrayList.class) {
 						List<String> files = (List<String>) results.getValue("file", i);
 						int j = 0;
-
+						files = files.Sort();
 						if (loadedTemplate != "") {
 							for (String f : files) {
 								if (f.contains(loadedTemplate)) {
