@@ -251,10 +251,10 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 								j = 0;
 							}
 							addImage(anat.getUrl("", "thumbnailT.png"), anat.anatomy.label, anat.anatomy.short_form, imageArray, j);
-							loaded.add(anat.anatomy.short_form);
 							if (loaded.contains(anat.anatomy.short_form)) {
 								return imageArray;
 							}
+							loaded.add(anat.anatomy.short_form);
 							j++;
 						} else {
 							if (!loaded.contains(anat.anatomy.short_form)) {
@@ -276,10 +276,10 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 								j = 0;
 							}
 							addImage(anat.getUrl("", "thumbnailT.png"), anat.anatomy.label, anat.anatomy.short_form, imageArray, j);
-							loaded.add(anat.anatomy.short_form);
 							if (loaded.contains(anat.anatomy.short_form)) {
 								return imageArray;
 							}
+							loaded.add(anat.anatomy.short_form);
 							j++;
 						} else {
 							f--;
