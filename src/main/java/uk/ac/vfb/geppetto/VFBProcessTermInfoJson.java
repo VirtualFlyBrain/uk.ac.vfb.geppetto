@@ -631,6 +631,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				}
 				result += "</span>";
 			}
+			result = result.replace("gpt-fly", "fa fa-external-link")
 			if (result.equals("<span class=\"terminfo-source\"></span>")) return "";
 			return result;
 		}
