@@ -1288,7 +1288,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 							}
 							if (tempData != null){
 								addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId(), parentType, geppettoModelAccess, dataSource);
-								downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".wlz</a>";
+								downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + ".obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".obj</a>";
 							}
 
 							// SWC - 3D mesh
@@ -1296,7 +1296,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 							if (tempData != null){
 								if (debug) System.out.println("SWC " + tempData);
 								addModelSwc(tempData.replace("https://","http://"), "3D Skeleton", variable.getId(), parentType, geppettoModelAccess, dataSource);
-								downloadFiles += "<br>Skeleton (SWC): <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".swc</a>";
+								downloadFiles += "<br>Skeleton (SWC): <a download=\"" + variable.getId() + ".swc\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".swc</a>";
 							}
 
 							// Slices - 3D slice viewer
@@ -1304,7 +1304,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 							if (tempData != null){
 								if (debug) System.out.println("WLZ " + tempData);
 								addModelSlices(tempData.replace("http://","https://"), "Stack Viewer Slices", variable.getId(), parentType, geppettoModelAccess, dataSource, vfbTerm.getDomains());
-								downloadFiles += "<br>Slices (Woolz): <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".wlz</a>";
+								downloadFiles += "<br>Slices (Woolz): <a download=\"" + variable.getId() + ".wlz\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".wlz</a>";
 							}
 
 							// Download - NRRD stack
