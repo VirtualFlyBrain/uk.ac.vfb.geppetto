@@ -78,7 +78,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 
 		public String intLink(Boolean showTypes) {
-			return "<a href=\"#\" data-instancepath=\"" + this.short_form + "\">" + this.label + "</a>"
+			return "<a href=\"?id=" + this.short_form + "\" data-instancepath=\"" + this.short_form + "\">" + this.label + "</a>"
 					+ this.types(showTypes);
 		}
 
@@ -219,7 +219,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		 */
 		private String highlightLinks(String text) {
 			try {
-				text = text.replaceAll("([F,V,G][A-z]*)[:,_](\\d{5}[0-9]*\\b)", "<a href=\"#\" data-instancepath=\"$1_$2\" title=\"$1_$2\" ><i class=\"fa fa-info-circle\"></i></a>");
+				text = text.replaceAll("([F,V,G][A-z]*)[:,_](\\d{5}[0-9]*\\b)", "<a href=\"?id=$1_$2\" data-instancepath=\"$1_$2\" title=\"$1_$2\" ><i class=\"fa fa-info-circle\"></i></a>");
 				return text;
 			} catch (Exception e) {
 				System.out.println("Error highlighting links in (" + text + ") " + e.toString());
@@ -1392,15 +1392,15 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				{
 					if(QueryChecker.check(runnableQuery, variable))
 					{
-						querys += badge + "<a href=\"#\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + variable.getId() + "," + variable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
+						querys += badge + "<a href=\"?q=" + variable.getId() + "," + (String) runnableQuery.getPath() + "\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + variable.getId() + "," + variable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
 						if (runnableQuery.getPath().equals("ExpOverlapsX")) {
-							queryExpressedInX = "<a href=\"#\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + variable.getId() + "," + variable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
+							queryExpressedInX = "<a href=\"?q=" + variable.getId() + "," + (String) runnableQuery.getPath() + "\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + variable.getId() + "," + variable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
 						}else if (runnableQuery.getPath().equals("TransgeneExpInX")) {
-							queryExpressedInX = "<a href=\"#\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + variable.getId() + "," + variable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
+							queryExpressedInX = "<a href=\"?q=" + variable.getId() + "," + (String) runnableQuery.getPath() + "\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + variable.getId() + "," + variable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
 						}
 					}else if ((superTypes.contains("Painted_domain") || superTypes.contains("Synaptic_neuropil_domain") || superTypes.contains("Neuron_projection_bundle") || superTypes.contains("Split") || superTypes.contains("Expression_pattern")) && superTypes.contains("Individual") && classVariable.getId()!="notSet"){
 						if(QueryChecker.check(runnableQuery, classVariable)){
-							querys += badge + "<a href=\"#\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + classVariable.getId() + "," + classVariable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", classVariable.getName()) + "</a></br>";
+							querys += badge + "<a href=\"?q=" + classVariable.getId() + "," + (String) runnableQuery.getPath() + "\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + classVariable.getId() + "," + classVariable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", classVariable.getName()) + "</a></br>";
 						}
 						if (!classAdded) {
 							addModelString(classVariable.getId(), "ClassQueriesFrom", "classqueriesfrom", metadataType, geppettoModelAccess);
@@ -1426,8 +1426,6 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				tempData = vfbTerm.targetingSplits();
 				if (tempData != null && !tempData.equals("")) {
 					tempData += badge + queryExpressedInX;
-					// Remove emptry record:
-					tempData = tempData.replace("<li><a href=\"#\" data-instancepath=\"null\"></a></li>", "");
 					addModelHtml(tempData, "Targeting Splits", header, metadataType, geppettoModelAccess);
 				}
 
@@ -1436,8 +1434,6 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				tempData = vfbTerm.targetingNeurons();
 				if (tempData != null && !tempData.equals("")) {
 					tempData += badge + queryExpressedInX;
-					// Remove emptry record:
-					tempData = tempData.replace("<li><a href=\"#\" data-instancepath=\"null\"></a></li>", "");
 					addModelHtml(tempData, "Targeted Neurons", header, metadataType, geppettoModelAccess);
 				}
 
