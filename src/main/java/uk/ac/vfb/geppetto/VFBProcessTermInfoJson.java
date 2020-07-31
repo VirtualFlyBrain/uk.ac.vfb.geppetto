@@ -1269,7 +1269,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 								tempData = vfbTerm.imageFile(alignment, "volume.nrrd");
 								if (tempData != null){
 									if (debug) System.out.println("NRRD " + tempData);
-									downloadFiles += "br>Signal (NRRD): <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a>";
+									downloadFiles += "<br>Signal (NRRD): <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a>";
 									downloadFiles += "<br>Remember to cite: <a download=\"" + variable.getId() + ".bibtex\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">citations.bibtex</a>";
 									downloadFiles += "<br>Note: see source & license above for terms of reuse and correct attribution.";
 									addModelHtml(downloadFiles, "Downloads", "downloads", metadataType, geppettoModelAccess);
