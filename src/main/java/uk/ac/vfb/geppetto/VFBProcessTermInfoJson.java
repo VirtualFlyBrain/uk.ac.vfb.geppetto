@@ -77,6 +77,11 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public Double getZ() {
 			return this.coordinates.get(2);
 		}
+		
+		public String toString() {
+			return coordinates.toString();
+		}
+
 	}
 	
 	class coordinatesJsonList {
@@ -95,6 +100,10 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public Double getZ() {
 			coordinates json = new Gson().fromJson(coordinates.get(0), coordinates.class);
 			return json.getZ();
+		}
+		
+		public String toString() {
+			return "[" + this.getX().toString() + "," + this.getY().toString() + "," + this.getZ().toString() + "]";
 		}
 	}
 	
@@ -115,6 +124,10 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			coordinates json = new Gson().fromJson(coordinates , coordinates.class);
 			return json.getZ();
 		}
+		
+		public String toString() {
+			return "[" + this.getX().toString() + "," + this.getY().toString() + "," + this.getZ().toString() + "]";
+		}
 	}
 	
 	class coordinates {
@@ -132,6 +145,10 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		
 		public Double getZ() {
 			return this.Z;
+		}
+		
+		public String toString() {
+			return "[" + this.getX().toString() + "," + this.getY().toString() + "," + this.getZ().toString() + "]";
 		}
 	}
 		
@@ -771,7 +788,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 						domainId[domain.index.get(0).intValue()] = domain.anatomical_individual.short_form;
 						domainName[domain.index.get(0).intValue()] = domain.anatomical_type.label;
 						domainType[domain.index.get(0).intValue()] = domain.anatomical_type.short_form;
-						if (domain.center != null && domain.center.size() > 0){
+						if (domain.center != null && domain.center.getZ() != null){
 							domainCentre[domain.index.get(0).intValue()] = String.valueOf(domain.center);
 						}
 					}
