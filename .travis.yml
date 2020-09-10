@@ -33,7 +33,7 @@ before_script:
 - npm install travis-ci
 
 after_success:
-- node travis/trigger-build.js
+- travis_wait 200 node travis/trigger-build.js
     
     
  
