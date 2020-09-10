@@ -112,7 +112,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 		
 		public Double getZ() {
-			json = new Gson().fromJson(coordinates , coordinates.class);
+			coordinates json = new Gson().fromJson(coordinates , coordinates.class);
 			return json.getZ();
 		}
 	}
