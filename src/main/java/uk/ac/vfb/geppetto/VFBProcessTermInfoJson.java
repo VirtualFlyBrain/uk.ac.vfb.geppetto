@@ -63,6 +63,79 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 	// START VFB term info schema https://github.com/VirtualFlyBrain/VFB_json_schema/blob/master/json_schema/
 
+	class coordinates {
+		private List<Double> coordinates;
+		
+		public Double getX() {
+			return this.coordinates.get(0);
+		}
+		
+		public Double getY() {
+			return this.coordinates.get(1);
+		}
+		
+		public Double getZ() {
+			return this.coordinates.get(2);
+		}
+	}
+	
+	class coordinates {
+		private List<String> coordinates;
+		
+		public Double getX() {
+			json = new Gson().fromJson(coordinates.get(0), coordinates.class);
+			return json.X;
+		}
+		
+		public Double getY() {
+			json = new Gson().fromJson(coordinates.get(0), coordinates.class);
+			return json.Y;
+		}
+		
+		public Double getZ() {
+			json = new Gson().fromJson(coordinates.get(0), coordinates.class);
+			return json.Z;
+		}
+	}
+	
+	class coordinates {
+		private String coordinates;
+		
+		public Double getX() {
+			json = new Gson().fromJson(coordinates , coordinates.class);
+			return json.X;
+		}
+		
+		public Double getY() {
+			json = new Gson().fromJson(coordinates , coordinates.class);
+			return json.Y;
+		}
+		
+		public Double getZ() {
+			json = new Gson().fromJson(coordinates , coordinates.class);
+			return json.Z;
+		}
+	}
+	
+	class coordinates {
+		private Double X;
+		private Double Y;
+		private Double Z;
+		
+		public Double getX() {
+			return this.X;
+		}
+		
+		public Double getY() {
+			return this.Y;
+		}
+		
+		public Double getZ() {
+			return this.Z;
+		}
+	}
+		
+
 	class minimal_entity_info {
 		String short_form;
 		String iri;
@@ -299,7 +372,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 	class domain {
 		private List<Double> index;
-		private List<Double> center;
+		private coordinates center;
 		private String folder;
 		private minimal_entity_info anatomical_individual;
 		private minimal_entity_info anatomical_type;
@@ -307,9 +380,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 	class template_channel {
 		private List<Double> index;
-		private List<Double> center;
-		private List<Double> extent;
-		private List<Double> voxel;
+		private coordinates center;
+		private coordinates extent;
+		private coordinates voxel;
 		private String orientation;
 		String image_folder;
 		private minimal_entity_info channel;
@@ -690,9 +763,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					domainId[0] = this.term.core.short_form;
 					domainName[0] = this.parents.get(0).label;
 					domainType[0] = this.parents.get(0).short_form;
-					voxelSize[0] = String.valueOf(this.template_channel.voxel.get(0));
-					voxelSize[1] = String.valueOf(this.template_channel.voxel.get(1));
-					voxelSize[2] = String.valueOf(this.template_channel.voxel.get(2));
+					voxelSize[0] = String.valueOf(this.template_channel.voxel.getX());
+					voxelSize[1] = String.valueOf(this.template_channel.voxel.getY());
+					voxelSize[2] = String.valueOf(this.template_channel.voxel.getZ());
 					domainCentre[0] = String.valueOf(this.template_channel.center);
 					for (domain domain:this.template_domains){
 						domainId[domain.index.get(0).intValue()] = domain.anatomical_individual.short_form;
