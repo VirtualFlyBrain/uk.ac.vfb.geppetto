@@ -83,18 +83,18 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		private List<String> coordinates;
 		
 		public Double getX() {
-			json = new Gson().fromJson(coordinates.get(0), coordinatesJsonString.class);
-			return json.X;
+			coordinates json = new Gson().fromJson(coordinates.get(0), coordinates.class);
+			return json.getX();
 		}
 		
 		public Double getY() {
-			json = new Gson().fromJson(coordinates.get(0), coordinatesJsonString.class);
-			return json.Y;
+			coordinates json = new Gson().fromJson(coordinates.get(0), coordinates.class);
+			return json.getY();
 		}
 		
 		public Double getZ() {
-			json = new Gson().fromJson(coordinates.get(0), coordinatesJsonString.class);
-			return json.Z;
+			coordinates json = new Gson().fromJson(coordinates.get(0), coordinates.class);
+			return json.getZ();
 		}
 	}
 	
@@ -102,18 +102,18 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		private String coordinates;
 		
 		public Double getX() {
-			json = new Gson().fromJson(coordinates , coordinates.class);
-			return json.X;
+			coordinates json = new Gson().fromJson(coordinates , coordinates.class);
+			return json.getX();
 		}
 		
 		public Double getY() {
-			json = new Gson().fromJson(coordinates , coordinates.class);
-			return json.Y;
+			coordinates json = new Gson().fromJson(coordinates , coordinates.class);
+			return json.getY();
 		}
 		
 		public Double getZ() {
 			json = new Gson().fromJson(coordinates , coordinates.class);
-			return json.Z;
+			return json.getZ();
 		}
 	}
 	
