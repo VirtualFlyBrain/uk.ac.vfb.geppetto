@@ -63,7 +63,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 	// START VFB term info schema https://github.com/VirtualFlyBrain/VFB_json_schema/blob/master/json_schema/
 
-	class coordinates {
+	class coordinatesList {
 		private List<Double> coordinates;
 		
 		public Double getX() {
@@ -79,26 +79,26 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 	}
 	
-	class coordinates {
+	class coordinatesJsonList {
 		private List<String> coordinates;
 		
 		public Double getX() {
-			json = new Gson().fromJson(coordinates.get(0), coordinates.class);
+			json = new Gson().fromJson(coordinates.get(0), coordinatesJsonString.class);
 			return json.X;
 		}
 		
 		public Double getY() {
-			json = new Gson().fromJson(coordinates.get(0), coordinates.class);
+			json = new Gson().fromJson(coordinates.get(0), coordinatesJsonString.class);
 			return json.Y;
 		}
 		
 		public Double getZ() {
-			json = new Gson().fromJson(coordinates.get(0), coordinates.class);
+			json = new Gson().fromJson(coordinates.get(0), coordinatesJsonString.class);
 			return json.Z;
 		}
 	}
 	
-	class coordinates {
+	class coordinatesJsonString {
 		private String coordinates;
 		
 		public Double getX() {
@@ -372,7 +372,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 	class domain {
 		private List<Double> index;
-		private coordinates center;
+		private coordinatesJsonString center;
 		private String folder;
 		private minimal_entity_info anatomical_individual;
 		private minimal_entity_info anatomical_type;
@@ -380,9 +380,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 	class template_channel {
 		private List<Double> index;
-		private coordinates center;
-		private coordinates extent;
-		private coordinates voxel;
+		private coordinatesJsonString center;
+		private coordinatesJsonString extent;
+		private coordinatesJsonString voxel;
 		private String orientation;
 		String image_folder;
 		private minimal_entity_info channel;
