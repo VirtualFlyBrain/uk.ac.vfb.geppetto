@@ -872,7 +872,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			try{
 				if (template == null || template.equals("")){
 					//default to JFRC2
-					template = "VFB_00017894";
+					template = "VFB_00101567";
 				}
 				int j = 0;
 				int f = this.channel_image.size();
@@ -903,7 +903,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			try{
 				if (template == null || template.equals("")){
 					//default to JFRC2
-					template = "VFB_00017894";
+					template = "VFB_00101567";
 				}
 				int j = 0;
 				int f = this.anatomy_channel_image.size();
@@ -1066,7 +1066,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 			// Determine loaded template
 			CompositeType testTemplate = null;
-			List<String> availableTemplates = Arrays.asList("VFB_00017894","VFB_00101567","VFB_00101384","VFB_00050000","VFB_00049000","VFB_00100000","VFB_00030786");
+			List<String> availableTemplates = Arrays.asList("VFB_00101567","VFB_00200000","VFB_00017894","VFB_00101384","VFB_00050000","VFB_00049000","VFB_00100000","VFB_00030786");
 			for (String at:availableTemplates) {
 				try {
 					testTemplate = (CompositeType) ModelUtility.getTypeFromLibrary(at + "_metadata", dataSource.getTargetLibrary());
@@ -1343,6 +1343,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					if (!template.equals("")){
 						template = variable.getId();
 					}
+					String downloadFiles = "Template Image Files: ";
 					addModelHtml(vfbTerm.term.core.intLink(), "Aligned to", "template", metadataType, geppettoModelAccess);
 					// thumbnail
 					addModelThumbnails(vfbTerm.thumbnail(), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
