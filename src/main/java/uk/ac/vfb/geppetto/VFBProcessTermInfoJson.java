@@ -397,7 +397,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 		public coordinatesJsonString getCenter() {
 			if ( center instanceof String ) {
-				return new coordinatesJsonString(this.center);
+				return new coordinatesJsonString((String) this.center);
 			}
 			return null;
 		}
