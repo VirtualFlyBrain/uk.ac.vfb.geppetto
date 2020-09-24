@@ -107,7 +107,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 	}
 
-	class coordinatesJsonString extends String {
+	public final class coordinatesJsonString {
 		private coordinates json;
 
 		public coordinatesJsonString(String coordinates) {
