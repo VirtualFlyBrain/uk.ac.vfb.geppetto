@@ -390,13 +390,16 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 	class domain {
 		private List<Double> index;
-		private String center;
+		private Object center;
 		private String folder;
 		private minimal_entity_info anatomical_individual;
 		private minimal_entity_info anatomical_type;
 
 		public coordinatesJsonString getCenter() {
-			return new coordinatesJsonString(this.center);
+			if ( center instanceof String ) {
+				return new coordinatesJsonString(this.center);
+			}
+			return null;
 		}
 
 	}
