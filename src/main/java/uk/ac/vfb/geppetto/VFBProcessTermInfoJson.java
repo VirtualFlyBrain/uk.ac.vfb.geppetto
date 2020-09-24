@@ -390,7 +390,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 	class domain {
 		private List<Double> index;
-		private coordinatesJsonString center;
+		private String center;
 		private String folder;
 		private minimal_entity_info anatomical_individual;
 		private minimal_entity_info anatomical_type;
@@ -398,12 +398,25 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 	class template_channel {
 		private List<Double> index;
-		private coordinatesJsonString center;
-		private coordinatesJsonString extent;
-		private coordinatesJsonString voxel;
+		private String center;
+		private String extent;
+		private String voxel;
 		private String orientation;
 		String image_folder;
 		private minimal_entity_info channel;
+
+		public coordinatesJsonString getVoxel() {
+			return new coordinatesJsonString(this.voxel);
+		}
+
+		public coordinatesJsonString getCenter() {
+			return new coordinatesJsonString(this.center);
+		}
+
+		public coordinatesJsonString getExtent() {
+			return new coordinatesJsonString(this.extent);
+		}
+
 	}
 
 	class xref {
@@ -781,16 +794,16 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					domainId[0] = this.term.core.short_form;
 					domainName[0] = this.parents.get(0).label;
 					domainType[0] = this.parents.get(0).short_form;
-					voxelSize[0] = String.valueOf(this.template_channel.voxel.getX());
-					voxelSize[1] = String.valueOf(this.template_channel.voxel.getY());
-					voxelSize[2] = String.valueOf(this.template_channel.voxel.getZ());
-					domainCentre[0] = String.valueOf(this.template_channel.center);
+					voxelSize[0] = String.valueOf(this.template_channel.getVoxel().getX());
+					voxelSize[1] = String.valueOf(this.template_channel.getVoxel().getY());
+					voxelSize[2] = String.valueOf(this.template_channel.getVoxel().getZ());
+					domainCentre[0] = String.valueOf(this.template_channel.getCenter());
 					for (domain domain:this.template_domains){
 						domainId[domain.index.get(0).intValue()] = domain.anatomical_individual.short_form;
 						domainName[domain.index.get(0).intValue()] = domain.anatomical_type.label;
 						domainType[domain.index.get(0).intValue()] = domain.anatomical_type.short_form;
-						if (domain.center != null && domain.center.getZ() != null){
-							domainCentre[domain.index.get(0).intValue()] = String.valueOf(domain.center);
+						if (domain.getCenter() != null && domain.getCenter().getZ() != null){
+							domainCentre[domain.index.get(0).intValue()] = String.valueOf(domain.getCenter());
 						}
 					}
 					domains.add(Arrays.asList(voxelSize));
