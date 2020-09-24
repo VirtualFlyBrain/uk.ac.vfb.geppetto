@@ -673,7 +673,10 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		// TODO: handle type?
 
 		public String toString() {
-			return this.scope.replaceAll("([^_A-Z])([A-Z])", "$1 $2").replace("has ", "") + ": " + this.label;
+			if (!scope.equals(""))	{
+				return this.scope.replaceAll("([^_A-Z])([A-Z])", "$1 $2").replace("has ", "") + ": " + this.label;
+			}
+			return this.label;
 		}
 	}
 
