@@ -106,30 +106,31 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			return "[" + this.getX().toString() + "," + this.getY().toString() + "," + this.getZ().toString() + "]";
 		}
 	}
-	
+
 	class coordinatesJsonString {
-		private String coordinates;
-		
+		private coordinates json;
+
+		public coordinatesJsonString(String coordinates) {
+			this.json = new Gson().fromJson(coordinates , coordinates.class);
+		}
+
 		public Double getX() {
-			coordinates json = new Gson().fromJson(coordinates , coordinates.class);
-			return json.getX();
+			return this.json.getX();
 		}
-		
+
 		public Double getY() {
-			coordinates json = new Gson().fromJson(coordinates , coordinates.class);
-			return json.getY();
+			return this.json.getY();
 		}
-		
+
 		public Double getZ() {
-			coordinates json = new Gson().fromJson(coordinates , coordinates.class);
-			return json.getZ();
+			return this.json.getZ();
 		}
-		
+
 		public String toString() {
 			return "[" + this.getX().toString() + "," + this.getY().toString() + "," + this.getZ().toString() + "]";
 		}
 	}
-	
+
 	class coordinates {
 		private Double X;
 		private Double Y;
