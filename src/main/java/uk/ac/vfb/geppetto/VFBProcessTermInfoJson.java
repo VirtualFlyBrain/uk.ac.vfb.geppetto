@@ -394,6 +394,11 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		private String folder;
 		private minimal_entity_info anatomical_individual;
 		private minimal_entity_info anatomical_type;
+
+		public coordinatesJsonString getCenter() {
+			return new coordinatesJsonString(this.center);
+		}
+
 	}
 
 	class template_channel {
@@ -797,13 +802,13 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					voxelSize[0] = String.valueOf(this.template_channel.getVoxel().getX());
 					voxelSize[1] = String.valueOf(this.template_channel.getVoxel().getY());
 					voxelSize[2] = String.valueOf(this.template_channel.getVoxel().getZ());
-					domainCentre[0] = String.valueOf(this.template_channel.getCenter());
+					domainCentre[0] = this.template_channel.getCenter().toString();
 					for (domain domain:this.template_domains){
 						domainId[domain.index.get(0).intValue()] = domain.anatomical_individual.short_form;
 						domainName[domain.index.get(0).intValue()] = domain.anatomical_type.label;
 						domainType[domain.index.get(0).intValue()] = domain.anatomical_type.short_form;
 						if (domain.getCenter() != null && domain.getCenter().getZ() != null){
-							domainCentre[domain.index.get(0).intValue()] = String.valueOf(domain.getCenter());
+							domainCentre[domain.index.get(0).intValue()] = domain.getCenter().toString();
 						}
 					}
 					domains.add(Arrays.asList(voxelSize));
