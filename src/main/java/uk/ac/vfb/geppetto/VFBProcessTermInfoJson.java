@@ -193,32 +193,44 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				if (types.contains("Obsolete")){
 					this.returnType(types, Arrays.asList("Obsolete"));
 				}
+				if (types.contains("Deprecated")){
+					this.returnType(types, Arrays.asList("Deprecated"));
+				}
+				if (types.contains("Template")){
+					this.returnType(types, Arrays.asList("Adult","Larva","Template"));
+				}
 				if (types.contains("Motor_neuron")){
-					return this.returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Motor_neuron"));
+					return this.returnType(types, Arrays.asList("Adult","Larva","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Motor_neuron"));
 				}
 				if (types.contains("Sensory_neuron")){
-					return this.returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Sensory_neuron"));
-				}
-				if (types.contains("Sensory_neuron")){
-					return this.returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Sensory_neuron"));
+					return this.returnType(types, Arrays.asList("Adult","Larva","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Sensory_neuron"));
 				}
 				if (types.contains("Peptidergic_neuron")){
-					return this.returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Peptidergic_neuron"));
+					return this.returnType(types, Arrays.asList("Adult","Larva","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Peptidergic_neuron"));
 				}
 				if (types.contains("Neuron")){
-					return this.returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Neuron"));
+					return this.returnType(types, Arrays.asList("Adult","Larva","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Neuron"));
 				}
 				if (types.contains("Glial_cell")){
-					return this.returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Glial_cell"));
+					return this.returnType(types, Arrays.asList("Adult","Larva","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Glial_cell"));
+				}
+				if (types.contains("GMC")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","Split","Expression_pattern","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","GMC"));
 				}
 				if (types.contains("Cell")){
-					return this.returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Cell"));
+					return this.returnType(types, Arrays.asList("Adult","Larva","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Neuroblast","Muscle","Cell"));
 				}
 				if (types.contains("Neuron_projection_bundle")){
-					return this.returnType(types, Arrays.asList("Neuron_projection_bundle"));
+					return this.returnType(types, Arrays.asList("Adult","Larva","Neuron_projection_bundle"));
 				}
 				if (types.contains("Split")){
-					return this.returnType(types, Arrays.asList("Split","Expression_pattern","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Glial_cell"));
+					return this.returnType(types, Arrays.asList("Adult","Larva","Split","Expression_pattern","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Glial_cell"));
+				}
+				if (types.contains("Clone")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","Split","Expression_pattern","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Clone"));
+				}
+				if (types.contains("Cluster")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","Split","Expression_pattern","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Cluster"));
 				}
 				if (types.contains("Expression_pattern")){
 					return "<span class=\"label types\">" + "<span class=\"label label-Expression_pattern\">Expression Pattern</span> ";
@@ -226,7 +238,16 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				if (types.contains("pub")){
 					return "<span class=\"label types\">" + "<span class=\"label label-pub\">Publication</span> ";
 				}
-				return this.returnType(types, Arrays.asList("Person","License","Synaptic_neuropil","Template","Property","Anatomy","Ganglion","Clone","DataSet","Neuromere","Resource","Site"));
+				if (types.contains("Synaptic neuropil")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","Synaptic neuropil"));
+				}
+				if (types.contains("Neuromere")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","Neuromere"));
+				}
+				if (types.contains("Ganglion")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","Ganglion"));
+				}
+				return this.returnType(types, Arrays.asList("Adult","Larva","Person","License","Synaptic_neuropil","Template","Property","Anatomy","Ganglion","Clone","DataSet","Neuromere","Resource","Site","UnknownType"));
 			}
 			return "";
 		}
