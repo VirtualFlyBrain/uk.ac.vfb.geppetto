@@ -238,8 +238,8 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				if (types.contains("pub")){
 					return "<span class=\"label types\">" + "<span class=\"label label-pub\">Publication</span> ";
 				}
-				if (types.contains("Synaptic neuropil")){
-					return this.returnType(types, Arrays.asList("Adult","Larva","Synaptic neuropil"));
+				if (types.contains("Synaptic_neuropil")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","Synaptic_neuropil"));
 				}
 				if (types.contains("Neuromere")){
 					return this.returnType(types, Arrays.asList("Adult","Larva","Neuromere"));
