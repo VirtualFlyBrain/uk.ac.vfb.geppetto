@@ -247,7 +247,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				if (types.contains("Ganglion")){
 					return this.returnType(types, Arrays.asList("Adult","Larva","Ganglion"));
 				}
-				return this.returnType(types, Arrays.asList("Adult","Larva","Person","License","Synaptic_neuropil","Template","Property","Anatomy","Ganglion","Clone","DataSet","Neuromere","Resource","Site","UnknownType"));
+				return this.returnType(types, Arrays.asList("Adult","Larva","Person","License","Synaptic_neuropil","Template","Property","Anatomy","Ganglion","Clone","DataSet","Neuromere","Resource","Site","UnknownType","API"));
 			}
 			return "";
 		}
