@@ -191,13 +191,13 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public String returnType(List<String> types) {
 			if (types.size() > 0) {
 				if (types.contains("Obsolete")){
-					this.returnType(types, Arrays.asList("Obsolete"));
+					return this.returnType(types, Arrays.asList("Obsolete"));
 				}
 				if (types.contains("Deprecated")){
-					this.returnType(types, Arrays.asList("Deprecated"));
+					return this.returnType(types, Arrays.asList("Deprecated"));
 				}
 				if (types.contains("Template")){
-					this.returnType(types, Arrays.asList("Adult","Larva","Template"));
+					return this.returnType(types, Arrays.asList("Adult","Larva","Template"));
 				}
 				if (types.contains("Motor_neuron")){
 					return this.returnType(types, Arrays.asList("Adult","Larva","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Motor_neuron"));
@@ -257,7 +257,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				String result = "<span class=\"label types\">";
 				for (String type : show) {
 					if (types.contains(type)) {
-						result += "<span class=\"label label-" + type + "\">" + type.replace("_", " ") + "</span> ";
+						result = "<span class=\"label label-" + type + "\">" + type.replace("_", " ") + "</span> " + result;
 					}
 				}
 				return result + "</span>";
