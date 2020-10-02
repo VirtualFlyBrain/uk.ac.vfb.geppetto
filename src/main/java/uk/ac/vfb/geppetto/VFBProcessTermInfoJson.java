@@ -254,13 +254,13 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 		private String returnType(List<String> types, List<String> show) {
 			if (types.size() > 0 && show.size() > 0) {
-				String result = "<span class=\"label types\">";
+				String result = "";
 				for (String type : show) {
 					if (types.contains(type)) {
 						result = "<span class=\"label label-" + type + "\">" + type.replace("_", " ") + "</span> " + result;
 					}
 				}
-				return result + "</span>";
+				return "<span class=\"label types\">" + result + "</span>";
 			}
 			return "";
 		}
