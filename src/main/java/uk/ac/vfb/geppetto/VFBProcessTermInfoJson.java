@@ -536,7 +536,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			}else{
 				result += this.core.label;
 			}
-			result += "</a>";	
+			result += "</a>";
 			return result;
 		}
 
@@ -736,13 +736,13 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 		public List<String> getRefs() {
 			List<String> results = new ArrayList<>();
-			if (this.FlyBase != null && this.FlyBase.size() > 2) {
+			if (this.FlyBase != null && this.FlyBase.length() > 2) {
 				results.add("<a href=\"http://flybase.org/reports/" + this.FlyBase + "\" target=\"_blank\"><i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:" + this.FlyBase + "\" aria-hidden=\"true\"></i> FlyBase:" + this.FlyBase + "</a>");
 			}
-			if (this.PubMed != null && this.PubMed.size() > 2) {
+			if (this.PubMed != null && this.PubMed.length() > 2) {
 				results.add("<a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + this.PubMed + "\" target=\"_blank\"><i class=\"popup-icon-link gpt-pubmed\" title=\"PMID:" + this.PubMed + "\" aria-hidden=\"true\"></i> PMID:" + this.PubMed + "</a>");
 			}
-			if (this.DOI != null && this.DOI.size() > 2) {
+			if (this.DOI != null && this.DOI.length() > 2) {
 				results.add("<a href=\"https://doi.org/" + this.DOI + "\" target=\"_blank\"><i class=\"popup-icon-link gpt-doi\" title=\"doi:" + this.DOI + "\" aria-hidden=\"true\"></i> doi:" + this.DOI + "</a>");
 			}
 			// TODO: ISBN
