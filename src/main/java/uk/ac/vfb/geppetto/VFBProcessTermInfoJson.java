@@ -1299,7 +1299,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					System.out.println("ERROR: term:core missing from JSON for " + variable.getId());
 					System.out.println(json.replace("}","}\n"));
 					addModelHtml(variable.getId(), "Name", "label", metadataType, geppettoModelAccess);
-					addModelHtml("ERROR: term:core missing from JSON for " + variable.getId() + "<br>" + json.replace("}","}<br>"), "Debug", "debug", metadataType, geppettoModelAccess);
+					addModelHtml("ERROR: term:core missing from JSON for " + variable.getId() + "<br>" + json.replace("}","}<br>"), "Error", "error", metadataType, geppettoModelAccess);
 					return results;
 				}
 
