@@ -1298,6 +1298,8 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				if (vfbTerm.term == null || vfbTerm.term.core == null){
 					System.out.println("ERROR: term:core missing from JSON for " + variable.getId());
 					System.out.println(json.replace("}","}\n"));
+					addModelHtml(variable.getId(), "Name", label, metadataType, geppettoModelAccess);
+					addModelHtml("ERROR: term:core missing from JSON for " + variable.getId() + "<br>" + json.replace("}","}<br>"), "Debug", "debug", metadataType, geppettoModelAccess);
 					return results;
 				}
 
@@ -1309,7 +1311,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				}
 				tempData = "<b>" + vfbTerm.term.core.label + "</b> [" + vfbTerm.term.core.short_form + "] " + vfbTerm.term.core.types(showTypes);
 				if (vfbTerm.term.core.symbol != null && !vfbTerm.term.core.symbol.equals("")) {
-					tempData = tempData.replace("</b> [","</b> (<b>" + vfbTerm.term.core.symbol + "</b>) [");
+					tempData = tempData.replace("</br> [","</b> (<b>" + vfbTerm.term.core.symbol + "</b>) [");
 				}
 				addModelHtml(tempData, "Name", header, metadataType, geppettoModelAccess);
 
