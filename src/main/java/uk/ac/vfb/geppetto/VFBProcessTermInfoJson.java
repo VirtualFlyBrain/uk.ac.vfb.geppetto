@@ -159,6 +159,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		String iri;
 		String label;
 		private List<String> types;
+		String symbol;
 
 		public String intLink() {
 			return this.intLink(false);
@@ -726,6 +727,29 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 	}
 
+	class pub_specific_content {
+		public String title;
+		public String PubMed;
+		public String FlyBase;
+		public String DOI;
+		public String ISBN;
+
+		public List<String> getRefs() {
+			String results = new ArrayList<>();;
+			if (this.FlyBase != null && this.FlyBase.size() > 2) {
+				results.add("<a href=\"http://flybase.org/reports/" + this.FlyBase + "\" target=\"_blank\"><i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:" + this.FlyBase + "\" aria-hidden=\"true\"></i> FlyBase:" + this.FlyBase + "</a>");
+			}
+			if (this.PubMed != null && this.PubMed.size() > 2) {
+				results.add("<a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + this.PubMed + "\" target=\"_blank\"><i class=\"popup-icon-link gpt-pubmed\" title=\"PMID:" + this.PubMed + "\" aria-hidden=\"true\"></i> PMID:" + this.PubMed + "</a>");
+			}
+			if (this.DOI != null && this.DOI.size() > 2) {
+				results.add("<a href=\"https://doi.org/" + this.DOI + "\" target=\"_blank\"><i class=\"popup-icon-link gpt-doi\" title=\"doi:" + this.DOI + "\" aria-hidden=\"true\"></i> doi:" + this.DOI + "</a>");
+			}
+			// TODO: ISBN
+			return results;
+		}
+	}
+
 	class vfb_terminfo {
 		term term;
 		public String query;
@@ -746,6 +770,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		private template_channel template_channel;
 		private List<minimal_entity_info> targeting_splits;
 		private List<minimal_entity_info> target_neurons;
+		private pub_specific_content pub_specific_content;
 
 		public String getSource() {
 			String result = "";
@@ -979,6 +1004,12 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			// process xrefs
 			for (xref xref : this.xrefs) {
 				results.add(xref.extLink());
+			}
+
+			if (this.pub_specific_content != null) {
+				for (String ref : this.pub_specific_content.getRefs()) {
+					results.add(ref);
+				}
 			}
 			// sort xrefs alphabetically (by site)
 			java.util.Collections.sort(results);
@@ -1272,7 +1303,14 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 				// Label: {label} ({short_form}) TYPES (all on one line)
 				header = "label";
-				tempData = "<b>" + vfbTerm.term.core.label + "</b> (" + vfbTerm.term.core.short_form + ") " + vfbTerm.term.core.types(showTypes);
+				if (vfbTerm.pub_specific_content != null) {
+					tempData = "<b>" + vfbTerm.pub_specific_content.title + "</b>";
+					addModelHtml(tempData, "Title", "title", metadataType, geppettoModelAccess);
+				}
+				tempData = "<b>" + vfbTerm.term.core.label + "</b> [" + vfbTerm.term.core.short_form + "] " + vfbTerm.term.core.types(showTypes);
+				if (vfbTerm.term.core.symbol != null && !vfbTerm.term.core.symbol.equals("")) {
+					tempData = tempData.replace("</b> [","</b> (<b>" + vfbTerm.term.core.symbol + "</b>) [");
+				}
 				addModelHtml(tempData, "Name", header, metadataType, geppettoModelAccess);
 
 				// Logo
@@ -1356,6 +1394,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				header = "xrefs";
 				if (vfbTerm.xrefs != null && vfbTerm.xrefs.size() > 0) {
 					tempData = vfbTerm.xrefList();
+					addModelHtml(tempData, "Cross References", header, metadataType, geppettoModelAccess);
+				} else if (vfbTerm.pub_specific_content != null) {
+					tempData = vfbTerm.pub_specific_content.getRefs();
 					addModelHtml(tempData, "Cross References", header, metadataType, geppettoModelAccess);
 				}
 
