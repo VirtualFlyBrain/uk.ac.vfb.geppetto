@@ -735,7 +735,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public String ISBN;
 
 		public List<String> getRefs() {
-			String results = new ArrayList<>();;
+			List<String> results = new ArrayList<>();
 			if (this.FlyBase != null && this.FlyBase.size() > 2) {
 				results.add("<a href=\"http://flybase.org/reports/" + this.FlyBase + "\" target=\"_blank\"><i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:" + this.FlyBase + "\" aria-hidden=\"true\"></i> FlyBase:" + this.FlyBase + "</a>");
 			}
