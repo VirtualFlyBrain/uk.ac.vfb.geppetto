@@ -1395,10 +1395,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				if (vfbTerm.xrefs != null && vfbTerm.xrefs.size() > 0) {
 					tempData = vfbTerm.xrefList();
 					addModelHtml(tempData, "Cross References", header, metadataType, geppettoModelAccess);
-				} else if (vfbTerm.pub_specific_content != null) {
-					tempData = vfbTerm.pub_specific_content.getRefs();
-					addModelHtml(tempData, "Cross References", header, metadataType, geppettoModelAccess);
-				}
+				} 
 
 				// Images:
 				header = "parentType";
