@@ -1311,7 +1311,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				}
 				tempData = "<b>" + vfbTerm.term.core.label + "</b> [" + vfbTerm.term.core.short_form + "] " + vfbTerm.term.core.types(showTypes);
 				if (vfbTerm.term.core.symbol != null && !vfbTerm.term.core.symbol.equals("")) {
-					tempData = tempData.replace("</br> [","</b> (<b>" + vfbTerm.term.core.symbol + "</b>) [");
+					tempData = tempData.replace("</b> [","</b> (<b>" + vfbTerm.term.core.symbol + "</b>) [");
 				}
 				addModelHtml(tempData, "Name", header, metadataType, geppettoModelAccess);
 
