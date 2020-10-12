@@ -260,7 +260,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					if (result.equals("")){
 						result += type.label;
 					} else {
-						result += "; " + type.labels;
+						result += "; " + type.label;
 					}
 				}
 			}
