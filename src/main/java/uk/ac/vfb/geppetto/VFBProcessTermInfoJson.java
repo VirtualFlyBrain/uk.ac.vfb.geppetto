@@ -1037,9 +1037,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				}
 				for (String xref : results) {
 					if (result == null){
-						result = ref;
+						result = xref;
 					} else {
-						result += "<br>" + ref;
+						result += "<br>" + xref;
 					}
 				}
 			}
