@@ -271,8 +271,8 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
 			try{
 				if (template == null || template.equals("")){
-					//default to JFRC2
-					template = "VFB_00017894";
+					//default to JRC2018U
+					template = "VFB_00101567";
 				}
 				int j = 0;
 				int f = 0;
