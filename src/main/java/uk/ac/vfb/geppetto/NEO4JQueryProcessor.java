@@ -143,6 +143,14 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		public Integer types;
 	}
 
+	class type {
+		public String iri;
+      	public String symbol;
+      	public List<String> types;
+      	public String label;
+      	public String short_form;
+	}
+
 	class vfb_query {
 		private minimal_entity_info anatomy;
 		public String query;
@@ -158,6 +166,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		private List<anatomy_channel_image> expressed_in;
 		private List<channel_image> channel_image;
 		private term term;
+		private List<type> types;
 
 		public String id(){
 			String delim = "----";
@@ -185,12 +194,16 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 				}
 
 			}
+			if (this.term != null) {
+				result = this.term.core.short_form;
+			}
 			return result;
 		}
 
 		public String name(){
 			if (this.expression_pattern != null) return this.expression_pattern.label;
 			if (this.dataset != null) return this.dataset.label;
+			if (this.term != null) return this.term.core.label;
 			return this.anatomy.label;
 		}
 
@@ -237,11 +250,25 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			return this.images("");
 		}
 
+		public String types(){
+			String result = "";
+			if (this.types != null && this.types.size() > 0){
+				for (type type:this.types){
+					if (result.equals("")){
+						result += type.label;
+					} else {
+						result += "; " + type.labels;
+					}
+				}
+			}
+			return result;
+		}
+
 		public ArrayValue images(String template) {
 			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
 			try{
 				if (template == null || template.equals("")){
-					//default to JFRC2 
+					//default to JFRC2
 					template = "VFB_00017894";
 				}
 				int j = 0;
@@ -385,6 +412,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			Boolean	hasReference = false;
 			Boolean	hasStage = false;
 			Boolean hasImage = false;
+			Boolean hasTypes = false;
 			List<vfb_query> table = new ArrayList<vfb_query>();
 			vfb_query vfbQuery = null;
 
@@ -429,6 +457,10 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 								hasId = true;
 								hasName = true;
 								break;
+							case "term":
+								hasId = true;
+								hasName = true;
+								break;
 							case "dataset":
 								hasId = true;
 								hasName = true;
@@ -462,6 +494,9 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 							case "channel_image":
 								hasImage = true;
 								break;
+							case "types":
+								hasTypes = true;
+								break;
 						}
 						tempData = new Gson().toJson(results.getValue(key, count));
 						json = json + "\"" + key  + "\":" + tempData;
@@ -494,6 +529,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			// set headers
 			processedResults.getHeader().add("ID");
 			if (hasName) processedResults.getHeader().add("Name");
+			if (hasTypes) processedResults.getHeader().add("Type");
 			if (hasExpressed_in) processedResults.getHeader().add("Expressed_in");
 			if (hasLicense) processedResults.getHeader().add("License");
 			if (hasReference) processedResults.getHeader().add("Reference");
@@ -507,6 +543,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					String length = "8";
 					if (hasId) processedResult.getValues().add(row.id());
 					if (hasName) processedResult.getValues().add(row.name());
+					if (hasTypes) processedResult.getValues().add(row.types());
 					if (hasExpressed_in) processedResult.getValues().add(row.expressed_in());
 					if (hasLicense) processedResult.getValues().add(row.licenseLabel());
 					if (hasReference) processedResult.getValues().add(row.reference());
