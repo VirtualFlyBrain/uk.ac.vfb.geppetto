@@ -196,6 +196,9 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			}
 			if (this.term != null) {
 				result = this.term.core.short_form;
+				if (this.types != null) {
+					// TODO: add link(s)
+				}
 			}
 			return result;
 		}
