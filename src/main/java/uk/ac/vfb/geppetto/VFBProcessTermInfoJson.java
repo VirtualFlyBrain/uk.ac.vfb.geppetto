@@ -1001,38 +1001,46 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public String xrefList() {
 			// turning xrefs into list of html with link for xrefs.
 			List<String> results = new ArrayList<>();
+			String result = null;
 			// process xrefs
 			if (this.xrefs != null) {
 				for (xref xref : this.xrefs) {
 					results.add(xref.extLink());
 				}
+				// sort xrefs alphabetically (by site)
+				java.util.Collections.sort(results);
+				// itterate to create html list:
+				result = "<ul class=\"terminfo-xrefs\">";
+				String site = "";
+				for (String xref : results) {
+					if (result.indexOf(xref)<0){
+						if (xref.substring(25).equals(site)) {
+							result += "<li>" + xref + "</li>";
+						} else if (site == "") {
+							// embed first sites xrefs
+							result += "<li>" + xref.replace("-->", "<ul><li>").replace("<!--", "") + "</li>";
+						} else {
+							// close previous and start next site xrefs
+							result += "</ul></li><li>" + xref.replace("-->", "<ul><li>").replace("<!--", "") + "</li>";
+						}
+						site = xref.substring(25);
+					}
+				}
+				result += "</ul></li></ul>";
 			}
 
 			if (this.pub_specific_content != null) {
 				for (String ref : this.pub_specific_content.getRefs()) {
 					results.add(ref);
 				}
-			}
-			// sort xrefs alphabetically (by site)
-			java.util.Collections.sort(results);
-			// itterate to create html list:
-			String result = "<ul class=\"terminfo-xrefs\">";
-			String site = "";
-			for (String xref : results) {
-				if (result.indexOf(xref)<0){
-					if (xref.substring(25).equals(site)) {
-						result += "<li>" + xref + "</li>";
-					} else if (site == "") {
-						// embed first sites xrefs
-						result += "<li>" + xref.replace("-->", "<ul><li>").replace("<!--", "") + "</li>";
+				for (String xref : results) {
+					if (result == null){
+						result = ref;
 					} else {
-						// close previous and start next site xrefs
-						result += "</ul></li><li>" + xref.replace("-->", "<ul><li>").replace("<!--", "") + "</li>";
+						result += "<br>" + ref;
 					}
-					site = xref.substring(25);
 				}
 			}
-			result += "</ul></li></ul>";
 			return result;
 		}
 
@@ -1313,7 +1321,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				}
 				tempData = "<b>" + vfbTerm.term.core.label + "</b> [" + vfbTerm.term.core.short_form + "] " + vfbTerm.term.core.types(showTypes);
 				if (vfbTerm.term.core.symbol != null && !vfbTerm.term.core.symbol.equals("")) {
-					tempData = tempData.replace("</b> [","</b> (<b>" + vfbTerm.term.core.symbol + "</b>) [");
+					tempData = tempData.replace("</br> [","</b> (<b>" + vfbTerm.term.core.symbol + "</b>) [");
 				}
 				addModelHtml(tempData, "Name", header, metadataType, geppettoModelAccess);
 
