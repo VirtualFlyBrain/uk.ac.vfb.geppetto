@@ -62,6 +62,12 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		private String type;
 	}
 
+	class term {
+		public minimal_entity_info core;
+		public List<String> description;
+		public List<String> comment;
+	}
+
 	class image {
 		String image_folder;
 		private List<Double> index;
@@ -150,6 +156,8 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		private List<minimal_entity_info> stages;
 		private minimal_entity_info expression_pattern;
 		private List<anatomy_channel_image> expressed_in;
+		private List<channel_image> channel_image;
+		private term term;
 
 		public String id(){
 			String delim = "----";
@@ -285,6 +293,31 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 							f--;
 							addImage(anat.getUrl("", "thumbnailT.png"), anat.anatomy.label, anat.anatomy.short_form, imageArray, f);
 							loaded.add(anat.anatomy.short_form);
+						}
+					}
+				}
+				if (this.channel_image != null) {
+					f = this.channel_image.size();
+					c = f;
+					for (channel_image anat : this.channel_image) {
+						// add same template to the begining and others at the end.
+						if (anat != null && anat.image != null && anat.image.template_anatomy != null && anat.image.template_anatomy.short_form != null && template.equals(anat.image.template_anatomy.short_form)) {
+							if (loaded.contains(this.term.core.short_form)) {
+								imageArray = ValuesFactory.eINSTANCE.createArrayValue();
+								j = 0;
+							}
+							addImage(anat.getUrl("", "thumbnailT.png"), this.term.core.label, this.term.core.short_form, imageArray, j);
+							if (loaded.contains(this.term.core.short_form)) {
+								return imageArray;
+							}
+							loaded.add(this.term.core.short_form);
+							j++;
+						} else {
+							if (!loaded.contains(this.term.core.short_form)) {
+								f--;
+								addImage(anat.getUrl("", "thumbnailT.png"), this.term.core.label, this.term.core.short_form, imageArray, f);
+								loaded.add(this.term.core.short_form);
+							}
 						}
 					}
 				}
@@ -424,6 +457,9 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 								hasImage = true;
 								break;
 							case "expressed_in":
+								hasImage = true;
+								break;
+							case "channel_image":
 								hasImage = true;
 								break;
 						}
