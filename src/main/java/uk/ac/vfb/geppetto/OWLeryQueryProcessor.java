@@ -31,7 +31,7 @@ public class OWLeryQueryProcessor extends AQueryProcessor
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.geppetto.core.datasources.IQueryProcessor#process(org.geppetto.model.ProcessQuery, org.geppetto.model.variables.Variable, org.geppetto.model.QueryResults)
 	 */
 	@Override
@@ -41,30 +41,30 @@ public class OWLeryQueryProcessor extends AQueryProcessor
 		{
 			throw new GeppettoDataSourceException("Results input to " + query.getName() + " is null");
 		}
-		
+
 		String queryID = dataSource.getId();
-		
+
 		QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
 		int idIndex = -1;
-		
+
 		List<String> ids = new ArrayList<String>();
-		
-		switch(queryID) 
+
+		switch(queryID)
 		{
 			case "owleryDataSourceSubclass":
-				idIndex = results.getHeader().indexOf("superClassOf");					
-				
+				idIndex = results.getHeader().indexOf("superClassOf");
+
 				break;
 			case "owleryDataSourceRealise":
-				idIndex = results.getHeader().indexOf("hasInstance");					
-				
+				idIndex = results.getHeader().indexOf("hasInstance");
+
 				break;
 			default:
 				throw new GeppettoDataSourceException("Results header not in hasInstance, subClassOf");
-				
+
 		}
 		processedResults.getHeader().add("ID");
-	
+
 		if (idIndex > -1){
 			for(AQueryResult result : results.getResults())
 			{
@@ -78,7 +78,7 @@ public class OWLeryQueryProcessor extends AQueryProcessor
 				}
 			}
 		}
-		
+
 		processingOutputMap.put("ARRAY_ID_RESULTS", ids);
 
 		return processedResults;
