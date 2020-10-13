@@ -65,43 +65,43 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 	class coordinatesList {
 		private List<Double> coordinates;
-		
+
 		public Double getX() {
 			return this.coordinates.get(0);
 		}
-		
+
 		public Double getY() {
 			return this.coordinates.get(1);
 		}
-		
+
 		public Double getZ() {
 			return this.coordinates.get(2);
 		}
-		
+
 		public String toString() {
 			return coordinates.toString();
 		}
 
 	}
-	
+
 	class coordinatesJsonList {
 		private List<String> coordinates;
-		
+
 		public Double getX() {
 			coordinates json = new Gson().fromJson(coordinates.get(0), coordinates.class);
 			return json.getX();
 		}
-		
+
 		public Double getY() {
 			coordinates json = new Gson().fromJson(coordinates.get(0), coordinates.class);
 			return json.getY();
 		}
-		
+
 		public Double getZ() {
 			coordinates json = new Gson().fromJson(coordinates.get(0), coordinates.class);
 			return json.getZ();
 		}
-		
+
 		public String toString() {
 			return "[" + this.getX().toString() + "," + this.getY().toString() + "," + this.getZ().toString() + "]";
 		}
@@ -135,24 +135,24 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		private Double X;
 		private Double Y;
 		private Double Z;
-		
+
 		public Double getX() {
 			return this.X;
 		}
-		
+
 		public Double getY() {
 			return this.Y;
 		}
-		
+
 		public Double getZ() {
 			return this.Z;
 		}
-		
+
 		public String toString() {
 			return "[" + this.getX().toString() + "," + this.getY().toString() + "," + this.getZ().toString() + "]";
 		}
 	}
-		
+
 
 	class minimal_entity_info {
 		String short_form;
@@ -1409,7 +1409,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				if ((vfbTerm.xrefs != null && vfbTerm.xrefs.size() > 0) || vfbTerm.pub_specific_content != null) {
 					tempData = vfbTerm.xrefList();
 					addModelHtml(tempData, "Cross References", header, metadataType, geppettoModelAccess);
-				} 
+				}
 
 				// Images:
 				header = "parentType";
@@ -1643,7 +1643,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				System.out.println(json.replace("}","}\n"));
 				//debug query version to term info
 				if (debug) {
-					if (vfbTerm!=null && vfbTerm.query!=null) {	
+					if (vfbTerm!=null && vfbTerm.query!=null) {
 						addModelHtml(vfbTerm.query + " (" + vfbTerm.version + ")" + "<br>" + json + "<br>" + e.toString(), "Debug", "debug", metadataType, geppettoModelAccess);
 					}else{
 						addModelHtml(json + "<br>" + e.toString(), "Debug", "debug", metadataType, geppettoModelAccess);
@@ -1657,7 +1657,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			System.out.println(e);
 			throw new GeppettoDataSourceException(e);
 		}
-		catch (Exception e) 
+		catch (Exception e)
 		{
 			System.out.println("Error creating metadata: " + e.toString());
 			e.printStackTrace();
@@ -1790,13 +1790,13 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	{
 		try{
 			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
-			
+
 			Variable imageVariable = VariablesFactory.eINSTANCE.createVariable();
 			imageVariable.setId(reference);
 			imageVariable.setName(name);
 			imageVariable.getTypes().add(imageType);
 			geppettoModelAccess.addVariableToType(imageVariable, metadataType);
-			
+
 			if (images.getElements().size() > 1){
 				imageVariable.getInitialValues().put(imageType, images);
 			}else{
@@ -1812,7 +1812,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 	}
 
-	
+
 	/**
 	 * @param data
 	 * @param name
@@ -1842,7 +1842,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			throw new GeppettoVisitingException(e);
 		}
 	}
-	
+
 	private class IIPJSON {
 		int indexNumber;
 		String serverUrl;
