@@ -31,7 +31,7 @@ public class OWLeryQueryProcessor extends AQueryProcessor
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.geppetto.core.datasources.IQueryProcessor#process(org.geppetto.model.ProcessQuery, org.geppetto.model.variables.Variable, org.geppetto.model.QueryResults)
 	 */
 	@Override
@@ -41,44 +41,44 @@ public class OWLeryQueryProcessor extends AQueryProcessor
 		{
 			throw new GeppettoDataSourceException("Results input to " + query.getName() + " is null");
 		}
-		
+
 		String queryID = dataSource.getId();
-		
+
 		QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
 		int idIndex = -1;
-		
+
 		List<String> ids = new ArrayList<String>();
-		
-		switch(queryID) 
+
+		switch(queryID)
 		{
 			case "owleryDataSourceSubclass":
-				idIndex = results.getHeader().indexOf("superClassOf");					
-				
+				idIndex = results.getHeader().indexOf("superClassOf");
+
 				break;
 			case "owleryDataSourceRealise":
-				idIndex = results.getHeader().indexOf("hasInstance");					
-				
+				idIndex = results.getHeader().indexOf("hasInstance");
+
 				break;
 			default:
 				throw new GeppettoDataSourceException("Results header not in hasInstance, subClassOf");
-				
+
 		}
 		processedResults.getHeader().add("ID");
-	
+
 		if (idIndex > -1){
 			for(AQueryResult result : results.getResults())
 			{
 				List<String> idsList = (ArrayList)((QueryResult) result).getValues().get(idIndex);
 				for(String id : idsList) {
-					SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
+					//SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 					String subID = id.substring((id.lastIndexOf('/')+1) , id.length()).toString();
-					processedResult.getValues().add(subID);
+					//processedResult.getValues().add(subID);
 					ids.add("\"" + subID + "\"");
-					processedResults.getResults().add(processedResult);
+					//processedResults.getResults().add(processedResult);
 				}
 			}
 		}
-		
+
 		processingOutputMap.put("ARRAY_ID_RESULTS", ids);
 
 		return processedResults;

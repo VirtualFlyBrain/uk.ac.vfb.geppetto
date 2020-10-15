@@ -63,11 +63,103 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 	// START VFB term info schema https://github.com/VirtualFlyBrain/VFB_json_schema/blob/master/json_schema/
 
+	class coordinatesList {
+		private List<Double> coordinates;
+
+		public Double getX() {
+			return this.coordinates.get(0);
+		}
+
+		public Double getY() {
+			return this.coordinates.get(1);
+		}
+
+		public Double getZ() {
+			return this.coordinates.get(2);
+		}
+
+		public String toString() {
+			return coordinates.toString();
+		}
+
+	}
+
+	class coordinatesJsonList {
+		private List<String> coordinates;
+
+		public Double getX() {
+			coordinates json = new Gson().fromJson(coordinates.get(0), coordinates.class);
+			return json.getX();
+		}
+
+		public Double getY() {
+			coordinates json = new Gson().fromJson(coordinates.get(0), coordinates.class);
+			return json.getY();
+		}
+
+		public Double getZ() {
+			coordinates json = new Gson().fromJson(coordinates.get(0), coordinates.class);
+			return json.getZ();
+		}
+
+		public String toString() {
+			return "[" + this.getX().toString() + "," + this.getY().toString() + "," + this.getZ().toString() + "]";
+		}
+	}
+
+	public final class coordinatesJsonString {
+		private coordinates json;
+
+		public coordinatesJsonString(String coordinates) {
+			this.json = new Gson().fromJson(coordinates , coordinates.class);
+		}
+
+		public Double getX() {
+			return this.json.getX();
+		}
+
+		public Double getY() {
+			return this.json.getY();
+		}
+
+		public Double getZ() {
+			return this.json.getZ();
+		}
+
+		public String toString() {
+			return "[" + this.getX().toString() + "," + this.getY().toString() + "," + this.getZ().toString() + "]";
+		}
+	}
+
+	class coordinates {
+		private Double X;
+		private Double Y;
+		private Double Z;
+
+		public Double getX() {
+			return this.X;
+		}
+
+		public Double getY() {
+			return this.Y;
+		}
+
+		public Double getZ() {
+			return this.Z;
+		}
+
+		public String toString() {
+			return "[" + this.getX().toString() + "," + this.getY().toString() + "," + this.getZ().toString() + "]";
+		}
+	}
+
+
 	class minimal_entity_info {
 		String short_form;
 		String iri;
 		String label;
 		private List<String> types;
+		String symbol;
 
 		public String intLink() {
 			return this.intLink(false);
@@ -100,34 +192,46 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public String returnType(List<String> types) {
 			if (types.size() > 0) {
 				if (types.contains("Obsolete")){
-					this.returnType(types, Arrays.asList("Obsolete"));
+					return this.returnType(types, Arrays.asList("Obsolete"));
+				}
+				if (types.contains("Deprecated")){
+					return this.returnType(types, Arrays.asList("Deprecated"));
+				}
+				if (types.contains("Template")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","Template"));
 				}
 				if (types.contains("Motor_neuron")){
-					return this.returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Motor_neuron"));
+					return this.returnType(types, Arrays.asList("Adult","Larva","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Motor_neuron"));
 				}
 				if (types.contains("Sensory_neuron")){
-					return this.returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Sensory_neuron"));
-				}
-				if (types.contains("Sensory_neuron")){
-					return this.returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Sensory_neuron"));
+					return this.returnType(types, Arrays.asList("Adult","Larva","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Sensory_neuron"));
 				}
 				if (types.contains("Peptidergic_neuron")){
-					return this.returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Peptidergic_neuron"));
+					return this.returnType(types, Arrays.asList("Adult","Larva","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Peptidergic_neuron"));
 				}
 				if (types.contains("Neuron")){
-					return this.returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Neuron"));
+					return this.returnType(types, Arrays.asList("Adult","Larva","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Neuron"));
 				}
 				if (types.contains("Glial_cell")){
-					return this.returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Glial_cell"));
+					return this.returnType(types, Arrays.asList("Adult","Larva","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Glial_cell"));
+				}
+				if (types.contains("GMC")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","Split","Expression_pattern","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","GMC"));
 				}
 				if (types.contains("Cell")){
-					return this.returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Cell"));
+					return this.returnType(types, Arrays.asList("Adult","Larva","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Neuroblast","Muscle","Cell"));
 				}
 				if (types.contains("Neuron_projection_bundle")){
-					return this.returnType(types, Arrays.asList("Neuron_projection_bundle"));
+					return this.returnType(types, Arrays.asList("Adult","Larva","Neuron_projection_bundle"));
 				}
 				if (types.contains("Split")){
-					return this.returnType(types, Arrays.asList("Split","Expression_pattern","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Glial_cell"));
+					return this.returnType(types, Arrays.asList("Adult","Larva","Split","Expression_pattern","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Glial_cell"));
+				}
+				if (types.contains("Clone")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","Split","Expression_pattern","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Clone"));
+				}
+				if (types.contains("Cluster")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","Split","Expression_pattern","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Cluster"));
 				}
 				if (types.contains("Expression_pattern")){
 					return "<span class=\"label types\">" + "<span class=\"label label-Expression_pattern\">Expression Pattern</span> ";
@@ -135,20 +239,29 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				if (types.contains("pub")){
 					return "<span class=\"label types\">" + "<span class=\"label label-pub\">Publication</span> ";
 				}
-				return this.returnType(types, Arrays.asList("Person","License","Synaptic_neuropil","Template","Property","Anatomy","Ganglion","Clone","DataSet","Neuromere","Resource","Site"));
+				if (types.contains("Synaptic_neuropil")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","Synaptic_neuropil"));
+				}
+				if (types.contains("Neuromere")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","Neuromere"));
+				}
+				if (types.contains("Ganglion")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","Ganglion"));
+				}
+				return this.returnType(types, Arrays.asList("Adult","Larva","Person","License","Synaptic_neuropil","Template","Property","Anatomy","Ganglion","Clone","DataSet","Neuromere","Resource","Site","UnknownType","API"));
 			}
 			return "";
 		}
 
 		private String returnType(List<String> types, List<String> show) {
 			if (types.size() > 0 && show.size() > 0) {
-				String result = "<span class=\"label types\">";
+				String result = "";
 				for (String type : show) {
 					if (types.contains(type)) {
-						result += "<span class=\"label label-" + type + "\">" + type.replace("_", " ") + "</span> ";
+						result = "<span class=\"label label-" + type + "\">" + type.replace("_", " ") + "</span> " + result;
 					}
 				}
-				return result + "</span>";
+				return "<span class=\"label types\">" + result + "</span>";
 			}
 			return "";
 		}
@@ -299,20 +412,41 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 	class domain {
 		private List<Double> index;
-		private List<Double> center;
+		private Object center;
 		private String folder;
 		private minimal_entity_info anatomical_individual;
 		private minimal_entity_info anatomical_type;
+
+		public coordinatesJsonString getCenter() {
+			if ( center instanceof String ) {
+				return new coordinatesJsonString((String) this.center);
+			}
+			return null;
+		}
+
 	}
 
 	class template_channel {
 		private List<Double> index;
-		private List<Double> center;
-		private List<Double> extent;
-		private List<Double> voxel;
+		private String center;
+		private String extent;
+		private String voxel;
 		private String orientation;
 		String image_folder;
 		private minimal_entity_info channel;
+
+		public coordinatesJsonString getVoxel() {
+			return new coordinatesJsonString(this.voxel);
+		}
+
+		public coordinatesJsonString getCenter() {
+			return new coordinatesJsonString(this.center);
+		}
+
+		public coordinatesJsonString getExtent() {
+			return new coordinatesJsonString(this.extent);
+		}
+
 	}
 
 	class xref {
@@ -402,7 +536,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			}else{
 				result += this.core.label;
 			}
-			result += "</a>";	
+			result += "</a>";
 			return result;
 		}
 
@@ -561,7 +695,10 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		// TODO: handle type?
 
 		public String toString() {
-			return this.scope.replaceAll("([^_A-Z])([A-Z])", "$1 $2").replace("has ", "") + ": " + this.label;
+			if (!this.scope.equals(""))	{
+				return this.scope.replaceAll("([^_A-Z])([A-Z])", "$1 $2").replace("has ", "") + ": " + this.label;
+			}
+			return this.label;
 		}
 	}
 
@@ -590,6 +727,29 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 	}
 
+	class pub_specific_content {
+		public String title;
+		public String PubMed;
+		public String FlyBase;
+		public String DOI;
+		public String ISBN;
+
+		public List<String> getRefs() {
+			List<String> results = new ArrayList<>();
+			if (this.FlyBase != null && this.FlyBase.length() > 2) {
+				results.add("<a href=\"http://flybase.org/reports/" + this.FlyBase + "\" target=\"_blank\"><i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:" + this.FlyBase + "\" aria-hidden=\"true\"></i> FlyBase:" + this.FlyBase + "</a>");
+			}
+			if (this.PubMed != null && this.PubMed.length() > 2) {
+				results.add("<a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + this.PubMed + "\" target=\"_blank\"><i class=\"popup-icon-link gpt-pubmed\" title=\"PMID:" + this.PubMed + "\" aria-hidden=\"true\"></i> PMID:" + this.PubMed + "</a>");
+			}
+			if (this.DOI != null && this.DOI.length() > 2) {
+				results.add("<a href=\"https://doi.org/" + this.DOI + "\" target=\"_blank\"><i class=\"popup-icon-link gpt-doi\" title=\"doi:" + this.DOI + "\" aria-hidden=\"true\"></i> doi:" + this.DOI + "</a>");
+			}
+			// TODO: ISBN
+			return results;
+		}
+	}
+
 	class vfb_terminfo {
 		term term;
 		public String query;
@@ -610,6 +770,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		private template_channel template_channel;
 		private List<minimal_entity_info> targeting_splits;
 		private List<minimal_entity_info> target_neurons;
+		private pub_specific_content pub_specific_content;
 
 		public String getSource() {
 			String result = "";
@@ -632,6 +793,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				result += "</span>";
 			}
 			result = result.replace("gpt-fly", "fa fa-external-link");
+			result = result.replace("<a href=\"?id=null\" data-instancepath=\"null\"></a>","");
 			if (result.equals("<span class=\"terminfo-source\"></span>")) return "";
 			return result;
 		}
@@ -673,6 +835,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				}
 				result += "</span>";
 			}
+			result = result.replace("<a href=\"?id=null\" data-instancepath=\"null\"></a>","");
 			if (result.equals("<span class=\"terminfo-license\"></span>")) return "";
 			return result;
 		}
@@ -690,16 +853,16 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					domainId[0] = this.term.core.short_form;
 					domainName[0] = this.parents.get(0).label;
 					domainType[0] = this.parents.get(0).short_form;
-					voxelSize[0] = String.valueOf(this.template_channel.voxel.get(0));
-					voxelSize[1] = String.valueOf(this.template_channel.voxel.get(1));
-					voxelSize[2] = String.valueOf(this.template_channel.voxel.get(2));
-					domainCentre[0] = String.valueOf(this.template_channel.center);
+					voxelSize[0] = String.valueOf(this.template_channel.getVoxel().getX());
+					voxelSize[1] = String.valueOf(this.template_channel.getVoxel().getY());
+					voxelSize[2] = String.valueOf(this.template_channel.getVoxel().getZ());
+					domainCentre[0] = this.template_channel.getCenter().toString();
 					for (domain domain:this.template_domains){
 						domainId[domain.index.get(0).intValue()] = domain.anatomical_individual.short_form;
 						domainName[domain.index.get(0).intValue()] = domain.anatomical_type.label;
 						domainType[domain.index.get(0).intValue()] = domain.anatomical_type.short_form;
-						if (domain.center != null && domain.center.size() > 0){
-							domainCentre[domain.index.get(0).intValue()] = String.valueOf(domain.center);
+						if (domain.getCenter() != null && domain.getCenter().getZ() != null){
+							domainCentre[domain.index.get(0).intValue()] = domain.getCenter().toString();
 						}
 					}
 					domains.add(Arrays.asList(voxelSize));
@@ -840,30 +1003,46 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public String xrefList() {
 			// turning xrefs into list of html with link for xrefs.
 			List<String> results = new ArrayList<>();
+			String result = null;
 			// process xrefs
-			for (xref xref : this.xrefs) {
-				results.add(xref.extLink());
-			}
-			// sort xrefs alphabetically (by site)
-			java.util.Collections.sort(results);
-			// itterate to create html list:
-			String result = "<ul class=\"terminfo-xrefs\">";
-			String site = "";
-			for (String xref : results) {
-				if (result.indexOf(xref)<0){
-					if (xref.substring(25).equals(site)) {
-						result += "<li>" + xref + "</li>";
-					} else if (site == "") {
-						// embed first sites xrefs
-						result += "<li>" + xref.replace("-->", "<ul><li>").replace("<!--", "") + "</li>";
-					} else {
-						// close previous and start next site xrefs
-						result += "</ul></li><li>" + xref.replace("-->", "<ul><li>").replace("<!--", "") + "</li>";
+			if (this.xrefs != null) {
+				for (xref xref : this.xrefs) {
+					results.add(xref.extLink());
+				}
+				// sort xrefs alphabetically (by site)
+				java.util.Collections.sort(results);
+				// itterate to create html list:
+				result = "<ul class=\"terminfo-xrefs\">";
+				String site = "";
+				for (String xref : results) {
+					if (result.indexOf(xref)<0){
+						if (xref.substring(25).equals(site)) {
+							result += "<li>" + xref + "</li>";
+						} else if (site == "") {
+							// embed first sites xrefs
+							result += "<li>" + xref.replace("-->", "<ul><li>").replace("<!--", "") + "</li>";
+						} else {
+							// close previous and start next site xrefs
+							result += "</ul></li><li>" + xref.replace("-->", "<ul><li>").replace("<!--", "") + "</li>";
+						}
+						site = xref.substring(25);
 					}
-					site = xref.substring(25);
+				}
+				result += "</ul></li></ul>";
+			}
+
+			if (this.pub_specific_content != null) {
+				for (String ref : this.pub_specific_content.getRefs()) {
+					results.add(ref);
+				}
+				for (String xref : results) {
+					if (result == null){
+						result = xref;
+					} else {
+						result += "<br>" + xref;
+					}
 				}
 			}
-			result += "</ul></li></ul>";
 			return result;
 		}
 
@@ -1131,12 +1310,21 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				if (vfbTerm.term == null || vfbTerm.term.core == null){
 					System.out.println("ERROR: term:core missing from JSON for " + variable.getId());
 					System.out.println(json.replace("}","}\n"));
+					addModelHtml(variable.getId(), "Name", "label", metadataType, geppettoModelAccess);
+					addModelHtml("ERROR: term:core missing from JSON for " + variable.getId() + "<br>" + json.replace("}","}<br>"), "Error", "error", metadataType, geppettoModelAccess);
 					return results;
 				}
 
 				// Label: {label} ({short_form}) TYPES (all on one line)
 				header = "label";
-				tempData = "<b>" + vfbTerm.term.core.label + "</b> (" + vfbTerm.term.core.short_form + ") " + vfbTerm.term.core.types(showTypes);
+				if (vfbTerm.pub_specific_content != null) {
+					tempData = "<b>" + vfbTerm.pub_specific_content.title + "</b>";
+					addModelHtml(tempData, "Title", "title", metadataType, geppettoModelAccess);
+				}
+				tempData = "<b>" + vfbTerm.term.core.label + "</b> [" + vfbTerm.term.core.short_form + "] " + vfbTerm.term.core.types(showTypes);
+				if (vfbTerm.term.core.symbol != null && !vfbTerm.term.core.symbol.equals("")) {
+					tempData = tempData.replace("</b> [","</b> (<b>" + vfbTerm.term.core.symbol + "</b>) [");
+				}
 				addModelHtml(tempData, "Name", header, metadataType, geppettoModelAccess);
 
 				// Logo
@@ -1218,7 +1406,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 				// xrefs
 				header = "xrefs";
-				if (vfbTerm.xrefs != null && vfbTerm.xrefs.size() > 0) {
+				if ((vfbTerm.xrefs != null && vfbTerm.xrefs.size() > 0) || vfbTerm.pub_specific_content != null) {
 					tempData = vfbTerm.xrefList();
 					addModelHtml(tempData, "Cross References", header, metadataType, geppettoModelAccess);
 				}
@@ -1456,7 +1644,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				System.out.println(json.replace("}","}\n"));
 				//debug query version to term info
 				if (debug) {
-					if (vfbTerm!=null && vfbTerm.query!=null) {	
+					if (vfbTerm!=null && vfbTerm.query!=null) {
 						addModelHtml(vfbTerm.query + " (" + vfbTerm.version + ")" + "<br>" + json + "<br>" + e.toString(), "Debug", "debug", metadataType, geppettoModelAccess);
 					}else{
 						addModelHtml(json + "<br>" + e.toString(), "Debug", "debug", metadataType, geppettoModelAccess);
@@ -1470,7 +1658,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			System.out.println(e);
 			throw new GeppettoDataSourceException(e);
 		}
-		catch (Exception e) 
+		catch (Exception e)
 		{
 			System.out.println("Error creating metadata: " + e.toString());
 			e.printStackTrace();
@@ -1603,13 +1791,13 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	{
 		try{
 			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
-			
+
 			Variable imageVariable = VariablesFactory.eINSTANCE.createVariable();
 			imageVariable.setId(reference);
 			imageVariable.setName(name);
 			imageVariable.getTypes().add(imageType);
 			geppettoModelAccess.addVariableToType(imageVariable, metadataType);
-			
+
 			if (images.getElements().size() > 1){
 				imageVariable.getInitialValues().put(imageType, images);
 			}else{
@@ -1625,7 +1813,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 	}
 
-	
+
 	/**
 	 * @param data
 	 * @param name
@@ -1655,7 +1843,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			throw new GeppettoVisitingException(e);
 		}
 	}
-	
+
 	private class IIPJSON {
 		int indexNumber;
 		String serverUrl;
