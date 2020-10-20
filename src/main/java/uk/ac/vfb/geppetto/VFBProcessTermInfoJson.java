@@ -1319,15 +1319,21 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 				// Label: {label} ({short_form}) TYPES (all on one line)
 				header = "label";
-				if (vfbTerm.pub_specific_content != null) {
-					tempData = "<b>" + vfbTerm.pub_specific_content.title + "</b>";
-					addModelHtml(tempData, "Title", "title", metadataType, geppettoModelAccess);
-				}
 				tempData = "<b>" + vfbTerm.term.core.label + "</b> [" + vfbTerm.term.core.short_form + "] " + vfbTerm.term.core.types(showTypes);
-				if (vfbTerm.term.core.symbol != null && !vfbTerm.term.core.symbol.equals("")) {
-					tempData = tempData.replace("</b> [","</b> (<b>" + vfbTerm.term.core.symbol + "</b>) [");
-				}
 				addModelHtml(tempData, "Name", header, metadataType, geppettoModelAccess);
+
+				// Title
+				header = "title";
+				if (vfbTerm.pub_specific_content != null && fbTerm.pub_specific_content.title != null && !vfbTerm.pub_specific_content.title.equals("")) {
+					tempData = "<b>" + vfbTerm.pub_specific_content.title + "</b>";
+					addModelHtml(tempData, "Title", header, metadataType, geppettoModelAccess);
+				}
+
+				// Symbol
+				header = "symbol";
+				if (vfbTerm.term.core.symbol != null && !vfbTerm.term.core.symbol.equals("")) {
+					addModelHtml("<b>" + vfbTerm.term.core.symbol + "</b>", "Symbol", header, metadataType, geppettoModelAccess);
+				}
 
 				// Logo
 				header = "logo";
