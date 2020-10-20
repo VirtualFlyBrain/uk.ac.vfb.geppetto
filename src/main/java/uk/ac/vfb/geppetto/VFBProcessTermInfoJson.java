@@ -1245,7 +1245,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 			// Determine loaded template
 			CompositeType testTemplate = null;
-			List<String> availableTemplates = Arrays.asList("VFB_00017894","VFB_00101567","VFB_00101384","VFB_00050000","VFB_00049000","VFB_00100000","VFB_00030786");
+			List<String> availableTemplates = Arrays.asList("VFB_00101567","VFB_00200000","VFB_00017894","VFB_00101384","VFB_00050000","VFB_00049000","VFB_00100000","VFB_00030786");
 			for (String at:availableTemplates) {
 				try {
 					testTemplate = (CompositeType) ModelUtility.getTypeFromLibrary(at + "_metadata", dataSource.getTargetLibrary());
@@ -1257,6 +1257,8 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					loadedTemplate = at;
 					if (debug) System.out.println("Template detected: " + at);
 					break;
+				} else {
+					loadedTemplate = "VFB_00101567";
 				}
 			}
 
