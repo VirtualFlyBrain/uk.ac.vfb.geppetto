@@ -212,10 +212,10 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 
 		public String grossTypes(){
 			List<String> types = new ArrayList<String>();
-			if (this.expression_pattern != null) types=this.expression_pattern.types;
-			if (this.dataset != null) types=this.dataset.types;
-			if (this.term != null) types=this.term.core.types;
-			if (this.anatomy != null) types=this.anatomy.types;
+			if (this.expression_pattern != null) types.addAll(this.expression_pattern.types);
+			if (this.dataset != null) types.addAll(this.dataset.types);
+			if (this.term != null) types.addAll(this.term.core.types);
+			if (this.anatomy != null) types.addAll(this.anatomy.types);
 			return this.returnType(types);
 		}
 
