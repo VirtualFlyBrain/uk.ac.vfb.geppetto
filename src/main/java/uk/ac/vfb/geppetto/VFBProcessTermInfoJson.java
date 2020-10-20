@@ -1324,7 +1324,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 				// Title
 				header = "title";
-				if (vfbTerm.pub_specific_content != null && fbTerm.pub_specific_content.title != null && !vfbTerm.pub_specific_content.title.equals("")) {
+				if (vfbTerm.pub_specific_content != null && vfbTerm.pub_specific_content.title != null && !vfbTerm.pub_specific_content.title.equals("")) {
 					tempData = "<b>" + vfbTerm.pub_specific_content.title + "</b>";
 					addModelHtml(tempData, "Title", header, metadataType, geppettoModelAccess);
 				}
