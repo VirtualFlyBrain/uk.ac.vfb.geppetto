@@ -210,6 +210,110 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			return this.anatomy.label;
 		}
 
+		public String grossTypes(){
+			List<String> types = new ArrayList<String>();
+			if (this.expression_pattern != null) types=this.expression_pattern.types;
+			if (this.dataset != null) types=this.dataset.types;
+			if (this.term != null) types=this.term.core.types;
+			if (this.anatomy != null) types=this.anatomy.types;
+			return this.returnType(types);
+		}
+
+		public String returnType(List<String> types) {
+			if (types.size() > 0) {
+				if (types.contains("Obsolete")){
+					return this.returnType(types, Arrays.asList("Obsolete"));
+				}
+				if (types.contains("Deprecated")){
+					return this.returnType(types, Arrays.asList("Deprecated"));
+				}
+				if (types.contains("Template")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","Template"));
+				}
+				if (types.contains("Motor_neuron")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Motor_neuron"));
+				}
+				if (types.contains("Sensory_neuron")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Sensory_neuron"));
+				}
+				if (types.contains("Peptidergic_neuron")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Peptidergic_neuron"));
+				}
+				if (types.contains("Neuron")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Neuron"));
+				}
+				if (types.contains("Glial_cell")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Glial_cell"));
+				}
+				if (types.contains("GMC")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","Split","Expression_pattern","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","GMC"));
+				}
+				if (types.contains("Cell")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Neuroblast","Muscle","Cell"));
+				}
+				if (types.contains("Neuron_projection_bundle")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","Neuron_projection_bundle"));
+				}
+				if (types.contains("Split")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","Split","Expression_pattern","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Glial_cell"));
+				}
+				if (types.contains("Clone")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","Split","Expression_pattern","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Clone"));
+				}
+				if (types.contains("Cluster")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","Split","Expression_pattern","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Cluster"));
+				}
+				if (types.contains("Expression_pattern")){
+					return "Expression Pattern";
+				}
+				if (types.contains("pub")){
+					return "Publication";
+				}
+				if (types.contains("Synaptic_neuropil")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","Synaptic_neuropil"));
+				}
+				if (types.contains("Neuromere")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","Neuromere"));
+				}
+				if (types.contains("Ganglion")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","Ganglion"));
+				}
+				return this.returnType(types, Arrays.asList("Adult","Larva","Person","License","Synaptic_neuropil","Template","Property","Anatomy","Ganglion","Clone","DataSet","Neuromere","Resource","Site","UnknownType","API"));
+			}
+			return "";
+		}
+
+		public String types(){
+			String result = "";
+			if (this.types != null && this.types.size() > 0){
+				for (type type:this.types){
+					if (result.equals("")){
+						result += type.label;
+					} else {
+						result += "; " + type.label;
+					}
+				}
+			}
+			return result;
+		}
+
+		private String returnType(List<String> types, List<String> show) {
+			if (types.size() > 0 && show.size() > 0) {
+				String result = "";
+				for (String type : show) {
+					if (types.contains(type)) {
+						if (result.equals("")){
+							result += type;
+						} else {
+							result += "; " + type;
+						}
+					}
+				}
+				return result;
+			}
+			return "";
+		}
+
 		public String expressed_in(){
 			if (this.expression_pattern != null) return this.anatomy.label;
 			return "";
@@ -251,20 +355,6 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 
 		public ArrayValue images() {
 			return this.images("");
-		}
-
-		public String types(){
-			String result = "";
-			if (this.types != null && this.types.size() > 0){
-				for (type type:this.types){
-					if (result.equals("")){
-						result += type.label;
-					} else {
-						result += "; " + type.label;
-					}
-				}
-			}
-			return result;
 		}
 
 		public ArrayValue images(String template) {
@@ -416,6 +506,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			Boolean	hasStage = false;
 			Boolean hasImage = false;
 			Boolean hasTypes = false;
+			Boolean hasGrossType = false;
 			List<vfb_query> table = new ArrayList<vfb_query>();
 			vfb_query vfbQuery = null;
 
@@ -459,19 +550,23 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 							case "anatomy":
 								hasId = true;
 								hasName = true;
+								hasGrossType = true;
 								break;
 							case "term":
 								hasId = true;
 								hasName = true;
+								hasGrossType = true;
 								break;
 							case "dataset":
 								hasId = true;
 								hasName = true;
+								hasGrossType = true;
 								break;
 							case "expression_pattern":
 								hasId = true;
 								hasName = true;
 								hasExpressed_in=true;
+								hasGrossType = true;
 								break;
 							case "pubs":
 								hasReference = true;
@@ -533,6 +628,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			processedResults.getHeader().add("ID");
 			if (hasName) processedResults.getHeader().add("Name");
 			if (hasTypes) processedResults.getHeader().add("Type");
+			if (hasGrossType) processedResults.getHeader().add("Gross_Type");
 			if (hasExpressed_in) processedResults.getHeader().add("Expressed_in");
 			if (hasLicense) processedResults.getHeader().add("License");
 			if (hasReference) processedResults.getHeader().add("Reference");
@@ -547,6 +643,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					if (hasId) processedResult.getValues().add(row.id());
 					if (hasName) processedResult.getValues().add(row.name());
 					if (hasTypes) processedResult.getValues().add(row.types());
+					if (hasGrossType) processedResult.getValues().add(row.grossTypes());
 					if (hasExpressed_in) processedResult.getValues().add(row.expressed_in());
 					if (hasLicense) processedResult.getValues().add(row.licenseLabel());
 					if (hasReference) processedResult.getValues().add(row.reference());
