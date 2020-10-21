@@ -51,15 +51,15 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 	class minimal_entity_info {
 		String short_form;
 		String iri;
-		String label;
-		List<String> types;
+		public String label;
+		public List<String> types;
 	}
 
 	class minimal_edge_info {
-		private String short_form;
+		String short_form;
 		private String iri;
-		private String label;
-		private String type;
+		String label;
+		String type;
 	}
 
 	class term {
@@ -71,8 +71,8 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 	class image {
 		String image_folder;
 		private List<Double> index;
-		minimal_entity_info template_channel;
-		minimal_entity_info template_anatomy;
+		public minimal_entity_info template_channel;
+		public minimal_entity_info template_anatomy;
 	}
 
 	class channel_image {
@@ -364,10 +364,10 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 				}
 			}
 			if (this.anatomy_channel_image != null && this.anatomy_channel_image.size() > 0) {
-				for (anatomy_channel_image ci:this.anatomy_channel_image){
-					if (result.indexOf(ci.channel_image.imaging_technique.label) > -1){
+				for (anatomy_channel_image aci:this.anatomy_channel_image){
+					if (result.indexOf(aci.channel_image.imaging_technique.label) > -1){
 						if (!result.equals("")) result += "; ";
-						result += ci.channel_image.imaging_technique.label;
+						result += aci.channel_image.imaging_technique.label;
 					}
 				}
 			}
@@ -385,10 +385,10 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 				}
 			}
 			if (this.anatomy_channel_image != null && this.anatomy_channel_image.size() > 0) {
-				for (anatomy_channel_image ci:this.anatomy_channel_image){
-					if (result.indexOf(ci.channel_image.image.template_anatomy.label) > -1){
+				for (anatomy_channel_image aci:this.anatomy_channel_image){
+					if (result.indexOf(aci.channel_image.image.template_anatomy.label) > -1){
 						if (!result.equals("")) result += "; ";
-						result += ci.channel_image.image.template_anatomy.label;
+						result += aci.channel_image.image.template_anatomy.label;
 					}
 				}
 			}
