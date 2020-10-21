@@ -357,14 +357,18 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			String result = "";
 			if (this.channel_image != null && this.channel_image.size() > 0) {
 				for (channel_image ci:this.channel_image){
-					if (!result.equals("")) result += "; ";
-					result += ci.imaging_technique.label;
+					if (result.indexOf(ci.imaging_technique.label) > -1){
+						if (!result.equals("")) result += "; ";
+						result += ci.imaging_technique.label;
+					}
 				}
 			}
 			if (this.anatomy_channel_image != null && this.anatomy_channel_image.size() > 0) {
 				for (anatomy_channel_image ci:this.anatomy_channel_image){
-					if (!result.equals("")) result += "; ";
-					result += ci.channel_image.imaging_technique.label;
+					if (result.indexOf(ci.channel_image.imaging_technique.label) > -1){
+						if (!result.equals("")) result += "; ";
+						result += ci.channel_image.imaging_technique.label;
+					}
 				}
 			}
 			return result;
@@ -374,14 +378,18 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			String result = "";
 			if (this.channel_image != null && this.channel_image.size() > 0) {
 				for (channel_image ci:this.channel_image){
-					if (!result.equals("")) result += "; ";
-					result += ci.image.template_anatomy.label;
+					if (result.indexOf(ci.image.template_anatomy.label) > -1){
+						if (!result.equals("")) result += "; ";
+						result += ci.image.template_anatomy.label;
+					}
 				}
 			}
 			if (this.anatomy_channel_image != null && this.anatomy_channel_image.size() > 0) {
 				for (anatomy_channel_image ci:this.anatomy_channel_image){
-					if (!result.equals("")) result += "; ";
-					result += ci.channel_image.image.template_anatomy.label;
+					if (result.indexOf(ci.channel_image.image.template_anatomy.label) > -1){
+						if (!result.equals("")) result += "; ";
+						result += ci.channel_image.image.template_anatomy.label;
+					}
 				}
 			}
 			return result;
@@ -690,6 +698,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					if (hasLicense) processedResult.getValues().add(row.licenseLabel());
 					if (hasReference) processedResult.getValues().add(row.reference());
 					if (hasStage) processedResult.getValues().add(row.stages());
+					if (hasTemplate) processedResult.getValues().add(row.template());
 					if (hasTechnique) processedResult.getValues().add(row.technique());
 					if (hasImage){
 						Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
