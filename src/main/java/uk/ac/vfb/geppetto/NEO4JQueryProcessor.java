@@ -52,7 +52,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		String short_form;
 		String iri;
 		String label;
-		private List<String> types;
+		List<String> types;
 	}
 
 	class minimal_edge_info {
@@ -71,14 +71,14 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 	class image {
 		String image_folder;
 		private List<Double> index;
-		private minimal_entity_info template_channel;
+		minimal_entity_info template_channel;
 		minimal_entity_info template_anatomy;
 	}
 
 	class channel_image {
 		image image;
 		minimal_entity_info channel;
-		private minimal_entity_info imaging_technique;
+		minimal_entity_info imaging_technique;
 
 		public String getUrl(String pre, String post){
 			String result = "";
