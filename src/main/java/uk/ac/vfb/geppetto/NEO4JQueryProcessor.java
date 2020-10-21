@@ -371,6 +371,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					}
 				}
 			}
+			if (debug) System.out.println("Technique:" + result);
 			return result;
 		}
 
@@ -392,6 +393,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					}
 				}
 			}
+			if (debug) System.out.println("Template:" + result);
 			return result;
 		}
 
