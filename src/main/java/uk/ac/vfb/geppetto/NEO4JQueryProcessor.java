@@ -353,6 +353,40 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			return result;
 		}
 
+		public String technique(){
+			String result = "";
+			if (this.channel_image != null && this.channel_image.size() > 0) {
+				for (channel_image ci:this.channel_image){
+					if (!result.equals("")) result += "; ";
+					result += ci.imaging_technique.label;
+				}
+			}
+			if (this.anatomy_channel_image != null && this.anatomy_channel_image.size() > 0) {
+				for (anatomy_channel_image ci:this.anatomy_channel_image){
+					if (!result.equals("")) result += "; ";
+					result += ci.channel_image.imaging_technique.label;
+				}
+			}
+			return result;
+		}
+
+		public String template(){
+			String result = "";
+			if (this.channel_image != null && this.channel_image.size() > 0) {
+				for (channel_image ci:this.channel_image){
+					if (!result.equals("")) result += "; ";
+					result += ci.image.template_anatomy.label;
+				}
+			}
+			if (this.anatomy_channel_image != null && this.anatomy_channel_image.size() > 0) {
+				for (anatomy_channel_image ci:this.anatomy_channel_image){
+					if (!result.equals("")) result += "; ";
+					result += ci.channel_image.image.template_anatomy.label;
+				}
+			}
+			return result;
+		}
+
 		public ArrayValue images() {
 			return this.images("");
 		}
@@ -507,6 +541,8 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			Boolean hasImage = false;
 			Boolean hasTypes = false;
 			Boolean hasGrossType = false;
+			Boolean hasTemplate = false;
+			Boolean hasTechnique = false;
 			List<vfb_query> table = new ArrayList<vfb_query>();
 			vfb_query vfbQuery = null;
 
@@ -585,12 +621,16 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 								break;
 							case "anatomy_channel_image":
 								hasImage = true;
+								hasTemplate = true;
+								hasTechnique = true;
 								break;
 							case "expressed_in":
 								hasImage = true;
 								break;
 							case "channel_image":
 								hasImage = true;
+								hasTemplate = true;
+								hasTechnique = true;
 								break;
 							case "types":
 								hasTypes = true;
@@ -633,6 +673,8 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			if (hasLicense) processedResults.getHeader().add("License");
 			if (hasReference) processedResults.getHeader().add("Reference");
 			if (hasStage) processedResults.getHeader().add("Stage");
+			if (hasTemplate) processedResults.getHeader().add("Template_Space");
+			if (hasTechnique) processedResults.getHeader().add("Imaging_Technique");
 			if (hasImage) processedResults.getHeader().add("Images");
 			if (hasDatasetCount) processedResults.getHeader().add("Image_count");
 
@@ -648,6 +690,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					if (hasLicense) processedResult.getValues().add(row.licenseLabel());
 					if (hasReference) processedResult.getValues().add(row.reference());
 					if (hasStage) processedResult.getValues().add(row.stages());
+					if (hasTechnique) processedResult.getValues().add(row.technique());
 					if (hasImage){
 						Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
 						exampleVar.setId("images");
