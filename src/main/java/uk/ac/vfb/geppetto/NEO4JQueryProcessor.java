@@ -376,7 +376,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 
 		public String template(){
 			String result = "";
-			if (debug) System.out.println("Template0:" + result.toString());
+			System.out.println("Template0:" + result.toString());
 			if (this.channel_image != null && this.channel_image.size() > 0) {
 				for (channel_image ci:this.channel_image){
 					if (ci.image.template_anatomy.label != null && result.indexOf(ci.image.template_anatomy.label) > -1){
@@ -385,7 +385,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					}
 				}
 			}
-			if (debug) System.out.println("Template1:" + result.toString());
+			System.out.println("Template1:" + result.toString());
 			if (this.anatomy_channel_image != null && this.anatomy_channel_image.size() > 0) {
 				for (anatomy_channel_image aci:this.anatomy_channel_image){
 					if (aci.channel_image.image.template_anatomy.label != null && result.indexOf(aci.channel_image.image.template_anatomy.label) > -1){
@@ -394,7 +394,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					}
 				}
 			}
-			if (debug) System.out.println("Template:" + result.toString());
+			System.out.println("Template:" + result.toString());
 			return result;
 		}
 
