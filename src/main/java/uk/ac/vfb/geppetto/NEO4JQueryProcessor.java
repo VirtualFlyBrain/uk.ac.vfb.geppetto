@@ -357,7 +357,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			String result = "";
 			if (this.channel_image != null && this.channel_image.size() > 0) {
 				for (channel_image ci:this.channel_image){
-					if (result.indexOf(ci.imaging_technique.label) > -1){
+					if (ci.imaging_technique.label != null && result.indexOf(ci.imaging_technique.label) > -1){
 						if (!result.equals("")) result += "; ";
 						result += ci.imaging_technique.label;
 					}
@@ -365,13 +365,13 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			}
 			if (this.anatomy_channel_image != null && this.anatomy_channel_image.size() > 0) {
 				for (anatomy_channel_image aci:this.anatomy_channel_image){
-					if (result.indexOf(aci.channel_image.imaging_technique.label) > -1){
+					if (aci.channel_image.imaging_technique.label != null && result.indexOf(aci.channel_image.imaging_technique.label) > -1){
 						if (!result.equals("")) result += "; ";
 						result += aci.channel_image.imaging_technique.label;
 					}
 				}
 			}
-			if (debug) System.out.println("Technique:" + result);
+			if (debug) System.out.println("Technique:" + result.toString());
 			return result;
 		}
 
@@ -379,7 +379,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			String result = "";
 			if (this.channel_image != null && this.channel_image.size() > 0) {
 				for (channel_image ci:this.channel_image){
-					if (result.indexOf(ci.image.template_anatomy.label) > -1){
+					if (ci.image.template_anatomy.label != null && result.indexOf(ci.image.template_anatomy.label) > -1){
 						if (!result.equals("")) result += "; ";
 						result += ci.image.template_anatomy.label;
 					}
@@ -387,13 +387,13 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			}
 			if (this.anatomy_channel_image != null && this.anatomy_channel_image.size() > 0) {
 				for (anatomy_channel_image aci:this.anatomy_channel_image){
-					if (result.indexOf(aci.channel_image.image.template_anatomy.label) > -1){
+					if (aci.channel_image.image.template_anatomy.label != null && result.indexOf(aci.channel_image.image.template_anatomy.label) > -1){
 						if (!result.equals("")) result += "; ";
 						result += aci.channel_image.image.template_anatomy.label;
 					}
 				}
 			}
-			if (debug) System.out.println("Template:" + result);
+			if (debug) System.out.println("Template:" + result.toString());
 			return result;
 		}
 
