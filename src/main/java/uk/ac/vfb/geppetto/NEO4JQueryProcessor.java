@@ -379,6 +379,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			System.out.println("Template0:" + result.toString());
 			if (this.channel_image != null && this.channel_image.size() > 0) {
 				for (channel_image ci:this.channel_image){
+					System.out.println("Template0.1:" + ci.image.template_anatomy.label);
 					if (ci.image.template_anatomy.label != null && result.indexOf(ci.image.template_anatomy.label) > -1){
 						if (!result.equals("")) result += "; ";
 						result += ci.image.template_anatomy.label;
@@ -388,6 +389,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			System.out.println("Template1:" + result.toString());
 			if (this.anatomy_channel_image != null && this.anatomy_channel_image.size() > 0) {
 				for (anatomy_channel_image aci:this.anatomy_channel_image){
+					System.out.println("Template1.1:" + aci.channel_image.image.template_anatomy.label);
 					if (aci.channel_image.image.template_anatomy.label != null && result.indexOf(aci.channel_image.image.template_anatomy.label) > -1){
 						if (!result.equals("")) result += "; ";
 						result += aci.channel_image.image.template_anatomy.label;
