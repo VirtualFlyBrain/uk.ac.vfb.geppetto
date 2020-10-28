@@ -170,14 +170,14 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 
 		public String intLink(Boolean showTypes) {
-			if (this.label != null) {
+			if (this.label != null && !this.label.equals("")) {
 				return "<a href=\"?id=" + this.short_form + "\" data-instancepath=\"" + this.short_form + "\">" + this.label + "</a>" + this.types(showTypes);
 			}
 			return "<a href=\"?id=" + this.short_form + "\" data-instancepath=\"" + this.short_form + "\">" + this.short_form + "</a>" + this.types(showTypes);
 		}
 
 		public String extLink(Boolean showTypes) {
-			if (this.label != null) {
+			if (this.label != null && !this.label.equals("")) {
 				return "<a href=\"" + this.iri + "\" target=\"_blank\">" + this.label + "</a>" + this.types(showTypes);
 			}
 			return "<a href=\"" + this.iri + "\" target=\"_blank\">" + this.short_form + "</a>" + this.types(showTypes);
