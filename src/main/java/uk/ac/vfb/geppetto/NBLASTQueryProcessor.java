@@ -87,6 +87,7 @@ public class NBLASTQueryProcessor extends AQueryProcessor
 		if (debug) {
 			System.out.println("NBLASTQueryProcessor returning " + Integer.toString(ids.size()) + " rows");
 			System.out.println("NBLASTQueryProcessor returning " + ids);
+			System.out.println("NBLASTQueryProcessor returning " + scores);
 		}
 		return processedResults;
 	}
