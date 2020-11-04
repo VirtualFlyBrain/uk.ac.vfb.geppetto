@@ -211,7 +211,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 
 		public String getScore(){
 			for (columns col:extra_columns) {
-				if (col.short_form == this.term.core.short_form) {
+				if (col.short_form.equals(this.term.core.short_form)) {
 					return col.Score;
 				}
 			}
