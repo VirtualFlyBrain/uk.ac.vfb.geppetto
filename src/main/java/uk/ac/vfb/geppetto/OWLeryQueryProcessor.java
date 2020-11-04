@@ -80,6 +80,7 @@ public class OWLeryQueryProcessor extends AQueryProcessor
 		}
 
 		processingOutputMap.put("ARRAY_ID_RESULTS", ids);
+		processingOutputMap.put("EXTRA_RESULT_COLUMNS", "");
 
 		return processedResults;
 	}

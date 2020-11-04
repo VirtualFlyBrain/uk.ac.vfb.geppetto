@@ -151,6 +151,11 @@ public class NEO4JQueryProcessor extends AQueryProcessor
       	public String short_form;
 	}
 
+	class columns {
+		public String short_form;
+		public String Score;
+	}
+
 	class vfb_query {
 		private minimal_entity_info anatomy;
 		public String query;
@@ -167,6 +172,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		private List<channel_image> channel_image;
 		private term term;
 		private List<type> types;
+		public List<columns> extra_columns;
 
 		public String id(){
 			String delim = "----";
@@ -201,6 +207,15 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 				}
 			}
 			return result;
+		}
+
+		public String getScore(){
+			for (columns col:extra_columns) {
+				if (col.short_form == this.term.core.short_form) {
+					return col.Score;
+				}
+			}
+			return null;
 		}
 
 		public String name(){
@@ -551,6 +566,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			Boolean hasGrossType = false;
 			Boolean hasTemplate = false;
 			Boolean hasTechnique = false;
+			Boolean hasExtra = false;
 			List<vfb_query> table = new ArrayList<vfb_query>();
 			vfb_query vfbQuery = null;
 
@@ -560,7 +576,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 
 			// Determine loaded template
 			CompositeType testTemplate = null;
-			List<String> availableTemplates = Arrays.asList("VFB_00017894","VFB_00101567","VFB_00101384","VFB_00050000","VFB_00049000","VFB_00100000","VFB_00030786");
+			List<String> availableTemplates = Arrays.asList("VFB_00101567","VFB_00200000","VFB_00017894","VFB_00101384","VFB_00050000","VFB_00049000","VFB_00030786");
 			for (String at:availableTemplates) {
 				try {
 					testTemplate = (CompositeType) ModelUtility.getTypeFromLibrary(at + "_metadata", dataSource.getTargetLibrary());
@@ -643,6 +659,8 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 							case "types":
 								hasTypes = true;
 								break;
+							case "extra_columns":
+								hasExtra = true;
 						}
 						tempData = new Gson().toJson(results.getValue(key, count));
 						json = json + "\"" + key  + "\":" + tempData;
@@ -685,6 +703,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			if (hasTechnique) processedResults.getHeader().add("Imaging_Technique");
 			if (hasImage) processedResults.getHeader().add("Images");
 			if (hasDatasetCount) processedResults.getHeader().add("Image_count");
+			if (hasExtra && table.get(0).extra_columns.size() > 0 && table.get(0).extra_columns.get(0).Score != null) processedResults.getHeader().add("Score");
 
 			for (vfb_query row:table){
 				try{
@@ -722,6 +741,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 						}
 					}
 					if (hasDatasetCount) processedResult.getValues().add(String.format("%1$" + length + "s", row.dataset_counts.images.toString()));
+					if (hasExtra && row.extra_columns.size() > 0 && row.getScore() != null) processedResult.getValues().add(row.getScore());
 					processedResults.getResults().add(processedResult);
 				}catch (Exception e) {
 					System.out.println("Error creating results row: " + count.toString() + " - " + e.toString());
