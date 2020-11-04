@@ -47,7 +47,7 @@ public class NBLASTQueryProcessor extends AQueryProcessor
         int idIndex = results.getHeader().indexOf("id");
         int scoreIndex = results.getHeader().indexOf("score");
 
-        // processedResults.getHeader().add("ID");
+        processedResults.getHeader().add("ID");
         // processedResults.getHeader().add("Score");
 
 		List<String> ids = new ArrayList<String>();
