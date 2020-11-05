@@ -1376,13 +1376,17 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				header = "source";
 				tempData = vfbTerm.getSource();
 				if (!tempData.equals("")) {
-					addModelHtml(tempData, "Source", header, metadataType, geppettoModelAccess);
+					if (vfbTerm.pub_specific_content != null) {
+						addModelHtml(tempData, "Related DataSets", header, metadataType, geppettoModelAccess);
+					} else {
+						addModelHtml(tempData, "Source", header, metadataType, geppettoModelAccess);
+					}
 				}
 
 				// License
 				header = "license";
 				tempData = vfbTerm.getLicense();
-				if (!tempData.equals("")) {
+				if (!tempData.equals("") && vfbTerm.pub_specific_content == null) {
 					addModelHtml(tempData, "License", header, metadataType, geppettoModelAccess);
 				}
 
