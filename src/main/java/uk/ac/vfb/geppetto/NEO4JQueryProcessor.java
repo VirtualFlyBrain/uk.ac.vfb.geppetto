@@ -317,6 +317,8 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 				String result = "";
 				for (String type : show) {
 					if (types.contains(type)) {
+						type = type.replace("DataSet", "Dataset");
+						if (type.equals("pub")) type = "Publication";
 						if (result.equals("")){
 							result += type;
 						} else {
