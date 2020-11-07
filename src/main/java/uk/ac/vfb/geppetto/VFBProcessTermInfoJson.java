@@ -535,7 +535,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		private String icon;
 
 		public String extLink() {
-			if (this.core.label.equals("null")) return "";
+			if (this.core.label == null || this.core.label.equals("null")) return "";
 			String result = "<a href=\"" + this.link + "\" target=\"_blank\">";
 			if (this.icon != null && !this.icon.equals("")) {
 				result += "<img class=\"terminfo-dataseticon\" src=\"" + secureUrl(this.icon) + "\" title=\"" + this.core.label + "\"/>";
@@ -547,7 +547,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 
 		public String intLink() {
-			if (this.core.label.equals("null")) return "";
+			if (this.core.label == null || this.core.label.equals("null")) return "";
 			String result = this.core.intLink(false);
 			if (this.icon != null && !this.icon.equals("")) {
 				result += result.replace(this.core.label,this.core.label + " <img class=\"terminfo-dataseticon\" src=\"" + secureUrl(this.icon) + "\" title=\"" + this.core.label + "\"/>");
@@ -800,7 +800,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				result += "</span>";
 			}
 			result = result.replace("gpt-fly", "fa fa-external-link");
-			result = result.replace("<a href=\"?id=null\" data-instancepath=\"null\"></a>","");
+			result = result.replace("<a href=\"?id=null\" data-instancepath=\"null\">null</a>","");
 			if (result.equals("<span class=\"terminfo-source\"></span>")) return "";
 			return result;
 		}
