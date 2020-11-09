@@ -1607,9 +1607,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					if(QueryChecker.check(runnableQuery, variable))
 					{
 						querys += badge + "<a href=\"?q=" + variable.getId() + "," + (String) runnableQuery.getPath() + "\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + variable.getId() + "," + variable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
-						if (runnableQuery.getPath().equals("ExpOverlapsX")) {
+						if (runnableQuery.getPath().equals("ExpressionOverlapsHere")) {
 							queryExpressedInX = "<a href=\"?q=" + variable.getId() + "," + (String) runnableQuery.getPath() + "\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + variable.getId() + "," + variable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
-						}else if (runnableQuery.getPath().equals("TransgeneExpInX")) {
+						}else if (runnableQuery.getPath().equals("TransgeneExpressionHere")) {
 							queryExpressedInX = "<a href=\"?q=" + variable.getId() + "," + (String) runnableQuery.getPath() + "\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + variable.getId() + "," + variable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
 						}
 					}else if ((superTypes.contains("Painted_domain") || superTypes.contains("Synaptic_neuropil_domain") || superTypes.contains("Neuron_projection_bundle") || superTypes.contains("Split") || superTypes.contains("Expression_pattern")) && superTypes.contains("Individual") && classVariable.getId()!="notSet"){
