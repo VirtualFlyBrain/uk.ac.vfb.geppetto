@@ -707,6 +707,8 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			if (hasDatasetCount) processedResults.getHeader().add("Image_count");
 			if (hasExtra && table.get(0).extra_columns.size() > 0 && table.get(0).extra_columns.get(0).Score != null) processedResults.getHeader().add("Score");
 
+			if (debug) System.out.println("Headers: " + processedResults.getHeader().join(",") );
+
 			for (vfb_query row:table){
 				try{
 					SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
