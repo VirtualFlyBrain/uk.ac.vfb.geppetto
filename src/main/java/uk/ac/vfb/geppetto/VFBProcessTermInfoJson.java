@@ -1612,7 +1612,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 						}else if (runnableQuery.getPath().equals("TransgeneExpressionHere")) {
 							queryExpressedInX = "<a href=\"?q=" + variable.getId() + "," + (String) runnableQuery.getPath() + "\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + variable.getId() + "," + variable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
 						}
-					}else if ((superTypes.contains("Painted_domain") || superTypes.contains("Synaptic_neuropil_domain") || superTypes.contains("Neuron_projection_bundle") || superTypes.contains("Split") || superTypes.contains("Expression_pattern")) && superTypes.contains("Individual") && classVariable.getId()!="notSet"){
+					}else if ((superTypes.contains("Painted_domain") || superTypes.contains("Synaptic_neuropil_domain") || superTypes.contains("Synaptic_neuropil_subdomain") || superTypes.contains("Neuron_projection_bundle") || superTypes.contains("Split") || superTypes.contains("Expression_pattern")) && superTypes.contains("Individual") && classVariable.getId()!="notSet"){
 						if(QueryChecker.check(runnableQuery, classVariable)){
 							querys += badge + "<a href=\"?q=" + classVariable.getId() + "," + (String) runnableQuery.getPath() + "\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + classVariable.getId() + "," + classVariable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", classVariable.getName()) + "</a></br>";
 						}
