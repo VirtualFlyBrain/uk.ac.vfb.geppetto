@@ -171,14 +171,14 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 		public String intLink(Boolean showTypes) {
 			if (this.label != null && !this.label.equals("")) {
-				return "<a href=\"?id=" + this.short_form + "\" data-instancepath=\"" + this.short_form + "\">" + this.label.replaceAll("\\\\","") + "</a>" + this.types(showTypes);
+				return "<a href=\"?id=" + this.short_form + "\" data-instancepath=\"" + this.short_form + "\">" + this.label.replaceAll("\\","") + "</a>" + this.types(showTypes);
 			}
 			return "<a href=\"?id=" + this.short_form + "\" data-instancepath=\"" + this.short_form + "\">" + this.short_form + "</a>" + this.types(showTypes);
 		}
 
 		public String extLink(Boolean showTypes) {
 			if (this.label != null && !this.label.equals("")) {
-				return "<a href=\"" + this.iri + "\" target=\"_blank\">" + this.label.replaceAll("\\\\","") + "</a>" + this.types(showTypes);
+				return "<a href=\"" + this.iri + "\" target=\"_blank\">" + this.label.replaceAll("\\","") + "</a>" + this.types(showTypes);
 			}
 			return "<a href=\"" + this.iri + "\" target=\"_blank\">" + this.short_form + "</a>" + this.types(showTypes);
 		}
@@ -280,12 +280,12 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		private String type;
 
 		public String toString() {
-			return String.format("<a href=\"%s\" target=\"_blank\">%s</a>", this.iri, this.label.replaceAll("\\\\",""));
+			return String.format("<a href=\"%s\" target=\"_blank\">%s</a>", this.iri, this.label.replaceAll("\\",""));
 		}
 
 		public String label() {
 			if (this.label != null && !this.label.equals("")){
-				return this.label.replaceAll("\\\\","");
+				return this.label.replaceAll("\\","");
 			}
 			return this.type();
 		}
@@ -1065,14 +1065,14 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				for (channel_image ci : this.channel_image) {
 					// add same template to the begining and others at the end.
 					if (ci != null && ci.image != null && ci.image.template_anatomy != null && ci.image.template_anatomy.short_form != null && template.equals(ci.image.template_anatomy.short_form)) {
-						addImage(ci.getUrl("", "thumbnailT.png"), this.term.core.label.replaceAll("\\\\",""), this.term.core.short_form, imageArray, j);
+						addImage(ci.getUrl("", "thumbnailT.png"), this.term.core.label.replaceAll("\\",""), this.term.core.short_form, imageArray, j);
 						j++;
 					}
 				}
 				for (channel_image ci : this.channel_image) {
 					// add same template to the begining and others at the end.
 					if (ci != null && ci.image != null && ci.image.template_anatomy != null && ci.image.template_anatomy.short_form != null && !template.equals(ci.image.template_anatomy.short_form)) {
-						addImage(ci.getUrl("", "thumbnailT.png"), this.term.core.label.replaceAll("\\\\","") + " [" + ci.image.template_anatomy.label + "]", "[" + ci.image.template_anatomy.short_form + "," + this.term.core.short_form + "]", imageArray, j);
+						addImage(ci.getUrl("", "thumbnailT.png"), this.term.core.label.replaceAll("\\","") + " [" + ci.image.template_anatomy.label + "]", "[" + ci.image.template_anatomy.short_form + "," + this.term.core.short_form + "]", imageArray, j);
 						j++;
 					}
 				}
@@ -1096,14 +1096,14 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				for (anatomy_channel_image anat : this.anatomy_channel_image) {
 					// add same template to the begining and others at the end.
 					if (anat.channel_image != null && anat.channel_image.image != null && anat.channel_image.image.template_anatomy != null && anat.channel_image.image.template_anatomy.short_form != null && template.equals(anat.channel_image.image.template_anatomy.short_form)) {
-						addImage(anat.getUrl("", "thumbnailT.png"), anat.anatomy.label.replaceAll("\\\\",""), anat.anatomy.short_form, imageArray, j);
+						addImage(anat.getUrl("", "thumbnailT.png"), anat.anatomy.label.replaceAll("\\",""), anat.anatomy.short_form, imageArray, j);
 						j++;
 					}
 				}
 				for (anatomy_channel_image anat : this.anatomy_channel_image) {
 					// add same template to the begining and others at the end.
 					if (anat.channel_image != null && anat.channel_image.image != null && anat.channel_image.image.template_anatomy != null && anat.channel_image.image.template_anatomy.short_form != null && !template.equals(anat.channel_image.image.template_anatomy.short_form)) {
-						addImage(anat.getUrl("", "thumbnailT.png"), anat.anatomy.label.replaceAll("\\\\",""), anat.anatomy.short_form, imageArray, j);
+						addImage(anat.getUrl("", "thumbnailT.png"), anat.anatomy.label.replaceAll("\\",""), anat.anatomy.short_form, imageArray, j);
 						j++;
 					}
 				}
@@ -1118,7 +1118,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public ArrayValue thumbnail() {
 			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
 			try{
-				addImage(this.template_channel.image_folder + "thumbnailT.png", this.term.core.label.replaceAll("\\\\",""), this.term.core.short_form, imageArray, 0);
+				addImage(this.template_channel.image_folder + "thumbnailT.png", this.term.core.label.replaceAll("\\",""), this.term.core.short_form, imageArray, 0);
 			}catch (Exception e) {
 				System.out.println("Error in vfbTerm.thumbnails(): " + e.toString());
 				e.printStackTrace();
@@ -1129,7 +1129,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public ArrayValue clusterImage() {
 			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
 			try{
-				addImage(this.xrefs.get(0).link_base + this.xrefs.get(0).accession + "/snapshot.png", this.term.core.label.replaceAll("\\\\",""), this.term.core.short_form, imageArray, 0);
+				addImage(this.xrefs.get(0).link_base + this.xrefs.get(0).accession + "/snapshot.png", this.term.core.label.replaceAll("\\",""), this.term.core.short_form, imageArray, 0);
 			}catch (Exception e) {
 				System.out.println("Error in vfbTerm.clusterImage(): " + e.toString());
 				e.printStackTrace();
@@ -1326,7 +1326,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 				// Label: {label} ({short_form}) TYPES (all on one line)
 				header = "label";
-				tempData = "<b>" + vfbTerm.term.core.label.replaceAll("\\\\", "") + "</b> [" + vfbTerm.term.core.short_form + "] " + vfbTerm.term.core.types(showTypes);
+				tempData = "<b>" + vfbTerm.term.core.label.replaceAll("\\", "") + "</b> [" + vfbTerm.term.core.short_form + "] " + vfbTerm.term.core.types(showTypes);
 				addModelHtml(tempData, "Name", header, metadataType, geppettoModelAccess);
 
 				// Title
