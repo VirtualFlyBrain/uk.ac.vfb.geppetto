@@ -143,6 +143,13 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		public Integer types;
 	}
 
+	class synapse_counts{
+		public List<Float> downstream;
+		public List<Float> Tbars;
+		public List<Float> upstream;
+		public List<Float> weight;
+	}
+
 	class type {
 		public String iri;
       	public String symbol;
@@ -172,7 +179,9 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		private List<channel_image> channel_image;
 		private term term;
 		private List<type> types;
+		private List<type> parents;
 		public List<columns> extra_columns;
+		public synapse_counts synapse_counts;
 
 		public String id(){
 			String delim = "----";
@@ -302,6 +311,20 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			String result = "";
 			if (this.types != null && this.types.size() > 0){
 				for (type type:this.types){
+					if (result.equals("")){
+						result += type.label;
+					} else {
+						result += "; " + type.label;
+					}
+				}
+			}
+			return result;
+		}
+
+		public String parents(){
+			String result = "";
+			if (this.parents != null && this.parents.size() > 0){
+				for (type type:this.parents){
 					if (result.equals("")){
 						result += type.label;
 					} else {
@@ -565,10 +588,12 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			Boolean	hasStage = false;
 			Boolean hasImage = false;
 			Boolean hasTypes = false;
+			Boolean hasParents = false;
 			Boolean hasGrossType = false;
 			Boolean hasTemplate = false;
 			Boolean hasTechnique = false;
 			Boolean hasExtra = false;
+			Boolean hasSynCount = false;
 			List<vfb_query> table = new ArrayList<vfb_query>();
 			vfb_query vfbQuery = null;
 
@@ -661,6 +686,12 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 							case "types":
 								hasTypes = true;
 								break;
+							case "parents":
+								hasParents = true;
+								break;
+							case "extra_columns":
+							hasSynCount = true;
+								break;
 							case "extra_columns":
 								hasExtra = true;
 						}
@@ -696,6 +727,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			processedResults.getHeader().add("ID");
 			if (hasName) processedResults.getHeader().add("Name");
 			if (hasTypes) processedResults.getHeader().add("Type");
+			if (hasParents) processedResults.getHeader().add("Parent");
 			if (hasGrossType) processedResults.getHeader().add("Gross_Type");
 			if (hasExpressed_in) processedResults.getHeader().add("Expressed_in");
 			if (hasLicense) processedResults.getHeader().add("License");
@@ -706,6 +738,12 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			if (hasImage) processedResults.getHeader().add("Images");
 			if (hasDatasetCount) processedResults.getHeader().add("Image_count");
 			if (hasExtra && table.get(0).extra_columns.size() > 0 && table.get(0).extra_columns.get(0).Score != null) processedResults.getHeader().add("Score");
+			if (hasSynCount){
+				processedResults.getHeader().add("Downstream");
+				processedResults.getHeader().add("Tbars");
+				processedResults.getHeader().add("Upstream");
+				processedResults.getHeader().add("Weight");
+			}
 
 			if (debug) System.out.println("Headers: " + String.join(",",processedResults.getHeader()));
 
@@ -716,6 +754,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					if (hasId) processedResult.getValues().add(row.id());
 					if (hasName) processedResult.getValues().add(row.name());
 					if (hasTypes) processedResult.getValues().add(row.types());
+					if (hasParents) processedResult.getValues().add(row.parents());
 					if (hasGrossType) processedResult.getValues().add(row.grossTypes());
 					if (hasExpressed_in) processedResult.getValues().add(row.expressed_in());
 					if (hasLicense) processedResult.getValues().add(row.licenseLabel());
@@ -746,6 +785,12 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					}
 					if (hasDatasetCount) processedResult.getValues().add(String.format("%1$" + length + "s", row.dataset_counts.images.toString()));
 					if (hasExtra && row.extra_columns.size() > 0 && row.getScore() != null) processedResult.getValues().add(row.getScore());
+					if (hasSynCount){
+						processedResults.getValues().add(Floats.join(",",row.synapse_counts.downstream));
+						processedResults.getValues().add(Floats.join(",",row.synapse_counts.Tbars.get(0)));
+						processedResults.getValues().add(Floats.join(",",row.synapse_counts.upstream.get(0)));
+						processedResults.getValues().add(Floats.join(",",row.synapse_counts.weight.get(0)));
+					}
 					processedResults.getResults().add(processedResult);
 				}catch (Exception e) {
 					System.out.println("Error creating results row: " + count.toString() + " - " + e.toString());
