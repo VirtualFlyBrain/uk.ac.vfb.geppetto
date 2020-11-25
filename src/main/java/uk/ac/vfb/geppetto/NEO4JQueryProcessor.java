@@ -32,7 +32,6 @@ import org.geppetto.model.types.CompositeType;
 import org.geppetto.model.util.ModelUtility;
 
 import com.google.gson.Gson;
-import com.google.common.primitives.Floats;
 
 /**
  * @author dariodelpiano
@@ -787,10 +786,10 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					if (hasDatasetCount) processedResult.getValues().add(String.format("%1$" + length + "s", row.dataset_counts.images.toString()));
 					if (hasExtra && row.extra_columns.size() > 0 && row.getScore() != null) processedResult.getValues().add(row.getScore());
 					if (hasSynCount){
-						processedResults.getValues().add(Floats.join(",",row.synapse_counts.downstream.get(0)));
-						processedResults.getValues().add(Floats.join(",",row.synapse_counts.Tbars.get(0)));
-						processedResults.getValues().add(Floats.join(",",row.synapse_counts.upstream.get(0)));
-						processedResults.getValues().add(Floats.join(",",row.synapse_counts.weight.get(0)));
+						processedResults.getValues().add(",".join(map(str, row.synapse_counts.downstream)));
+						processedResults.getValues().add(",".join(map(str, row.synapse_counts.Tbars)));
+						processedResults.getValues().add(",".join(map(str, row.synapse_counts.upstream)));
+						processedResults.getValues().add(",".join(map(str, row.synapse_counts.weight)));
 					}
 					processedResults.getResults().add(processedResult);
 				}catch (Exception e) {
