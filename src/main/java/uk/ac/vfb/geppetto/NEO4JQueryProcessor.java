@@ -148,6 +148,35 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		public List<Float> Tbars;
 		public List<Float> upstream;
 		public List<Float> weight;
+
+		public String getDownstream() {
+			return this.getList(this.downstream);
+		}
+
+		public String getTbars() {
+			return this.getList(this.Tbars);
+		}
+
+		public String getUpstream() {
+			return this.getList(this.upstream);
+		}
+
+		public String getWeight() {
+			return this.getList(this.weight);
+		}
+
+		public String getList(List<Float> values) {
+			String results = "";
+			if (values != null && values.size() > 0) {
+				for (Float num:values) {
+					if (results != ""){
+						results += "; ";
+					}
+					results += Float.toString(num);
+				}
+			}
+			return results;
+		}
 	}
 
 	class type {
@@ -786,10 +815,10 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					if (hasDatasetCount) processedResult.getValues().add(String.format("%1$" + length + "s", row.dataset_counts.images.toString()));
 					if (hasExtra && row.extra_columns.size() > 0 && row.getScore() != null) processedResult.getValues().add(row.getScore());
 					if (hasSynCount){
-						processedResult.getValues().add(Float.toString(row.synapse_counts.downstream.get(0)));
-						processedResult.getValues().add(Float.toString(row.synapse_counts.Tbars.get(0)));
-						processedResult.getValues().add(Float.toString(row.synapse_counts.upstream.get(0)));
-						processedResult.getValues().add(Float.toString(row.synapse_counts.weight.get(0)));
+						processedResult.getValues().add(row.synapse_counts.getDownstream());
+						processedResult.getValues().add(row.synapse_counts.getTbars());
+						processedResult.getValues().add(row.synapse_counts.getUpstream());
+						processedResult.getValues().add(row.synapse_counts.getWeight());
 					}
 					processedResults.getResults().add(processedResult);
 				}catch (Exception e) {
