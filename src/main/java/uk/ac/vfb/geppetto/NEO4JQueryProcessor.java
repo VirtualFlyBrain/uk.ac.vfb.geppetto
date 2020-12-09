@@ -172,7 +172,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					if (results != ""){
 						results += "; ";
 					}
-					results += Float.toString(num);
+					results += Integer.toString((Integer) Math.ceil(num));
 				}
 			}
 			return results;
