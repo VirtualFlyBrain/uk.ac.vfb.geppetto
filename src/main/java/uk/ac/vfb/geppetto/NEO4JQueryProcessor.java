@@ -172,7 +172,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					if (results != ""){
 						results += "; ";
 					}
-					results += Integer.toString((int) Math.ceil(num));
+					results += String.format("%03d",(int) Math.ceil(num));
 				}
 			}
 			return results;
