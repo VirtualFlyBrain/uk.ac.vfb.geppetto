@@ -211,6 +211,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		private List<type> parents;
 		public List<columns> extra_columns;
 		public synapse_counts synapse_counts;
+		public minimal_entity_info object;
 
 		public String id(){
 			String delim = "----";
@@ -243,6 +244,9 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 				if (this.types != null && this.types.size() > 0 && this.types.get(0).short_form != null) {
 					result += delim + this.types.get(0).short_form;
 				}
+			}
+			if (this.object != null) {
+				result += delim + this.object.short_form;
 			}
 			return result;
 		}
@@ -754,7 +758,13 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 
 			// set headers
 			processedResults.getHeader().add("ID");
-			if (hasName) processedResults.getHeader().add("Name");
+			if (hasName) {
+				if (hasSynCount) {
+					processedResults.getHeader().add("Neuron_A");
+				} else {
+					processedResults.getHeader().add("Name");
+				}
+			}
 			if (hasTypes) processedResults.getHeader().add("Type");
 			if (hasParents) processedResults.getHeader().add("Parent");
 			if (hasGrossType) processedResults.getHeader().add("Gross_Type");
@@ -767,11 +777,12 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			if (hasImage) processedResults.getHeader().add("Images");
 			if (hasDatasetCount) processedResults.getHeader().add("Image_count");
 			if (hasExtra && table.get(0).extra_columns.size() > 0 && table.get(0).extra_columns.get(0).Score != null) processedResults.getHeader().add("Score");
-			if (hasSynCount){
+			if (hasSynCount) {
 				processedResults.getHeader().add("Downstream");
 				processedResults.getHeader().add("Tbars");
 				processedResults.getHeader().add("Upstream");
 				processedResults.getHeader().add("Weight");
+				processedResults.getHeader().add("Neuron_B");
 			}
 
 			if (debug) System.out.println("Headers: " + String.join(",",processedResults.getHeader()));
@@ -819,6 +830,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 						processedResult.getValues().add(row.synapse_counts.getTbars());
 						processedResult.getValues().add(row.synapse_counts.getUpstream());
 						processedResult.getValues().add(row.synapse_counts.getWeight());
+						processedResult.getValues().add(row.object.label);
 					}
 					processedResults.getResults().add(processedResult);
 				}catch (Exception e) {
