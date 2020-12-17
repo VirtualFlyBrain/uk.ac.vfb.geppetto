@@ -795,8 +795,9 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					} else {
 						processedResults.getHeader().add("Target");
 					}
-			}else{
-				if (hasObject) processedResults.getHeader().add("Target");
+				}else{
+					if (hasObject) processedResults.getHeader().add("Target");
+				}
 			}
 
 			if (debug) System.out.println("Headers: " + String.join(",",processedResults.getHeader()));
