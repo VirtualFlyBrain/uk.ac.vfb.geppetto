@@ -627,6 +627,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			Boolean hasTechnique = false;
 			Boolean hasExtra = false;
 			Boolean hasSynCount = false;
+			Boolean hasObject = false;
 			List<vfb_query> table = new ArrayList<vfb_query>();
 			vfb_query vfbQuery = null;
 
@@ -724,6 +725,10 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 								break;
 							case "synapse_counts":
 							hasSynCount = true;
+							hasName = true;
+								break;
+							case "object":
+								hasObject = true;
 								break;
 							case "extra_columns":
 								hasExtra = true;
@@ -782,7 +787,9 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 				processedResults.getHeader().add("Tbars");
 				processedResults.getHeader().add("Upstream");
 				processedResults.getHeader().add("Weight");
-				processedResults.getHeader().add("Neuron_B");
+				if (hasObject) processedResults.getHeader().add("Neuron_B");
+			}else{
+				if (hasObject) processedResults.getHeader().add("Target");
 			}
 
 			if (debug) System.out.println("Headers: " + String.join(",",processedResults.getHeader()));
@@ -830,8 +837,8 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 						processedResult.getValues().add(row.synapse_counts.getTbars());
 						processedResult.getValues().add(row.synapse_counts.getUpstream());
 						processedResult.getValues().add(row.synapse_counts.getWeight());
-						processedResult.getValues().add(row.object.label);
 					}
+					if (hasObject) processedResult.getValues().add(row.object.label);
 					processedResults.getResults().add(processedResult);
 				}catch (Exception e) {
 					System.out.println("Error creating results row: " + count.toString() + " - " + e.toString());
