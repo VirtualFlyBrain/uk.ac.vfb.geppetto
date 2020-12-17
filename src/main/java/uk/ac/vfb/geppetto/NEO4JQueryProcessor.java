@@ -788,9 +788,9 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 				processedResults.getHeader().add("Upstream");
 				processedResults.getHeader().add("Weight");
 				if (hasObject) {
-					if (row.query.contains("neuron_neuron")) {
+					if (table.get(0).query.contains("neuron_neuron")) {
 						processedResults.getHeader().add("Neuron_B");
-					} else if (row.query.contains("neuron_region")) {
+					} else if (table.get(0).query.contains("neuron_region")) {
 						processedResults.getHeader().add("Region");
 					} else {
 						processedResults.getHeader().add("Target");
