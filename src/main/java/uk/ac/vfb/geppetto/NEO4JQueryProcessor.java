@@ -379,10 +379,12 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			String result = "";
 			if (this.parents != null && this.parents.size() > 0){
 				for (type type:this.parents){
-					if (result.equals("")){
-						result += type.label;
-					} else {
-						result += "; " + type.label;
+					if (!results.contains(type.label)){
+						if (result.equals("")){
+							result += type.label;
+						} else {
+							result += "; " + type.label;
+						}
 					}
 				}
 			}
