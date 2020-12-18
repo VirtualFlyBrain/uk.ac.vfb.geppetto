@@ -93,6 +93,17 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			}
 			return result;
 		}
+
+		public String getLabel(){
+			String result = "";
+			if (this.image != null && this.image.template_anatomy != null && !this.image.template_anatomy.label.equals("")){
+				result += " [" + this.image.template_anatomy.label + "]";
+			}
+			if (this.imaging_technique != null && this.imaging_technique.label != null && !this.imaging_technique.label.equals("")){
+				result += " [" + this.imaging_technique.label + "]";
+			}
+			return result;
+		}
 	}
 
 	class anatomy_channel_image {
@@ -100,8 +111,15 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		channel_image channel_image;
 
 		public String getUrl(String pre, String post){
-			return channel_image.getUrl(pre, post);
+			return this.channel_image.getUrl(pre, post);
 		}
+
+		public String getLabel(){
+			String result = this.anatomy.label;
+			result += this.channel_image.getLabel();
+			return result;
+		}
+
 	}
 
 	class domain {
@@ -496,7 +514,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 								imageArray = ValuesFactory.eINSTANCE.createArrayValue();
 								j = 0;
 							}
-							addImage(anat.getUrl("", "thumbnailT.png"), anat.anatomy.label, anat.anatomy.short_form, imageArray, j);
+							addImage(anat.getUrl("", "thumbnailT.png"), anat.getLabel() , anat.anatomy.short_form, imageArray, j);
 							if (loaded.contains(anat.anatomy.short_form)) {
 								return imageArray;
 							}
@@ -505,7 +523,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 						} else {
 							if (!loaded.contains(anat.anatomy.short_form)) {
 								f--;
-								addImage(anat.getUrl("", "thumbnailT.png"), anat.anatomy.label, anat.anatomy.short_form, imageArray, f);
+								addImage(anat.getUrl("", "thumbnailT.png"), anat.getLabel(), anat.anatomy.short_form, imageArray, f);
 								loaded.add(anat.anatomy.short_form);
 							}
 						}
@@ -521,7 +539,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 								imageArray = ValuesFactory.eINSTANCE.createArrayValue();
 								j = 0;
 							}
-							addImage(anat.getUrl("", "thumbnailT.png"), anat.anatomy.label, anat.anatomy.short_form, imageArray, j);
+							addImage(anat.getUrl("", "thumbnailT.png"), anat.getLabel(), anat.anatomy.short_form, imageArray, j);
 							if (loaded.contains(anat.anatomy.short_form)) {
 								return imageArray;
 							}
@@ -529,7 +547,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 							j++;
 						} else {
 							f--;
-							addImage(anat.getUrl("", "thumbnailT.png"), anat.anatomy.label, anat.anatomy.short_form, imageArray, f);
+							addImage(anat.getUrl("", "thumbnailT.png"), anat.getLabel(), anat.anatomy.short_form, imageArray, f);
 							loaded.add(anat.anatomy.short_form);
 						}
 					}
@@ -768,20 +786,18 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			processedResults.getHeader().add("ID");
 			if (hasName) {
 				if (hasSynCount) {
-					processedResults.getHeader().add("Neuron_A");
+					//processedResults.getHeader().add("Neuron_A");
 				} else {
 					processedResults.getHeader().add("Name");
 				}
 			}
 			if (hasTypes) processedResults.getHeader().add("Type");
 			if (hasParents) processedResults.getHeader().add("Parent");
-			if (hasGrossType) processedResults.getHeader().add("Gross_Type");
+			if (hasGrossType && !table.get(0).query.contains("connectivity_query")) processedResults.getHeader().add("Gross_Type");
 			if (hasExpressed_in) processedResults.getHeader().add("Expressed_in");
 			if (hasLicense) processedResults.getHeader().add("License");
 			if (hasReference) processedResults.getHeader().add("Reference");
 			if (hasStage) processedResults.getHeader().add("Stage");
-			if (hasTemplate) processedResults.getHeader().add("Template_Space");
-			if (hasTechnique) processedResults.getHeader().add("Imaging_Technique");
 			if (hasImage) processedResults.getHeader().add("Images");
 			if (hasDatasetCount) processedResults.getHeader().add("Image_count");
 			if (hasExtra && table.get(0).extra_columns.size() > 0 && table.get(0).extra_columns.get(0).Score != null) processedResults.getHeader().add("Score");
@@ -789,7 +805,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 				processedResults.getHeader().add("Downstream");
 				processedResults.getHeader().add("Tbars");
 				processedResults.getHeader().add("Upstream");
-				processedResults.getHeader().add("Weight");
+				//processedResults.getHeader().add("Weight");
 				if (hasObject) {
 					if (table.get(0).query.contains("neuron_neuron")) {
 						processedResults.getHeader().add("Neuron_B");
@@ -810,16 +826,14 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 					String length = "8";
 					if (hasId) processedResult.getValues().add(row.id());
-					if (hasName) processedResult.getValues().add(row.name());
+					if (hasName && !hasSynCount) processedResult.getValues().add(row.name());
 					if (hasTypes) processedResult.getValues().add(row.types());
 					if (hasParents) processedResult.getValues().add(row.parents());
-					if (hasGrossType) processedResult.getValues().add(row.grossTypes());
+					if (hasGrossType && !table.get(0).query.contains("connectivity_query")) processedResult.getValues().add(row.grossTypes());
 					if (hasExpressed_in) processedResult.getValues().add(row.expressed_in());
 					if (hasLicense) processedResult.getValues().add(row.licenseLabel());
 					if (hasReference) processedResult.getValues().add(row.reference());
 					if (hasStage) processedResult.getValues().add(row.stages());
-					if (hasTemplate) processedResult.getValues().add(row.template());
-					if (hasTechnique) processedResult.getValues().add(row.technique());
 					if (hasImage){
 						Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
 						exampleVar.setId("images");
@@ -847,7 +861,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 						processedResult.getValues().add(row.synapse_counts.getDownstream());
 						processedResult.getValues().add(row.synapse_counts.getTbars());
 						processedResult.getValues().add(row.synapse_counts.getUpstream());
-						processedResult.getValues().add(row.synapse_counts.getWeight());
+						//processedResult.getValues().add(row.synapse_counts.getWeight());
 					}
 					if (hasObject) processedResult.getValues().add(row.object.label);
 					processedResults.getResults().add(processedResult);
