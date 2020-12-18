@@ -805,7 +805,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			if (hasExtra && table.get(0).extra_columns.size() > 0 && table.get(0).extra_columns.get(0).Score != null) processedResults.getHeader().add("Score");
 			if (hasSynCount) {
 				processedResults.getHeader().add("Downstream");
-				processedResults.getHeader().add("Tbars");
+				if (!table.get(0).query.contains("neuron_neuron")) processedResults.getHeader().add("Tbars");
 				processedResults.getHeader().add("Upstream");
 				//processedResults.getHeader().add("Weight");
 				if (hasObject) {
@@ -861,7 +861,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					if (hasExtra && row.extra_columns.size() > 0 && row.getScore() != null) processedResult.getValues().add(row.getScore());
 					if (hasSynCount){
 						processedResult.getValues().add(row.synapse_counts.getDownstream());
-						processedResult.getValues().add(row.synapse_counts.getTbars());
+						if (!row.query.contains("neuron_neuron"))processedResult.getValues().add(row.synapse_counts.getTbars());
 						processedResult.getValues().add(row.synapse_counts.getUpstream());
 						//processedResult.getValues().add(row.synapse_counts.getWeight());
 					}
