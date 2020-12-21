@@ -557,24 +557,49 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 				if (this.channel_image != null) {
 					f = this.channel_image.size();
 					c = f;
-					for (channel_image anat : this.channel_image) {
-						// add same template to the begining and others at the end.
-						if (anat != null && anat.image != null && anat.image.template_anatomy != null && anat.image.template_anatomy.short_form != null && template.equals(anat.image.template_anatomy.short_form)) {
-							if (loaded.contains(this.term.core.short_form)) {
-								imageArray = ValuesFactory.eINSTANCE.createArrayValue();
-								j = 0;
+					if (this.object != null) {
+						// if the row has a target object then the image is for that not the term.
+						for (channel_image anat : this.channel_image) {
+							// add same template to the begining and others at the end.
+							if (anat != null && anat.image != null && anat.image.template_anatomy != null && anat.image.template_anatomy.short_form != null && template.equals(anat.image.template_anatomy.short_form)) {
+								if (loaded.contains(this.object.short_form)) {
+									imageArray = ValuesFactory.eINSTANCE.createArrayValue();
+									j = 0;
+								}
+								addImage(anat.getUrl("", "thumbnailT.png"), this.object.label + anat.getLabel(), this.object.short_form, imageArray, j);
+								if (loaded.contains(this.object.short_form)) {
+									return imageArray;
+								}
+								loaded.add(this.object.short_form);
+								j++;
+							} else {
+								if (!loaded.contains(this.object.short_form)) {
+									f--;
+									addImage(anat.getUrl("", "thumbnailT.png"), this.object.label + anat.getLabel(), this.object.short_form, imageArray, f);
+									loaded.add(this.object.short_form);
+								}
 							}
-							addImage(anat.getUrl("", "thumbnailT.png"), this.term.core.label, this.term.core.short_form, imageArray, j);
-							if (loaded.contains(this.term.core.short_form)) {
-								return imageArray;
-							}
-							loaded.add(this.term.core.short_form);
-							j++;
-						} else {
-							if (!loaded.contains(this.term.core.short_form)) {
-								f--;
-								addImage(anat.getUrl("", "thumbnailT.png"), this.term.core.label, this.term.core.short_form, imageArray, f);
+						}
+					} else {
+						for (channel_image anat : this.channel_image) {
+							// add same template to the begining and others at the end.
+							if (anat != null && anat.image != null && anat.image.template_anatomy != null && anat.image.template_anatomy.short_form != null && template.equals(anat.image.template_anatomy.short_form)) {
+								if (loaded.contains(this.term.core.short_form)) {
+									imageArray = ValuesFactory.eINSTANCE.createArrayValue();
+									j = 0;
+								}
+								addImage(anat.getUrl("", "thumbnailT.png"), this.term.core.label, this.term.core.short_form, imageArray, j);
+								if (loaded.contains(this.term.core.short_form)) {
+									return imageArray;
+								}
 								loaded.add(this.term.core.short_form);
+								j++;
+							} else {
+								if (!loaded.contains(this.term.core.short_form)) {
+									f--;
+									addImage(anat.getUrl("", "thumbnailT.png"), this.term.core.label, this.term.core.short_form, imageArray, f);
+									loaded.add(this.term.core.short_form);
+								}
 							}
 						}
 					}
