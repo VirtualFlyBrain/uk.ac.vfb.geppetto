@@ -865,11 +865,13 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					voxelSize[2] = String.valueOf(this.template_channel.getVoxel().getZ());
 					domainCentre[0] = this.template_channel.getCenter().toString();
 					for (domain domain:this.template_domains){
-						domainId[domain.index.get(0).intValue()] = domain.anatomical_individual.short_form;
-						domainName[domain.index.get(0).intValue()] = domain.anatomical_type.label;
-						domainType[domain.index.get(0).intValue()] = domain.anatomical_type.short_form;
-						if (domain.getCenter() != null && domain.getCenter().getZ() != null){
-							domainCentre[domain.index.get(0).intValue()] = domain.getCenter().toString();
+						if (domain.index.size() > 0) {
+							domainId[domain.index.get(0).intValue()] = domain.anatomical_individual.short_form;
+							domainName[domain.index.get(0).intValue()] = domain.anatomical_type.label;
+							domainType[domain.index.get(0).intValue()] = domain.anatomical_type.short_form;
+							if (domain.getCenter() != null && domain.getCenter().getZ() != null){
+								domainCentre[domain.index.get(0).intValue()] = domain.getCenter().toString();
+							}
 						}
 					}
 					domains.add(Arrays.asList(voxelSize));
