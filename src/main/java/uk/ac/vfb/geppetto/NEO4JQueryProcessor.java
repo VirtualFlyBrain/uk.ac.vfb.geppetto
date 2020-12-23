@@ -829,13 +829,13 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			if (hasDatasetCount) processedResults.getHeader().add("Image_count");
 			if (hasExtra && table.get(0).extra_columns.size() > 0 && table.get(0).extra_columns.get(0).Score != null) processedResults.getHeader().add("Score");
 			if (hasSynCount) {
-				processedResults.getHeader().add("Downstream");
-				if (!table.get(0).query.contains("neuron_neuron")) processedResults.getHeader().add("Tbars");
-				processedResults.getHeader().add("Upstream");
+				processedResults.getHeader().add("#_Downstream_Synapses");
+				if (!table.get(0).query.contains("neuron_neuron")) processedResults.getHeader().add("#_Tbars");
+				processedResults.getHeader().add("#_Upstream_Synapses");
 				//processedResults.getHeader().add("Weight");
 				if (hasObject) {
 					if (table.get(0).query.contains("neuron_neuron")) {
-						processedResults.getHeader().add("Neuron_B");
+						processedResults.getHeader().add("Partner_Neuron");
 					} else if (table.get(0).query.contains("neuron_region")) {
 						processedResults.getHeader().add("Region");
 					} else {
