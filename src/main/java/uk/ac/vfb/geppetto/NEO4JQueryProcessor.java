@@ -263,11 +263,11 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					result += delim + this.types.get(0).short_form;
 				}
 			}
-			if (this.object != null) {
-				result += delim + this.object.short_form;
-			}
 			if (this.parents != null) {
 				result += delim + this.parents.get(0).short_form;
+			}
+			if (this.object != null) {
+				result += delim + this.object.short_form;
 			}
 			return result;
 		}
@@ -819,7 +819,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 				}
 			}
 			if (hasTypes) processedResults.getHeader().add("Type");
-			if (hasParents) processedResults.getHeader().add("Parent");
+			if (hasParents) processedResults.getHeader().add("Type");
 			if (hasGrossType && !table.get(0).query.contains("connectivity_query")) processedResults.getHeader().add("Gross_Type");
 			if (hasExpressed_in) processedResults.getHeader().add("Expressed_in");
 			if (hasLicense) processedResults.getHeader().add("License");
