@@ -95,8 +95,12 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		}
 
 		public String getLabel(){
+			return this.getLabel(true);
+		}
+
+		public String getLabel(Boolean showTemplate){
 			String result = "";
-			if (this.image != null && this.image.template_anatomy != null && !this.image.template_anatomy.label.equals("")){
+			if (showTemplate && this.image != null && this.image.template_anatomy != null && !this.image.template_anatomy.label.equals("")){
 				result += " [" + this.image.template_anatomy.label + "]";
 			}
 			if (this.imaging_technique != null && this.imaging_technique.label != null && !this.imaging_technique.label.equals("")){
@@ -509,7 +513,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 						// add same template to the begining and others at the end.
 						if (anat.channel_image != null && anat.channel_image.image != null && anat.channel_image.image.template_anatomy != null && anat.channel_image.image.template_anatomy.short_form != null && template.equals(anat.channel_image.image.template_anatomy.short_form)) {
 							if (!loaded.contains(anat.anatomy.short_form)) {
-								addImage(anat.getUrl("", "thumbnailT.png"), anat.getLabel() , anat.anatomy.short_form, imageArray, j);
+								addImage(anat.getUrl("", "thumbnailT.png"), anat.getLabel(false) , anat.anatomy.short_form, imageArray, j);
 								loaded.add(anat.anatomy.short_form);
 								j++;
 							}
@@ -529,7 +533,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 						// add same template to the begining and others at the end.
 						if (anat.channel_image != null && anat.channel_image.image != null && anat.channel_image.image.template_anatomy != null && anat.channel_image.image.template_anatomy.short_form != null && template.equals(anat.channel_image.image.template_anatomy.short_form)) {
 							if (!loaded.contains(anat.anatomy.short_form)) {
-								addImage(anat.getUrl("", "thumbnailT.png"), anat.getLabel(), anat.anatomy.short_form, imageArray, j);
+								addImage(anat.getUrl("", "thumbnailT.png"), anat.getLabel(false), anat.anatomy.short_form, imageArray, j);
 								loaded.add(anat.anatomy.short_form);
 								j++;
 							}
@@ -551,7 +555,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 							// add same template to the begining and others at the end.
 							if (anat != null && anat.image != null && anat.image.template_anatomy != null && anat.image.template_anatomy.short_form != null && template.equals(anat.image.template_anatomy.short_form)) {
 								if (!loaded.contains(this.object.short_form)) {
-									addImage(anat.getUrl("", "thumbnailT.png"), this.object.label + anat.getLabel(), this.object.short_form, imageArray, j);
+									addImage(anat.getUrl("", "thumbnailT.png"), this.object.label + anat.getLabel(false), this.object.short_form, imageArray, j);
 									loaded.add(this.object.short_form);
 									j++;
 								}
