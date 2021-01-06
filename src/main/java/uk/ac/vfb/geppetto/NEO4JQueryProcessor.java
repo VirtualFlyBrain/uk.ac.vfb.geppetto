@@ -124,6 +124,12 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			return result;
 		}
 
+		public String getLabel(Boolean showTemplate){
+			String result = this.anatomy.label;
+			result += this.channel_image.getLabel(showTemplate);
+			return result;
+		}
+
 	}
 
 	class domain {
