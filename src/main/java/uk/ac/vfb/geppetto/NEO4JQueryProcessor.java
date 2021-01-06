@@ -575,13 +575,13 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 									j++;
 								}
 							}
-							if (j > 0) return imageArray;
-							for (channel_image anat : this.channel_image) {
-								if (!loaded.contains(this.term.core.short_form)) {
-									addImage(anat.getUrl("", "thumbnailT.png"), this.term.core.label, this.term.core.short_form, imageArray, j);
-									loaded.add(this.term.core.short_form);
-									j++;
-								}
+						}
+						if (j > 0) return imageArray;
+						for (channel_image anat : this.channel_image) {
+							if (!loaded.contains(this.term.core.short_form)) {
+								addImage(anat.getUrl("", "thumbnailT.png"), this.term.core.label, this.term.core.short_form, imageArray, j);
+								loaded.add(this.term.core.short_form);
+								j++;
 							}
 						}
 					}
