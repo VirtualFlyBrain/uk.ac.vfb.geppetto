@@ -100,7 +100,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 				result += " [" + this.image.template_anatomy.label + "]";
 			}
 			if (this.imaging_technique != null && this.imaging_technique.label != null && !this.imaging_technique.label.equals("")){
-				result += " [" + this.imaging_technique.label + "]";
+				result += " [" + this.imaging_technique.label.replace("focussed ion beam scanning electron microscopy (FIB-SEM)","FIB-SEM") + "]";
 			}
 			return result;
 		}
