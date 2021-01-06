@@ -503,102 +503,84 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					template = "VFB_00101567";
 				}
 				int j = 0;
-				int f = 0;
-				int c = 0;
 				List<String> loaded = new ArrayList<String>();
 				if (this.anatomy_channel_image != null) {
-					f = this.anatomy_channel_image.size();
-					c = f;
 					for (anatomy_channel_image anat : this.anatomy_channel_image) {
 						// add same template to the begining and others at the end.
 						if (anat.channel_image != null && anat.channel_image.image != null && anat.channel_image.image.template_anatomy != null && anat.channel_image.image.template_anatomy.short_form != null && template.equals(anat.channel_image.image.template_anatomy.short_form)) {
-							if (loaded.contains(anat.anatomy.short_form)) {
-								imageArray = ValuesFactory.eINSTANCE.createArrayValue();
-								j = 0;
+							if (!loaded.contains(anat.anatomy.short_form)) {
+								addImage(anat.getUrl("", "thumbnailT.png"), anat.getLabel() , anat.anatomy.short_form, imageArray, j);
+								loaded.add(anat.anatomy.short_form);
+								j++;
 							}
-							addImage(anat.getUrl("", "thumbnailT.png"), anat.getLabel() , anat.anatomy.short_form, imageArray, j);
-							if (loaded.contains(anat.anatomy.short_form)) {
-								return imageArray;
-							}
+						}
+					}
+					if (j > 0) return imageArray;
+					for (anatomy_channel_image anat : this.anatomy_channel_image) {
+						if (!loaded.contains(anat.anatomy.short_form)) {
+							addImage(anat.getUrl("", "thumbnailT.png"), anat.getLabel(), anat.anatomy.short_form, imageArray, j);
 							loaded.add(anat.anatomy.short_form);
 							j++;
-						} else {
-							if (!loaded.contains(anat.anatomy.short_form)) {
-								f--;
-								addImage(anat.getUrl("", "thumbnailT.png"), anat.getLabel(), anat.anatomy.short_form, imageArray, f);
-								loaded.add(anat.anatomy.short_form);
-							}
 						}
 					}
 				}
 				if (this.expressed_in != null) {
-					j = c;
-					f = c + this.expressed_in.size();
 					for (anatomy_channel_image anat : this.expressed_in) {
 						// add same template to the begining and others at the end.
 						if (anat.channel_image != null && anat.channel_image.image != null && anat.channel_image.image.template_anatomy != null && anat.channel_image.image.template_anatomy.short_form != null && template.equals(anat.channel_image.image.template_anatomy.short_form)) {
-							if (loaded.contains(anat.anatomy.short_form)) {
-								imageArray = ValuesFactory.eINSTANCE.createArrayValue();
-								j = 0;
+							if (!loaded.contains(anat.anatomy.short_form)) {
+								addImage(anat.getUrl("", "thumbnailT.png"), anat.getLabel(), anat.anatomy.short_form, imageArray, j);
+								loaded.add(anat.anatomy.short_form);
+								j++;
 							}
+						}
+					}
+					if (j > 0) return imageArray;
+					for (anatomy_channel_image anat : this.expressed_in) {
+						if (!loaded.contains(anat.anatomy.short_form)) {
 							addImage(anat.getUrl("", "thumbnailT.png"), anat.getLabel(), anat.anatomy.short_form, imageArray, j);
-							if (loaded.contains(anat.anatomy.short_form)) {
-								return imageArray;
-							}
 							loaded.add(anat.anatomy.short_form);
 							j++;
-						} else {
-							f--;
-							addImage(anat.getUrl("", "thumbnailT.png"), anat.getLabel(), anat.anatomy.short_form, imageArray, f);
-							loaded.add(anat.anatomy.short_form);
 						}
 					}
 				}
 				if (this.channel_image != null) {
-					f = this.channel_image.size();
-					c = f;
 					if (this.object != null) {
 						// if the row has a target object then the image is for that not the term.
 						for (channel_image anat : this.channel_image) {
 							// add same template to the begining and others at the end.
 							if (anat != null && anat.image != null && anat.image.template_anatomy != null && anat.image.template_anatomy.short_form != null && template.equals(anat.image.template_anatomy.short_form)) {
-								if (loaded.contains(this.object.short_form)) {
-									imageArray = ValuesFactory.eINSTANCE.createArrayValue();
-									j = 0;
+								if (!loaded.contains(this.object.short_form)) {
+									addImage(anat.getUrl("", "thumbnailT.png"), this.object.label + anat.getLabel(), this.object.short_form, imageArray, j);
+									loaded.add(this.object.short_form);
+									j++;
 								}
+							}
+						}
+						if (j > 0) return imageArray;
+						for (channel_image anat : this.channel_image) {
+							if (!loaded.contains(this.object.short_form)) {
 								addImage(anat.getUrl("", "thumbnailT.png"), this.object.label + anat.getLabel(), this.object.short_form, imageArray, j);
-								if (loaded.contains(this.object.short_form)) {
-									return imageArray;
-								}
 								loaded.add(this.object.short_form);
 								j++;
-							} else {
-								if (!loaded.contains(this.object.short_form)) {
-									f--;
-									addImage(anat.getUrl("", "thumbnailT.png"), this.object.label + anat.getLabel(), this.object.short_form, imageArray, f);
-									loaded.add(this.object.short_form);
-								}
 							}
 						}
 					} else {
 						for (channel_image anat : this.channel_image) {
 							// add same template to the begining and others at the end.
 							if (anat != null && anat.image != null && anat.image.template_anatomy != null && anat.image.template_anatomy.short_form != null && template.equals(anat.image.template_anatomy.short_form)) {
-								if (loaded.contains(this.term.core.short_form)) {
-									imageArray = ValuesFactory.eINSTANCE.createArrayValue();
-									j = 0;
-								}
-								addImage(anat.getUrl("", "thumbnailT.png"), this.term.core.label, this.term.core.short_form, imageArray, j);
-								if (loaded.contains(this.term.core.short_form)) {
-									return imageArray;
-								}
-								loaded.add(this.term.core.short_form);
-								j++;
-							} else {
 								if (!loaded.contains(this.term.core.short_form)) {
-									f--;
-									addImage(anat.getUrl("", "thumbnailT.png"), this.term.core.label, this.term.core.short_form, imageArray, f);
+									addImage(anat.getUrl("", "thumbnailT.png"), this.term.core.label, this.term.core.short_form, imageArray, j);
 									loaded.add(this.term.core.short_form);
+									j++;
+								}
+							}
+							if (j > 0) return imageArray;
+							for (channel_image anat : this.channel_image) {
+								if (!loaded.contains(this.term.core.short_form)) {
+									addImage(anat.getUrl("", "thumbnailT.png"), this.term.core.label, this.term.core.short_form, imageArray, j);
+									loaded.add(this.term.core.short_form);
+									j++;
 								}
 							}
 						}
