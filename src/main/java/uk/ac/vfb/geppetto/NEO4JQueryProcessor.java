@@ -104,7 +104,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 				result += " [" + this.image.template_anatomy.label + "]";
 			}
 			if (this.imaging_technique != null && this.imaging_technique.label != null && !this.imaging_technique.label.equals("")){
-				result += " [" + this.imaging_technique.label.replace("focussed ion beam scanning electron microscopy (FIB-SEM)","FIB-SEM") + "]";
+				result += " [" + this.imaging_technique.label.replace("focussed ion beam scanning electron microscopy (FIB-SEM)","FIB-SEM").replace("focussed ion beam scanning electron microscopy (TEM)","TEM") + "]";
 			}
 			return result;
 		}
@@ -821,9 +821,9 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			if (hasDatasetCount) processedResults.getHeader().add("Image_count");
 			if (hasExtra && table.get(0).extra_columns.size() > 0 && table.get(0).extra_columns.get(0).Score != null) processedResults.getHeader().add("Score");
 			if (hasSynCount) {
-				processedResults.getHeader().add("#_Downstream_Synapses");
-				if (!table.get(0).query.contains("neuron_neuron")) processedResults.getHeader().add("#_Tbars");
-				processedResults.getHeader().add("#_Upstream_Synapses");
+				processedResults.getHeader().add("outputs");
+				if (!table.get(0).query.contains("neuron_neuron")) processedResults.getHeader().add("outputs (Tbars)");
+				processedResults.getHeader().add("inputs");
 				//processedResults.getHeader().add("Weight");
 				if (hasObject) {
 					if (table.get(0).query.contains("neuron_neuron")) {
