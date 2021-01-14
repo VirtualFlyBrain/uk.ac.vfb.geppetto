@@ -821,9 +821,9 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			if (hasDatasetCount) processedResults.getHeader().add("Image_count");
 			if (hasExtra && table.get(0).extra_columns.size() > 0 && table.get(0).extra_columns.get(0).Score != null) processedResults.getHeader().add("Score");
 			if (hasSynCount) {
-				processedResults.getHeader().add("outputs");
-				if (!table.get(0).query.contains("neuron_neuron")) processedResults.getHeader().add("outputs (Tbars)");
-				processedResults.getHeader().add("inputs");
+				processedResults.getHeader().add("Outputs");
+				if (!table.get(0).query.contains("neuron_neuron")) processedResults.getHeader().add("Outputs (Tbars)");
+				processedResults.getHeader().add("Inputs");
 				//processedResults.getHeader().add("Weight");
 				if (hasObject) {
 					if (table.get(0).query.contains("neuron_neuron")) {
