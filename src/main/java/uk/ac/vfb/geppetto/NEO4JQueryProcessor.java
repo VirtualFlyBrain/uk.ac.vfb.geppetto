@@ -101,13 +101,103 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		public String getLabel(Boolean showTemplate){
 			String result = "";
 			if (showTemplate && this.image != null && this.image.template_anatomy != null && !this.image.template_anatomy.label.equals("")){
-				result += " [" + this.image.template_anatomy.label + "]";
+				result += " [" + templateSymbol(this.image.template_anatomy.label) + "]";
 			}
 			if (this.imaging_technique != null && this.imaging_technique.label != null && !this.imaging_technique.label.equals("")){
-				result += " [" + this.imaging_technique.label.replace("focussed ion beam scanning electron microscopy (FIB-SEM)","FIB-SEM").replace("focussed ion beam scanning electron microscopy (TEM)","TEM") + "]";
+				result += " [" + this.techniqueSymbol(this.imaging_technique.label) + "]";
 			}
 			return result;
 		}
+
+		public String templateSymbol(String label){
+			switch (label) {
+				case "adult brain template JFRC2":
+					return "JFRC2";
+				case "adult brain template Ito2014":
+					return "ItoHalfBrain";
+				case "L1 larval CNS ssTEM - Cardona/Janelia":
+					return "L1CNS";
+				case "adult VNS template - Court2018":
+					return "adultVNS";
+				case "L3 CNS template - Wood2018":
+					return "L3CNS";
+				case "JRC_FlyEM_Hemibrain":
+					return "HemiBrain";
+				case "JRC2018Unisex":
+					return "JRC2018U";
+				case "JRC2018UnisexVNC":
+					return "JRC2018UV";
+				default:
+					return label;
+			}
+			return label;
+		}
+
+		public String techniqueSymbol(String label){
+			switch (label) {
+				case "structured illumination microscopy (SIM)":
+					return "SIM";
+				case "photomultiplier tube (PMT)":
+					return "PMT";
+				case "scanning electron microscopy (SEM)":
+					return "SEM";
+				case "charge coupled device (CCD)":
+					return "CCD";
+				case "Fluorescein (FITC)":
+					return "FITC";
+				case "Tetramethyl rhodamine (TRITC)":
+					return "TRITC";
+				case "intermediate voltage electron microacopy (IVEM)":
+					return "IVEM";
+				case "high-voltage electron microscopy (HVEM)":
+					return "HVEM";
+				case "interference reflection contrast (IRM)":
+					return "IRM";
+				case "inelastic scattering of photons (Raman scattering)":
+					return "Raman scattering";
+				case "transmission electron microscopy (TEM)":
+					return "TEM";
+				case "nearfield scanning optical microscopy (ANSOM)":
+					return "ANSOM";
+				case "single sideband edge enhancement (SSBE)":
+					return "SSBE";
+				case "complementary metal oxide semiconductor (CMOS)":
+					return "CMOS";
+				case "electron bombardment CCD (EBCCD)":
+					return "EBCCD";
+				case "intensified CCD (ICCD)":
+					return "ICCD";
+				case "silicon intensified target tube (SIT)":
+					return "SIT";
+				case "4\',6-diamidino-2-phenylindole (DAPI)":
+					return "DAPI";
+				case "ground state depletion scanning (GSD)":
+					return "GSD";
+				case "Arachis hypogaea (PNA)":
+					return "PNA";
+				case "avalanche photodiode (APD)":
+					return "APD";
+				case "stimulated emission depletion (STED)":
+					return "STED";
+				case "serial block face SEM (SBFSEM)":
+					return "SBFSEM";
+				case "electron multiplying CCD (EMCCD)":
+					return "EMCCD";
+				case "saturated structured-illumination microscopy (SSIM)":
+					return "SSIM";
+				case "intensified SIT (ISIT)":
+					return "ISIT";
+				case "confocal microscopy":
+					return "Confocal";
+				case "focussed ion beam scanning electron microscopy (FIB-SEM)":
+					return "FIB-SEM";
+				default:
+					return label;
+			}
+			return label;
+		}
+
+
 	}
 
 	class anatomy_channel_image {
