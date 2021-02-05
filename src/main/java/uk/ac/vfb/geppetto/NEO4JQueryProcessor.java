@@ -130,7 +130,6 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 				default:
 					return label;
 			}
-			return label;
 		}
 
 		public String techniqueSymbol(String label){
@@ -194,7 +193,6 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 				default:
 					return label;
 			}
-			return label;
 		}
 
 
