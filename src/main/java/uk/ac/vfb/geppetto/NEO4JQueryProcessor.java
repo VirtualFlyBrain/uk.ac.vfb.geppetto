@@ -551,17 +551,17 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			String result = "";
 			if (this.channel_image != null && this.channel_image.size() > 0) {
 				for (channel_image ci:this.channel_image){
-					if (ci.imaging_technique.label != null && result.indexOf(ci.imaging_technique.label) < 0){
+					if (ci.imaging_technique.label != null && result.indexOf(ci.techniqueSymbol(ci.imaging_technique.label)) < 0){
 						if (!result.equals("")) result += "; ";
-						result += ci.imaging_technique.label;
+						result += ci.techniqueSymbol(ci.imaging_technique.label);
 					}
 				}
 			}
 			if (this.anatomy_channel_image != null && this.anatomy_channel_image.size() > 0) {
 				for (anatomy_channel_image aci:this.anatomy_channel_image){
-					if (aci.channel_image.imaging_technique.label != null && result.indexOf(aci.channel_image.imaging_technique.label) < 0){
+					if (aci.channel_image.imaging_technique.label != null && result.indexOf(aci.channel_image.techniqueSymbol(aci.channel_image.imaging_technique.label)) < 0){
 						if (!result.equals("")) result += "; ";
-						result += aci.channel_image.imaging_technique.label;
+						result += aci.channel_image.techniqueSymbol(aci.channel_image.imaging_technique.label);
 					}
 				}
 			}
@@ -906,6 +906,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			if (hasReference) processedResults.getHeader().add("Reference");
 			if (hasStage) processedResults.getHeader().add("Stage");
 			if (hasImage) processedResults.getHeader().add("Images");
+			if (hasImage) processedResults.getHeader().add("Imaging_Technique");
 			if (hasDatasetCount) processedResults.getHeader().add("Image_count");
 			if (hasExtra && table.get(0).extra_columns.size() > 0 && table.get(0).extra_columns.get(0).Score != null) processedResults.getHeader().add("Score");
 			if (hasSynCount) {
@@ -957,6 +958,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 						{
 							processedResult.getValues().add("");
 						}
+						processedResult.getValues().add(row.technique());
 					}
 					if (hasDatasetCount) processedResult.getValues().add(String.format("%1$" + length + "s", row.dataset_counts.images.toString()));
 					if (hasExtra && row.extra_columns.size() > 0 && row.getScore() != null) processedResult.getValues().add(row.getScore());
