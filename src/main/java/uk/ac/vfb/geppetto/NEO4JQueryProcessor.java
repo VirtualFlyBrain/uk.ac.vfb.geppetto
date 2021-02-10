@@ -568,13 +568,21 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			return result;
 		}
 
-		public String template(){
+		public String template(String template){
 			String result = "";
+			if (template == null || template.equals("")){
+				//default to JRC2018U
+				template = "VFB_00101567";
+			}
 			if (this.channel_image != null && this.channel_image.size() > 0) {
 				for (channel_image ci:this.channel_image){
 					if (ci.image.template_anatomy.label != null && result.indexOf(ci.templateSymbol(ci.image.template_anatomy.label)) < 0){
 						if (!result.equals("")) result += "; ";
-						result += ci.templateSymbol(ci.image.template_anatomy.label);
+						if (ci.image.template_anatomy.short_form.equals(template)) {
+							result = ci.templateSymbol(ci.image.template_anatomy.label) + "\nAlso in: " + result;
+						} else {
+							result += ci.templateSymbol(ci.image.template_anatomy.label);
+						}
 					}
 				}
 			}
@@ -582,7 +590,11 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 				for (anatomy_channel_image aci:this.anatomy_channel_image){
 					if (aci.channel_image.image.template_anatomy.label != null && result.indexOf(aci.channel_image.templateSymbol(aci.channel_image.image.template_anatomy.label)) < 0){
 						if (!result.equals("")) result += "; ";
-						result += aci.channel_image.templateSymbol(aci.channel_image.image.template_anatomy.label);
+						if (aci.channel_image.image.template_anatomy.short_form.equals(template)) {
+							result = aci.channel_image.templateSymbol(aci.channel_image.image.template_anatomy.label) + "\nAlso in: " + result;
+						} else {
+							result += aci.channel_image.templateSymbol(aci.channel_image.image.template_anatomy.label);
+						}
 					}
 				}
 			}
@@ -961,7 +973,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 						}
 					}
 					if (hasTechnique) processedResult.getValues().add(row.technique());
-					if (hasTemplate) processedResult.getValues().add(row.template());
+					if (hasTemplate) processedResult.getValues().add(row.template(template));
 					if (hasDatasetCount) processedResult.getValues().add(String.format("%1$" + length + "s", row.dataset_counts.images.toString()));
 					if (hasExtra && row.extra_columns.size() > 0 && row.getScore() != null) processedResult.getValues().add(row.getScore());
 					if (hasSynCount){
