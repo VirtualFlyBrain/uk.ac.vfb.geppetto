@@ -581,7 +581,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 						if (ci.image.template_anatomy.short_form.equals(template)) {
 							result = ci.templateSymbol(ci.image.template_anatomy.label) + "\nAlso in: " + result;
 						} else {
-							if (!result.equals("")) result += "; ";
+							if (!result.equals("") && !result.endsWith(": ")) result += "; ";
 							result += ci.templateSymbol(ci.image.template_anatomy.label);
 						}
 					}
@@ -593,7 +593,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 						if (aci.channel_image.image.template_anatomy.short_form.equals(template)) {
 							result = aci.channel_image.templateSymbol(aci.channel_image.image.template_anatomy.label) + "\nAlso in: " + result;
 						} else {
-							if (!result.equals("")) result += "; ";
+							if (!result.equals("") && !result.endsWith(": ")) result += "; ";
 							result += aci.channel_image.templateSymbol(aci.channel_image.image.template_anatomy.label);
 						}
 					}
