@@ -577,10 +577,11 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			if (this.channel_image != null && this.channel_image.size() > 0) {
 				for (channel_image ci:this.channel_image){
 					if (ci.image.template_anatomy.label != null && result.indexOf(ci.templateSymbol(ci.image.template_anatomy.label)) < 0){
-						if (!result.equals("")) result += "; ";
+						
 						if (ci.image.template_anatomy.short_form.equals(template)) {
 							result = ci.templateSymbol(ci.image.template_anatomy.label) + "\nAlso in: " + result;
 						} else {
+							if (!result.equals("")) result += "; ";
 							result += ci.templateSymbol(ci.image.template_anatomy.label);
 						}
 					}
@@ -589,10 +590,10 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			if (this.anatomy_channel_image != null && this.anatomy_channel_image.size() > 0) {
 				for (anatomy_channel_image aci:this.anatomy_channel_image){
 					if (aci.channel_image.image.template_anatomy.label != null && result.indexOf(aci.channel_image.templateSymbol(aci.channel_image.image.template_anatomy.label)) < 0){
-						if (!result.equals("")) result += "; ";
 						if (aci.channel_image.image.template_anatomy.short_form.equals(template)) {
 							result = aci.channel_image.templateSymbol(aci.channel_image.image.template_anatomy.label) + "\nAlso in: " + result;
 						} else {
+							if (!result.equals("")) result += "; ";
 							result += aci.channel_image.templateSymbol(aci.channel_image.image.template_anatomy.label);
 						}
 					}
