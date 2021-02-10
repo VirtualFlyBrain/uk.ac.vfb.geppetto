@@ -572,17 +572,17 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			String result = "";
 			if (this.channel_image != null && this.channel_image.size() > 0) {
 				for (channel_image ci:this.channel_image){
-					if (ci.image.template_anatomy.label != null && result.indexOf(ci.image.template_anatomy.label) < 0){
+					if (ci.image.template_anatomy.label != null && result.indexOf(ci.templateSymbol(ci.image.template_anatomy.label)) < 0){
 						if (!result.equals("")) result += "; ";
-						result += ci.image.template_anatomy.label;
+						result += ci.templateSymbol(ci.image.template_anatomy.label);
 					}
 				}
 			}
 			if (this.anatomy_channel_image != null && this.anatomy_channel_image.size() > 0) {
 				for (anatomy_channel_image aci:this.anatomy_channel_image){
-					if (aci.channel_image.image.template_anatomy.label != null && result.indexOf(aci.channel_image.image.template_anatomy.label) < 0){
+					if (aci.channel_image.image.template_anatomy.label != null && result.indexOf(aci.channel_image.templateSymbol(aci.channel_image.image.template_anatomy.label)) < 0){
 						if (!result.equals("")) result += "; ";
-						result += aci.channel_image.image.template_anatomy.label;
+						result += aci.channel_image.templateSymbol(aci.channel_image.image.template_anatomy.label);
 					}
 				}
 			}
@@ -905,8 +905,11 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			if (hasLicense) processedResults.getHeader().add("License");
 			if (hasReference) processedResults.getHeader().add("Reference");
 			if (hasStage) processedResults.getHeader().add("Stage");
-			if (hasImage) processedResults.getHeader().add("Images");
-			if (hasImage) processedResults.getHeader().add("Imaging_Technique");
+			if (hasImage) {
+				processedResults.getHeader().add("Images");
+				processedResults.getHeader().add("Imaging_Technique");
+				processedResults.getHeader().add("Template_Space");
+			}
 			if (hasDatasetCount) processedResults.getHeader().add("Image_count");
 			if (hasExtra && table.get(0).extra_columns.size() > 0 && table.get(0).extra_columns.get(0).Score != null) processedResults.getHeader().add("Score");
 			if (hasSynCount) {
@@ -959,6 +962,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 							processedResult.getValues().add("");
 						}
 						processedResult.getValues().add(row.technique());
+						processedResult.getValues().add(row.template());
 					}
 					if (hasDatasetCount) processedResult.getValues().add(String.format("%1$" + length + "s", row.dataset_counts.images.toString()));
 					if (hasExtra && row.extra_columns.size() > 0 && row.getScore() != null) processedResult.getValues().add(row.getScore());
