@@ -577,7 +577,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			if (this.channel_image != null && this.channel_image.size() > 0) {
 				for (channel_image ci:this.channel_image){
 					if (ci.image.template_anatomy.label != null && result.indexOf(ci.templateSymbol(ci.image.template_anatomy.label)) < 0){
-						
+
 						if (ci.image.template_anatomy.short_form.equals(template)) {
 							result = ci.templateSymbol(ci.image.template_anatomy.label) + "\nAlso in: " + result;
 						} else {
