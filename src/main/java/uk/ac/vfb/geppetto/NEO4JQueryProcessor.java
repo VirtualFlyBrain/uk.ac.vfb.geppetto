@@ -905,11 +905,9 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			if (hasLicense) processedResults.getHeader().add("License");
 			if (hasReference) processedResults.getHeader().add("Reference");
 			if (hasStage) processedResults.getHeader().add("Stage");
-			if (hasImage) {
-				processedResults.getHeader().add("Images");
-				processedResults.getHeader().add("Imaging_Technique");
-				processedResults.getHeader().add("Template_Space");
-			}
+			if (hasImage) processedResults.getHeader().add("Images");
+			if (hasTemplate) processedResults.getHeader().add("Imaging_Technique");
+			if (hasTechnique) processedResults.getHeader().add("Template_Space");
 			if (hasDatasetCount) processedResults.getHeader().add("Image_count");
 			if (hasExtra && table.get(0).extra_columns.size() > 0 && table.get(0).extra_columns.get(0).Score != null) processedResults.getHeader().add("Score");
 			if (hasSynCount) {
@@ -961,9 +959,9 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 						{
 							processedResult.getValues().add("");
 						}
-						processedResult.getValues().add(row.technique());
-						processedResult.getValues().add(row.template());
 					}
+					if (hasTechnique) processedResult.getValues().add(row.technique());
+					if (hasTemplate) processedResult.getValues().add(row.template());
 					if (hasDatasetCount) processedResult.getValues().add(String.format("%1$" + length + "s", row.dataset_counts.images.toString()));
 					if (hasExtra && row.extra_columns.size() > 0 && row.getScore() != null) processedResult.getValues().add(row.getScore());
 					if (hasSynCount){
