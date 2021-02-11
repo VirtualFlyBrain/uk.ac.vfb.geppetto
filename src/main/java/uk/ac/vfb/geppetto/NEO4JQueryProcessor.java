@@ -599,6 +599,9 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					}
 				}
 			}
+			if (result.endsWith(": ")) {
+				result = result.replace("Also in: ", "");
+			}
 			return result;
 		}
 
