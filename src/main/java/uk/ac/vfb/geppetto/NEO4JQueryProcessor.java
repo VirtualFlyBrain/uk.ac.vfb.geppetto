@@ -579,7 +579,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					if (ci.image.template_anatomy.label != null && result.indexOf(ci.templateSymbol(ci.image.template_anatomy.label)) < 0){
 
 						if (ci.image.template_anatomy.short_form.equals(template)) {
-							result = ci.templateSymbol(ci.image.template_anatomy.label) + "\nAlso in: " + result;
+							result = ci.templateSymbol(ci.image.template_anatomy.label) + "\nalso in: " + result;
 						} else {
 							if (!result.equals("") && !result.endsWith(": ")) result += "; ";
 							result += ci.templateSymbol(ci.image.template_anatomy.label);
@@ -591,7 +591,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 				for (anatomy_channel_image aci:this.anatomy_channel_image){
 					if (aci.channel_image.image.template_anatomy.label != null && result.indexOf(aci.channel_image.templateSymbol(aci.channel_image.image.template_anatomy.label)) < 0){
 						if (aci.channel_image.image.template_anatomy.short_form.equals(template)) {
-							result = aci.channel_image.templateSymbol(aci.channel_image.image.template_anatomy.label) + "\nAlso in: " + result;
+							result = aci.channel_image.templateSymbol(aci.channel_image.image.template_anatomy.label) + "\nalso in: " + result;
 						} else {
 							if (!result.equals("") && !result.endsWith(": ")) result += "; ";
 							result += aci.channel_image.templateSymbol(aci.channel_image.image.template_anatomy.label);
@@ -600,7 +600,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 				}
 			}
 			if (result.endsWith(": ")) {
-				result = result.replace("Also in: ", "");
+				result = result.replace("also in: ", "");
 			}
 			return result;
 		}
