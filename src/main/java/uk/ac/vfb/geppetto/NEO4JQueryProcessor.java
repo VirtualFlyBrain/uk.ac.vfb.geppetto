@@ -312,6 +312,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		private minimal_entity_info anatomy;
 		public String query;
 		public String version;
+		public String score;
 		private List<anatomy_channel_image> anatomy_channel_image;
 		private List<pub> pubs;
 		private pub pub;
@@ -772,6 +773,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			Boolean hasExtra = false;
 			Boolean hasSynCount = false;
 			Boolean hasObject = false;
+			Boolean hasScore = false;
 			List<vfb_query> table = new ArrayList<vfb_query>();
 			vfb_query vfbQuery = null;
 
@@ -874,6 +876,9 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 							case "object":
 								hasObject = true;
 								break;
+							case "score":
+								hasScore = true;
+								break;
 							case "extra_columns":
 								hasExtra = true;
 						}
@@ -926,6 +931,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			if (hasTechnique) processedResults.getHeader().add("Template_Space");
 			if (hasDatasetCount) processedResults.getHeader().add("Image_count");
 			if (hasExtra && table.get(0).extra_columns.size() > 0 && table.get(0).extra_columns.get(0).Score != null) processedResults.getHeader().add("Score");
+			if (hasScore) processedResults.getHeader().add("Score");
 			if (hasSynCount) {
 				processedResults.getHeader().add("Outputs");
 				if (!table.get(0).query.contains("neuron_neuron")) processedResults.getHeader().add("Outputs (Tbars)");
@@ -980,6 +986,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					if (hasTemplate) processedResult.getValues().add(row.template(template));
 					if (hasDatasetCount) processedResult.getValues().add(String.format("%1$" + length + "s", row.dataset_counts.images.toString()));
 					if (hasExtra && row.extra_columns.size() > 0 && row.getScore() != null) processedResult.getValues().add(row.getScore());
+					if (hasScore) processedResult.getValues().add(row.score);
 					if (hasSynCount){
 						processedResult.getValues().add(row.synapse_counts.getDownstream());
 						if (!row.query.contains("neuron_neuron"))processedResult.getValues().add(row.synapse_counts.getTbars());
