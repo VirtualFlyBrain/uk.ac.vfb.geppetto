@@ -1284,6 +1284,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			String tempData = "";
 			String header = "loading";
 			String references = "";
+			String downloadFiles = "";
 
 			//	Queries
 			String querys = "";
@@ -1437,7 +1438,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 				header = "channel_image";
 				if (vfbTerm.channel_image != null && vfbTerm.channel_image.size() > 0) {
-					String downloadFiles = "Aligned Image: ";
+					downloadFiles = "Aligned Image: ";
 					String oldTemplate = template;
 					String tempLink = "";
 					int count = 0;
@@ -1583,7 +1584,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume.nrrd");
 					if (debug) System.out.println("NRRD " + tempData);
 					if (tempData != null){
-						addModelHtml("Aligned Image: <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a><br>Note: see source & license above for terms of reuse and correct attribution.", "Downloads", "downloads", metadataType, geppettoModelAccess);
+						addModelHtml(downloadFiles + "<br>Aligned Image: <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a><br>Note: see source & license above for terms of reuse and correct attribution.", "Downloads", "downloads", metadataType, geppettoModelAccess);
 					}
 				}
 
