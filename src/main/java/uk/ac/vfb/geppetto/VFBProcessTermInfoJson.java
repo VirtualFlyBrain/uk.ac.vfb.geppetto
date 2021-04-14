@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -1639,6 +1640,27 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				}
 
 				if (querys != "") {
+					List<String> ql = querys.split("</br>");
+					Hashtable<String, String> subMenusGrouping = new Hashtable<String, String>();
+					subMenusGrouping.put("Neurons with","Neurons with...");
+					subMenusGrouping.put("Images of neurons with","Images of neurons with...");
+					subMenusGrouping.put("Tracts/nerves innervating","Tract/Nerves innervating here...");
+					subMenusGrouping.put("Lineage clones found","Lineage clones with...");
+					subMenusGrouping.put("Transgenes expressed in","Expression/Phenotypes found here...");
+					List<String> keys = subMenusGrouping.keys();
+					for (String k:keys) {
+						if (querys.indexOf(k) > -1) {
+							tempData += "<details><summary>" + subMenusGrouping.get(k) + "</summary>";
+							for (String q:ql) {
+								if (q.indexOf(k) > -1) {
+									tempData += q + "<br />";
+									ql.remove(q);
+							}
+							tempData += "</details>";
+						}
+					}
+					tempData += "<br />" + ql.join("<br />");
+					tempData += "<br /><small>Note: Copy link URL for query permalink<br />Queries are only shown if a result is likely</small><br />";
 					addModelHtml(querys, "Query for", "queries", metadataType, geppettoModelAccess);
 				}
 
