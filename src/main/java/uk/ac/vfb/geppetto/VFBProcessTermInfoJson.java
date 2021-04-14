@@ -1655,6 +1655,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 								if (q.indexOf(k) > -1) {
 									tempData += q + "<br />";
 									ql.remove(q);
+								}
 							}
 							tempData += "</details>";
 						}
