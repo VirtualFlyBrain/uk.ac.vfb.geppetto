@@ -1640,15 +1640,14 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				}
 
 				if (querys != "") {
-					List<String> ql = querys.split("</br>");
+					List<String> ql = new ArrayList<String>(Arrays.asList(querys.split("</br>")));
 					Hashtable<String, String> subMenusGrouping = new Hashtable<String, String>();
 					subMenusGrouping.put("Neurons with","Neurons with...");
 					subMenusGrouping.put("Images of neurons with","Images of neurons with...");
 					subMenusGrouping.put("Tracts/nerves innervating","Tract/Nerves innervating here...");
 					subMenusGrouping.put("Lineage clones found","Lineage clones with...");
 					subMenusGrouping.put("Transgenes expressed in","Expression/Phenotypes found here...");
-					List<String> keys = subMenusGrouping.keys();
-					for (String k:keys) {
+					for (String k:subMenusGrouping.keySet()) {
 						if (querys.indexOf(k) > -1) {
 							tempData += "<details><summary>" + subMenusGrouping.get(k) + "</summary>";
 							for (String q:ql) {
