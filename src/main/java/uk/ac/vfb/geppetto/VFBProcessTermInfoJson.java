@@ -10,6 +10,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.GroupLayout.Alignment;
 
@@ -1640,7 +1641,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				}
 
 				if (querys != "") {
-					List<String> ql = new ArrayList<String>(Arrays.asList(querys.split("</br>")));
+					CopyOnWriteArrayList<String> ql = new CopyOnWriteArrayList<String>(Arrays.asList(querys.split("</br>")));
 					Hashtable<String, String> subMenusGrouping = new Hashtable<String, String>();
 					subMenusGrouping.put("Neurons with","Neurons with...");
 					subMenusGrouping.put("Images of neurons with","Images of neurons with...");
@@ -1650,8 +1651,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					for (String k:subMenusGrouping.keySet()) {
 						if (querys.indexOf(k) > -1) {
 							tempData += "<details><summary>" + subMenusGrouping.get(k) + "</summary>";
-							List<String> cql = copy(ql);
-							for (String q:cql) {
+							for (String q:ql) {
 								if (q.indexOf(k) > -1) {
 									tempData += q + "<br />";
 									ql.remove(q);
