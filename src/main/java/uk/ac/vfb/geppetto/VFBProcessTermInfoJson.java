@@ -1655,7 +1655,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 					for (String k:subMenusGrouping.keySet()) {
 						if (querys.indexOf(k.substring(2)) > -1) {
-							tempData += "<details><summary>" + subMenusGrouping.get(k) + "</summary>";
+							tempData += "<details><summary><i class='fa'></i>" + subMenusGrouping.get(k) + "</summary>";
 							for (String q:ql) {
 								if (q.indexOf(k.substring(2)) > -1) {
 									tempData += q + "<br />";
