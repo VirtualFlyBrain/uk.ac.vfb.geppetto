@@ -10,6 +10,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.GroupLayout.Alignment;
@@ -1644,19 +1645,19 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					tempData = "";
 					CopyOnWriteArrayList<String> ql = new CopyOnWriteArrayList<String>(Arrays.asList(querys.split("</br>")));
 					Collections.sort(ql);
-					Hashtable<String, String> subMenusGrouping = new Hashtable<String, String>();
-					subMenusGrouping.put("Transgenes expressed in","Expression/Phenotypes found here...");
-					subMenusGrouping.put("Reports of transgene expression in","Expression/Phenotypes found here...");
-					subMenusGrouping.put("Lineage clones found","Lineage clones with...");
-					subMenusGrouping.put("Tracts/nerves innervating","Tract/Nerves innervating here...");
-					subMenusGrouping.put("Images of neurons with","Images of neurons with...");
-					subMenusGrouping.put("Neurons with","Neurons with...");
+					TreeMap<String, String> subMenusGrouping = new TreeMap<String, String>();
+					subMenusGrouping.put("6 Transgenes expressed in","Expression/Phenotypes found here...");
+					subMenusGrouping.put("5 Reports of transgene expression in","Expression/Phenotypes found here...");
+					subMenusGrouping.put("4 Lineage clones found","Lineage clones with...");
+					subMenusGrouping.put("3 Tracts/nerves innervating","Tract/Nerves innervating here...");
+					subMenusGrouping.put("2 Images of neurons with","Images of neurons with...");
+					subMenusGrouping.put("1 Neurons with","Neurons with...");
 
 					for (String k:subMenusGrouping.keySet()) {
-						if (querys.indexOf(k) > -1) {
+						if (querys.indexOf(k.substring(2)) > -1) {
 							tempData += "<details><summary>" + subMenusGrouping.get(k) + "</summary>";
 							for (String q:ql) {
-								if (q.indexOf(k) > -1) {
+								if (q.indexOf(k.substring(2)) > -1) {
 									tempData += q + "<br />";
 									ql.remove(q);
 								}
