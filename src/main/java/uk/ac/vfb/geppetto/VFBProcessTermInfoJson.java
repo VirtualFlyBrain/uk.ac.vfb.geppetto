@@ -1641,6 +1641,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				}
 
 				if (querys != "") {
+					tempData = "";
 					CopyOnWriteArrayList<String> ql = new CopyOnWriteArrayList<String>(Arrays.asList(querys.split("</br>")));
 					Collections.sort(ql);
 					Hashtable<String, String> subMenusGrouping = new Hashtable<String, String>();
