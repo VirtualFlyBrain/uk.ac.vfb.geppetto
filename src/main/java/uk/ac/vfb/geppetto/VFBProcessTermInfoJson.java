@@ -1662,7 +1662,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					}
 					tempData += "<br />" + String.join("<br />", ql);
 					tempData += "<br /><small>Note: Copy link URL for query permalink<br />Queries are only shown if a result is likely</small><br />";
-					addModelHtml(querys, "Query for", "queries", metadataType, geppettoModelAccess);
+					addModelHtml(tempData, "Query for", "queries", metadataType, geppettoModelAccess);
 				}
 
 				//Indenting embeded queries
