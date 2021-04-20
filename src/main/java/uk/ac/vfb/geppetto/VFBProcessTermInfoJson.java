@@ -1653,6 +1653,19 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					subMenusGrouping.put("2 Images of neurons with","Images of neurons with...");
 					subMenusGrouping.put("1 Neurons with","Neurons with...");
 
+					// merging all NBLAST and NeuronBridge queries as top item.
+					if ((querys.indexOf("NBLAST") > -1) || (querys.indexOf("NeuronBridge") > -1)) {
+						tempData += "<details><summary><i class=\"popup-icon-link fa fa-chevron-circle-right\"></i><i class=\"popup-icon-link fa fa-chevron-circle-down\"></i>Find similar...</summary>";
+						for (String q:ql) {
+							if ((q.indexOf("NBLAST") > -1) || (q.indexOf("NeuronBridge") > -1)) {
+								tempData += q + "<br />";
+								ql.remove(q);
+							}
+						}
+						tempData += "</details>";
+					}
+
+					// merging all rmaining queries in the order of the numbered subMenusGrouping
 					for (String k:subMenusGrouping.keySet()) {
 						if (querys.indexOf(k.substring(2)) > -1) {
 							tempData += "<details><summary><i class=\"popup-icon-link fa fa-chevron-circle-right\"></i><i class=\"popup-icon-link fa fa-chevron-circle-down\"></i>" + subMenusGrouping.get(k) + "</summary>";
@@ -1665,7 +1678,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 							tempData += "</details>";
 						}
 					}
+					// place all ungrouped queries at the end of the list
 					tempData += String.join("<br />", ql);
+					// add footer/note
 					tempData += "<br /><small>Note: Copy link URL for query permalink. Queries are only shown if a result is likely</small><br />";
 					addModelHtml(tempData, "Query for", "queries", metadataType, geppettoModelAccess);
 				}
