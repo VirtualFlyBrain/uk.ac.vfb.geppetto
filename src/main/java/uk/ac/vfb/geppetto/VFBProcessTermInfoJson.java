@@ -1660,6 +1660,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 							if ((q.indexOf("NBLAST") > -1) || (q.indexOf("NeuronBridge") > -1)) {
 								tempData += q + "<br />";
 								ql.remove(q);
+								querys = querys.replace(q,"");
 							}
 						}
 						tempData += "</details>";
@@ -1673,6 +1674,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 								if (q.indexOf(k.substring(2)) > -1) {
 									tempData += q + "<br />";
 									ql.remove(q);
+									querys = querys.replace(q,"");
 								}
 							}
 							tempData += "</details>";
