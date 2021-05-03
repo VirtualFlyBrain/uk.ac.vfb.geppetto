@@ -1650,8 +1650,8 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					subMenusGrouping.put("5 Reports of transgene expression in","Expression/Phenotypes found here...");
 					subMenusGrouping.put("4 Lineage clones found","Lineage clones with...");
 					subMenusGrouping.put("3 Tracts/nerves innervating","Tract/Nerves innervating here...");
-					subMenusGrouping.put("2 Images of neurons with","Images of neurons with...");
-					subMenusGrouping.put("1 Neurons with","Neurons with...");
+					subMenusGrouping.put("2 Images of neurons with","Individual neurons with...");
+					subMenusGrouping.put("1 Neurons with","Types of neurons with...");
 
 					// merging all NBLAST and NeuronBridge queries as top item.
 					if ((querys.indexOf("NBLAST") > -1) || (querys.indexOf("NeuronBridge") > -1)) {
@@ -1683,7 +1683,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					// place all ungrouped queries at the end of the list
 					tempData += String.join("<br />", ql);
 					// add footer/note
-					tempData += "<br /><small>Note: Copy link URL for query permalink. Queries are only shown if a result is likely</small><br />";
+					//tempData += "<br /><small>Note: Copy link URL for query permalink. Queries are only shown if a result is likely</small><br />";
 					addModelHtml(tempData, "Query for", "queries", metadataType, geppettoModelAccess);
 				}
 
