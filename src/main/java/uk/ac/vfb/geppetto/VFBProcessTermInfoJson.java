@@ -1619,6 +1619,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				{
 					if(QueryChecker.check(runnableQuery, variable))
 					{
+						if (runnableQuery.getPath().equals("TransgeneExpressionHere") && superTypes.contains("Expression_pattern")) {
+							continue;
+						}
 						querys += badge + "<a href=\"/org.geppetto.frontend/geppetto?q=" + variable.getId() + "," + (String) runnableQuery.getPath() + "\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + variable.getId() + "," + variable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
 						if (runnableQuery.getPath().equals("ExpressionOverlapsHere")) {
 							queryExpressedInX = "<a href=\"/org.geppetto.frontend/geppetto?q=" + variable.getId() + "," + (String) runnableQuery.getPath() + "\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + variable.getId() + "," + variable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
