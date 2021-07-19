@@ -1954,7 +1954,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				if (!result.equals("{")) {
 					result += ",";
 				}
-				results += file;
+				result += file;
 			}
 			result += "}";
 			Type textType = geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE);
