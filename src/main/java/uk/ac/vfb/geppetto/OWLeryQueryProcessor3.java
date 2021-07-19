@@ -33,9 +33,11 @@ public class OWLeryQueryProcessor3 extends AQueryProcessor
 
 	private Map<String, Object> processingOutputMap = new HashMap<String, Object>();
 
+	private Boolean debug=false;
+
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.geppetto.core.datasources.IQueryProcessor#process(org.geppetto.model.ProcessQuery, org.geppetto.model.variables.Variable, org.geppetto.model.QueryResults)
 	 */
 	@Override
@@ -45,7 +47,7 @@ public class OWLeryQueryProcessor3 extends AQueryProcessor
 		{
 			throw new GeppettoDataSourceException("Results input to " + query.getName() + " is null");
 		}
-		
+
 		String queryID = dataSource.getId();
 
 		try{
@@ -53,35 +55,35 @@ public class OWLeryQueryProcessor3 extends AQueryProcessor
 			processingOutputMap = queryProcessor.getProcessingOutputMap();
 		}catch (GeppettoInitializationException e){
 			System.out.println(e.toString());
-		} 
-		
+		}
+
 		QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
 		int idIndex = -1;
 
-		if (processingOutputMap.keySet().contains("ARRAY_ID_RESULTS")) {
+		if (debug && processingOutputMap.keySet().contains("ARRAY_ID_RESULTS")) {
 			System.out.println("passed:");
 			System.out.println(processingOutputMap.get("ARRAY_ID_RESULTS").toString());
 		}
 
 		List<String> ids = new ArrayList<String>();
-		
-		switch(queryID) 
+
+		switch(queryID)
 		{
 			case "owleryDataSourceSubclass":
-				idIndex = results.getHeader().indexOf("superClassOf");					
-				
+				idIndex = results.getHeader().indexOf("superClassOf");
+
 				break;
 			case "owleryDataSourceRealise":
-				idIndex = results.getHeader().indexOf("hasInstance");					
-				
+				idIndex = results.getHeader().indexOf("hasInstance");
+
 				break;
 			default:
 				throw new GeppettoDataSourceException("Results header not in hasInstance, subClassOf");
-				
+
 		}
 
 		processedResults.getHeader().add("ID");
-	
+
 		if (idIndex > -1){
 			for(AQueryResult result : results.getResults())
 			{
@@ -94,14 +96,14 @@ public class OWLeryQueryProcessor3 extends AQueryProcessor
 		}
 		ArrayList<ArrayList<String>> concatIds = new ArrayList<ArrayList<String>>();
 		if (processingOutputMap.keySet().contains("ARRAY_ID_RESULTS")) {
-			System.out.println("passing full");
-			concatIds = (ArrayList<ArrayList<String>>) processingOutputMap.get("ARRAY_ID_RESULTS");	
+			if (debug) System.out.println("passing full");
+			concatIds = (ArrayList<ArrayList<String>>) processingOutputMap.get("ARRAY_ID_RESULTS");
 		}
 
 		concatIds.add(new ArrayList<String>(ids));
 		processingOutputMap.clear();
 		processingOutputMap.put("ARRAY_ID_RESULTS", concatIds);
-		System.out.println(processingOutputMap.get("ARRAY_ID_RESULTS").toString());
+		if (debug) System.out.println(processingOutputMap.get("ARRAY_ID_RESULTS").toString());
 		return processedResults;
 	}
 

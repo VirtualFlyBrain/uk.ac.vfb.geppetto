@@ -73,6 +73,8 @@ public class VFBProcessTermInfoCore extends AQueryProcessor {
 			Type htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
 			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
 
+			System.out.println("Loading: " + String.valueOf(variable.getId()));
+
 			// term
 			if (results.getValue("term", 0) != null) {
 				Map<String, Object> term = (Map<String, Object>) results.getValue("term", 0);
@@ -100,11 +102,11 @@ public class VFBProcessTermInfoCore extends AQueryProcessor {
 					geppettoModelAccess.setObjectAttribute(variable, GeppettoPackage.Literals.NODE__NAME, tempName);
 					// add parent composite type
 					CompositeType parentType = TypesFactory.eINSTANCE.createCompositeType();
-					// set ID of parent 
+					// set ID of parent
 					parentType.setId(tempId);
 					// add to variable
 					variable.getAnonymousTypes().add(parentType);
-					
+
 					// Create new child composite variable & type for term info data to be stored in
 					Variable metaDataVar = VariablesFactory.eINSTANCE.createVariable();
 					CompositeType metaDataType = TypesFactory.eINSTANCE.createCompositeType();
@@ -114,13 +116,13 @@ public class VFBProcessTermInfoCore extends AQueryProcessor {
 					metaDataType.setName("Info");
 					metaDataVar.setName(tempName);
 					geppettoModelAccess.addVariableToType(metaDataVar, parentType);
-					
+
 					geppettoModelAccess.addTypeToLibrary(metaDataType, dataSource.getTargetLibrary());
-					
-					// add supertypes: 
+
+					// add supertypes:
 					// provide access to libary of types either dynamically added (as bellow) or loaded from xmi
 					List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
-					
+
 					if (core.get("types") != null) {
 						List<String> supertypes = (List<String>) core.get("types");
 

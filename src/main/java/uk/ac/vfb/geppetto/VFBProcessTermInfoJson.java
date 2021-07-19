@@ -6,9 +6,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.GroupLayout.Alignment;
 
@@ -60,14 +63,106 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 {
 
 	Boolean debug=false;
-	
+
 	// START VFB term info schema https://github.com/VirtualFlyBrain/VFB_json_schema/blob/master/json_schema/
+
+	class coordinatesList {
+		private List<Double> coordinates;
+
+		public Double getX() {
+			return this.coordinates.get(0);
+		}
+
+		public Double getY() {
+			return this.coordinates.get(1);
+		}
+
+		public Double getZ() {
+			return this.coordinates.get(2);
+		}
+
+		public String toString() {
+			return coordinates.toString();
+		}
+
+	}
+
+	class coordinatesJsonList {
+		private List<String> coordinates;
+
+		public Double getX() {
+			coordinates json = new Gson().fromJson(coordinates.get(0), coordinates.class);
+			return json.getX();
+		}
+
+		public Double getY() {
+			coordinates json = new Gson().fromJson(coordinates.get(0), coordinates.class);
+			return json.getY();
+		}
+
+		public Double getZ() {
+			coordinates json = new Gson().fromJson(coordinates.get(0), coordinates.class);
+			return json.getZ();
+		}
+
+		public String toString() {
+			return "[" + this.getX().toString() + "," + this.getY().toString() + "," + this.getZ().toString() + "]";
+		}
+	}
+
+	public final class coordinatesJsonString {
+		private coordinates json;
+
+		public coordinatesJsonString(String coordinates) {
+			this.json = new Gson().fromJson(coordinates , coordinates.class);
+		}
+
+		public Double getX() {
+			return this.json.getX();
+		}
+
+		public Double getY() {
+			return this.json.getY();
+		}
+
+		public Double getZ() {
+			return this.json.getZ();
+		}
+
+		public String toString() {
+			return "[" + this.getX().toString() + "," + this.getY().toString() + "," + this.getZ().toString() + "]";
+		}
+	}
+
+	class coordinates {
+		private Double X;
+		private Double Y;
+		private Double Z;
+
+		public Double getX() {
+			return this.X;
+		}
+
+		public Double getY() {
+			return this.Y;
+		}
+
+		public Double getZ() {
+			return this.Z;
+		}
+
+		public String toString() {
+			return "[" + this.getX().toString() + "," + this.getY().toString() + "," + this.getZ().toString() + "]";
+		}
+	}
+
 
 	class minimal_entity_info {
 		String short_form;
 		String iri;
 		String label;
 		private List<String> types;
+		String symbol;
 
 		public String intLink() {
 			return this.intLink(false);
@@ -78,12 +173,17 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 
 		public String intLink(Boolean showTypes) {
-			return "<a href=\"#\" data-instancepath=\"" + this.short_form + "\">" + this.label + "</a>"
-					+ this.types(showTypes);
+			if (this.label != null && !this.label.equals("")) {
+				return "<a href=\"?id=" + this.short_form + "\" data-instancepath=\"" + this.short_form + "\">" + this.label.replace("\\'", "'") + "</a>" + this.types(showTypes);
+			}
+			return "<a href=\"?id=" + this.short_form + "\" data-instancepath=\"" + this.short_form + "\">" + this.short_form + "</a>" + this.types(showTypes);
 		}
 
 		public String extLink(Boolean showTypes) {
-			return "<a href=\"" + this.iri + "\" target=\"_blank\">" + this.label + "</a>" + this.types(showTypes);
+			if (this.label != null && !this.label.equals("")) {
+				return "<a href=\"" + this.iri + "\" target=\"_blank\">" + this.label.replace("\\'", "'") + "</a>" + this.types(showTypes);
+			}
+			return "<a href=\"" + this.iri + "\" target=\"_blank\">" + this.short_form + "</a>" + this.types(showTypes);
 		}
 
 		public String types(Boolean show) {
@@ -100,34 +200,46 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public String returnType(List<String> types) {
 			if (types.size() > 0) {
 				if (types.contains("Obsolete")){
-					this.returnType(types, Arrays.asList("Obsolete"));
+					return this.returnType(types, Arrays.asList("Obsolete"));
+				}
+				if (types.contains("Deprecated")){
+					return this.returnType(types, Arrays.asList("Deprecated"));
+				}
+				if (types.contains("Template")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","Template"));
 				}
 				if (types.contains("Motor_neuron")){
-					return this.returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Motor_neuron"));
+					return this.returnType(types, Arrays.asList("Adult","Larva","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Motor_neuron"));
 				}
 				if (types.contains("Sensory_neuron")){
-					return this.returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Sensory_neuron"));
-				}
-				if (types.contains("Sensory_neuron")){
-					return this.returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Sensory_neuron"));
+					return this.returnType(types, Arrays.asList("Adult","Larva","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Sensory_neuron"));
 				}
 				if (types.contains("Peptidergic_neuron")){
-					return this.returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Peptidergic_neuron"));
+					return this.returnType(types, Arrays.asList("Adult","Larva","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Peptidergic_neuron"));
 				}
 				if (types.contains("Neuron")){
-					return this.returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Neuron"));
+					return this.returnType(types, Arrays.asList("Adult","Larva","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Neuron"));
 				}
 				if (types.contains("Glial_cell")){
-					return this.returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Glial_cell"));
+					return this.returnType(types, Arrays.asList("Adult","Larva","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Glial_cell"));
+				}
+				if (types.contains("GMC")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","Split","Expression_pattern","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","GMC"));
 				}
 				if (types.contains("Cell")){
-					return this.returnType(types, Arrays.asList("GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Cell"));
+					return this.returnType(types, Arrays.asList("Adult","Larva","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Neuroblast","Muscle","Cell"));
 				}
 				if (types.contains("Neuron_projection_bundle")){
-					return this.returnType(types, Arrays.asList("Neuron_projection_bundle"));
+					return this.returnType(types, Arrays.asList("Adult","Larva","Neuron_projection_bundle"));
 				}
 				if (types.contains("Split")){
-					return this.returnType(types, Arrays.asList("Split","Expression_pattern","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Glial_cell"));
+					return this.returnType(types, Arrays.asList("Adult","Larva","Split","Expression_pattern","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Glial_cell"));
+				}
+				if (types.contains("Clone")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","Split","Expression_pattern","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Clone"));
+				}
+				if (types.contains("Cluster")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","Split","Expression_pattern","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Cluster"));
 				}
 				if (types.contains("Expression_pattern")){
 					return "<span class=\"label types\">" + "<span class=\"label label-Expression_pattern\">Expression Pattern</span> ";
@@ -135,20 +247,29 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				if (types.contains("pub")){
 					return "<span class=\"label types\">" + "<span class=\"label label-pub\">Publication</span> ";
 				}
-				return this.returnType(types, Arrays.asList("Person","License","Synaptic_neuropil","Template","Property","Anatomy","Ganglion","Clone","DataSet","Neuromere","Resource","Site"));
+				if (types.contains("Synaptic_neuropil")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","Synaptic_neuropil"));
+				}
+				if (types.contains("Neuromere")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","Neuromere"));
+				}
+				if (types.contains("Ganglion")){
+					return this.returnType(types, Arrays.asList("Adult","Larva","Ganglion"));
+				}
+				return this.returnType(types, Arrays.asList("Adult","Larva","Person","License","Synaptic_neuropil","Template","Property","Anatomy","Ganglion","Clone","DataSet","Neuromere","Resource","Site","UnknownType","API"));
 			}
 			return "";
 		}
-	
+
 		private String returnType(List<String> types, List<String> show) {
 			if (types.size() > 0 && show.size() > 0) {
-				String result = "<span class=\"label types\">";
+				String result = "";
 				for (String type : show) {
 					if (types.contains(type)) {
-						result += "<span class=\"label label-" + type + "\">" + type.replace("_", " ") + "</span> ";
+						result = "<span class=\"label label-" + type + "\">" + type.replace("_", " ") + "</span> " + result;
 					}
 				}
-				return result + "</span>";
+				return "<span class=\"label types\">" + result + "</span>";
 			}
 			return "";
 		}
@@ -219,7 +340,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		 */
 		private String highlightLinks(String text) {
 			try {
-				text = text.replaceAll("([F,V,G][A-z]*)[:,_](\\d{5}[0-9]*\\b)", "<a href=\"#\" data-instancepath=\"$1_$2\" title=\"$1_$2\" ><i class=\"fa fa-info-circle\"></i></a>");
+				text = text.replaceAll("([F,V,G][A-z]*)[:,_](\\d{5}[0-9]*\\b)", "<a href=\"?id=$1_$2\" data-instancepath=\"$1_$2\" title=\"$1_$2\" ><i class=\"fa fa-info-circle\"></i></a>");
 				return text;
 			} catch (Exception e) {
 				System.out.println("Error highlighting links in (" + text + ") " + e.toString());
@@ -299,20 +420,41 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 	class domain {
 		private List<Double> index;
-		private List<Double> center;
+		private Object center;
 		private String folder;
 		private minimal_entity_info anatomical_individual;
 		private minimal_entity_info anatomical_type;
+
+		public coordinatesJsonString getCenter() {
+			if ( center instanceof String ) {
+				return new coordinatesJsonString((String) this.center);
+			}
+			return null;
+		}
+
 	}
 
 	class template_channel {
 		private List<Double> index;
-		private List<Double> center;
-		private List<Double> extent;
-		private List<Double> voxel;
+		private String center;
+		private String extent;
+		private String voxel;
 		private String orientation;
 		String image_folder;
 		private minimal_entity_info channel;
+
+		public coordinatesJsonString getVoxel() {
+			return new coordinatesJsonString(this.voxel);
+		}
+
+		public coordinatesJsonString getCenter() {
+			return new coordinatesJsonString(this.center);
+		}
+
+		public coordinatesJsonString getExtent() {
+			return new coordinatesJsonString(this.extent);
+		}
+
 	}
 
 	class xref {
@@ -332,7 +474,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			if (this.accession != null && !this.accession.equals("None") && !this.accession.equals("")) {
 				return this.link_base + this.accession + this.link_postfix;
 			}
-			if (this.homepage != null && this.homepage.equals("")) {
+			if (this.homepage != null && !this.homepage.equals("")) {
 				return this.homepage;
 			}
 			return this.site.iri;
@@ -343,9 +485,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			result += this.link_text;
 			// tack site link as comment on xref for later sorting
 			String site = this.site.extLink(showTypes);
-			if (this.homepage != null && this.homepage.equals("")) {
-				site = site.replace(this.site.iri,this.homepage);
-			}
+			site = site.replace(this.site.iri,this.link());
 			if (this.icon != null && !this.icon.equals("")) {
 				site += "<a href=\"" + this.link() + "\" target=\"_blank\">" + "<img class=\"terminfo-siteicon\" src=\"" + secureUrl(this.icon) + "\" /></a>";
 			}
@@ -396,17 +536,19 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		private String icon;
 
 		public String extLink() {
+			if (this.core.label == null || this.core.label.equals("null")) return "";
 			String result = "<a href=\"" + this.link + "\" target=\"_blank\">";
 			if (this.icon != null && !this.icon.equals("")) {
 				result += "<img class=\"terminfo-dataseticon\" src=\"" + secureUrl(this.icon) + "\" title=\"" + this.core.label + "\"/>";
 			}else{
 				result += this.core.label;
 			}
-			result += "</a>";	
+			result += "</a>";
 			return result;
 		}
 
 		public String intLink() {
+			if (this.core.label == null || this.core.label.equals("null")) return "";
 			String result = this.core.intLink(false);
 			if (this.icon != null && !this.icon.equals("")) {
 				result += result.replace(this.core.label,this.core.label + " <img class=\"terminfo-dataseticon\" src=\"" + secureUrl(this.icon) + "\" title=\"" + this.core.label + "\"/>");
@@ -561,7 +703,10 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		// TODO: handle type?
 
 		public String toString() {
-			return this.scope.replaceAll("([^_A-Z])([A-Z])", "$1 $2").replace("has ", "") + ": " + this.label;
+			if (!this.scope.equals(""))	{
+				return this.scope.replaceAll("([^_A-Z])([A-Z])", "$1 $2").replace("has ", "") + ": " + this.label;
+			}
+			return this.label;
 		}
 	}
 
@@ -579,7 +724,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			}
 			return this.synonym.toString();
 		}
-		
+
 		private String microrefs() {
 			String result="(";
 			for (pub pub:pubs) {
@@ -587,6 +732,29 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			}
 			result += ")";
 			return result.replace(", )",")");
+		}
+	}
+
+	class pub_specific_content {
+		public String title;
+		public String PubMed;
+		public String FlyBase;
+		public String DOI;
+		public String ISBN;
+
+		public List<String> getRefs() {
+			List<String> results = new ArrayList<>();
+			if (this.FlyBase != null && this.FlyBase.length() > 2) {
+				results.add("<a href=\"http://flybase.org/reports/" + this.FlyBase + "\" target=\"_blank\"><i class=\"popup-icon-link gpt-fly\" title=\"FlyBase:" + this.FlyBase + "\" aria-hidden=\"true\"></i> FlyBase:" + this.FlyBase + "</a>");
+			}
+			if (this.PubMed != null && this.PubMed.length() > 2) {
+				results.add("<a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + this.PubMed + "\" target=\"_blank\"><i class=\"popup-icon-link gpt-pubmed\" title=\"PMID:" + this.PubMed + "\" aria-hidden=\"true\"></i> PMID:" + this.PubMed + "</a>");
+			}
+			if (this.DOI != null && this.DOI.length() > 2) {
+				results.add("<a href=\"https://doi.org/" + this.DOI + "\" target=\"_blank\"><i class=\"popup-icon-link gpt-doi\" title=\"doi:" + this.DOI + "\" aria-hidden=\"true\"></i> doi:" + this.DOI + "</a>");
+			}
+			// TODO: ISBN
+			return results;
 		}
 	}
 
@@ -608,8 +776,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		private List<channel_image> channel_image;
 		private List<domain> template_domains;
 		private template_channel template_channel;
-		private List<minimal_entity_info> targeting_splits; 
-		private List<minimal_entity_info> target_neurons; 
+		private List<minimal_entity_info> targeting_splits;
+		private List<minimal_entity_info> target_neurons;
+		private pub_specific_content pub_specific_content;
 
 		public String getSource() {
 			String result = "";
@@ -630,7 +799,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					}
 				}
 				result += "</span>";
-			} 
+			}
+			result = result.replace("gpt-fly", "fa fa-external-link");
+			result = result.replace("<a href=\"?id=null\" data-instancepath=\"null\">null</a>","");
 			if (result.equals("<span class=\"terminfo-source\"></span>")) return "";
 			return result;
 		}
@@ -672,6 +843,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				}
 				result += "</span>";
 			}
+			result = result.replace("<a href=\"?id=null\" data-instancepath=\"null\"></a>","");
 			if (result.equals("<span class=\"terminfo-license\"></span>")) return "";
 			return result;
 		}
@@ -689,16 +861,18 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					domainId[0] = this.term.core.short_form;
 					domainName[0] = this.parents.get(0).label;
 					domainType[0] = this.parents.get(0).short_form;
-					voxelSize[0] = String.valueOf(this.template_channel.voxel.get(0));
-					voxelSize[1] = String.valueOf(this.template_channel.voxel.get(1));
-					voxelSize[2] = String.valueOf(this.template_channel.voxel.get(2));
-					domainCentre[0] = String.valueOf(this.template_channel.center);
+					voxelSize[0] = String.valueOf(this.template_channel.getVoxel().getX());
+					voxelSize[1] = String.valueOf(this.template_channel.getVoxel().getY());
+					voxelSize[2] = String.valueOf(this.template_channel.getVoxel().getZ());
+					domainCentre[0] = this.template_channel.getCenter().toString();
 					for (domain domain:this.template_domains){
-						domainId[domain.index.get(0).intValue()] = domain.anatomical_individual.short_form;
-						domainName[domain.index.get(0).intValue()] = domain.anatomical_type.label;
-						domainType[domain.index.get(0).intValue()] = domain.anatomical_type.short_form;
-						if (domain.center != null && domain.center.size() > 0){
-							domainCentre[domain.index.get(0).intValue()] = String.valueOf(domain.center);
+						if (domain.index.size() > 0) {
+							domainId[domain.index.get(0).intValue()] = domain.anatomical_individual.short_form;
+							domainName[domain.index.get(0).intValue()] = domain.anatomical_type.label;
+							domainType[domain.index.get(0).intValue()] = domain.anatomical_type.short_form;
+							if (domain.getCenter() != null && domain.getCenter().getZ() != null){
+								domainCentre[domain.index.get(0).intValue()] = domain.getCenter().toString();
+							}
 						}
 					}
 					domains.add(Arrays.asList(voxelSize));
@@ -839,30 +1013,46 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public String xrefList() {
 			// turning xrefs into list of html with link for xrefs.
 			List<String> results = new ArrayList<>();
+			String result = null;
 			// process xrefs
-			for (xref xref : this.xrefs) {
-				results.add(xref.extLink());
-			}
-			// sort xrefs alphabetically (by site)
-			java.util.Collections.sort(results);
-			// itterate to create html list:
-			String result = "<ul class=\"terminfo-xrefs\">";
-			String site = "";
-			for (String xref : results) {
-				if (result.indexOf(xref)<0){
-					if (xref.substring(25).equals(site)) {
-						result += "<li>" + xref + "</li>";
-					} else if (site == "") {
-						// embed first sites xrefs
-						result += "<li>" + xref.replace("-->", "<ul><li>").replace("<!--", "") + "</li>";
-					} else {
-						// close previous and start next site xrefs
-						result += "</ul></li><li>" + xref.replace("-->", "<ul><li>").replace("<!--", "") + "</li>";
+			if (this.xrefs != null) {
+				for (xref xref : this.xrefs) {
+					results.add(xref.extLink());
+				}
+				// sort xrefs alphabetically (by site)
+				java.util.Collections.sort(results);
+				// itterate to create html list:
+				result = "<ul class=\"terminfo-xrefs\">";
+				String site = "";
+				for (String xref : results) {
+					if (result.indexOf(xref)<0){
+						if (xref.substring(25).equals(site)) {
+							result += "<li>" + xref + "</li>";
+						} else if (site == "") {
+							// embed first sites xrefs
+							result += "<li>" + xref.replace("-->", "<ul><li>").replace("<!--", "") + "</li>";
+						} else {
+							// close previous and start next site xrefs
+							result += "</ul></li><li>" + xref.replace("-->", "<ul><li>").replace("<!--", "") + "</li>";
+						}
+						site = xref.substring(25);
 					}
-					site = xref.substring(25);
+				}
+				result += "</ul></li></ul>";
+			}
+
+			if (this.pub_specific_content != null) {
+				for (String ref : this.pub_specific_content.getRefs()) {
+					results.add(ref);
+				}
+				for (String xref : results) {
+					if (result == null){
+						result = xref;
+					} else {
+						result += "<br>" + xref;
+					}
 				}
 			}
-			result += "</ul></li></ul>";
 			return result;
 		}
 
@@ -870,7 +1060,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
 			try{
 				if (template == null || template.equals("")){
-					//default to JFRC2 
+					//default to JFRC2
 					template = "VFB_00017894";
 				}
 				int j = 0;
@@ -878,16 +1068,16 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				for (channel_image ci : this.channel_image) {
 					// add same template to the begining and others at the end.
 					if (ci != null && ci.image != null && ci.image.template_anatomy != null && ci.image.template_anatomy.short_form != null && template.equals(ci.image.template_anatomy.short_form)) {
-						addImage(ci.getUrl("", "thumbnailT.png"), ci.channel.label.replace("_c", "").replace("-c", ""), ci.channel.short_form.replace("VFBc_", "VFB_"), imageArray, j);
+						addImage(ci.getUrl("", "thumbnailT.png"), this.term.core.label, this.term.core.short_form, imageArray, j);
 						j++;
-					} 
+					}
 				}
 				for (channel_image ci : this.channel_image) {
 					// add same template to the begining and others at the end.
 					if (ci != null && ci.image != null && ci.image.template_anatomy != null && ci.image.template_anatomy.short_form != null && !template.equals(ci.image.template_anatomy.short_form)) {
-						addImage(ci.getUrl("", "thumbnailT.png"), ci.channel.label.replace("_c", "").replace("-c", "") + " [" + ci.image.template_anatomy.label + "]", "[" + ci.image.template_anatomy.short_form + "," + ci.channel.short_form.replace("VFBc_", "VFB_") + "]", imageArray, j);
+						addImage(ci.getUrl("", "thumbnailT.png"), this.term.core.label + " [" + ci.image.template_anatomy.label + "]", "[" + ci.image.template_anatomy.short_form + "," + this.term.core.short_form + "]", imageArray, j);
 						j++;
-					} 
+					}
 				}
 			}catch (Exception e) {
 				System.out.println("Error in vfbTerm.thumbnails(): " + e.toString());
@@ -901,7 +1091,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
 			try{
 				if (template == null || template.equals("")){
-					//default to JFRC2 
+					//default to JFRC2
 					template = "VFB_00017894";
 				}
 				int j = 0;
@@ -1012,7 +1202,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		 */
 		private boolean checkURL(String urlString)
 		{
-			if (urlString.indexOf(":") > 0) 
+			if (urlString.indexOf(":") > 0)
 			{
 				try
 				{
@@ -1049,7 +1239,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.geppetto.core.datasources.IQueryProcessor#process(org.geppetto.model.ProcessQuery, org.geppetto.model.variables.Variable, org.geppetto.model.QueryResults)
 	 */
 	@Override
@@ -1065,7 +1255,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 			// Determine loaded template
 			CompositeType testTemplate = null;
-			List<String> availableTemplates = Arrays.asList("VFB_00017894","VFB_00101567","VFB_00101384","VFB_00050000","VFB_00049000","VFB_00100000","VFB_00030786");
+			List<String> availableTemplates = Arrays.asList("VFB_00101567","VFB_00200000","VFB_00017894","VFB_00101384","VFB_00050000","VFB_00049000","VFB_00100000","VFB_00030786");
 			for (String at:availableTemplates) {
 				try {
 					testTemplate = (CompositeType) ModelUtility.getTypeFromLibrary(at + "_metadata", dataSource.getTargetLibrary());
@@ -1077,12 +1267,14 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					loadedTemplate = at;
 					if (debug) System.out.println("Template detected: " + at);
 					break;
+				} else {
+					loadedTemplate = "VFB_00101567";
 				}
 			}
 
 			// retrieving the metadatatype
 			CompositeType metadataType = (CompositeType) ModelUtility.getTypeFromLibrary(variable.getId() + "_metadata", dataSource.getTargetLibrary());
-			
+
 			// provide access to libary of types either dynamically added (as bellow) or loaded from xmi
 			List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
 
@@ -1094,7 +1286,8 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			Boolean showTypes = true; //Arrays.asList("Class","Individual","Anatomy","Template","Motor_neuron","Cell","Neuron","pub","License","Ganglion","Expression_pattern","Neuromere","DataSet","Cluster","Synaptic_neuropil_block","Synaptic_neuropil_subdomain","Synaptic_neuropil_domain","Synaptic_neuropil","Clone","Neuron_projection_bundle","Sensory_neuron","Site","Serotonergic","Person","Peptidergic_neuron","Painted_domain","Octopaminergic","Neuroblast","Motor_neuron","Glutamatergic","Glial_cell","Ganglion","GABAergic","Dopaminergic","Cholinergic"); // TODO: Fill in with passed types
 			String tempData = "";
 			String header = "loading";
-			String references = ""; 
+			String references = "";
+			String downloadFiles = "";
 
 			//	Queries
 			String querys = "";
@@ -1106,7 +1299,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			try{
 				header = "results>JSON";
 				if (debug) System.out.println("{");
-				
+
 				for (String key:results.getHeader()) {
 					if (!json.equals("{")) {
 						json = json + ", ";
@@ -1118,7 +1311,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 							System.out.println("\"" + key  + "\":" + tempData.replace("}","}\n") + ",");
 						}else{
 							System.out.println("\"" + key  + "\":" + tempData + ",");
-						}	
+						}
 					}
 				}
 				json = json + "}";
@@ -1130,13 +1323,28 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				if (vfbTerm.term == null || vfbTerm.term.core == null){
 					System.out.println("ERROR: term:core missing from JSON for " + variable.getId());
 					System.out.println(json.replace("}","}\n"));
+					addModelHtml(variable.getId(), "Name", "label", metadataType, geppettoModelAccess);
+					addModelHtml("ERROR: term:core missing from JSON for " + variable.getId() + "<br>" + json.replace("}","}<br>"), "Error", "error", metadataType, geppettoModelAccess);
 					return results;
 				}
 
 				// Label: {label} ({short_form}) TYPES (all on one line)
 				header = "label";
-				tempData = "<b>" + vfbTerm.term.core.label + "</b> (" + vfbTerm.term.core.short_form + ") " + vfbTerm.term.core.types(showTypes);
+				tempData = "<b>" + vfbTerm.term.core.label + "</b> [" + vfbTerm.term.core.short_form + "] " + vfbTerm.term.core.types(showTypes);
 				addModelHtml(tempData, "Name", header, metadataType, geppettoModelAccess);
+
+				// Title
+				header = "title";
+				if (vfbTerm.pub_specific_content != null && vfbTerm.pub_specific_content.title != null && !vfbTerm.pub_specific_content.title.equals("")) {
+					tempData = "<b>" + vfbTerm.pub_specific_content.title + "</b>";
+					addModelHtml(tempData, "Title", header, metadataType, geppettoModelAccess);
+				}
+
+				// Symbol
+				header = "symbol";
+				if (vfbTerm.term.core.symbol != null && !vfbTerm.term.core.symbol.equals("")) {
+					addModelHtml("<b>" + vfbTerm.term.core.symbol + "</b>", "Symbol", header, metadataType, geppettoModelAccess);
+				}
 
 				// Logo
 				header = "logo";
@@ -1173,14 +1381,18 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				// Source
 				header = "source";
 				tempData = vfbTerm.getSource();
-				if (!tempData.equals("")) {
-					addModelHtml(tempData, "Source", header, metadataType, geppettoModelAccess);
+				if (!tempData.equals("") && !tempData.equals("")) {
+					if (vfbTerm.pub_specific_content != null) {
+						addModelHtml(tempData, "Related DataSets", header, metadataType, geppettoModelAccess);
+					} else {
+						addModelHtml(tempData, "Source", header, metadataType, geppettoModelAccess);
+					}
 				}
-				
+
 				// License
 				header = "license";
 				tempData = vfbTerm.getLicense();
-				if (!tempData.equals("")) {
+				if (!tempData.equals("") && vfbTerm.pub_specific_content == null) {
 					addModelHtml(tempData, "License", header, metadataType, geppettoModelAccess);
 				}
 
@@ -1217,11 +1429,11 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 				// xrefs
 				header = "xrefs";
-				if (vfbTerm.xrefs != null && vfbTerm.xrefs.size() > 0) {
+				if ((vfbTerm.xrefs != null && vfbTerm.xrefs.size() > 0) || vfbTerm.pub_specific_content != null) {
 					tempData = vfbTerm.xrefList();
 					addModelHtml(tempData, "Cross References", header, metadataType, geppettoModelAccess);
 				}
-			
+
 				// Images:
 				header = "parentType";
 				// retrieving the parent composite type for new image variables
@@ -1229,16 +1441,20 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 				header = "channel_image";
 				if (vfbTerm.channel_image != null && vfbTerm.channel_image.size() > 0) {
+					downloadFiles = "Aligned Image: ";
 					String oldTemplate = template;
 					String tempLink = "";
+					int count = 0;
 					for (channel_image alignment:vfbTerm.channel_image) {
+						count ++;
 						oldTemplate = template;
 						template = alignment.image.template_anatomy.short_form;
-						
+						downloadFiles = "Image files (aligned to " + alignment.image.template_anatomy.label + "): ";
+
 						if (loadedTemplate != "" && !loadedTemplate.equals(template))
 						{
 							if (debug) System.out.println("Image aligned to a template that isn't loaded: " + template);
-							
+
 							if (oldTemplate != null && oldTemplate != "") {
 								template = oldTemplate;
 							}
@@ -1246,14 +1462,48 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 							if (tempLink != null && tempLink == "") {
 								tempLink = alignment.image.template_anatomy.intLink();
 							}
+
+							if (vfbTerm.channel_image.size() == count) {
+								// Add OBJ only so the template detection is triggered
+
+								// OBJ - 3D mesh
+								tempData = vfbTerm.imageFile(alignment, "volume_man.obj");
+								if (tempData == null){
+									if (debug) System.out.println("OBJ " + tempData);
+									tempData = vfbTerm.imageFile(alignment, "volume.obj");
+									downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + "_pointCloud.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_pointCloud.obj</a>";
+								}else {
+									downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + "_mesh.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_mesh.obj</a>";
+								}
+								if (tempData != null){
+									addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId(), parentType, geppettoModelAccess, dataSource);
+								}
+
+								// Download - NRRD stack
+								tempData = vfbTerm.imageFile(alignment, "volume.nrrd");
+								if (tempData != null){
+									if (debug) System.out.println("NRRD " + tempData);
+									downloadFiles += "<br>Signal (NRRD): <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a>";
+									downloadFiles += "<br>Remember to cite: <a download=\"" + variable.getId() + ".bibtex\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">citations.bibtex</a>";
+									downloadFiles += "<br>Note: see source & license above for terms of reuse and correct attribution.";
+									addModelHtml(downloadFiles, "Downloads", "downloads", metadataType, geppettoModelAccess);
+								}
+							}
+
 						}else{
 							oldTemplate = template;
+							if (loadedTemplate == "") {
+								loadedTemplate = template;
+							}
 							tempLink = alignment.image.template_anatomy.intLink();
 							// OBJ - 3D mesh
 							tempData = vfbTerm.imageFile(alignment, "volume_man.obj");
 							if (tempData == null){
 								if (debug) System.out.println("OBJ " + tempData);
 								tempData = vfbTerm.imageFile(alignment, "volume.obj");
+								downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + "_pointCloud.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_pointCloud.obj</a>";
+							}else {
+								downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + "_mesh.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_mesh.obj</a>";
 							}
 							if (tempData != null){
 								addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId(), parentType, geppettoModelAccess, dataSource);
@@ -1264,23 +1514,34 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 							if (tempData != null){
 								if (debug) System.out.println("SWC " + tempData);
 								addModelSwc(tempData.replace("https://","http://"), "3D Skeleton", variable.getId(), parentType, geppettoModelAccess, dataSource);
+								downloadFiles += "<br>Skeleton (SWC): <a download=\"" + variable.getId() + ".swc\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".swc</a>";
 							}
-						
+
 							// Slices - 3D slice viewer
 							tempData = vfbTerm.imageFile(alignment, "volume.wlz");
 							if (tempData != null){
 								if (debug) System.out.println("WLZ " + tempData);
 								addModelSlices(tempData.replace("http://","https://"), "Stack Viewer Slices", variable.getId(), parentType, geppettoModelAccess, dataSource, vfbTerm.getDomains());
+								downloadFiles += "<br>Slices (Woolz): <a download=\"" + variable.getId() + ".wlz\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".wlz</a>";
 							}
-							
+
 							// Download - NRRD stack
 							tempData = vfbTerm.imageFile(alignment, "volume.nrrd");
 							if (tempData != null){
 								if (debug) System.out.println("NRRD " + tempData);
-								addModelHtml("Aligned Image: <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a><br>Note: see source & license above for terms of reuse and correct attribution.", "Downloads", "downloads", metadataType, geppettoModelAccess);
+								downloadFiles += "<br>Signal (NRRD): <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a>";
+								tempData = vfbTerm.imageFile(alignment, "citations.bibtex");
+								if (tempData != null){
+									downloadFiles += "<br>Remember to cite: <a download=\"" + variable.getId() + ".bibtex\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">citations.bibtex</a>";
+									downloadFiles += "<br>The license shown above applies to this data.";
+								} else {
+									downloadFiles += "<br>Note: see source & license above for terms of reuse and correct attribution.";
+								}
+								addModelHtml(downloadFiles, "Downloads", "downloads", metadataType, geppettoModelAccess);
 							}
+							// throwing count out to prevent other OBJ loading
+							count = 1000;
 						}
-
 					}
 					if (template != null && template != "") {
 						addModelHtml(tempLink, "Aligned to", "template", metadataType, geppettoModelAccess);
@@ -1290,7 +1551,6 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 							addModelThumbnails(vfbTerm.thumbnails(template), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
 						}
 					}
-	
 				}
 
 				header = "template_channel";
@@ -1306,31 +1566,35 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume_man.obj");
 					if (tempData == null){
 						tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume.obj");
+						downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + "_pointCloud.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_pointCloud.obj</a>";
+					}else {
+						downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + "_mesh.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_mesh.obj</a>";
 					}
 					if (tempData != null){
 						addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId(), parentType, geppettoModelAccess, dataSource);
 					}
 					if (debug) System.out.println("OBJ " + tempData);
-			
+
 					// Slices - 3D slice viewer
 					tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume.wlz");
 					if (tempData != null){
 						addModelSlices(tempData.replace("http://","https://"), "Stack Viewer Slices", variable.getId(), parentType, geppettoModelAccess, dataSource, vfbTerm.getDomains());
-					}
+						downloadFiles += "<br>Slices (Woolz): <a download=\"" + variable.getId() + ".wlz\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".wlz</a>";
+							}
 					if (debug) System.out.println("WLZ " + tempData);
-					
+
 					// Download - NRRD stack
 					tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume.nrrd");
 					if (debug) System.out.println("NRRD " + tempData);
 					if (tempData != null){
-						addModelHtml("Aligned Image: <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a><br>Note: see source & license above for terms of reuse and correct attribution.", "Downloads", "downloads", metadataType, geppettoModelAccess);
+						addModelHtml(downloadFiles + "<br>Aligned Image: <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a><br>Note: see source & license above for terms of reuse and correct attribution.", "Downloads", "downloads", metadataType, geppettoModelAccess);
 					}
 				}
-			
+
 				// examples
 				header = "anatomy_channel_image";
 				if (vfbTerm.anatomy_channel_image != null && vfbTerm.anatomy_channel_image.size() > 0 && vfbTerm.examples(template) != null) {
-					addModelThumbnails(vfbTerm.examples(template), "Examples", "examples", metadataType, geppettoModelAccess);
+					addModelThumbnails(vfbTerm.examples(template), "Available Images", "examples", metadataType, geppettoModelAccess);
 					parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("hasExamples", dependenciesLibrary));
 				}
 
@@ -1353,17 +1617,20 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				String queryExpressedInX = "";
 				for(Query runnableQuery : geppettoModelAccess.getQueries())
 				{
+					if (runnableQuery.getPath().equals("TransgeneExpressionHere") && vfbTerm.term.core.typeList().contains("Expression_pattern")) {
+						continue;
+					}
 					if(QueryChecker.check(runnableQuery, variable))
 					{
-						querys += badge + "<a href=\"#\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + variable.getId() + "," + variable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
-						if (runnableQuery.getPath().equals("ExpOverlapsX")) {
-							queryExpressedInX = "<a href=\"#\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + variable.getId() + "," + variable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
-						}else if (runnableQuery.getPath().equals("TransgeneExpInX")) {
-							queryExpressedInX = "<a href=\"#\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + variable.getId() + "," + variable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
+						querys += badge + "<a href=\"/org.geppetto.frontend/geppetto?q=" + variable.getId() + "," + (String) runnableQuery.getPath() + "\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + variable.getId() + "," + variable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
+						if (runnableQuery.getPath().equals("ExpressionOverlapsHere")) {
+							queryExpressedInX = "<a href=\"/org.geppetto.frontend/geppetto?q=" + variable.getId() + "," + (String) runnableQuery.getPath() + "\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + variable.getId() + "," + variable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
+						}else if (runnableQuery.getPath().equals("TransgeneExpressionHere")) {
+							queryExpressedInX = "<a href=\"/org.geppetto.frontend/geppetto?q=" + variable.getId() + "," + (String) runnableQuery.getPath() + "\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + variable.getId() + "," + variable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
 						}
-					}else if ((superTypes.contains("Painted_domain") || superTypes.contains("Synaptic_neuropil_domain") || superTypes.contains("Neuron_projection_bundle") || superTypes.contains("Split") || superTypes.contains("Expression_pattern")) && superTypes.contains("Individual") && classVariable.getId()!="notSet"){
+					}else if ((superTypes.contains("Painted_domain") || superTypes.contains("Synaptic_neuropil_domain") || superTypes.contains("Synaptic_neuropil_subdomain") || superTypes.contains("Neuron_projection_bundle") || superTypes.contains("Split") || superTypes.contains("Expression_pattern")) && superTypes.contains("Individual") && classVariable.getId()!="notSet"){
 						if(QueryChecker.check(runnableQuery, classVariable)){
-							querys += badge + "<a href=\"#\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + classVariable.getId() + "," + classVariable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", classVariable.getName()) + "</a></br>";
+							querys += badge + "<a href=\"/org.geppetto.frontend/geppetto?q=" + classVariable.getId() + "," + (String) runnableQuery.getPath() + "\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + classVariable.getId() + "," + classVariable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", classVariable.getName()) + "</a></br>";
 						}
 						if (!classAdded) {
 							addModelString(classVariable.getId(), "ClassQueriesFrom", "classqueriesfrom", metadataType, geppettoModelAccess);
@@ -1371,14 +1638,56 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 						}
 					}
 				}
-				
+
 				if (debug && superTypes.contains("Template")){
 					badge = "<i class=\"popup-icon-link fa gpt-shapeshow\" ></i>";
 					querys += badge + "<a href=\"\" title=\"Hide template boundary and show all painted neuroanatomy\" onclick=\"" + variable.getId() + ".hide();$('body').css('cursor', 'progress');window.addVfbId(JSON.parse(" + variable.getId() + "." + variable.getId() + "_slices.getValue().getWrappedObj().value.data).subDomains[1].filter(function(n){ return n != null }));$('body').css('cursor', 'default');return false;\">Show All Anatomy</a><br/>";
 				}
 
 				if (querys != "") {
-					addModelHtml(querys, "Query for", "queries", metadataType, geppettoModelAccess);
+					tempData = "";
+					CopyOnWriteArrayList<String> ql = new CopyOnWriteArrayList<String>(Arrays.asList(querys.split("</br>")));
+					Collections.sort(ql);
+					TreeMap<String, String> subMenusGrouping = new TreeMap<String, String>();
+					subMenusGrouping.put("6 Transgenes expressed in","Expression/Phenotypes found here...");
+					subMenusGrouping.put("5 Reports of transgene expression in","Expression/Phenotypes found here...");
+					subMenusGrouping.put("4 Lineage clones found","Lineage clones with...");
+					subMenusGrouping.put("3 Tracts/nerves innervating","Tract/Nerves innervating here...");
+					subMenusGrouping.put("2 Images of neurons with","Individual neurons with...");
+					subMenusGrouping.put("1 Neurons with","Types of neurons with...");
+
+					// merging all NBLAST and NeuronBridge queries as top item.
+					if ((querys.indexOf("NBLAST") > -1) || (querys.indexOf("NeuronBridge") > -1)) {
+						tempData += "<details><summary><i class=\"popup-icon-link fa fa-chevron-circle-right\"></i><i class=\"popup-icon-link fa fa-chevron-circle-down\"></i>Find similar...</summary>";
+						for (String q:ql) {
+							if ((q.indexOf("NBLAST") > -1) || (q.indexOf("NeuronBridge") > -1)) {
+								tempData += q + "<br />";
+								ql.remove(q);
+								querys = querys.replace(q,"");
+							}
+						}
+						tempData += "</details>";
+					}
+
+					// merging all rmaining queries in the order of the numbered subMenusGrouping
+					for (String k:subMenusGrouping.keySet()) {
+						if (querys.indexOf(k.substring(2)) > -1) {
+							tempData += "<details><summary><i class=\"popup-icon-link fa fa-chevron-circle-right\"></i><i class=\"popup-icon-link fa fa-chevron-circle-down\"></i>" + subMenusGrouping.get(k) + "</summary>";
+							for (String q:ql) {
+								if (q.indexOf(k.substring(2)) > -1) {
+									tempData += q + "<br />";
+									ql.remove(q);
+									querys = querys.replace(q,"");
+								}
+							}
+							tempData += "</details>";
+						}
+					}
+					// place all ungrouped queries at the end of the list
+					tempData += String.join("<br />", ql);
+					// add footer/note
+					//tempData += "<br /><small>Note: Copy link URL for query permalink. Queries are only shown if a result is likely</small><br />";
+					addModelHtml(tempData, "Query for", "queries", metadataType, geppettoModelAccess);
 				}
 
 				//Indenting embeded queries
@@ -1389,8 +1698,6 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				tempData = vfbTerm.targetingSplits();
 				if (tempData != null && !tempData.equals("")) {
 					tempData += badge + queryExpressedInX;
-					// Remove emptry record:
-					tempData = tempData.replace("<li><a href=\"#\" data-instancepath=\"null\"></a></li>", "");
 					addModelHtml(tempData, "Targeting Splits", header, metadataType, geppettoModelAccess);
 				}
 
@@ -1399,8 +1706,6 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				tempData = vfbTerm.targetingNeurons();
 				if (tempData != null && !tempData.equals("")) {
 					tempData += badge + queryExpressedInX;
-					// Remove emptry record:
-					tempData = tempData.replace("<li><a href=\"#\" data-instancepath=\"null\"></a></li>", "");
 					addModelHtml(tempData, "Targeted Neurons", header, metadataType, geppettoModelAccess);
 				}
 
@@ -1415,7 +1720,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				System.out.println(json.replace("}","}\n"));
 				//debug query version to term info
 				if (debug) {
-					if (vfbTerm!=null && vfbTerm.query!=null) {	
+					if (vfbTerm!=null && vfbTerm.query!=null) {
 						addModelHtml(vfbTerm.query + " (" + vfbTerm.version + ")" + "<br>" + json + "<br>" + e.toString(), "Debug", "debug", metadataType, geppettoModelAccess);
 					}else{
 						addModelHtml(json + "<br>" + e.toString(), "Debug", "debug", metadataType, geppettoModelAccess);
@@ -1429,7 +1734,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			System.out.println(e);
 			throw new GeppettoDataSourceException(e);
 		}
-		catch (Exception e) 
+		catch (Exception e)
 		{
 			System.out.println("Error creating metadata: " + e.toString());
 			e.printStackTrace();
@@ -1562,13 +1867,13 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	{
 		try{
 			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
-			
+
 			Variable imageVariable = VariablesFactory.eINSTANCE.createVariable();
 			imageVariable.setId(reference);
 			imageVariable.setName(name);
 			imageVariable.getTypes().add(imageType);
 			geppettoModelAccess.addVariableToType(imageVariable, metadataType);
-			
+
 			if (images.getElements().size() > 1){
 				imageVariable.getInitialValues().put(imageType, images);
 			}else{
@@ -1584,7 +1889,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 	}
 
-	
+
 	/**
 	 * @param data
 	 * @param name
@@ -1614,7 +1919,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			throw new GeppettoVisitingException(e);
 		}
 	}
-	
+
 	private class IIPJSON {
 		int indexNumber;
 		String serverUrl;

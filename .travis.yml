@@ -13,7 +13,7 @@ install:
     - git checkout development
     - git checkout $TRAVIS_BRANCH || true
     - travis_wait 200 mvn  -Dhttps.protocols=TLSv1.2 -DskipTests --quiet install
-    - cd .. 
+    - cd ..
     - git clone https://github.com/openworm/org.geppetto.simulation.git
     - cd org.geppetto.simulation
     - git checkout development
@@ -25,7 +25,7 @@ install:
     - git checkout development
     - git checkout $TRAVIS_BRANCH || true
     - travis_wait 200 mvn  -Dhttps.protocols=TLSv1.2 -DskipTests --quiet install
-    - cd .. 
+    - cd ..
     - cd uk.ac.vfb.geppetto
     - travis_wait 200 mvn -Dhttps.protocols=TLSv1.2 -DskipTests --quiet install
 
@@ -33,10 +33,4 @@ before_script:
 - npm install travis-ci
 
 after_success:
-- node travis/trigger-build.js
-    
-    
- 
- 
-
-
+- travis_wait 200 node travis/trigger-build.js

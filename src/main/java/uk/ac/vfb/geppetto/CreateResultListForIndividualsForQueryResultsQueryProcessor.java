@@ -42,10 +42,15 @@ import org.geppetto.model.util.GeppettoVisitingException;
 import org.geppetto.model.values.*;
 import org.geppetto.model.variables.Variable;
 import org.geppetto.model.variables.VariablesFactory;
+import org.geppetto.model.types.CompositeType;
+import org.geppetto.model.util.ModelUtility;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Arrays;
+import java.util.Collections;
+import java.lang.reflect.Array;
 
 /**
  * @author robertcourt
@@ -73,6 +78,29 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 			processedResults.getHeader().add("Type");
 			processedResults.getHeader().add("Images");
 
+			Boolean debug=false;
+
+			// Template space:
+			String template = "";
+			String loadedTemplate = "";
+
+			// Determine loaded template
+			CompositeType testTemplate = null;
+			List<String> availableTemplates = Arrays.asList("VFB_00017894","VFB_00101567","VFB_00101384","VFB_00050000","VFB_00049000","VFB_00100000","VFB_00030786");
+			for (String at:availableTemplates) {
+				try {
+					testTemplate = (CompositeType) ModelUtility.getTypeFromLibrary(at + "_metadata", dataSource.getTargetLibrary());
+				} catch (Exception e) {
+					testTemplate = null;
+				}
+				if (testTemplate != null) {
+					template = at;
+					loadedTemplate = at;
+					if (debug) System.out.println("Template detected: " + at);
+					break;
+				}
+			}
+
 			while(results.getValue("id", i) != null)
 			{
 				SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
@@ -87,7 +115,6 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 					def = def.substring(0, 250) + "...";
 				}
 				processedResult.getValues().add(def);
-				
 				try{
 					String type = cleanType((List<String>) results.getValue("type", i));
 					processedResult.getValues().add(type);
@@ -96,7 +123,6 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 					e.printStackTrace();
 					processedResult.getValues().add("");
 				}
-				
 				Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
 				exampleVar.setId("images");
 				exampleVar.setName("Images");
@@ -106,10 +132,27 @@ public class CreateResultListForIndividualsForQueryResultsQueryProcessor extends
 
 				//Check is single file or list of individuals
 				if (results.getValue("file", i) != null) {
-
-					String file = (String) results.getValue("file", i);
-
-					addImage(file, name, id, images, 0);
+					if ((results.getValue("file", i)).getClass() == ArrayList.class) {
+						List<String> files = (List<String>) results.getValue("file", i);
+						int j = 0;
+						Collections.sort(files);
+						if (loadedTemplate != "" && files.contains(loadedTemplate)) {
+							for (String f : files) {
+								if (f.contains(loadedTemplate)) {
+									addImage(f, name, id, images, j);
+									j++;
+								}
+							}
+						} else {
+							for (String f : files) {
+									addImage(f, name, id, images, j);
+									j++;
+							}
+						}
+					} else {
+						String file = (String) results.getValue("file", i);
+						addImage(file, name, id, images, 0);
+					}
 
 				}else if (results.getValue("inds", i) != null){
 					List<Object> currentObjects = (List<Object>) results.getValue("inds", i);
