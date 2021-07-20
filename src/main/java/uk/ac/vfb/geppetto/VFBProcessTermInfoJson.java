@@ -1288,7 +1288,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			String header = "loading";
 			String references = "";
 			String downloadFiles = "";
-			List<String> downloadData = new ArrayList<>();
+			List<String> downloadData = new ArrayList<String>();
 
 			//	Queries
 			String querys = "";
