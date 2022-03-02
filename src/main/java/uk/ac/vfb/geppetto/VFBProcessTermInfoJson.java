@@ -162,6 +162,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		String iri;
 		String label;
 		private List<String> types;
+		private List<String> unique_facets;
 		String symbol;
 
 		public String intLink() {
@@ -198,6 +199,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 
 		public String returnType(List<String> types) {
+			if (unique_facets.size() > 0) {
+				return this.returnType(types, unique_facets);
+			}
 			if (types.size() > 0) {
 				if (types.contains("Obsolete")){
 					return this.returnType(types, Arrays.asList("Obsolete"));
