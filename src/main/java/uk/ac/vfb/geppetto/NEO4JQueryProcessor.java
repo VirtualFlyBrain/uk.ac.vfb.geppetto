@@ -53,6 +53,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		String iri;
 		public String label;
 		public List<String> types;
+		public List<String> unique_facets;
 	}
 
 	class minimal_edge_info {
@@ -389,10 +390,34 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 
 		public String grossTypes(){
 			List<String> types = new ArrayList<String>();
-			if (this.expression_pattern != null) types.addAll(this.expression_pattern.types);
-			if (this.dataset != null) types.addAll(this.dataset.types);
-			if (this.term != null) types.addAll(this.term.core.types);
-			if (this.anatomy != null) types.addAll(this.anatomy.types);
+			if (this.expression_pattern != null) {
+				if (this.expression_pattern.unique_facets.size() > 0) {
+					types.addAll(this.expression_pattern.unique_facets);
+				} else {
+					types.addAll(this.expression_pattern.types);
+				}
+			}
+			if (this.dataset != null) {
+				if (this.dataset.unique_facets.size() > 0) {
+					types.addAll(this.dataset.unique_facets);
+				} else {
+					types.addAll(this.dataset.types);
+				}
+			}
+			if (this.term != null) {
+				if (this.term.core.unique_facets.size() > 0) {
+					types.addAll(this.term.core.unique_facets);
+				} else {
+					types.addAll(this.term.core.types);
+				}
+			}
+			if (this.anatomy != null) {
+				if (this.anatomy.unique_facets.size() > 0) {
+					types.addAll(this.anatomy.unique_facets);
+				} else {
+					types.addAll(this.anatomy.types);
+				}
+			}
 			return this.returnType(types);
 		}
 
