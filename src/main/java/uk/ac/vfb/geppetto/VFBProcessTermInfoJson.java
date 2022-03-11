@@ -199,7 +199,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		}
 
 		public String returnType(List<String> types) {
-			if (unique_facets.size() > 0) {
+			if (unique_facets != null && unique_facets.size() > 0) {
 				return this.returnType(types, unique_facets);
 			}
 			if (types.size() > 0) {
