@@ -391,28 +391,28 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		public String grossTypes(){
 			List<String> types = new ArrayList<String>();
 			if (this.expression_pattern != null) {
-				if (this.expression_pattern.unique_facets.size() > 0) {
+				if (this.expression_pattern.unique_facets != null && this.expression_pattern.unique_facets.size() > 0) {
 					types.addAll(this.expression_pattern.unique_facets);
 				} else {
 					types.addAll(this.expression_pattern.types);
 				}
 			}
 			if (this.dataset != null) {
-				if (this.dataset.unique_facets.size() > 0) {
+				if (this.dataset.unique_facets != null && this.dataset.unique_facets.size() > 0) {
 					types.addAll(this.dataset.unique_facets);
 				} else {
 					types.addAll(this.dataset.types);
 				}
 			}
 			if (this.term != null) {
-				if (this.term.core.unique_facets.size() > 0) {
+				if (this.term.core.unique_facets != null && this.term.core.unique_facets.size() > 0) {
 					types.addAll(this.term.core.unique_facets);
 				} else {
 					types.addAll(this.term.core.types);
 				}
 			}
 			if (this.anatomy != null) {
-				if (this.anatomy.unique_facets.size() > 0) {
+				if (this.anatomy.unique_facets != null && this.anatomy.unique_facets.size() > 0) {
 					types.addAll(this.anatomy.unique_facets);
 				} else {
 					types.addAll(this.anatomy.types);
