@@ -423,15 +423,13 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 
 		private String returnType(List<String> types) {
 			String result = "";
-			for (String type : show) {
-				if (types.contains(type)) {
-					type = type.replace("DataSet", "Dataset");
-					if (type.equals("pub")) type = "Publication";
-					if (result.equals("")){
-						result += type;
-					} else {
-						result += "; " + type;
-					}
+			for (String type : types) {
+				type = type.replace("DataSet", "Dataset");
+				if (type.equals("pub")) type = "Publication";
+				if (result.equals("")){
+					result += type;
+				} else {
+					result += "; " + type;
 				}
 			}
 			return result;
