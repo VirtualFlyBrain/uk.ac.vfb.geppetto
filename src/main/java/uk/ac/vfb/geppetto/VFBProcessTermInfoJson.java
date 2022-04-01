@@ -1570,7 +1570,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				String queryExpressedInX = "";
 				for(Query runnableQuery : geppettoModelAccess.getQueries())
 				{
-					if (runnableQuery.getPath().equals("TransgeneExpressionHere") && vfbTerm.term.core.typeList().contains("Expression_pattern")) {
+					if (runnableQuery.getPath().equals("TransgeneExpressionHere") && superTypes.contains("Expression_pattern")) {
 						continue;
 					}
 					if(QueryChecker.check(runnableQuery, variable))
