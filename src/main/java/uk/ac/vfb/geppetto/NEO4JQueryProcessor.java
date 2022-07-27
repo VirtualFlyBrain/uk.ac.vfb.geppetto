@@ -53,6 +53,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		String iri;
 		public String label;
 		public List<String> types;
+		public List<String> unique_facets;
 	}
 
 	class minimal_edge_info {
@@ -389,75 +390,49 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 
 		public String grossTypes(){
 			List<String> types = new ArrayList<String>();
-			if (this.expression_pattern != null) types.addAll(this.expression_pattern.types);
-			if (this.dataset != null) types.addAll(this.dataset.types);
-			if (this.term != null) types.addAll(this.term.core.types);
-			if (this.anatomy != null) types.addAll(this.anatomy.types);
+			if (this.expression_pattern != null) {
+				if (this.expression_pattern.unique_facets != null && this.expression_pattern.unique_facets.size() > 0) {
+					types.addAll(this.expression_pattern.unique_facets);
+				} else {
+					types.addAll(this.expression_pattern.types);
+				}
+			}
+			if (this.dataset != null) {
+				if (this.dataset.unique_facets != null && this.dataset.unique_facets.size() > 0) {
+					types.addAll(this.dataset.unique_facets);
+				} else {
+					types.addAll(this.dataset.types);
+				}
+			}
+			if (this.term != null) {
+				if (this.term.core.unique_facets != null && this.term.core.unique_facets.size() > 0) {
+					types.addAll(this.term.core.unique_facets);
+				} else {
+					types.addAll(this.term.core.types);
+				}
+			}
+			if (this.anatomy != null) {
+				if (this.anatomy.unique_facets != null && this.anatomy.unique_facets.size() > 0) {
+					types.addAll(this.anatomy.unique_facets);
+				} else {
+					types.addAll(this.anatomy.types);
+				}
+			}
 			return this.returnType(types);
 		}
 
-		public String returnType(List<String> types) {
-			if (types.size() > 0) {
-				if (types.contains("Obsolete")){
-					return this.returnType(types, Arrays.asList("Obsolete"));
+		private String returnType(List<String> types) {
+			String result = "";
+			for (String type : types) {
+				type = type.replace("DataSet", "Dataset");
+				if (type.equals("pub")) type = "Publication";
+				if (result.equals("")){
+					result += type;
+				} else {
+					result += "; " + type;
 				}
-				if (types.contains("Deprecated")){
-					return this.returnType(types, Arrays.asList("Deprecated"));
-				}
-				if (types.contains("Template")){
-					return this.returnType(types, Arrays.asList("Adult","Larva","Template"));
-				}
-				if (types.contains("Motor_neuron")){
-					return this.returnType(types, Arrays.asList("Adult","Larva","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Motor_neuron"));
-				}
-				if (types.contains("Sensory_neuron")){
-					return this.returnType(types, Arrays.asList("Adult","Larva","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Sensory_neuron"));
-				}
-				if (types.contains("Peptidergic_neuron")){
-					return this.returnType(types, Arrays.asList("Adult","Larva","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Peptidergic_neuron"));
-				}
-				if (types.contains("Neuron")){
-					return this.returnType(types, Arrays.asList("Adult","Larva","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Neuron"));
-				}
-				if (types.contains("Glial_cell")){
-					return this.returnType(types, Arrays.asList("Adult","Larva","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Glial_cell"));
-				}
-				if (types.contains("GMC")){
-					return this.returnType(types, Arrays.asList("Adult","Larva","Split","Expression_pattern","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","GMC"));
-				}
-				if (types.contains("Cell")){
-					return this.returnType(types, Arrays.asList("Adult","Larva","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Neuroblast","Muscle","Cell"));
-				}
-				if (types.contains("Neuron_projection_bundle")){
-					return this.returnType(types, Arrays.asList("Adult","Larva","Neuron_projection_bundle"));
-				}
-				if (types.contains("Split")){
-					return this.returnType(types, Arrays.asList("Adult","Larva","Split","Expression_pattern","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Glial_cell"));
-				}
-				if (types.contains("Clone")){
-					return this.returnType(types, Arrays.asList("Adult","Larva","Split","Expression_pattern","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Clone"));
-				}
-				if (types.contains("Cluster")){
-					return this.returnType(types, Arrays.asList("Adult","Larva","Split","Expression_pattern","GABAergic","Dopaminergic","Cholinergic","Glutamatergic","Octopaminergic","Serotonergic","Cluster"));
-				}
-				if (types.contains("Expression_pattern")){
-					return "Expression Pattern";
-				}
-				if (types.contains("pub")){
-					return "Publication";
-				}
-				if (types.contains("Synaptic_neuropil")){
-					return this.returnType(types, Arrays.asList("Adult","Larva","Synaptic_neuropil"));
-				}
-				if (types.contains("Neuromere")){
-					return this.returnType(types, Arrays.asList("Adult","Larva","Neuromere"));
-				}
-				if (types.contains("Ganglion")){
-					return this.returnType(types, Arrays.asList("Adult","Larva","Ganglion"));
-				}
-				return this.returnType(types, Arrays.asList("Adult","Larva","Person","License","Synaptic_neuropil","Template","Property","Anatomy","Ganglion","Clone","DataSet","Neuromere","Resource","Site","UnknownType","API"));
 			}
-			return "";
+			return result;
 		}
 
 		public String types(){
@@ -488,25 +463,6 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 				}
 			}
 			return result;
-		}
-
-		private String returnType(List<String> types, List<String> show) {
-			if (types.size() > 0 && show.size() > 0) {
-				String result = "";
-				for (String type : show) {
-					if (types.contains(type)) {
-						type = type.replace("DataSet", "Dataset");
-						if (type.equals("pub")) type = "Publication";
-						if (result.equals("")){
-							result += type;
-						} else {
-							result += "; " + type;
-						}
-					}
-				}
-				return result;
-			}
-			return "";
 		}
 
 		public String expressed_in(){
