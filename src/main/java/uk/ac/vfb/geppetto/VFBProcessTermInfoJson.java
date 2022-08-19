@@ -1601,6 +1601,10 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					tempData = "";
 					CopyOnWriteArrayList<String> ql = new CopyOnWriteArrayList<String>(Arrays.asList(querys.split("</br>")));
 					Collections.sort(ql);
+					if (debug) {
+						print(querys);
+						print(ql);
+					}
 					TreeMap<String, String> subMenusGrouping = new TreeMap<String, String>();
 					subMenusGrouping.put("6 Transgenes expressed in","Expression/Phenotypes found here...");
 					subMenusGrouping.put("5 Reports of transgene expression in","Expression/Phenotypes found here...");
@@ -1614,7 +1618,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 						tempData += "<details><summary><i class=\"popup-icon-link fa fa-chevron-circle-right\"></i><i class=\"popup-icon-link fa fa-chevron-circle-down\"></i>Find similar...</summary>";
 						for (String q:ql) {
 							if ((q.indexOf("NBLAST") > -1) || (q.indexOf("NeuronBridge") > -1)) {
-								tempData += q + "<br />";
+								tempData += "&emsp;" + q + "<br />";
 								ql.remove(q);
 								querys = querys.replace(q,"");
 							}
@@ -1628,7 +1632,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 							tempData += "<details><summary><i class=\"popup-icon-link fa fa-chevron-circle-right\"></i><i class=\"popup-icon-link fa fa-chevron-circle-down\"></i>" + subMenusGrouping.get(k) + "</summary>";
 							for (String q:ql) {
 								if (q.indexOf(k.substring(2)) > -1) {
-									tempData += q + "<br />";
+									tempData += "&emsp;" + q + "<br />";
 									ql.remove(q);
 									querys = querys.replace(q,"");
 								}
