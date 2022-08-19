@@ -1602,8 +1602,8 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					CopyOnWriteArrayList<String> ql = new CopyOnWriteArrayList<String>(Arrays.asList(querys.split("</br>")));
 					Collections.sort(ql);
 					if (debug) {
-						print(querys);
-						print(ql);
+						System.out.println(querys);
+						System.out.println(ql);
 					}
 					TreeMap<String, String> subMenusGrouping = new TreeMap<String, String>();
 					subMenusGrouping.put("6 Transgenes expressed in","Expression/Phenotypes found here...");
