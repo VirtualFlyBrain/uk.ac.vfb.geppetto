@@ -939,7 +939,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 					String length = "8";
 					if (scRNAseq) {
-						processedResult.getValues().add(row.cluster.short_form + delim + row.term.core.short_form + delim + row.dataset.short_form + delim + row.pubs.get(0).core.short_form);
+						processedResult.getValues().add(row.cluster.short_form + delim + row.term.core.short_form + delim + row.pubs.get(0).core.short_form + delim + row.dataset.short_form);
 						processedResult.getValues().add(row.cluster.label);
 						processedResult.getValues().add(row.returnType(row.cluster.getTypes()));
 						processedResult.getValues().add(row.dataset.label);
