@@ -69,7 +69,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		}
 
 		public String getName() {
-			if (this.symbol != null && this.symbol.size() > 0) return this.symbol;
+			if (this.symbol != null && this.symbol.length() > 0) return this.symbol;
 			return this.label;
 		}
 	}
@@ -226,13 +226,13 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		}
 
 		public String getLabel(){
-			String result = this.anatomy.label;
+			String result = this.anatomy.getName();
 			result += this.channel_image.getLabel();
 			return result;
 		}
 
 		public String getLabel(Boolean showTemplate){
-			String result = this.anatomy.label;
+			String result = this.anatomy.getName();
 			result += this.channel_image.getLabel(showTemplate);
 			return result;
 		}
@@ -403,10 +403,10 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		}
 
 		public String name(){
-			if (this.expression_pattern != null) return this.expression_pattern.label;
-			if (this.dataset != null) return this.dataset.label;
-			if (this.term != null) return this.term.core.label;
-			return this.anatomy.label;
+			if (this.expression_pattern != null) return this.expression_pattern.getName();
+			if (this.dataset != null) return this.dataset.getName();
+			if (this.term != null) return this.term.core.getName();
+			return this.anatomy.getName();
 		}
 
 		public String grossTypes(){
@@ -487,7 +487,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		}
 
 		public String expressed_in(){
-			if (this.expression_pattern != null) return this.anatomy.label;
+			if (this.expression_pattern != null) return this.anatomy.getName();
 			return "";
 		}
 
@@ -496,7 +496,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			if (this.license != null) {
 				for (license l:this.license){
 					if (!result.equals("")) result += "; ";
-					result += l.core.label;
+					result += l.core.getName();
 				}
 			}
 			return result;
@@ -507,7 +507,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			if (this.stages != null && this.stages.size() > 0) {
 				for (minimal_entity_info stage:this.stages){
 					if (!result.equals("")) result += "; ";
-					result += stage.label;
+					result += stage.getName();
 				}
 			}
 			return result;
@@ -515,11 +515,11 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 
 		public String reference(){
 			String result = "";
-			if (this.pub != null) result += this.pub.core.label;
+			if (this.pub != null) result += this.pub.core.getName();
 			if (this.pubs != null && this.pubs.size() > 0) {
 				for (pub pub:this.pubs){
 					if (!result.equals("")) result += "; ";
-					result += pub.core.label;
+					result += pub.core.getName();
 				}
 			}
 			return result;
@@ -557,22 +557,22 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					if (ci.image.template_anatomy.label != null && result.indexOf(ci.templateSymbol(ci.image.template_anatomy.label)) < 0){
 
 						if (ci.image.template_anatomy.short_form.equals(template)) {
-							result = ci.templateSymbol(ci.image.template_anatomy.label) + "\nalso in: " + result;
+							result = ci.templateSymbol(ci.image.template_anatomy.getName()) + "\nalso in: " + result;
 						} else {
 							if (!result.equals("") && !result.endsWith(": ")) result += "; ";
-							result += ci.templateSymbol(ci.image.template_anatomy.label);
+							result += ci.templateSymbol(ci.image.template_anatomy.getName());
 						}
 					}
 				}
 			}
 			if (this.anatomy_channel_image != null && this.anatomy_channel_image.size() > 0) {
 				for (anatomy_channel_image aci:this.anatomy_channel_image){
-					if (aci.channel_image.image.template_anatomy.label != null && result.indexOf(aci.channel_image.templateSymbol(aci.channel_image.image.template_anatomy.label)) < 0){
+					if (aci.channel_image.image.template_anatomy.getName() != null && result.indexOf(aci.channel_image.templateSymbol(aci.channel_image.image.template_anatomy.getName())) < 0){
 						if (aci.channel_image.image.template_anatomy.short_form.equals(template)) {
-							result = aci.channel_image.templateSymbol(aci.channel_image.image.template_anatomy.label) + "\nalso in: " + result;
+							result = aci.channel_image.templateSymbol(aci.channel_image.image.template_anatomy.getName()) + "\nalso in: " + result;
 						} else {
 							if (!result.equals("") && !result.endsWith(": ")) result += "; ";
-							result += aci.channel_image.templateSymbol(aci.channel_image.image.template_anatomy.label);
+							result += aci.channel_image.templateSymbol(aci.channel_image.image.template_anatomy.getName());
 						}
 					}
 				}
@@ -643,7 +643,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 							// add same template to the begining and others at the end.
 							if (anat != null && anat.image != null && anat.image.template_anatomy != null && anat.image.template_anatomy.short_form != null && template.equals(anat.image.template_anatomy.short_form)) {
 								if (!loaded.contains(this.object.short_form)) {
-									addImage(anat.getUrl("", "thumbnailT.png"), this.object.label + anat.getLabel(false), this.object.short_form, imageArray, j);
+									addImage(anat.getUrl("", "thumbnailT.png"), this.object.getName() + anat.getLabel(false), this.object.short_form, imageArray, j);
 									loaded.add(this.object.short_form);
 									j++;
 								}
@@ -652,7 +652,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 						if (j > 0) return imageArray;
 						for (channel_image anat : this.channel_image) {
 							if (!loaded.contains(this.object.short_form)) {
-								addImage(anat.getUrl("", "thumbnailT.png"), this.object.label + anat.getLabel(), this.object.short_form, imageArray, j);
+								addImage(anat.getUrl("", "thumbnailT.png"), this.object.getName() + anat.getLabel(), this.object.short_form, imageArray, j);
 								loaded.add(this.object.short_form);
 								j++;
 							}
@@ -662,7 +662,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 							// add same template to the begining and others at the end.
 							if (anat != null && anat.image != null && anat.image.template_anatomy != null && anat.image.template_anatomy.short_form != null && template.equals(anat.image.template_anatomy.short_form)) {
 								if (!loaded.contains(this.term.core.short_form)) {
-									addImage(anat.getUrl("", "thumbnailT.png"), this.term.core.label, this.term.core.short_form, imageArray, j);
+									addImage(anat.getUrl("", "thumbnailT.png"), this.term.core.getName(), this.term.core.short_form, imageArray, j);
 									loaded.add(this.term.core.short_form);
 									j++;
 								}
@@ -671,7 +671,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 						if (j > 0) return imageArray;
 						for (channel_image anat : this.channel_image) {
 							if (!loaded.contains(this.term.core.short_form)) {
-								addImage(anat.getUrl("", "thumbnailT.png"), this.term.core.label, this.term.core.short_form, imageArray, j);
+								addImage(anat.getUrl("", "thumbnailT.png"), this.term.core.getName(), this.term.core.short_form, imageArray, j);
 								loaded.add(this.term.core.short_form);
 								j++;
 							}
@@ -752,7 +752,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			Boolean hasObject = false;
 			Boolean hasScore = false;
 			Boolean scRNAseq = false;
-			Booolean hasGene = false;
+			Boolean hasGene = false;
 			List<vfb_query> table = new ArrayList<vfb_query>();
 			vfb_query vfbQuery = null;
 
@@ -960,7 +960,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 						processedResult.getValues().add(String.format("%.02f", row.expression_level));
 						processedResult.getValues().add(String.format("%.02f", row.expression_extent));
 						String function = "";
-						for (String type:row.geme.types){
+						for (String type:row.gene.types){
 							if (type.indexOf("receptor") > 0 || type.indexOf("binding") > 0 || type.indexOf("channel") > 0 || type.indexOf("peptide") > 0 || type.indexOf("factor") > 0 || type.indexOf("Hormone") > 0 || type.indexOf("Enzyme") > 0 || type.indexOf("GPCR") > 0) {
 								function = type;
 								break;
@@ -970,10 +970,10 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					} else {
 						if (scRNAseq) {
 							processedResult.getValues().add(row.cluster.short_form + delim + row.term.core.short_form + delim + row.pubs.get(0).core.short_form + delim + row.dataset.short_form);
-							processedResult.getValues().add(row.cluster.label);
+							processedResult.getValues().add(row.cluster.getName());
 							processedResult.getValues().add(row.returnType(row.cluster.getTypes()));
-							processedResult.getValues().add(row.dataset.label);
-							processedResult.getValues().add(row.pubs.get(0).core.label);
+							processedResult.getValues().add(row.dataset.getName());
+							processedResult.getValues().add(row.pubs.get(0).core.getName());
 						} else {
 							if (hasId) processedResult.getValues().add(row.id());
 							if (hasName && !hasSynCount) processedResult.getValues().add(row.name());
@@ -1012,7 +1012,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 								processedResult.getValues().add(row.synapse_counts.getUpstream());
 								//processedResult.getValues().add(row.synapse_counts.getWeight());
 							}
-							if (hasObject) processedResult.getValues().add(row.object.label);
+							if (hasObject) processedResult.getValues().add(row.object.getName());
 							processedResults.getResults().add(processedResult);
 						}
 					}
