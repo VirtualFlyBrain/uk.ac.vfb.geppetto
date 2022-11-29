@@ -54,6 +54,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		String short_form;
 		String iri;
 		public String label;
+		public String symbol;
 		public List<String> types;
 		public List<String> unique_facets;
 
@@ -65,6 +66,11 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 				types.addAll(this.types);
 			}
 			return types;
+		}
+
+		public String getName() {
+			if (this.symbol != null && this.symbol.size() > 0) return this.symbol;
+			return this.label;
 		}
 	}
 
@@ -333,7 +339,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		private dataset_counts dataset_counts;
 		private minimal_entity_info cluster;
 		private minimal_entity_info gene;
-		private Integer expression_level;
+		private Float expression_level;
 		private Float expression_extent;
 		private List<license> license;
 		private List<minimal_entity_info> stages;
@@ -746,6 +752,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			Boolean hasObject = false;
 			Boolean hasScore = false;
 			Boolean scRNAseq = false;
+			Booolean hasGene = false;
 			List<vfb_query> table = new ArrayList<vfb_query>();
 			vfb_query vfbQuery = null;
 
@@ -788,6 +795,9 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 						switch(key) {
 							case "cluster":
 							    scRNAseq = true;
+								break;
+							case "gene":
+							    hasGene = true;
 								break;
 							case "anatomy":
 								hasId = true;
@@ -887,47 +897,54 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 
 			// set headers
 			processedResults.getHeader().add("ID");
-			if (scRNAseq) {
-				processedResults.getHeader().add("Cluster");
-				processedResults.getHeader().add("Cell Type");
-				processedResults.getHeader().add("Dataset");
-				processedResults.getHeader().add("Reference");
+			if (hasGene) {
+				processedResults.getHeader().add("Gene");
+				processedResults.getHeader().add("Level");
+				processedResults.getHeader().add("Extent");
+				processedResults.getHeader().add("Function");
 			} else {
-				if (hasName) {
-					if (hasSynCount) {
-						//processedResults.getHeader().add("Neuron_A");
-					} else {
-						processedResults.getHeader().add("Name");
-					}
-				}
-				if (hasTypes) processedResults.getHeader().add("Type");
-				if (hasParents) processedResults.getHeader().add("Type");
-				if (hasGrossType && !table.get(0).query.contains("connectivity_query")) processedResults.getHeader().add("Gross_Type");
-				if (hasExpressed_in) processedResults.getHeader().add("Expressed_in");
-				if (hasLicense) processedResults.getHeader().add("License");
-				if (hasReference) processedResults.getHeader().add("Reference");
-				if (hasStage) processedResults.getHeader().add("Stage");
-				if (hasImage) processedResults.getHeader().add("Images");
-				if (hasTemplate) processedResults.getHeader().add("Imaging_Technique");
-				if (hasTechnique) processedResults.getHeader().add("Template_Space");
-				if (hasDatasetCount) processedResults.getHeader().add("Image_count");
-				if (hasExtra && table.get(0).extra_columns.size() > 0 && table.get(0).extra_columns.get(0).Score != null) processedResults.getHeader().add("Score");
-				if (hasScore) processedResults.getHeader().add("Score");
-				if (hasSynCount) {
-					processedResults.getHeader().add("Outputs");
-					if (!table.get(0).query.contains("neuron_neuron")) processedResults.getHeader().add("Outputs (Tbars)");
-					processedResults.getHeader().add("Inputs");
-					//processedResults.getHeader().add("Weight");
-					if (hasObject) {
-						if (table.get(0).query.contains("neuron_neuron")) {
-							processedResults.getHeader().add("Partner_Neuron");
-						} else if (table.get(0).query.contains("neuron_region")) {
-							processedResults.getHeader().add("Region");
+				if (scRNAseq) {
+					processedResults.getHeader().add("Cluster");
+					processedResults.getHeader().add("Cell Type");
+					processedResults.getHeader().add("Dataset");
+					processedResults.getHeader().add("Reference");
+				} else {
+					if (hasName) {
+						if (hasSynCount) {
+							//processedResults.getHeader().add("Neuron_A");
 						} else {
-							processedResults.getHeader().add("Target");
+							processedResults.getHeader().add("Name");
 						}
-					}else{
-						if (hasObject) processedResults.getHeader().add("Target");
+					}
+					if (hasTypes) processedResults.getHeader().add("Type");
+					if (hasParents) processedResults.getHeader().add("Type");
+					if (hasGrossType && !table.get(0).query.contains("connectivity_query")) processedResults.getHeader().add("Gross_Type");
+					if (hasExpressed_in) processedResults.getHeader().add("Expressed_in");
+					if (hasLicense) processedResults.getHeader().add("License");
+					if (hasReference) processedResults.getHeader().add("Reference");
+					if (hasStage) processedResults.getHeader().add("Stage");
+					if (hasImage) processedResults.getHeader().add("Images");
+					if (hasTemplate) processedResults.getHeader().add("Imaging_Technique");
+					if (hasTechnique) processedResults.getHeader().add("Template_Space");
+					if (hasDatasetCount) processedResults.getHeader().add("Image_count");
+					if (hasExtra && table.get(0).extra_columns.size() > 0 && table.get(0).extra_columns.get(0).Score != null) processedResults.getHeader().add("Score");
+					if (hasScore) processedResults.getHeader().add("Score");
+					if (hasSynCount) {
+						processedResults.getHeader().add("Outputs");
+						if (!table.get(0).query.contains("neuron_neuron")) processedResults.getHeader().add("Outputs (Tbars)");
+						processedResults.getHeader().add("Inputs");
+						//processedResults.getHeader().add("Weight");
+						if (hasObject) {
+							if (table.get(0).query.contains("neuron_neuron")) {
+								processedResults.getHeader().add("Partner_Neuron");
+							} else if (table.get(0).query.contains("neuron_region")) {
+								processedResults.getHeader().add("Region");
+							} else {
+								processedResults.getHeader().add("Target");
+							}
+						}else{
+							if (hasObject) processedResults.getHeader().add("Target");
+						}
 					}
 				}
 			}
@@ -938,52 +955,66 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 				try{
 					SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 					String length = "8";
-					if (scRNAseq) {
-						processedResult.getValues().add(row.cluster.short_form + delim + row.term.core.short_form + delim + row.pubs.get(0).core.short_form + delim + row.dataset.short_form);
-						processedResult.getValues().add(row.cluster.label);
-						processedResult.getValues().add(row.returnType(row.cluster.getTypes()));
-						processedResult.getValues().add(row.dataset.label);
-						processedResult.getValues().add(row.pubs.get(0).core.label);
+					if (hasGene) {
+						processedResult.getValues().add(row.gene.short_form);
+						processedResult.getValues().add(String.format("%.02f", row.expression_level));
+						processedResult.getValues().add(String.format("%.02f", row.expression_extent));
+						String function = "";
+						for (String type:row.geme.types){
+							if (type.indexOf("receptor") > 0 || type.indexOf("binding") > 0 || type.indexOf("channel") > 0 || type.indexOf("peptide") > 0 || type.indexOf("factor") > 0 || type.indexOf("Hormone") > 0 || type.indexOf("Enzyme") > 0 || type.indexOf("GPCR") > 0) {
+								function = type;
+								break;
+							}
+						}
+						processedResult.getValues().add(function);
 					} else {
-						if (hasId) processedResult.getValues().add(row.id());
-						if (hasName && !hasSynCount) processedResult.getValues().add(row.name());
-						if (hasTypes) processedResult.getValues().add(row.types());
-						if (hasParents) processedResult.getValues().add(row.parents());
-						if (hasGrossType && !table.get(0).query.contains("connectivity_query")) processedResult.getValues().add(row.grossTypes());
-						if (hasExpressed_in) processedResult.getValues().add(row.expressed_in());
-						if (hasLicense) processedResult.getValues().add(row.licenseLabel());
-						if (hasReference) processedResult.getValues().add(row.reference());
-						if (hasStage) processedResult.getValues().add(row.stages());
-						if (hasImage){
-							Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
-							exampleVar.setId("images");
-							exampleVar.setName("Images");
-							exampleVar.getTypes().add(imageType);
-							ArrayValue images = row.images(template);
-							if (!images.getElements().isEmpty() && images.getElements().size() > 0)
-							{
-								exampleVar.getInitialValues().put(imageType, images);
-								processedResult.getValues().add(GeppettoSerializer.serializeToJSON(exampleVar));
-								if (false && debug) System.out.println("DEBUG: Image: " + GeppettoSerializer.serializeToJSON(exampleVar) );
+						if (scRNAseq) {
+							processedResult.getValues().add(row.cluster.short_form + delim + row.term.core.short_form + delim + row.pubs.get(0).core.short_form + delim + row.dataset.short_form);
+							processedResult.getValues().add(row.cluster.label);
+							processedResult.getValues().add(row.returnType(row.cluster.getTypes()));
+							processedResult.getValues().add(row.dataset.label);
+							processedResult.getValues().add(row.pubs.get(0).core.label);
+						} else {
+							if (hasId) processedResult.getValues().add(row.id());
+							if (hasName && !hasSynCount) processedResult.getValues().add(row.name());
+							if (hasTypes) processedResult.getValues().add(row.types());
+							if (hasParents) processedResult.getValues().add(row.parents());
+							if (hasGrossType && !table.get(0).query.contains("connectivity_query")) processedResult.getValues().add(row.grossTypes());
+							if (hasExpressed_in) processedResult.getValues().add(row.expressed_in());
+							if (hasLicense) processedResult.getValues().add(row.licenseLabel());
+							if (hasReference) processedResult.getValues().add(row.reference());
+							if (hasStage) processedResult.getValues().add(row.stages());
+							if (hasImage){
+								Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
+								exampleVar.setId("images");
+								exampleVar.setName("Images");
+								exampleVar.getTypes().add(imageType);
+								ArrayValue images = row.images(template);
+								if (!images.getElements().isEmpty() && images.getElements().size() > 0)
+								{
+									exampleVar.getInitialValues().put(imageType, images);
+									processedResult.getValues().add(GeppettoSerializer.serializeToJSON(exampleVar));
+									if (false && debug) System.out.println("DEBUG: Image: " + GeppettoSerializer.serializeToJSON(exampleVar) );
+								}
+								else
+								{
+									processedResult.getValues().add("");
+								}
 							}
-							else
-							{
-								processedResult.getValues().add("");
+							if (hasTechnique) processedResult.getValues().add(row.technique());
+							if (hasTemplate) processedResult.getValues().add(row.template(template));
+							if (hasDatasetCount) processedResult.getValues().add(String.format("%1$" + length + "s", row.dataset_counts.images.toString()));
+							if (hasExtra && row.extra_columns.size() > 0 && row.getScore() != null) processedResult.getValues().add(row.getScore());
+							if (hasScore) processedResult.getValues().add(row.score);
+							if (hasSynCount){
+								processedResult.getValues().add(row.synapse_counts.getDownstream());
+								if (!row.query.contains("neuron_neuron"))processedResult.getValues().add(row.synapse_counts.getTbars());
+								processedResult.getValues().add(row.synapse_counts.getUpstream());
+								//processedResult.getValues().add(row.synapse_counts.getWeight());
 							}
+							if (hasObject) processedResult.getValues().add(row.object.label);
+							processedResults.getResults().add(processedResult);
 						}
-						if (hasTechnique) processedResult.getValues().add(row.technique());
-						if (hasTemplate) processedResult.getValues().add(row.template(template));
-						if (hasDatasetCount) processedResult.getValues().add(String.format("%1$" + length + "s", row.dataset_counts.images.toString()));
-						if (hasExtra && row.extra_columns.size() > 0 && row.getScore() != null) processedResult.getValues().add(row.getScore());
-						if (hasScore) processedResult.getValues().add(row.score);
-						if (hasSynCount){
-							processedResult.getValues().add(row.synapse_counts.getDownstream());
-							if (!row.query.contains("neuron_neuron"))processedResult.getValues().add(row.synapse_counts.getTbars());
-							processedResult.getValues().add(row.synapse_counts.getUpstream());
-							//processedResult.getValues().add(row.synapse_counts.getWeight());
-						}
-						if (hasObject) processedResult.getValues().add(row.object.label);
-						processedResults.getResults().add(processedResult);
 					}
 				}catch (Exception e) {
 					System.out.println("Error creating results row: " + count.toString() + " - " + e.toString());
