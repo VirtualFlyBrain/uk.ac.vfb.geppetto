@@ -337,7 +337,6 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		private pub pub;
 		private minimal_entity_info dataset;
 		private dataset_counts dataset_counts;
-		private anatomy minimal_entity_info;
 		private minimal_entity_info cluster;
 		private minimal_entity_info gene;
 		private Float expression_level;
