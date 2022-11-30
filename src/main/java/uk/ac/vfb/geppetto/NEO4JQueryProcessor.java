@@ -337,6 +337,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		private pub pub;
 		private minimal_entity_info dataset;
 		private dataset_counts dataset_counts;
+		private anatomy minimal_entity_info;
 		private minimal_entity_info cluster;
 		private minimal_entity_info gene;
 		private Float expression_level;
@@ -899,13 +900,14 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			processedResults.getHeader().add("ID");
 			if (hasGene) {
 				processedResults.getHeader().add("Gene");
+				processedResults.getHeader().add("Cell type");
 				processedResults.getHeader().add("Level");
 				processedResults.getHeader().add("Extent");
 				processedResults.getHeader().add("Function");
 			} else {
 				if (scRNAseq) {
 					processedResults.getHeader().add("Cluster");
-					processedResults.getHeader().add("Cell Type");
+					processedResults.getHeader().add("Cell type");
 					processedResults.getHeader().add("Dataset");
 					processedResults.getHeader().add("Reference");
 				} else {
@@ -956,7 +958,9 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 					String length = "8";
 					if (hasGene) {
-						processedResult.getValues().add(row.gene.short_form);
+						processedResult.getValues().add(row.gene.short_form + delim + row.anatomy.short_form);
+						processedResult.getValues().add(row.gene.getName());
+						processedResult.getValues().add(row.anatomy.getName());
 						processedResult.getValues().add(String.format("%.02f", row.expression_level));
 						processedResult.getValues().add(String.format("%.02f", row.expression_extent));
 						String function = "";
