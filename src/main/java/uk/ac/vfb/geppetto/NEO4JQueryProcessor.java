@@ -975,7 +975,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 						if (scRNAseq) {
 							processedResult.getValues().add(row.cluster.short_form + delim + row.term.core.short_form + delim + row.pubs.get(0).core.short_form + delim + row.dataset.short_form);
 							processedResult.getValues().add(row.cluster.getName());
-							processedResult.getValues().add(row.returnType(row.cluster.getTypes()));
+							processedResult.getValues().add(row.term.core.getName());
 							processedResult.getValues().add(row.dataset.getName());
 							processedResult.getValues().add(row.pubs.get(0).core.getName());
 						} else {
