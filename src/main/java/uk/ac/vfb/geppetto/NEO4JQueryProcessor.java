@@ -1013,9 +1013,9 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 								//processedResult.getValues().add(row.synapse_counts.getWeight());
 							}
 							if (hasObject) processedResult.getValues().add(row.object.getName());
-							processedResults.getResults().add(processedResult);
 						}
 					}
+					processedResults.getResults().add(processedResult);
 				}catch (Exception e) {
 					System.out.println("Error creating results row: " + count.toString() + " - " + e.toString());
 					e.printStackTrace();
