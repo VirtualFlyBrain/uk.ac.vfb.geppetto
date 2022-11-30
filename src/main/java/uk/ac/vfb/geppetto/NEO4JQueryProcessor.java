@@ -788,6 +788,8 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 					json = "{";
 					if (debug) System.out.println("{");
 
+					if (debug) System.out.println("results header: " + results.getHeader().toString());
+
 					for (String key:results.getHeader()) {
 						if (!json.equals("{")) {
 							json = json + ", ";
@@ -856,7 +858,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 								break;
 							case "synapse_counts":
 							    hasSynCount = true;
-							hasName = true;
+								hasName = true;
 								break;
 							case "object":
 								hasObject = true;
