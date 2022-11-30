@@ -29,6 +29,8 @@ public class OWLeryQueryProcessor extends AQueryProcessor
 
 	private Map<String, Object> processingOutputMap = new HashMap<String, Object>();
 
+	private Boolean debug=false;
+
 	/*
 	 * (non-Javadoc)
 	 *
@@ -42,6 +44,7 @@ public class OWLeryQueryProcessor extends AQueryProcessor
 			throw new GeppettoDataSourceException("Results input to " + query.getName() + " is null");
 		}
 
+
 		String queryID = dataSource.getId();
 
 		QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
@@ -53,11 +56,11 @@ public class OWLeryQueryProcessor extends AQueryProcessor
 		{
 			case "owleryDataSourceSubclass":
 				idIndex = results.getHeader().indexOf("superClassOf");
-
+				if (debug) System.out.println("superClassOf");
 				break;
 			case "owleryDataSourceRealise":
 				idIndex = results.getHeader().indexOf("hasInstance");
-
+				if (debug) System.out.println("hasInstance");
 				break;
 			default:
 				throw new GeppettoDataSourceException("Results header not in hasInstance, subClassOf");
@@ -78,9 +81,10 @@ public class OWLeryQueryProcessor extends AQueryProcessor
 				}
 			}
 		}
-
+		if (debug) System.out.println("OWL passing results:");
 		processingOutputMap.put("ARRAY_ID_RESULTS", ids);
 		processingOutputMap.put("EXTRA_RESULT_COLUMNS", "");
+		if (debug) System.out.println(ids);
 
 		return processedResults;
 	}
