@@ -49,8 +49,11 @@ public class OWLeryQueryProcessorWithQueryTerm extends AQueryProcessor
 
 		QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
 		int idIndex = -1;
+		int selfIdIndex = -1;
 
 		List<String> ids = new ArrayList<String>();
+
+        selfIdIndex = results.getHeader().indexOf("value");
 
 		switch(queryID)
 		{
