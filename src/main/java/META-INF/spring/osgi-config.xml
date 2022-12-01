@@ -122,6 +122,13 @@
 	<bean id="owleryIdOnlyQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.OWLeryQueryProcessor">
 	<aop:scoped-proxy proxy-target-class="false"/>
 	</bean>
+	
+	<osgi:service id="owleryIdOnlyQueryProcessorWithQueryTermExporter" ref="owleryIdOnlyQueryProcessorWithQueryTerm"
+		interface="org.geppetto.core.datasources.IQueryProcessor">
+	</osgi:service>
+	<bean id="owleryIdOnlyQueryProcessorWithQueryTerm" scope="prototype" class="uk.ac.vfb.geppetto.OWLeryQueryProcessor">
+	<aop:scoped-proxy proxy-target-class="false"/>
+	</bean>
 
 	<osgi:service id="owleryIdOnlyQueryProcessorExporter1" ref="owleryIdOnlyQueryProcessor1"
 		interface="org.geppetto.core.datasources.IQueryProcessor">
