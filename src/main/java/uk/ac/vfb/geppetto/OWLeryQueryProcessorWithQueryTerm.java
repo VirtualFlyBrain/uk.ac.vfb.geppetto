@@ -57,8 +57,7 @@ public class OWLeryQueryProcessorWithQueryTerm extends AQueryProcessor
 			case "owleryDataSourceSubclass":
 				idIndex = results.getHeader().indexOf("superClassOf");
 				if (debug) System.out.println("superClassOf");
-                if (debug) System.out.println("Adding query Term to SubClassOf list");
-                ids.add("\"" + variable.getId() + "\"");
+
 				break;
 			case "owleryDataSourceRealise":
 				idIndex = results.getHeader().indexOf("hasInstance");
@@ -70,6 +69,7 @@ public class OWLeryQueryProcessorWithQueryTerm extends AQueryProcessor
 		}
 		processedResults.getHeader().add("ID");
 
+        if (debug) System.out.println("Adding query Term to list");
 		if (selfIdIndex > -1){
 			for(AQueryResult result : results.getResults())
 			{
