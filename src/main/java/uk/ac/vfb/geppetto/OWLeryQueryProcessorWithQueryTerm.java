@@ -70,6 +70,16 @@ public class OWLeryQueryProcessorWithQueryTerm extends AQueryProcessor
 		}
 		processedResults.getHeader().add("ID");
 
+		if (selfIdIndex > -1){
+			for(AQueryResult result : results.getResults())
+			{
+				String id = (String)((QueryResult) result).getValues().get(selfIdIndex);
+				String subID = id.substring((id.lastIndexOf('/')+1) , id.length()).toString().replace(">))", "").replace(">)","");
+				ids.add("\"" + subID + "\"");
+			}
+		}
+
+
 		if (idIndex > -1){
 			for(AQueryResult result : results.getResults())
 			{
