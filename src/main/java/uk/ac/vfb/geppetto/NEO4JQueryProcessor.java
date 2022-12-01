@@ -46,7 +46,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 
 	private Boolean debug=false;
 
-	String delim = "----";
+	private String delim = "----";
 
 	// START VFB term info schema https://github.com/VirtualFlyBrain/VFB_json_schema/blob/master/src/json_schema/vfb_query.json
 
