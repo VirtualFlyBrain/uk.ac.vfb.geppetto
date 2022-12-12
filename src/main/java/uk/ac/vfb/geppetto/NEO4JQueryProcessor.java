@@ -46,7 +46,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 
 	private Boolean debug=false;
 
-	private String delim = "----";
+	private String delim="----";
 
 	// START VFB term info schema https://github.com/VirtualFlyBrain/VFB_json_schema/blob/master/src/json_schema/vfb_query.json
 
@@ -354,6 +354,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		public minimal_entity_info object;
 
 		public String id(){
+			String delim="----";
 			String result = "undefined";
 			if (this.expression_pattern != null){
 				result = this.expression_pattern.short_form;
