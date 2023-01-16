@@ -1236,6 +1236,13 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 				header = "results>JSON";
 				if (debug) System.out.println("{");
 
+				if (debug){
+					System.out.println("Results:");
+					for (String result:results){
+						System.out.println(result);
+					}
+				}
+
 				for (String key:results.getHeader()) {
 					if (!json.equals("{")) {
 						json = json + ", ";
