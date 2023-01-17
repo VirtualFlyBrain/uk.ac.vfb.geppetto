@@ -1186,11 +1186,9 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 		{
 			if (debug){
 				System.out.println("Results:");
-				for (String result:results){
-					System.out.println(result);
-				}
+				System.out.println(results.get(0));
 			}
-			
+
 			// Template space:
 			String template = "";
 			String loadedTemplate = "";
@@ -1244,9 +1242,9 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 				if (debug) System.out.println("{");
 
 				if (debug){
-					System.out.println("Results:");
-					for (String result:results){
-						System.out.println(result);
+					if (debug){
+						System.out.println("Results:");
+						System.out.println(results.get(0));
 					}
 				}
 
