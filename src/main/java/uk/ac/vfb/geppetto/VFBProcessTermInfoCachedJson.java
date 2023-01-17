@@ -26,7 +26,7 @@ import org.geppetto.core.datasources.QueryChecker;
 import org.geppetto.model.datasources.Query;
 import org.geppetto.model.datasources.ProcessQuery;
 import org.geppetto.model.datasources.QueryResults;
-import org.geppetto.model.datasources.AQueryResult;
+import org.geppetto.model.datasources.QueryResult;
 import org.geppetto.model.datasources.SerializableQueryResult;
 import org.geppetto.model.datasources.DataSource;
 import org.geppetto.model.datasources.DataSourceLibraryConfiguration;
@@ -1188,7 +1188,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 		{
 			if (debug){
 				System.out.println("Results:");
-				for (SerializableQueryResult result:results.getResults()){
+				for (QueryResult result:results.getResults()){
 					System.out.println(result.getValues());
 				}
 			}
