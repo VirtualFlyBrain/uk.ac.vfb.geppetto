@@ -1184,6 +1184,13 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 		vfb_terminfo vfbTerm = null;
 		try
 		{
+			if (debug){
+				System.out.println("Results:");
+				for (String result:results){
+					System.out.println(result);
+				}
+			}
+			
 			// Template space:
 			String template = "";
 			String loadedTemplate = "";
