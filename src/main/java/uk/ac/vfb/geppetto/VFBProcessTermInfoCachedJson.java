@@ -26,6 +26,7 @@ import org.geppetto.core.datasources.QueryChecker;
 import org.geppetto.model.datasources.Query;
 import org.geppetto.model.datasources.ProcessQuery;
 import org.geppetto.model.datasources.QueryResults;
+import org.geppetto.model.datasources.AQueryResult;
 import org.geppetto.model.datasources.DataSource;
 import org.geppetto.model.datasources.DataSourceLibraryConfiguration;
 
@@ -1186,7 +1187,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 		{
 			if (debug){
 				System.out.println("Results:");
-				for (String result:results.getResults()){
+				for (AQueryResult result:results.getResults()){
 					System.out.println(result.getValues());
 				}
 			}
@@ -1242,13 +1243,6 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 			try{
 				header = "results>JSON";
 				if (debug) System.out.println("{");
-
-				if (debug){
-					System.out.println("Results:");
-					for (String result:results.getResults()){
-						System.out.println(result.getValues());
-					}
-				}
 
 				for (String key:results.getHeader()) {
 					if (!json.equals("{")) {
