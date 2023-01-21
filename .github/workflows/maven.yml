@@ -25,6 +25,8 @@ jobs:
         java-version: '8'
         distribution: 'temurin'
         cache: maven
+    - name: Setup security
+      run: mvn --encrypt-master-password 1234
     - name: Build model
       run: | 
           git clone https://github.com/openworm/org.geppetto.model.git
