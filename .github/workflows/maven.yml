@@ -29,29 +29,25 @@ jobs:
       run: | 
           git clone https://github.com/openworm/org.geppetto.model.git
           cd org.geppetto.model
-          git checkout development
-          git checkout ${GITHUB_REF#refs/heads/} || true
+          git checkout vfb_20200604_a
           mvn -Dhttps.protocols=TLSv1.2 -DskipTests --quiet install
     - name: Build core
       run: | 
           git clone https://github.com/openworm/org.geppetto.core.git
           cd org.geppetto.core
-          git checkout development
-          git checkout ${GITHUB_REF#refs/heads/} || true
+          git checkout VFBv2.2.0
           mvn -Dhttps.protocols=TLSv1.2 -DskipTests --quiet install
     - name: Build simulation
       run: | 
           git clone https://github.com/openworm/org.geppetto.simulation.git
           cd org.geppetto.simulation
-          git checkout development
-          git checkout ${GITHUB_REF#refs/heads/} || true
+          git checkout vfb_20200604_a
           mvn -Dhttps.protocols=TLSv1.2 -DskipTests --quiet install
     - name: Build datasources
       run: | 
           git clone https://github.com/openworm/org.geppetto.datasources.git
           cd org.geppetto.datasources
-          git checkout development
-          git checkout ${GITHUB_REF#refs/heads/} || true
+          git checkout vfb_20200604_a
           mvn -Dhttps.protocols=TLSv1.2 -DskipTests --quiet install
     - name: Build uk.ac.vfb.geppetto
       run: mvn -B package --file pom.xml
