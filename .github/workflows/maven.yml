@@ -34,7 +34,7 @@ jobs:
           git checkout vfb_20200604_a
           export LOG4J_FORMAT_MSG_NO_LOOKUPS=true
           npm install jest@24.8.0 jest-image-snapshot@4.1.0 puppeteer@1.17.0 jest-puppeteer@4.3.0 @babel/preset-env@7.4.5 url-join@4.0.0 @babel/core@7.4.5
-          mvn -X -U -Dhttps.protocols=TLSv1.2 -DskipTests --file pom.xml install
+          mvn -X -U -Dhttps.protocols=TLSv1.2 -DskipTests --file pom.xml install -nsu
     - name: Build core
       run: | 
           git clone https://github.com/openworm/org.geppetto.core.git
