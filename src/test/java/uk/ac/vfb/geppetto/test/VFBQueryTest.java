@@ -49,6 +49,7 @@ import org.geppetto.core.model.GeppettoSerializer;
 import org.geppetto.core.services.registry.ApplicationListenerBean;
 import org.geppetto.datasources.aberowl.AberOWLDataSourceService;
 import org.geppetto.datasources.neo4j.Neo4jDataSourceService;
+import org.geppetto.datasources.solr.SOLRdataSourceService;
 import org.geppetto.datasources.opencpu.OpenCPUDataSourceService;
 import org.geppetto.datasources.owlery.OWLeryDataSourceService;
 import org.geppetto.model.GeppettoModel;
@@ -133,6 +134,10 @@ public class VFBQueryTest
 		context.registerBeanDefinition("neo4jDataSource", neo4jDataSourceBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.neo4jDataSource", neo4jDataSourceBeanDefinition);
 		
+		BeanDefinition solrDataSourceBeanDefinition = new RootBeanDefinition(SOLRdataSourceService.class);
+		context.registerBeanDefinition("solrqueryDataSource", solrDataSourceBeanDefinition);
+		context.registerBeanDefinition("scopedTarget.solrqueryDataSource", solrDataSourceBeanDefinition);
+		
 		BeanDefinition aberOWLDataSourceBeanDefinition = new RootBeanDefinition(AberOWLDataSourceService.class);
 		context.registerBeanDefinition("aberOWLDataSource", aberOWLDataSourceBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.aberOWLDataSource", aberOWLDataSourceBeanDefinition);
@@ -185,8 +190,8 @@ public class VFBQueryTest
 		model.getLibraries().add(SharedLibraryManager.getSharedCommonLibrary());
 
 		GeppettoModelAccess geppettoModelAccess = new GeppettoModelAccess(model);
-		Neo4jDataSourceService dataSource = new Neo4jDataSourceService();
-		dataSource.initialize(model.getDataSources().get(0), geppettoModelAccess);
+		SOLRdataSourceService dataSource = new SOLRdataSourceService();
+		dataSource.initialize(model.getDataSources().get(5), geppettoModelAccess);
 		
 		OpenCPUDataSourceService dataSource2 = new OpenCPUDataSourceService();
 		dataSource2.initialize(model.getDataSources().get(4), geppettoModelAccess);

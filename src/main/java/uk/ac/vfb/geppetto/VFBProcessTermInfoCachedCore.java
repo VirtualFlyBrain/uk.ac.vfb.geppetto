@@ -30,6 +30,9 @@ import org.geppetto.model.variables.Variable;
 import org.geppetto.model.variables.VariablesFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -48,7 +51,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 /**
  * @author RobertCourt
  */
-public class VFBProcessTermInfoCore extends AQueryProcessor {
+public class VFBProcessTermInfoCachedCore extends AQueryProcessor {
 
 	Boolean debug=false;
 
@@ -77,63 +80,65 @@ public class VFBProcessTermInfoCore extends AQueryProcessor {
 
 			// term
 			if (results.getValue("term", 0) != null) {
-				Object terms = results.getValue("term", 0);
-				Map<String, Object> term = (Map<String, Object>) results.getValue("term", 0);
+				JsonObject term = (JsonObject) results.getValue("term", 0);
 				 if (debug) System.out.println("DEBUG: term: " + String.valueOf(term));
 				//core
 				if (term.get("core") != null) {
-					Map<String, Object> core = (Map<String, Object>) term.get("core");
-					//ID/short_form
-					tempId = String.valueOf(variable.getId());
-					if (core.get("short_form") != null) {
-						if (String.valueOf(variable.getId()).equals((String) core.get("short_form"))) {
-							tempId = (String) core.get("short_form");
-						} else {
-							System.out.println("ERROR: Called ID: " + String.valueOf(variable.getId()) + " does not match returned ID: " + (String) core.get("short_form"));
-							tempId = (String) core.get("short_form");
-						}
-					}else{
-						System.out.println("ERROR: No ID returned: " + String.valueOf(core));
-					}
-					//label
-					if (core.get("label") != null) {
-						tempName = (String) core.get("label");
-					}
-					// add label to variable
-					geppettoModelAccess.setObjectAttribute(variable, GeppettoPackage.Literals.NODE__NAME, tempName);
-					// add parent composite type
-					CompositeType parentType = TypesFactory.eINSTANCE.createCompositeType();
-					// set ID of parent
-					parentType.setId(tempId);
-					// add to variable
-					variable.getAnonymousTypes().add(parentType);
-
-					// Create new child composite variable & type for term info data to be stored in
-					Variable metaDataVar = VariablesFactory.eINSTANCE.createVariable();
-					CompositeType metaDataType = TypesFactory.eINSTANCE.createCompositeType();
-					metaDataVar.getTypes().add(metaDataType);
-					metaDataVar.setId(tempId + "_meta");
-					metaDataType.setId(tempId + "_metadata");
-					metaDataType.setName("Info");
-					metaDataVar.setName(tempName);
-					geppettoModelAccess.addVariableToType(metaDataVar, parentType);
-
-					geppettoModelAccess.addTypeToLibrary(metaDataType, dataSource.getTargetLibrary());
-
-					// add supertypes:
-					// provide access to libary of types either dynamically added (as bellow) or loaded from xmi
-					List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
-
-					if (core.get("types") != null) {
-						List<String> supertypes = (List<String>) core.get("types");
-
-						for (String supertype : supertypes) {
-							if (!supertype.startsWith("_")) { // ignore supertypes starting with _
-								parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
+					if (term.get("core") != null) {
+						JsonObject core =  (JsonObject) term.get("core");
+						//ID/short_form
+						tempId = String.valueOf(variable.getId());
+						if (core.get("short_form") != null) {
+							String short_form = core.get("short_form").getAsString().replaceAll("\"", "");
+							if (String.valueOf(variable.getId()).equals(short_form)) {
+								tempId = short_form;
+							} else {
+								System.out.println("ERROR: Called ID: " + String.valueOf(variable.getId()) + " does not match returned ID: " + core.get("short_form").getAsString().replaceAll("\"", ""));
+								tempId =short_form;
 							}
+						}else{
+							System.out.println("ERROR: No ID returned: " + String.valueOf(core));
 						}
-					} else {
-						parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Orphan", dependenciesLibrary));
+						//label
+						if (core.get("label") != null) {
+							tempName = core.get("label").getAsString().replaceAll("\"", "");
+						}
+						// add label to variable
+						geppettoModelAccess.setObjectAttribute(variable, GeppettoPackage.Literals.NODE__NAME, tempName);
+						// add parent composite type
+						CompositeType parentType = TypesFactory.eINSTANCE.createCompositeType();
+						// set ID of parent
+						parentType.setId(tempId);
+						// add to variable
+						variable.getAnonymousTypes().add(parentType);
+	
+						// Create new child composite variable & type for term info data to be stored in
+						Variable metaDataVar = VariablesFactory.eINSTANCE.createVariable();
+						CompositeType metaDataType = TypesFactory.eINSTANCE.createCompositeType();
+						metaDataVar.getTypes().add(metaDataType);
+						metaDataVar.setId(tempId + "_meta");
+						metaDataType.setId(tempId + "_metadata");
+						metaDataType.setName("Info");
+						metaDataVar.setName(tempName);
+						geppettoModelAccess.addVariableToType(metaDataVar, parentType);
+	
+						geppettoModelAccess.addTypeToLibrary(metaDataType, dataSource.getTargetLibrary());
+	
+						// add supertypes:
+						// provide access to libary of types either dynamically added (as bellow) or loaded from xmi
+						List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
+	
+						if (core.get("types") != null) {
+							JsonArray supertypes = (JsonArray) core.get("types");
+	
+							for (JsonElement supertype : supertypes) {
+								if (!supertype.getAsString().replaceAll("\"", "").startsWith("_")) { // ignore supertypes starting with _
+									parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype.getAsString().replaceAll("\"", ""), dependenciesLibrary));
+								}
+							}
+						} else {
+							parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Orphan", dependenciesLibrary));
+						}
 					}
 				} else {
 					System.out.println("Error core not returned for: " + String.valueOf(variable.getId()));
