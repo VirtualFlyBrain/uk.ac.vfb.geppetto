@@ -341,7 +341,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 	}
 	
 	class channel_image {
-		List<individual_channel_image> channel_images;
+		List<individual_channel_image> elements;
 	}
 
 	class individual_channel_image {
@@ -957,23 +957,23 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 			
 			List<individual_pub_syn> pub_syn_elements = new ArrayList<>();
 			if ( this.pub_syn != null ) {
-				pub_syn_elements = this.pub_syn.elements;
+				if ( this.pub_syn.elements != null ) { pub_syn_elements = this.pub_syn.elements; }; 
 			}
 			
 			List<pub> pubs_elements = new ArrayList<>();
 			if ( this.pubs != null ) {
-				pubs_elements = this.pubs.pubs;
+				if ( this.pubs.pubs != null ) { pubs_elements = this.pubs.pubs; }; 
 			}
 			
 			List<pub> def_pubs_elements = new ArrayList<>();
 			if ( this.def_pubs != null ) {
-				def_pubs_elements = this.def_pubs.pubs;
+				if ( this.def_pubs.pubs != null ) { def_pubs_elements = this.def_pubs.pubs; }; 
 			}
 
 			if ((this.def_pubs != null && def_pubs_elements.size() > 0) || (this.pub_syn != null && pub_syn_elements.size() > 0) || (this.pubs != null && pubs_elements.size() > 0) || (this.pub != null)) {
 				result += "<ul class=\"terminfo-references\">";
-				if (this.def_pubs != null && this.def_pubs.pubs.size() > 0) {
-					for (pub pub:def_pubs.pubs) {
+				if (this.def_pubs != null && def_pubs_elements.size() > 0) {
+					for (pub pub:def_pubs_elements) {
 						result = addUniqueToString(result, "<li>" + pub.miniref() + "</li>");
 					}
 				}
@@ -1082,15 +1082,15 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 					template = "VFB_00017894";
 				}
 				int j = 0;
-				int f = this.channel_image.channel_images.size();
-				for (individual_channel_image ci : this.channel_image.channel_images) {
+				int f = this.channel_image.elements.size();
+				for (individual_channel_image ci : this.channel_image.elements) {
 					// add same template to the begining and others at the end.
 					if (ci != null && ci.image != null && ci.image.template_anatomy != null && ci.image.template_anatomy.short_form != null && template.equals(ci.image.template_anatomy.short_form)) {
 						addImage(ci.getUrl("", "thumbnailT.png"), this.term.members.core.label, this.term.members.core.short_form, imageArray, j);
 						j++;
 					}
 				}
-				for (individual_channel_image ci : this.channel_image.channel_images) {
+				for (individual_channel_image ci : this.channel_image.elements) {
 					// add same template to the begining and others at the end.
 					if (ci != null && ci.image != null && ci.image.template_anatomy != null && ci.image.template_anatomy.short_form != null && !template.equals(ci.image.template_anatomy.short_form)) {
 						addImage(ci.getUrl("", "thumbnailT.png"), this.term.members.core.label + " [" + ci.image.template_anatomy.label + "]", "[" + ci.image.template_anatomy.short_form + "," + this.term.members.core.short_form + "]", imageArray, j);
@@ -1456,7 +1456,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 
 				List<individual_channel_image> channel_images_elements = new ArrayList<>();
 				if ( vfbTerm.channel_image != null ) {
-					channel_images_elements = vfbTerm.channel_image.channel_images;
+					channel_images_elements = vfbTerm.channel_image.elements;
 				}
 				
 				// Images:

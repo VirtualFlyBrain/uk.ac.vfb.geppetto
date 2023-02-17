@@ -77,7 +77,6 @@ public class VFBProcessTermInfoCore extends AQueryProcessor {
 
 			// term
 			if (results.getValue("term", 0) != null) {
-				Object terms = results.getValue("term", 0);
 				Map<String, Object> term = (Map<String, Object>) results.getValue("term", 0);
 				 if (debug) System.out.println("DEBUG: term: " + String.valueOf(term));
 				//core
