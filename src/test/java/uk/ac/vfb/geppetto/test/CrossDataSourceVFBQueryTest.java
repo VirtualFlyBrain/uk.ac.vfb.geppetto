@@ -45,7 +45,6 @@ import org.geppetto.datasources.aberowl.AberOWLDataSourceService;
 import org.geppetto.datasources.neo4j.Neo4jDataSourceService;
 import org.geppetto.datasources.opencpu.OpenCPUDataSourceService;
 import org.geppetto.datasources.owlery.OWLeryDataSourceService;
-import org.geppetto.datasources.solr.SOLRdataSourceService;
 import org.geppetto.model.GeppettoModel;
 import org.geppetto.model.datasources.DatasourcesFactory;
 import org.geppetto.model.datasources.Query;
@@ -135,14 +134,6 @@ public class CrossDataSourceVFBQueryTest
 		BeanDefinition neo4jDataSourceBeanDefinition = new RootBeanDefinition(Neo4jDataSourceService.class);
 		context.registerBeanDefinition("neo4jDataSource", neo4jDataSourceBeanDefinition);
 		context.registerBeanDefinition("scopedTarget.neo4jDataSource", neo4jDataSourceBeanDefinition);
-		
-		BeanDefinition queryProcessrorSOLRBeanDefinition = new RootBeanDefinition(VFBProcessTermInfoCachedJson.class);
-		context.registerBeanDefinition("vfbProcessTermInfoCachedJson", queryProcessrorSOLRBeanDefinition);
-		context.registerBeanDefinition("scopedTarget.vfbProcessTermInfoCachedJson", queryProcessrorSOLRBeanDefinition);
-		
-		BeanDefinition solrqueryDataSourceBeanDefinition = new RootBeanDefinition(SOLRdataSourceService.class);
-		context.registerBeanDefinition("solrqueryDataSource", solrqueryDataSourceBeanDefinition);
-		context.registerBeanDefinition("scopedTarget.solrqueryDataSource", solrqueryDataSourceBeanDefinition);
 
 		BeanDefinition aberOWLDataSourceBeanDefinition = new RootBeanDefinition(AberOWLDataSourceService.class);
 		context.registerBeanDefinition("aberOWLDataSource", aberOWLDataSourceBeanDefinition);
@@ -185,8 +176,6 @@ public class CrossDataSourceVFBQueryTest
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.owleryIdOnlyQueryProcessor"));
 		retrievedContext = ApplicationListenerBean.getApplicationContext("nblastQueryProcessor");
 		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.nblastQueryProcessor"));
-		retrievedContext = ApplicationListenerBean.getApplicationContext("vfbProcessTermInfoCachedJson");
-		Assert.assertNotNull(retrievedContext.getBean("scopedTarget.vfbProcessTermInfoCachedJson"));
 
 	}
 
@@ -208,12 +197,8 @@ public class CrossDataSourceVFBQueryTest
 		OWLeryDataSourceService owleryDataSource = new OWLeryDataSourceService();
 		owleryDataSource.initialize(model.getDataSources().get(2), geppettoModelAccess);
 		
-		SOLRdataSourceService solrqueryDataSource = new SOLRdataSourceService();
-		solrqueryDataSource.initialize(model.getDataSources().get(5), geppettoModelAccess);
-		
 		OpenCPUDataSourceService nblastDataSource = new OpenCPUDataSourceService();
-		nblastDataSource.initialize(model.getDataSources().get(3), geppettoModelAccess);
-		
+		nblastDataSource.initialize(model.getDataSources().get(4), geppettoModelAccess);
 
 		//Build list of available query indexs against ids:
 		Map<String,Integer> avQ = new HashMap();
@@ -231,8 +216,9 @@ public class CrossDataSourceVFBQueryTest
 		
 		
 		neo4JDataSource.fetchVariable("FBbt_00003748");
-		// solrqueryDataSource.fetchVariable("FBbt_00003748");
 		
+		
+
 		Variable variable = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
 
 		int count = owleryDataSource.getNumberOfResults(getRunnableQueries(model.getQueries().get(avQ.get("partsof")), variable));
@@ -256,7 +242,7 @@ public class CrossDataSourceVFBQueryTest
 		System.out.println(GeppettoSerializer.serializeToJSON(results, false));
 
 		
-		solrqueryDataSource.fetchVariable("VFB_00014755");
+		neo4JDataSource.fetchVariable("VFB_00014755");
 		
 		Variable variable2 = geppettoModelAccess.getPointer("VFB_00014755").getElements().get(0).getVariable();
 		
