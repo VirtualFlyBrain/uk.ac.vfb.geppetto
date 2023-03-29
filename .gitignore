@@ -7,3 +7,5 @@ src/main/java/META-INF/MANIFEST.MF
 .classpath
 geppettoTmp/
 vfb.geppetto.iml
+.vscode/
+.project

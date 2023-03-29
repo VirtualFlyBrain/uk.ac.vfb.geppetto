@@ -995,8 +995,8 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
 			try{
 				if (template == null || template.equals("")){
-					//default to JFRC2
-					template = "VFB_00017894";
+					//default to JFRC2018
+					template = "VFB_00101567";
 				}
 				int j = 0;
 				int f = this.channel_image.size();
@@ -1190,7 +1190,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 			// Determine loaded template
 			CompositeType testTemplate = null;
-			List<String> availableTemplates = Arrays.asList("VFB_00101567","VFB_00200000","VFB_00017894","VFB_00101384","VFB_00050000","VFB_00049000","VFB_00100000","VFB_00030786","VFB_00110000");
+			List<String> availableTemplates = Arrays.asList("VFB_00101567","VFB_00200000","VFB_00017894","VFB_00101384","VFB_00050000","VFB_00049000","VFB_00100000","VFB_00030786","VFB_00110000","VFB_00120000");
 			for (String at:availableTemplates) {
 				try {
 					testTemplate = (CompositeType) ModelUtility.getTypeFromLibrary(at + "_metadata", dataSource.getTargetLibrary());
