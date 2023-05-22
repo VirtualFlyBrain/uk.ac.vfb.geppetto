@@ -1339,8 +1339,13 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 				header = "JSON>Schema";
 				JsonParser parser = new JsonParser();
 				JsonObject jsonFormat = (JsonObject) parser.parse(json);
-
-				vfbTerm = new Gson().fromJson(json, term_info.class);
+				
+				try {
+				    vfbTerm = new Gson().fromJson(json, term_info.class);
+				} catch (JsonSyntaxException e) {
+				    e.printStackTrace();
+				    print(f"Processing JSON: {json}")
+				}
 
 				if (vfbTerm.term.members == null || vfbTerm.term.members.core == null){
 					System.out.println("ERROR: term:core missing from JSON for " + variable.getId());
