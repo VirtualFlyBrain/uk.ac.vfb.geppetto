@@ -59,7 +59,7 @@ import org.geppetto.core.model.GeppettoSerializer;
 
 
 
-public class VFBProcessTermInfoJson extends AQueryProcessor
+public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 {
 
 	Boolean debug=false;
