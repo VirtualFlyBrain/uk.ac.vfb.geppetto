@@ -1234,7 +1234,8 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 			if (debug) System.out.println("Processing JSON...");
 			try{
 				header = "results>JSON";
-				if (debug) System.out.println("JSON passed:" + results.getValue("term_info", 0));
+				if (debug) System.out.println("Results Header: " + results.getHeader() );
+				if (debug) System.out.println("JSON passed: " + results.getValue("term_info", 0));
 				json = new Gson().toJson(results.getValue("term_info", 0));
 				if (debug) System.out.println(json);
 				header = "JSON>Schema";
