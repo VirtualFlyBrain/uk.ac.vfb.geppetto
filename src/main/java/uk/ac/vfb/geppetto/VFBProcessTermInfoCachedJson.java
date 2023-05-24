@@ -319,6 +319,11 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 
 	class image {
 		String image_folder;
+		String image_obj;
+		String image_nrrd;
+		String image_thumbnail;
+		String image_swc;
+		String image_wlz;
 		private List<Double> index;
 		private minimal_entity_info template_channel;
 		minimal_entity_info template_anatomy;
