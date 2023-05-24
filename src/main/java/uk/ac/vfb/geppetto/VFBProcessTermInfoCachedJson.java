@@ -52,6 +52,8 @@ import org.geppetto.model.GeppettoLibrary;
 import org.geppetto.core.model.GeppettoModelAccess;
 import org.geppetto.core.model.GeppettoSerializer;
 
+import org.geppetto.model.GeppettoPackage;
+
 /**
  * @author robertcourt
  *
@@ -1303,8 +1305,6 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 						geppettoModelAccess.addTypeToLibrary(metaDataType, dataSource.getTargetLibrary());
 
 						// add supertypes:
-						// provide access to libary of types either dynamically added (as bellow) or loaded from xmi
-						List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
 
 						if (core.get("types") != null) {
 							List<String> supertypes = (List<String>) core.get("types");
