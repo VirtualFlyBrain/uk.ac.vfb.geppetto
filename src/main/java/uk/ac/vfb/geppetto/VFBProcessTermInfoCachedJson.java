@@ -1357,7 +1357,10 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 				// Images:
 				header = "parentType";
 				// retrieving the parent composite type for new image variables
-				CompositeType parentType = (CompositeType) variable.getAnonymousTypes().get(0);
+				CompositeType parentType = null;
+				if (variable.getAnonymousTypes().size() > 0) {
+					parentType = (CompositeType) variable.getAnonymousTypes().get(0);
+				}
 
 				header = "channel_image";
 				if (vfbTerm.channel_image != null && vfbTerm.channel_image.size() > 0) {
