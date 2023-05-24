@@ -1251,6 +1251,74 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 					addModelHtml(variable.getId(), "Name", "label", metadataType, geppettoModelAccess);
 					addModelHtml("ERROR: term:core missing from JSON for " + variable.getId() + "<br>" + json.replace("}","}<br>"), "Error", "error", metadataType, geppettoModelAccess);
 					return results;
+				} else {
+					//	Populating passed variable with Core Term Info 
+					//      ID: short_form
+					String tempId = "xxxxx";
+					//	Label: label
+					String tempName = "not found";
+
+					System.out.println("Creating Variable for: " + String.valueOf(variable.getId()));
+					Map<String, Object> term = (Map<String, Object>) vfbTerm.term;
+					if (debug) System.out.println("DEBUG: term: " + String.valueOf(term));
+					//core
+					if (vfbTerm.term.core != null) {
+						Map<String, Object> core = (Map<String, Object>) term.get("core");
+						//ID/short_form
+						tempId = String.valueOf(variable.getId());
+						if (core.get("short_form") != null) {
+							if (String.valueOf(variable.getId()).equals((String) core.get("short_form"))) {
+								tempId = (String) core.get("short_form");
+							} else {
+								System.out.println("ERROR: Called ID: " + String.valueOf(variable.getId()) + " does not match returned ID: " + (String) core.get("short_form"));
+								tempId = (String) core.get("short_form");
+							}
+						}else{
+							System.out.println("ERROR: No ID returned: " + String.valueOf(core));
+						}
+						//label
+						if (core.get("label") != null) {
+							tempName = (String) core.get("label");
+						}
+						// add label to variable
+						geppettoModelAccess.setObjectAttribute(variable, GeppettoPackage.Literals.NODE__NAME, tempName);
+						// add parent composite type
+						CompositeType parentType = TypesFactory.eINSTANCE.createCompositeType();
+						// set ID of parent
+						parentType.setId(tempId);
+						// add to variable
+						variable.getAnonymousTypes().add(parentType);
+
+						// Create new child composite variable & type for term info data to be stored in
+						Variable metaDataVar = VariablesFactory.eINSTANCE.createVariable();
+						CompositeType metaDataType = TypesFactory.eINSTANCE.createCompositeType();
+						metaDataVar.getTypes().add(metaDataType);
+						metaDataVar.setId(tempId + "_meta");
+						metaDataType.setId(tempId + "_metadata");
+						metaDataType.setName("Info");
+						metaDataVar.setName(tempName);
+						geppettoModelAccess.addVariableToType(metaDataVar, parentType);
+
+						geppettoModelAccess.addTypeToLibrary(metaDataType, dataSource.getTargetLibrary());
+
+						// add supertypes:
+						// provide access to libary of types either dynamically added (as bellow) or loaded from xmi
+						List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
+
+						if (core.get("types") != null) {
+							List<String> supertypes = (List<String>) core.get("types");
+
+							for (String supertype : supertypes) {
+								if (!supertype.startsWith("_")) { // ignore supertypes starting with _
+									parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
+								}
+							}
+						} else {
+							parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Orphan", dependenciesLibrary));
+						}
+					} else {
+						System.out.println("Error core not returned for: " + String.valueOf(variable.getId()));
+					}
 				}
 
 				// Label: {label} ({short_form}) TYPES (all on one line)
@@ -1365,6 +1433,8 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 				CompositeType parentType = null;
 				if (variable.getAnonymousTypes().size() > 0) {
 					parentType = (CompositeType) variable.getAnonymousTypes().get(0);
+				}else {
+					if (debug) System.out.println("No parent type found for " + variable.getId());
 				}
 
 				header = "channel_image";
