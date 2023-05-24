@@ -60,7 +60,13 @@ public class VFBProcessTermInfoCore extends AQueryProcessor {
 	@Override
 	public QueryResults process(ProcessQuery query, DataSource dataSource, Variable variable, QueryResults results, GeppettoModelAccess geppettoModelAccess) throws GeppettoDataSourceException {
 
-		
+		//	Populating passed variable with Core Term Info 
+		//      ID: short_form
+		String tempId = "xxxxx";
+		//	Label: label
+		String tempName = "not found";
+
+		System.out.println("Creating Variable for: " + String.valueOf(variable.getId()));
 
 		try {
 			Type textType = geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE);
