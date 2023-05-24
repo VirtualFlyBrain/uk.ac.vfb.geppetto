@@ -1180,7 +1180,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 	@Override
 	public QueryResults process(ProcessQuery query, DataSource dataSource, Variable variable, QueryResults results, GeppettoModelAccess geppettoModelAccess) throws GeppettoDataSourceException
 	{
-		String json = "{";
+		String json = "";
 		vfb_terminfo vfbTerm = null;
 		try
 		{
@@ -1235,7 +1235,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 			try{
 				header = "results>JSON";
 				if (debug) System.out.println("Results Header: " + results.getHeader() );
-				json = results.getValue("term_info", 0);
+				json = results.getValue("term_info", 0).toString();
 				if (debug) System.out.println("JSON passed: " + json);
 				header = "JSON>Schema";
 				vfbTerm = new Gson().fromJson(json, vfb_terminfo.class);
