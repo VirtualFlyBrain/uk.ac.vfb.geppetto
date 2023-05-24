@@ -1236,6 +1236,14 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 			CompositeType classParentType = TypesFactory.eINSTANCE.createCompositeType();
 			classVariable.setId("notSet");
 
+			//	Populating passed variable with Core Term Info 
+			//      ID: short_form
+			String tempId = "xxxxx";
+			//	Label: label
+			String tempName = "not found";
+
+			System.out.println("Creating Variable for: " + String.valueOf(variable.getId()));
+
 			if (debug) System.out.println("Processing JSON...");
 			try{
 				header = "results>JSON";
@@ -1252,13 +1260,6 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 					addModelHtml("ERROR: term:core missing from JSON for " + variable.getId() + "<br>" + json.replace("}","}<br>"), "Error", "error", metadataType, geppettoModelAccess);
 					return results;
 				} else {
-					//	Populating passed variable with Core Term Info 
-					//      ID: short_form
-					String tempId = "xxxxx";
-					//	Label: label
-					String tempName = "not found";
-
-					System.out.println("Creating Variable for: " + String.valueOf(variable.getId()));
 					Map<String, Object> term = (Map<String, Object>) vfbTerm.term;
 					if (debug) System.out.println("DEBUG: term: " + String.valueOf(term));
 					//core
