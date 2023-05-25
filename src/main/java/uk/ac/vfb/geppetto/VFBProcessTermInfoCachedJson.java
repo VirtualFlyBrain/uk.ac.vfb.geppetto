@@ -1427,15 +1427,6 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 				}
 
 				// Images:
-				header = "parentType";
-				// retrieving the parent composite type for new image variables
-				CompositeType parentType = null;
-				if (variable.getAnonymousTypes().size() > 0) {
-					parentType = (CompositeType) variable.getAnonymousTypes().get(0);
-				}else {
-					if (debug) System.out.println("No parent type found for " + variable.getId());
-				}
-
 				header = "channel_image";
 				if (vfbTerm.channel_image != null && vfbTerm.channel_image.size() > 0) {
 					downloadFiles = "Aligned Image: ";
