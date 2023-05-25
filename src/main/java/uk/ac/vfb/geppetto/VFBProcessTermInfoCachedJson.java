@@ -1262,26 +1262,26 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 					addModelHtml("ERROR: term:core missing from JSON for " + variable.getId() + "<br>" + json.replace("}","}<br>"), "Error", "error", metadataType, geppettoModelAccess);
 					return results;
 				} else {
-					Map<String, Object> term = (Map<String, Object>) vfbTerm.term;
+					vfb_terminfo.Term term = vfbTerm.term;
 					if (debug) System.out.println("DEBUG: term: " + String.valueOf(term));
 					//core
-					if (vfbTerm.term.core != null) {
-						Map<String, Object> core = (Map<String, Object>) term.get("core");
+					if (term.core != null) {
+						vfb_terminfo.Core core = term.core;
 						//ID/short_form
 						tempId = String.valueOf(variable.getId());
-						if (core.get("short_form") != null) {
-							if (String.valueOf(variable.getId()).equals((String) core.get("short_form"))) {
-								tempId = (String) core.get("short_form");
+						if (core.short_form != null) {
+							if (String.valueOf(variable.getId()).equals(core.short_form)) {
+								tempId = core.short_form;
 							} else {
-								System.out.println("ERROR: Called ID: " + String.valueOf(variable.getId()) + " does not match returned ID: " + (String) core.get("short_form"));
-								tempId = (String) core.get("short_form");
+								System.out.println("ERROR: Called ID: " + String.valueOf(variable.getId()) + " does not match returned ID: " + core.short_form);
+								tempId = core.short_form;
 							}
 						}else{
 							System.out.println("ERROR: No ID returned: " + String.valueOf(core));
 						}
 						//label
-						if (core.get("label") != null) {
-							tempName = (String) core.get("label");
+						if (core.label != null) {
+							tempName = core.label;
 						}
 						// add label to variable
 						geppettoModelAccess.setObjectAttribute(variable, GeppettoPackage.Literals.NODE__NAME, tempName);
@@ -1306,8 +1306,8 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 
 						// add supertypes:
 
-						if (core.get("types") != null) {
-							List<String> supertypes = (List<String>) core.get("types");
+						if (core.types != null) {
+							List<String> supertypes = core.types;
 
 							for (String supertype : supertypes) {
 								if (!supertype.startsWith("_")) { // ignore supertypes starting with _
@@ -1316,7 +1316,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 							}
 						} else {
 							parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Orphan", dependenciesLibrary));
-						}
+						} 
 					} else {
 						System.out.println("Error core not returned for: " + String.valueOf(variable.getId()));
 					}
