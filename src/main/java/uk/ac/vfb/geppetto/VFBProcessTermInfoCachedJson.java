@@ -1237,6 +1237,8 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 			Variable classVariable = VariablesFactory.eINSTANCE.createVariable();
 			CompositeType classParentType = TypesFactory.eINSTANCE.createCompositeType();
 			classVariable.setId("notSet");
+			// add parent composite type
+			CompositeType parentType = TypesFactory.eINSTANCE.createCompositeType();
 
 			//	Populating passed variable with Core Term Info
 			//      ID: short_form
@@ -1283,8 +1285,6 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 						}
 						// add label to variable
 						geppettoModelAccess.setObjectAttribute(variable, GeppettoPackage.Literals.NODE__NAME, tempName);
-						// add parent composite type
-						CompositeType parentType = TypesFactory.eINSTANCE.createCompositeType();
 						// set ID of parent
 						parentType.setId(tempId);
 						// add to variable
