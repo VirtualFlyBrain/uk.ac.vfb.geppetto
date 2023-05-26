@@ -1237,6 +1237,10 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 			// add parent composite type
 			CompositeType parentType = TypesFactory.eINSTANCE.createCompositeType();
 
+			// Create new child composite variable & type for term info data to be stored in
+			Variable metaDataVar = VariablesFactory.eINSTANCE.createVariable();
+			CompositeType metaDataType = TypesFactory.eINSTANCE.createCompositeType();
+
 			//	Populating passed variable with Core Term Info
 			//      ID: short_form
 			String tempId = "xxxxx";
@@ -1286,8 +1290,6 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 						variable.getAnonymousTypes().add(parentType);
 
 						// Create new child composite variable & type for term info data to be stored in
-						Variable metaDataVar = VariablesFactory.eINSTANCE.createVariable();
-						CompositeType metaDataType = TypesFactory.eINSTANCE.createCompositeType();
 						metaDataVar.getTypes().add(metaDataType);
 						metaDataVar.setId(tempId + "_meta");
 						metaDataType.setId(tempId + "_metadata");
