@@ -1316,33 +1316,33 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 				// Label: {label} ({short_form}) TYPES (all on one line)
 				header = "label";
 				tempData = "<b>" + vfbTerm.term.core.label + "</b> [" + vfbTerm.term.core.short_form + "] " + vfbTerm.term.core.types(showTypes);
-				addModelHtml(tempData, "Name", header, metadataType, geppettoModelAccess);
+				addModelHtml(tempData, "Name", header, metaDataType, geppettoModelAccess);
 
 				// Title
 				header = "title";
 				if (vfbTerm.pub_specific_content != null && vfbTerm.pub_specific_content.title != null && !vfbTerm.pub_specific_content.title.equals("")) {
 					tempData = "<b>" + vfbTerm.pub_specific_content.title + "</b>";
-					addModelHtml(tempData, "Title", header, metadataType, geppettoModelAccess);
+					addModelHtml(tempData, "Title", header, metaDataType, geppettoModelAccess);
 				}
 
 				// Symbol
 				header = "symbol";
 				if (vfbTerm.term.core.symbol != null && !vfbTerm.term.core.symbol.equals("")) {
-					addModelHtml("<b>" + vfbTerm.term.core.symbol + "</b>", "Symbol", header, metadataType, geppettoModelAccess);
+					addModelHtml("<b>" + vfbTerm.term.core.symbol + "</b>", "Symbol", header, metaDataType, geppettoModelAccess);
 				}
 
 				// Logo
 				header = "logo";
 				tempData = vfbTerm.term.logo();
 				if (!tempData.equals("")) {
-					addModelHtml(tempData, "Logo", header, metadataType, geppettoModelAccess);
+					addModelHtml(tempData, "Logo", header, metaDataType, geppettoModelAccess);
 				}
 
 				// Link
 				header = "link";
 				tempData = vfbTerm.term.link();
 				if (!tempData.equals("")) {
-					addModelHtml(tempData, "Link", header, metadataType, geppettoModelAccess);
+					addModelHtml(tempData, "Link", header, metaDataType, geppettoModelAccess);
 				}
 
 				// Types
@@ -1353,14 +1353,14 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 				header = "description";
 				tempData = vfbTerm.definition();
 				if (!tempData.equals("")) {
-					addModelHtml(tempData, "Description", header, metadataType, geppettoModelAccess);
+					addModelHtml(tempData, "Description", header, metaDataType, geppettoModelAccess);
 				}
 
 				// Synonyms
 				header = "synonyms";
 				tempData = vfbTerm.synonyms();
 				if (!tempData.equals("")) {
-					addModelHtml(tempData, "Alternative Names", header, metadataType, geppettoModelAccess);
+					addModelHtml(tempData, "Alternative Names", header, metaDataType, geppettoModelAccess);
 				}
 
 				// Source
@@ -1368,9 +1368,9 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 				tempData = vfbTerm.getSource();
 				if (!tempData.equals("") && !tempData.equals("")) {
 					if (vfbTerm.pub_specific_content != null) {
-						addModelHtml(tempData, "Related DataSets", header, metadataType, geppettoModelAccess);
+						addModelHtml(tempData, "Related DataSets", header, metaDataType, geppettoModelAccess);
 					} else {
-						addModelHtml(tempData, "Source", header, metadataType, geppettoModelAccess);
+						addModelHtml(tempData, "Source", header, metaDataType, geppettoModelAccess);
 					}
 				}
 
@@ -1378,14 +1378,14 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 				header = "license";
 				tempData = vfbTerm.getLicense();
 				if (!tempData.equals("") && vfbTerm.pub_specific_content == null) {
-					addModelHtml(tempData, "License", header, metadataType, geppettoModelAccess);
+					addModelHtml(tempData, "License", header, metaDataType, geppettoModelAccess);
 				}
 
 				// Classification
 				header = "Classification";
 				if (vfbTerm.parents != null && vfbTerm.parents.size() > 0) {
 					tempData = vfbTerm.compileList(header, vfbTerm.parents, showTypes);
-					addModelHtml(tempData, "Classification", "type", metadataType, geppettoModelAccess);
+					addModelHtml(tempData, "Classification", "type", metaDataType, geppettoModelAccess);
 					// store first parent as parent type for neuropil/tract queries
 					classVariable.setId(vfbTerm.parents.get(0).short_form);
 					classVariable.setName(vfbTerm.parents.get(0).label);
@@ -1402,21 +1402,21 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 				header = "relationships";
 				if (vfbTerm.relationships != null && vfbTerm.relationships.size() > 0) {
 					tempData = vfbTerm.relList(header, vfbTerm.relationships, showTypes);
-					addModelHtml(tempData, "Relationships", header, metadataType, geppettoModelAccess);
+					addModelHtml(tempData, "Relationships", header, metaDataType, geppettoModelAccess);
 				}
 
 				// related individuals
 				header = "related_individuals";
 				if (vfbTerm.related_individuals != null && vfbTerm.related_individuals.size() > 0) {
 					tempData = vfbTerm.relList(header, vfbTerm.related_individuals, showTypes);
-					addModelHtml(tempData, "Related Individuals", header, metadataType, geppettoModelAccess);
+					addModelHtml(tempData, "Related Individuals", header, metaDataType, geppettoModelAccess);
 				}
 
 				// xrefs
 				header = "xrefs";
 				if ((vfbTerm.xrefs != null && vfbTerm.xrefs.size() > 0) || vfbTerm.pub_specific_content != null) {
 					tempData = vfbTerm.xrefList();
-					addModelHtml(tempData, "Cross References", header, metadataType, geppettoModelAccess);
+					addModelHtml(tempData, "Cross References", header, metaDataType, geppettoModelAccess);
 				}
 
 				// Images:
@@ -1471,8 +1471,8 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 									downloadFiles += "<br>Remember to cite: <a download=\"" + variable.getId() + ".bibtex\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">citations.bibtex</a>";
 									downloadData.add("'bibtex':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/RequiredCitations(BIBTEX)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").bibtex" + "'}");
 									downloadFiles += "<br>Note: see source & license above for terms of reuse and correct attribution.";
-									addModelHtml(downloadFiles, "Downloads", "downloads", metadataType, geppettoModelAccess);
-									addModelFileMeta(downloadData, "DownloadMeta", "filemeta", metadataType, geppettoModelAccess);
+									addModelHtml(downloadFiles, "Downloads", "downloads", metaDataType, geppettoModelAccess);
+									addModelFileMeta(downloadData, "DownloadMeta", "filemeta", metaDataType, geppettoModelAccess);
 								}
 							}
 
@@ -1529,19 +1529,19 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 								} else {
 									downloadFiles += "<br>Note: see source & license above for terms of reuse and correct attribution.";
 								}
-								addModelHtml(downloadFiles, "Downloads", "downloads", metadataType, geppettoModelAccess);
-								addModelFileMeta(downloadData, "DownloadMeta", "filemeta", metadataType, geppettoModelAccess);
+								addModelHtml(downloadFiles, "Downloads", "downloads", metaDataType, geppettoModelAccess);
+								addModelFileMeta(downloadData, "DownloadMeta", "filemeta", metaDataType, geppettoModelAccess);
 							}
 							// throwing count out to prevent other OBJ loading
 							count = 1000;
 						}
 					}
 					if (template != null && template != "") {
-						addModelHtml(tempLink, "Aligned to", "template", metadataType, geppettoModelAccess);
+						addModelHtml(tempLink, "Aligned to", "template", metaDataType, geppettoModelAccess);
 						classParentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(template, dependenciesLibrary));
 						// thumbnail
 						if (vfbTerm.thumbnails(template) != null){
-							addModelThumbnails(vfbTerm.thumbnails(template), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
+							addModelThumbnails(vfbTerm.thumbnails(template), "Thumbnail", "thumbnail", metaDataType, geppettoModelAccess);
 						}
 					}
 				}
@@ -1552,9 +1552,9 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 					if (!template.equals("")){
 						template = variable.getId();
 					}
-					addModelHtml(vfbTerm.term.core.intLink(), "Aligned to", "template", metadataType, geppettoModelAccess);
+					addModelHtml(vfbTerm.term.core.intLink(), "Aligned to", "template", metaDataType, geppettoModelAccess);
 					// thumbnail
-					addModelThumbnails(vfbTerm.thumbnail(), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
+					addModelThumbnails(vfbTerm.thumbnail(), "Thumbnail", "thumbnail", metaDataType, geppettoModelAccess);
 					// OBJ - 3D mesh
 					tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume_man.obj");
 					if (tempData == null){
@@ -1583,30 +1583,30 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 					tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume.nrrd");
 					if (debug) System.out.println("NRRD " + tempData);
 					if (tempData != null){
-						addModelHtml(downloadFiles + "<br>Aligned Image: <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a><br>Note: see source & license above for terms of reuse and correct attribution.", "Downloads", "downloads", metadataType, geppettoModelAccess);
+						addModelHtml(downloadFiles + "<br>Aligned Image: <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a><br>Note: see source & license above for terms of reuse and correct attribution.", "Downloads", "downloads", metaDataType, geppettoModelAccess);
 						downloadData.add("'nrrd':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/SignalFiles(NRRD)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").nrrd" + "'}");
-						addModelFileMeta(downloadData, "DownloadMeta", "filemeta", metadataType, geppettoModelAccess);
+						addModelFileMeta(downloadData, "DownloadMeta", "filemeta", metaDataType, geppettoModelAccess);
 					}
 				}
 
 				// examples
 				header = "anatomy_channel_image";
 				if (vfbTerm.anatomy_channel_image != null && vfbTerm.anatomy_channel_image.size() > 0 && vfbTerm.examples(template) != null) {
-					addModelThumbnails(vfbTerm.examples(template), "Available Images", "examples", metadataType, geppettoModelAccess);
+					addModelThumbnails(vfbTerm.examples(template), "Available Images", "examples", metaDataType, geppettoModelAccess);
 					parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("hasExamples", dependenciesLibrary));
 				}
 
 				// NBLAST Cluster
 				header = "cluster";
 				if (vfbTerm.xrefs != null && vfbTerm.xrefs.size() > 0 && vfbTerm.xrefs.get(0).link_base.indexOf("flybrain.mrc-lmb.cam.ac.uk/vfb/fc/clusterv/3") > -1) {
-					addModelThumbnails(vfbTerm.clusterImage(), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
+					addModelThumbnails(vfbTerm.clusterImage(), "Thumbnail", "thumbnail", metaDataType, geppettoModelAccess);
 				}
 
 				// references
 				header = "references";
 				references = vfbTerm.getReferences();
 				if (!references.equals("")) {
-					addModelHtml(references, "References", "references", metadataType, geppettoModelAccess);
+					addModelHtml(references, "References", "references", metaDataType, geppettoModelAccess);
 				}
 
 				// set queries
@@ -1631,7 +1631,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 							querys += badge + "<a href=\"/org.geppetto.frontend/geppetto?q=" + classVariable.getId() + "," + (String) runnableQuery.getPath() + "\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + classVariable.getId() + "," + classVariable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", classVariable.getName()) + "</a></br>";
 						}
 						if (!classAdded) {
-							addModelString(classVariable.getId(), "ClassQueriesFrom", "classqueriesfrom", metadataType, geppettoModelAccess);
+							addModelString(classVariable.getId(), "ClassQueriesFrom", "classqueriesfrom", metaDataType, geppettoModelAccess);
 							classAdded = true;
 						}
 					}
@@ -1689,7 +1689,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 					tempData += String.join("<br />", ql);
 					// add footer/note
 					//tempData += "<br /><small>Note: Copy link URL for query permalink. Queries are only shown if a result is likely</small><br />";
-					addModelHtml(tempData, "Query for", "queries", metadataType, geppettoModelAccess);
+					addModelHtml(tempData, "Query for", "queries", metaDataType, geppettoModelAccess);
 				}
 
 				//Indenting embeded queries
@@ -1700,7 +1700,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 				tempData = vfbTerm.targetingSplits();
 				if (tempData != null && !tempData.equals("")) {
 					tempData += badge + queryExpressedInX;
-					addModelHtml(tempData, "Targeting Splits", header, metadataType, geppettoModelAccess);
+					addModelHtml(tempData, "Targeting Splits", header, metaDataType, geppettoModelAccess);
 				}
 
 				// Targeting Neurons
@@ -1708,12 +1708,12 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 				tempData = vfbTerm.targetingNeurons();
 				if (tempData != null && !tempData.equals("")) {
 					tempData += badge + queryExpressedInX;
-					addModelHtml(tempData, "Targeted Neurons", header, metadataType, geppettoModelAccess);
+					addModelHtml(tempData, "Targeted Neurons", header, metaDataType, geppettoModelAccess);
 				}
 
 				//debug query version to term info
 				if (debug) {
-					addModelHtml(vfbTerm.query + " (" + vfbTerm.version + ")<br>" + json, "Debug", "debug", metadataType, geppettoModelAccess);
+					addModelHtml(vfbTerm.query + " (" + vfbTerm.version + ")<br>" + json, "Debug", "debug", metaDataType, geppettoModelAccess);
 				}
 
 			}catch (Exception e) {
@@ -1723,9 +1723,9 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 				//debug query version to term info
 				if (debug) {
 					if (vfbTerm!=null && vfbTerm.query!=null) {
-						addModelHtml(vfbTerm.query + " (" + vfbTerm.version + ")" + "<br>" + json + "<br>" + e.toString(), "Debug", "debug", metadataType, geppettoModelAccess);
+						addModelHtml(vfbTerm.query + " (" + vfbTerm.version + ")" + "<br>" + json + "<br>" + e.toString(), "Debug", "debug", metaDataType, geppettoModelAccess);
 					}else{
-						addModelHtml(json + "<br>" + e.toString(), "Debug", "debug", metadataType, geppettoModelAccess);
+						addModelHtml(json + "<br>" + e.toString(), "Debug", "debug", metaDataType, geppettoModelAccess);
 					}
 				}
 			}
@@ -1832,10 +1832,10 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 	 * @param data
 	 * @param name
 	 * @param reference
-	 * @param metadataType
+	 * @param metaDataType
 	 * @return
 	 */
-	private void addModelHtml(String data, String name, String reference, CompositeType metadataType, GeppettoModelAccess geppettoModelAccess) throws GeppettoVisitingException
+	private void addModelHtml(String data, String name, String reference, CompositeType metaDataType, GeppettoModelAccess geppettoModelAccess) throws GeppettoVisitingException
 	{
 		try{
 			Type htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
@@ -1846,7 +1846,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 			HTML labelValue = ValuesFactory.eINSTANCE.createHTML();
 			label.getInitialValues().put(htmlType, labelValue);
 			labelValue.setHtml(data);
-			geppettoModelAccess.addVariableToType(label, metadataType);
+			geppettoModelAccess.addVariableToType(label, metaDataType);
 		}
 		catch(GeppettoVisitingException e)
 		{
@@ -1862,10 +1862,10 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 	 * @param images
 	 * @param name
 	 * @param reference
-	 * @param metadataType
+	 * @param metaDataType
 	 * @return
 	 */
-	private void addModelThumbnails(ArrayValue images, String name, String reference, CompositeType metadataType, GeppettoModelAccess geppettoModelAccess) throws GeppettoVisitingException
+	private void addModelThumbnails(ArrayValue images, String name, String reference, CompositeType metaDataType, GeppettoModelAccess geppettoModelAccess) throws GeppettoVisitingException
 	{
 		try{
 			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
@@ -1874,7 +1874,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 			imageVariable.setId(reference);
 			imageVariable.setName(name);
 			imageVariable.getTypes().add(imageType);
-			geppettoModelAccess.addVariableToType(imageVariable, metadataType);
+			geppettoModelAccess.addVariableToType(imageVariable, metaDataType);
 
 			if (images.getElements().size() > 1){
 				imageVariable.getInitialValues().put(imageType, images);
@@ -1896,10 +1896,10 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 	 * @param data
 	 * @param name
 	 * @param reference
-	 * @param metadataType
+	 * @param metaDataType
 	 * @return
 	 */
-	private void addModelString(String data, String name, String reference, CompositeType metadataType, GeppettoModelAccess geppettoModelAccess) throws GeppettoVisitingException
+	private void addModelString(String data, String name, String reference, CompositeType metaDataType, GeppettoModelAccess geppettoModelAccess) throws GeppettoVisitingException
 	{
 		try
 		{
@@ -1911,7 +1911,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 			Text labelValue = ValuesFactory.eINSTANCE.createText();
 			label.getInitialValues().put(textType, labelValue);
 			labelValue.setText(data);
-			geppettoModelAccess.addVariableToType(label, metadataType);
+			geppettoModelAccess.addVariableToType(label, metaDataType);
 		}
 		catch(GeppettoVisitingException e)
 		{
@@ -1926,10 +1926,10 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 	 * @param data
 	 * @param name
 	 * @param reference
-	 * @param metadataType
+	 * @param metaDataType
 	 * @return
 	 */
-	private void addModelFileMeta(List<String> data, String name, String reference, CompositeType metadataType, GeppettoModelAccess geppettoModelAccess) throws GeppettoVisitingException
+	private void addModelFileMeta(List<String> data, String name, String reference, CompositeType metaDataType, GeppettoModelAccess geppettoModelAccess) throws GeppettoVisitingException
 	{
 		try
 		{
@@ -1949,7 +1949,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 			Text labelValue = ValuesFactory.eINSTANCE.createText();
 			label.getInitialValues().put(textType, labelValue);
 			labelValue.setText(result);
-			geppettoModelAccess.addVariableToType(label, metadataType);
+			geppettoModelAccess.addVariableToType(label, metaDataType);
 		}
 		catch(GeppettoVisitingException e)
 		{
