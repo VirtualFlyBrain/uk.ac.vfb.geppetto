@@ -1265,55 +1265,51 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 				} else {
 					if (debug) System.out.println("DEBUG: term: " + String.valueOf(vfbTerm.term));
 					//core
-					if (vfbTerm.term.core != null) {
-						//ID/short_form
-						tempId = String.valueOf(variable.getId());
-						if (vfbTerm.term.core.short_form != null) {
-							if (String.valueOf(variable.getId()).equals(vfbTerm.term.core.short_form)) {
-								tempId = vfbTerm.term.core.short_form;
-							} else {
-								System.out.println("ERROR: Called ID: " + String.valueOf(variable.getId()) + " does not match returned ID: " + vfbTerm.term.core.short_form);
-								tempId = vfbTerm.term.core.short_form;
-							}
-						}else{
-							System.out.println("ERROR: No ID returned: " + String.valueOf(vfbTerm.term.core));
-						}
-						//label
-						if (vfbTerm.term.core.label != null) {
-							tempName = vfbTerm.term.core.label;
-						}
-						// add label to variable
-						geppettoModelAccess.setObjectAttribute(variable, GeppettoPackage.Literals.NODE__NAME, tempName);
-						// set ID of parent
-						parentType.setId(tempId);
-						// add to variable
-						variable.getAnonymousTypes().add(parentType);
-
-						// Create new child composite variable & type for term info data to be stored in
-						metaDataVar.getTypes().add(metaDataType);
-						metaDataVar.setId(tempId + "_meta");
-						metaDataType.setId(tempId + "_metadata");
-						metaDataType.setName("Info");
-						metaDataVar.setName(tempName);
-						geppettoModelAccess.addVariableToType(metaDataVar, parentType);
-
-						geppettoModelAccess.addTypeToLibrary(metaDataType, dataSource.getTargetLibrary());
-
-						// add supertypes:
-
-						if (vfbTerm.term.core.types != null) {
-							List<String> supertypes = vfbTerm.term.core.types;
-
-							for (String supertype : supertypes) {
-								if (!supertype.startsWith("_")) { // ignore supertypes starting with _
-									parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
-								}
-							}
+					//ID/short_form
+					tempId = String.valueOf(variable.getId());
+					if (vfbTerm.term.core.short_form != null) {
+						if (String.valueOf(variable.getId()).equals(vfbTerm.term.core.short_form)) {
+							tempId = vfbTerm.term.core.short_form;
 						} else {
-							parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Orphan", dependenciesLibrary));
+							System.out.println("ERROR: Called ID: " + String.valueOf(variable.getId()) + " does not match returned ID: " + vfbTerm.term.core.short_form);
+							tempId = vfbTerm.term.core.short_form;
+						}
+					}else{
+						System.out.println("ERROR: No ID returned: " + String.valueOf(vfbTerm.term.core));
+					}
+					//label
+					if (vfbTerm.term.core.label != null) {
+						tempName = vfbTerm.term.core.label;
+					}
+					// add label to variable
+					geppettoModelAccess.setObjectAttribute(variable, GeppettoPackage.Literals.NODE__NAME, tempName);
+					// set ID of parent
+					parentType.setId(tempId);
+					// add to variable
+					variable.getAnonymousTypes().add(parentType);
+
+					// Create new child composite variable & type for term info data to be stored in
+					metaDataVar.getTypes().add(metaDataType);
+					metaDataVar.setId(tempId + "_meta");
+					metaDataType.setId(tempId + "_metadata");
+					metaDataType.setName("Info");
+					metaDataVar.setName(tempName);
+					geppettoModelAccess.addVariableToType(metaDataVar, parentType);
+
+					geppettoModelAccess.addTypeToLibrary(metaDataType, dataSource.getTargetLibrary());
+
+					// add supertypes:
+
+					if (vfbTerm.term.core.types != null) {
+						List<String> supertypes = vfbTerm.term.core.types;
+
+						for (String supertype : supertypes) {
+							if (!supertype.startsWith("_")) { // ignore supertypes starting with _
+								parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
+							}
 						}
 					} else {
-						System.out.println("Error core not returned for: " + String.valueOf(variable.getId()));
+						parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Orphan", dependenciesLibrary));
 					}
 				}
 
