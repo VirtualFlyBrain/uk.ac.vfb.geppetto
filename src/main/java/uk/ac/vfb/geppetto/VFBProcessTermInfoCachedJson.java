@@ -1214,9 +1214,6 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 				}
 			}
 
-			// retrieving the metadatatype
-			CompositeType metadataType = (CompositeType) ModelUtility.getTypeFromLibrary(variable.getId() + "_metadata", dataSource.getTargetLibrary());
-
 			// provide access to libary of types either dynamically added (as bellow) or loaded from xmi
 			List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
 
@@ -1253,15 +1250,13 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 				header = "results>JSON";
 				if (debug) System.out.println("Results Header: " + results.getHeader() );
 				json = results.getValue("term_info", 0).toString();
-				if (debug) System.out.println("JSON passed: " + json);
+				if (debug) System.out.println("JSON passed: " + json.replace("}","}\n"));
 				header = "JSON>Schema";
 				vfbTerm = new Gson().fromJson(json, vfb_terminfo.class);
 
 				if (vfbTerm.term == null || vfbTerm.term.core == null){
 					System.out.println("ERROR: term:core missing from JSON for " + variable.getId());
 					System.out.println(json.replace("}","}\n"));
-					addModelHtml(variable.getId(), "Name", "label", metadataType, geppettoModelAccess);
-					addModelHtml("ERROR: term:core missing from JSON for " + variable.getId() + "<br>" + json.replace("}","}<br>"), "Error", "error", metadataType, geppettoModelAccess);
 					return results;
 				} else {
 					if (debug) System.out.println("DEBUG: term: " + String.valueOf(vfbTerm.term));
