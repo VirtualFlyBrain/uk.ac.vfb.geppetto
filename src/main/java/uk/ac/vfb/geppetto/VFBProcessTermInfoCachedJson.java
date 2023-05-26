@@ -383,6 +383,11 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 		private String voxel;
 		private String orientation;
 		String image_folder;
+		String image_obj;
+		String image_nrrd;
+		String image_thumbnail;
+		String image_swc;
+		String image_wlz;
 		private minimal_entity_info channel;
 
 		public coordinatesJsonString getVoxel() {
@@ -1010,14 +1015,14 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 				for (channel_image ci : this.channel_image) {
 					// add same template to the begining and others at the end.
 					if (ci != null && ci.image != null && ci.image.template_anatomy != null && ci.image.template_anatomy.short_form != null && template.equals(ci.image.template_anatomy.short_form)) {
-						addImage(ci.getUrl("", "thumbnailT.png"), this.term.core.label, this.term.core.short_form, imageArray, j);
+						addImage(ci.image.image_thumbnail.replace("template.png", "thumbnailT.png"), this.term.core.label, this.term.core.short_form, imageArray, j);
 						j++;
 					}
 				}
 				for (channel_image ci : this.channel_image) {
 					// add same template to the begining and others at the end.
 					if (ci != null && ci.image != null && ci.image.template_anatomy != null && ci.image.template_anatomy.short_form != null && !template.equals(ci.image.template_anatomy.short_form)) {
-						addImage(ci.getUrl("", "thumbnailT.png"), this.term.core.label + " [" + ci.image.template_anatomy.label + "]", "[" + ci.image.template_anatomy.short_form + "," + this.term.core.short_form + "]", imageArray, j);
+						addImage(ci.image.image_thumbnail.replace("template.png", "thumbnailT.png"), this.term.core.label + " [" + ci.image.template_anatomy.label + "]", "[" + ci.image.template_anatomy.short_form + "," + this.term.core.short_form + "]", imageArray, j);
 						j++;
 					}
 				}
@@ -1063,7 +1068,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 		public ArrayValue thumbnail() {
 			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
 			try{
-				addImage(this.template_channel.image_folder + "thumbnailT.png", this.term.core.label, this.term.core.short_form, imageArray, 0);
+				addImage(this.template_channel.image_thumbnail.replace("thumbnail.png", "thumbnailT.png"), this.term.core.label, this.term.core.short_form, imageArray, 0);
 			}catch (Exception e) {
 				System.out.println("Error in vfbTerm.thumbnails(): " + e.toString());
 				e.printStackTrace();
@@ -1250,6 +1255,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 			System.out.println("Creating Variable for: " + String.valueOf(variable.getId()));
 
 			if (debug) System.out.println("Processing JSON...");
+
 			try{
 				header = "results>JSON";
 				if (debug) System.out.println("Results Header: " + results.getHeader() );
@@ -1448,22 +1454,23 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 								// Add OBJ only so the template detection is triggered
 
 								// OBJ - 3D mesh
-								tempData = vfbTerm.imageFile(alignment, "volume_man.obj");
-								if (tempData == null){
+								tempData = alignment.image.image_obj;
+								if (tempData.contains(".obj")){
 									if (debug) System.out.println("OBJ " + tempData);
-									tempData = vfbTerm.imageFile(alignment, "volume.obj");
-									downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + "_pointCloud.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_pointCloud.obj</a>";
-									downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/PointCloudFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
-								}else {
-									downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + "_mesh.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_mesh.obj</a>";
-									downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/MeshFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
-								}
-								if (tempData != null){
-									addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId(), parentType, geppettoModelAccess, dataSource);
+									if (tempData.contains("volume.obj")) {
+										downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + "_pointCloud.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_pointCloud.obj</a>";
+										downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/PointCloudFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
+									}else {
+										downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + "_mesh.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_mesh.obj</a>";
+										downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/MeshFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
+									}
+									if (tempData != null){
+										addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId(), parentType, geppettoModelAccess, dataSource);
+									}
 								}
 
 								// Download - NRRD stack
-								tempData = vfbTerm.imageFile(alignment, "volume.nrrd");
+								tempData = alignment.image.image_nrrd;
 								if (tempData != null){
 									if (debug) System.out.println("NRRD " + tempData);
 									downloadFiles += "<br>Signal (NRRD): <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a>";
@@ -1483,22 +1490,23 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 							}
 							tempLink = alignment.image.template_anatomy.intLink();
 							// OBJ - 3D mesh
-							tempData = vfbTerm.imageFile(alignment, "volume_man.obj");
-							if (tempData == null){
+							tempData = alignment.image.image_obj;
+							if (tempData.contains(".obj")){
 								if (debug) System.out.println("OBJ " + tempData);
-								tempData = vfbTerm.imageFile(alignment, "volume.obj");
-								downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + "_pointCloud.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_pointCloud.obj</a>";
-								downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/PointCloudFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
-							}else {
-								downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + "_mesh.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_mesh.obj</a>";
-								downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/MeshFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
-							}
-							if (tempData != null){
-								addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId(), parentType, geppettoModelAccess, dataSource);
+								if (tempData.contains("volume.obj")) {
+									downloadFiles += "<br>Pointcloud (OBJ): <a download=\"" + variable.getId() + "_pointCloud.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_pointCloud.obj</a>";
+									downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/PointCloudFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
+								}else {
+									downloadFiles += "<br>Mesh (OBJ): <a download=\"" + variable.getId() + "_mesh.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_mesh.obj</a>";
+									downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/MeshFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
+								}
+								if (tempData != null){
+									addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId(), parentType, geppettoModelAccess, dataSource);
+								}
 							}
 
 							// SWC - 3D mesh
-							tempData = vfbTerm.imageFile(alignment, "volume.swc");
+							tempData = alignment.image.image_swc;
 							if (tempData != null){
 								if (debug) System.out.println("SWC " + tempData);
 								addModelSwc(tempData.replace("https://","http://"), "3D Skeleton", variable.getId(), parentType, geppettoModelAccess, dataSource);
@@ -1507,7 +1515,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 							}
 
 							// Slices - 3D slice viewer
-							tempData = vfbTerm.imageFile(alignment, "volume.wlz");
+							tempData = alignment.image.image_wlz;
 							if (tempData != null){
 								if (debug) System.out.println("WLZ " + tempData);
 								addModelSlices(tempData.replace("http://","https://"), "Stack Viewer Slices", variable.getId(), parentType, geppettoModelAccess, dataSource, vfbTerm.getDomains());
@@ -1516,7 +1524,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 							}
 
 							// Download - NRRD stack
-							tempData = vfbTerm.imageFile(alignment, "volume.nrrd");
+							tempData = alignment.image.image_nrrd;
 							if (tempData != null){
 								if (debug) System.out.println("NRRD " + tempData);
 								downloadFiles += "<br>Signal (NRRD): <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a>";
@@ -1556,22 +1564,23 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 					// thumbnail
 					addModelThumbnails(vfbTerm.thumbnail(), "Thumbnail", "thumbnail", metaDataType, geppettoModelAccess);
 					// OBJ - 3D mesh
-					tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume_man.obj");
-					if (tempData == null){
-						tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume.obj");
-						downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + "_pointCloud.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_pointCloud.obj</a>";
-						downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/PointCloudFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
-					}else {
-						downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + "_mesh.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_mesh.obj</a>";
-						downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/MeshFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
+					tempData = vfbTerm.template_channel.image_obj;
+					if (tempData.contains(".obj")){
+						if (tempData.contains("volume.obj")) {
+							downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + "_pointCloud.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_pointCloud.obj</a>";
+							downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/PointCloudFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
+						}else {
+							downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + "_mesh.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_mesh.obj</a>";
+							downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/MeshFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
+						}
+						if (tempData != null){
+							addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId(), parentType, geppettoModelAccess, dataSource);
+						}
+						if (debug) System.out.println("OBJ " + tempData);
 					}
-					if (tempData != null){
-						addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId(), parentType, geppettoModelAccess, dataSource);
-					}
-					if (debug) System.out.println("OBJ " + tempData);
 
 					// Slices - 3D slice viewer
-					tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume.wlz");
+					tempData = vfbTerm.template_channel.image_wlz;
 					if (tempData != null){
 						addModelSlices(tempData.replace("http://","https://"), "Stack Viewer Slices", variable.getId(), parentType, geppettoModelAccess, dataSource, vfbTerm.getDomains());
 						downloadFiles += "<br>Slices (Woolz): <a download=\"" + variable.getId() + ".wlz\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".wlz</a>";
@@ -1580,7 +1589,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 					if (debug) System.out.println("WLZ " + tempData);
 
 					// Download - NRRD stack
-					tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume.nrrd");
+					tempData = vfbTerm.template_channel.image_nrrd;
 					if (debug) System.out.println("NRRD " + tempData);
 					if (tempData != null){
 						addModelHtml(downloadFiles + "<br>Aligned Image: <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a><br>Note: see source & license above for terms of reuse and correct attribution.", "Downloads", "downloads", metaDataType, geppettoModelAccess);
@@ -1594,12 +1603,6 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 				if (vfbTerm.anatomy_channel_image != null && vfbTerm.anatomy_channel_image.size() > 0 && vfbTerm.examples(template) != null) {
 					addModelThumbnails(vfbTerm.examples(template), "Available Images", "examples", metaDataType, geppettoModelAccess);
 					parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("hasExamples", dependenciesLibrary));
-				}
-
-				// NBLAST Cluster
-				header = "cluster";
-				if (vfbTerm.xrefs != null && vfbTerm.xrefs.size() > 0 && vfbTerm.xrefs.get(0).link_base.indexOf("flybrain.mrc-lmb.cam.ac.uk/vfb/fc/clusterv/3") > -1) {
-					addModelThumbnails(vfbTerm.clusterImage(), "Thumbnail", "thumbnail", metaDataType, geppettoModelAccess);
 				}
 
 				// references
@@ -1716,7 +1719,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 					addModelHtml(vfbTerm.query + " (" + vfbTerm.version + ")<br>" + json, "Debug", "debug", metaDataType, geppettoModelAccess);
 				}
 
-			}catch (Exception e) {
+			} catch (Exception e) {
 				System.out.println("Error creating " + header + ": " + e.toString());
 				e.printStackTrace();
 				System.out.println(json.replace("}","}\n"));
