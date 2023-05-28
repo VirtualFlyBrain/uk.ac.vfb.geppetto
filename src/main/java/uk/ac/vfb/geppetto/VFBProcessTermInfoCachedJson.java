@@ -1007,7 +1007,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
 			try{
 				if (template == null || template.equals("")){
-					//default to JFRC2
+					//default to JRC2018U template
 					template = "VFB_00101567";
 				}
 				int j = 0;
@@ -1038,8 +1038,8 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
 			try{
 				if (template == null || template.equals("")){
-					//default to JFRC2
-					template = "VFB_00017894";
+					//default to JRC2018U template
+					template = "VFB_00101567";
 				}
 				int j = 0;
 				int f = this.anatomy_channel_image.size();
