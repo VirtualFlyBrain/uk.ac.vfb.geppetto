@@ -1455,7 +1455,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 
 								// OBJ - 3D mesh
 								tempData = alignment.image.image_obj;
-								if (tempData.contains(".obj")){
+								if (tempData != null && tempData.contains(".obj")){
 									if (debug) System.out.println("OBJ " + tempData);
 									if (tempData.contains("volume.obj")) {
 										downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + "_pointCloud.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_pointCloud.obj</a>";
@@ -1471,7 +1471,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 
 								// Download - NRRD stack
 								tempData = alignment.image.image_nrrd;
-								if (tempData != null){
+								if (tempData != null && tempData.contains(".nrrd")){
 									if (debug) System.out.println("NRRD " + tempData);
 									downloadFiles += "<br>Signal (NRRD): <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a>";
 									downloadData.add("'nrrd':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/SignalFiles(NRRD)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").nrrd" + "'}");
@@ -1491,7 +1491,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 							tempLink = alignment.image.template_anatomy.intLink();
 							// OBJ - 3D mesh
 							tempData = alignment.image.image_obj;
-							if (tempData.contains(".obj")){
+							if (tempData != null && tempData.contains(".obj")){
 								if (debug) System.out.println("OBJ " + tempData);
 								if (tempData.contains("volume.obj")) {
 									downloadFiles += "<br>Pointcloud (OBJ): <a download=\"" + variable.getId() + "_pointCloud.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_pointCloud.obj</a>";
@@ -1507,7 +1507,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 
 							// SWC - 3D mesh
 							tempData = alignment.image.image_swc;
-							if (tempData != null){
+							if (tempData != null && tempData.contains(".swc")){
 								if (debug) System.out.println("SWC " + tempData);
 								addModelSwc(tempData.replace("https://","http://"), "3D Skeleton", variable.getId(), parentType, geppettoModelAccess, dataSource);
 								downloadFiles += "<br>Skeleton (SWC): <a download=\"" + variable.getId() + ".swc\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".swc</a>";
@@ -1516,7 +1516,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 
 							// Slices - 3D slice viewer
 							tempData = alignment.image.image_wlz;
-							if (tempData != null){
+							if (tempData != null && tempData.contains(".wlz")){
 								if (debug) System.out.println("WLZ " + tempData);
 								addModelSlices(tempData.replace("http://","https://"), "Stack Viewer Slices", variable.getId(), parentType, geppettoModelAccess, dataSource, vfbTerm.getDomains());
 								downloadFiles += "<br>Slices (Woolz): <a download=\"" + variable.getId() + ".wlz\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".wlz</a>";
@@ -1525,7 +1525,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 
 							// Download - NRRD stack
 							tempData = alignment.image.image_nrrd;
-							if (tempData != null){
+							if (tempData != null && tempData.contains(".nrrd")){
 								if (debug) System.out.println("NRRD " + tempData);
 								downloadFiles += "<br>Signal (NRRD): <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a>";
 								downloadData.add("'nrrd':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/SignalFiles(NRRD)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").nrrd" + "'}");
