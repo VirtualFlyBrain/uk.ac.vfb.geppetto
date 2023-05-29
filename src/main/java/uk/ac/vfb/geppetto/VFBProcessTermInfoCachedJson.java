@@ -1507,6 +1507,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 
 							// SWC - 3D mesh
 							tempData = alignment.image.image_swc;
+							if (debug) System.out.println("tempData before check: " + tempData);
 							if (tempData != null && tempData.contains(".swc")){
 								if (debug) System.out.println("SWC " + tempData);
 								addModelSwc(tempData.replace("https://","http://"), "3D Skeleton", variable.getId(), parentType, geppettoModelAccess, dataSource);
