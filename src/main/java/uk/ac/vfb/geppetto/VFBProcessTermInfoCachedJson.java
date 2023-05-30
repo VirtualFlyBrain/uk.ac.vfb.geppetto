@@ -1758,7 +1758,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 	private void addModelSlices(String url, String name, String reference, CompositeType parentType, GeppettoModelAccess geppettoModelAccess, DataSource dataSource, List<List<String>> domains) throws GeppettoVisitingException
 	{
 		try{
-			if (url == null || url.equals("") {
+			if (url == null || url.equals("")) {
 				return;
 			}
 			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
