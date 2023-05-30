@@ -1490,7 +1490,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 							tempLink = alignment.image.template_anatomy.intLink();
 							// OBJ - 3D mesh
 							tempData = alignment.image.image_obj;
-							if (tempData != null && && !tempData.isEmpty() && !tempData.isBlank() tempData.contains(".obj")){
+							if (tempData != null && !tempData.isEmpty() && !tempData.isBlank() && tempData.contains(".obj")){
 								if (debug) System.out.println("OBJ " + tempData);
 								if (tempData.contains("volume.obj")) {
 									downloadFiles += "<br>Pointcloud (OBJ): <a download=\"" + variable.getId() + "_pointCloud.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_pointCloud.obj</a>";
