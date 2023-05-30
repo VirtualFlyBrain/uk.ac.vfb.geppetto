@@ -1269,7 +1269,6 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 					System.out.println(json.replace("}","}\n"));
 					return results;
 				} else {
-					if (debug) System.out.println("DEBUG: term: " + String.valueOf(vfbTerm.term));
 					//core
 					//ID/short_form
 					tempId = String.valueOf(variable.getId());
@@ -1455,7 +1454,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 
 								// OBJ - 3D mesh
 								tempData = alignment.image.image_obj;
-								if (tempData != null && tempData.contains(".obj")){
+								if (tempData != null && !tempData.isEmpty() && !tempData.isBlank() && tempData.contains(".obj")){
 									if (debug) System.out.println("OBJ " + tempData);
 									if (tempData.contains("volume.obj")) {
 										downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + "_pointCloud.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_pointCloud.obj</a>";
@@ -1471,7 +1470,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 
 								// Download - NRRD stack
 								tempData = alignment.image.image_nrrd;
-								if (tempData != null && tempData.contains(".nrrd")){
+								if (tempData != null && !tempData.isEmpty() && !tempData.isBlank() && tempData.contains(".nrrd")){
 									if (debug) System.out.println("NRRD " + tempData);
 									downloadFiles += "<br>Signal (NRRD): <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a>";
 									downloadData.add("'nrrd':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/SignalFiles(NRRD)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").nrrd" + "'}");
@@ -1491,7 +1490,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 							tempLink = alignment.image.template_anatomy.intLink();
 							// OBJ - 3D mesh
 							tempData = alignment.image.image_obj;
-							if (tempData != null && tempData.contains(".obj")){
+							if (tempData != null && && !tempData.isEmpty() && !tempData.isBlank() tempData.contains(".obj")){
 								if (debug) System.out.println("OBJ " + tempData);
 								if (tempData.contains("volume.obj")) {
 									downloadFiles += "<br>Pointcloud (OBJ): <a download=\"" + variable.getId() + "_pointCloud.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_pointCloud.obj</a>";
@@ -1508,7 +1507,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 							// SWC - 3D mesh
 							tempData = alignment.image.image_swc;
 							if (debug) System.out.println("tempData before check: " + tempData);
-							if (tempData != null && tempData.contains(".swc")){
+							if (tempData != null && !tempData.isEmpty() && !tempData.isBlank() && tempData.contains(".swc")){
 								if (debug) System.out.println("SWC " + tempData);
 								addModelSwc(tempData.replace("https://","http://"), "3D Skeleton", variable.getId(), parentType, geppettoModelAccess, dataSource);
 								downloadFiles += "<br>Skeleton (SWC): <a download=\"" + variable.getId() + ".swc\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".swc</a>";
@@ -1517,7 +1516,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 
 							// Slices - 3D slice viewer
 							tempData = alignment.image.image_wlz;
-							if (tempData != null && tempData.contains(".wlz")){
+							if (tempData != null && !tempData.isEmpty() && !tempData.isBlank() && tempData.contains(".wlz")){
 								if (debug) System.out.println("WLZ " + tempData);
 								addModelSlices(tempData.replace("http://","https://"), "Stack Viewer Slices", variable.getId(), parentType, geppettoModelAccess, dataSource, vfbTerm.getDomains());
 								downloadFiles += "<br>Slices (Woolz): <a download=\"" + variable.getId() + ".wlz\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".wlz</a>";
@@ -1526,7 +1525,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 
 							// Download - NRRD stack
 							tempData = alignment.image.image_nrrd;
-							if (tempData != null && tempData.contains(".nrrd")){
+							if (tempData != null && !tempData.isEmpty() && !tempData.isBlank() && tempData.contains(".nrrd")){
 								if (debug) System.out.println("NRRD " + tempData);
 								downloadFiles += "<br>Signal (NRRD): <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a>";
 								downloadData.add("'nrrd':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/SignalFiles(NRRD)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").nrrd" + "'}");
@@ -1545,7 +1544,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 							count = 1000;
 						}
 					}
-					if (template != null && template != "") {
+					if (template != null && !template.isEmpty() && !template.isBlank()) {
 						addModelHtml(tempLink, "Aligned to", "template", metaDataType, geppettoModelAccess);
 						classParentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(template, dependenciesLibrary));
 						// thumbnail
@@ -1566,7 +1565,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 					addModelThumbnails(vfbTerm.thumbnail(), "Thumbnail", "thumbnail", metaDataType, geppettoModelAccess);
 					// OBJ - 3D mesh
 					tempData = vfbTerm.template_channel.image_obj;
-					if (tempData.contains(".obj")){
+					if (!tempData.isEmpty() && !tempData.isBlank() && tempData.contains(".obj")){
 						if (tempData.contains("volume.obj")) {
 							downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + "_pointCloud.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_pointCloud.obj</a>";
 							downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/PointCloudFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
@@ -1582,7 +1581,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 
 					// Slices - 3D slice viewer
 					tempData = vfbTerm.template_channel.image_wlz;
-					if (tempData != null){
+					if (tempData != null && !tempData.isEmpty() && !tempData.isBlank() && tempData.contains(".wlz")){
 						addModelSlices(tempData.replace("http://","https://"), "Stack Viewer Slices", variable.getId(), parentType, geppettoModelAccess, dataSource, vfbTerm.getDomains());
 						downloadFiles += "<br>Slices (Woolz): <a download=\"" + variable.getId() + ".wlz\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".wlz</a>";
 						downloadData.add("'wlz':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/Slices(WOOLZ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").wlz" + "'}");
@@ -1592,7 +1591,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 					// Download - NRRD stack
 					tempData = vfbTerm.template_channel.image_nrrd;
 					if (debug) System.out.println("NRRD " + tempData);
-					if (tempData != null){
+					if (tempData != null && !tempData.isEmpty() && !tempData.isBlank() && tempData.contains(".nrrd")){
 						addModelHtml(downloadFiles + "<br>Aligned Image: <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a><br>Note: see source & license above for terms of reuse and correct attribution.", "Downloads", "downloads", metaDataType, geppettoModelAccess);
 						downloadData.add("'nrrd':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/SignalFiles(NRRD)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").nrrd" + "'}");
 						addModelFileMeta(downloadData, "DownloadMeta", "filemeta", metaDataType, geppettoModelAccess);
@@ -1759,6 +1758,9 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 	private void addModelSlices(String url, String name, String reference, CompositeType parentType, GeppettoModelAccess geppettoModelAccess, DataSource dataSource, List<List<String>> domains) throws GeppettoVisitingException
 	{
 		try{
+			if (url.isBlank()) {
+				return;
+			}
 			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
 			Variable slicesVar = VariablesFactory.eINSTANCE.createVariable();
 			Image slicesValue = ValuesFactory.eINSTANCE.createImage();
@@ -1786,6 +1788,9 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 	private void addModelSwc(String url, String name, String reference, CompositeType parentType, GeppettoModelAccess geppettoModelAccess, DataSource dataSource)
 	{
 		try{
+			if (url.isBlank()) {
+				return;
+			}
 			Variable Variable = VariablesFactory.eINSTANCE.createVariable();
 			ImportType importType = TypesFactory.eINSTANCE.createImportType();
 			importType.setUrl(url);
@@ -1814,6 +1819,9 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 	private void addModelObj(String url, String name, String reference, CompositeType parentType, GeppettoModelAccess geppettoModelAccess, DataSource dataSource)
 	{
 		try{
+			if (url.isBlank()) {
+				return;
+			}
 			Variable Variable = VariablesFactory.eINSTANCE.createVariable();
 			ImportType importType = TypesFactory.eINSTANCE.createImportType();
 			importType.setUrl(url);
@@ -1842,6 +1850,9 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 	private void addModelHtml(String data, String name, String reference, CompositeType metaDataType, GeppettoModelAccess geppettoModelAccess) throws GeppettoVisitingException
 	{
 		try{
+			if (data.isBlank()) {
+				return;
+			}
 			Type htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
 			Variable label = VariablesFactory.eINSTANCE.createVariable();
 			label.setId(reference);
@@ -1907,6 +1918,9 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 	{
 		try
 		{
+			if (data.isBlank()) {
+				return;
+			}
 			Type textType = geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE);
 			Variable label = VariablesFactory.eINSTANCE.createVariable();
 			label.setId(reference);
