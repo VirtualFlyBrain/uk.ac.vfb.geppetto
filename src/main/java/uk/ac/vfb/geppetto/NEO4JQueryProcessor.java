@@ -1032,9 +1032,11 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			if (debug) {
 				System.out.println("NEO4JQueryProcessor returning " + count.toString() + " rows");
 				if (results.getResults().size() > count) {
-					System.out.println("More rows: " + results.getResults().size().toString());
+					System.out.println("More rows: " + results.getResults().size());
 					System.out.println("First row: " + results.getResults().get(0).toString());
 					System.out.println("Last row: " + results.getResults().get(results.getResults().size()-1).toString());
+				} else {
+					System.out.println("No more rows");
 				}
 			}
 
