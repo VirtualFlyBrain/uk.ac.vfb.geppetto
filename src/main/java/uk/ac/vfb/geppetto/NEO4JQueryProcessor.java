@@ -69,7 +69,13 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		}
 
 		public String getName() {
-			if (this.symbol != null && this.symbol.length() > 0) return this.symbol;
+			return getName(false);
+		}
+
+		public String getName(boolean symbol) {
+			if (symbol && this.symbol != null && this.symbol.length() > 0) {
+				return this.symbol;
+			}
 			return this.label;
 		}
 	}
