@@ -345,7 +345,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		private dataset_counts dataset_counts;
 		private minimal_entity_info cluster;
 		private minimal_entity_info gene;
-		private Float expression_level;
+		private String expression_level;
 		private Float expression_extent;
 		private List<license> license;
 		private List<minimal_entity_info> stages;
@@ -969,7 +969,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 						processedResult.getValues().add(row.gene.short_form + delim + row.anatomy.short_form);
 						processedResult.getValues().add(row.gene.getName());
 						processedResult.getValues().add(row.anatomy.getName());
-						processedResult.getValues().add(String.format("%.02f", row.expression_level));
+						processedResult.getValues().add(row.expression_level);
 						processedResult.getValues().add(String.format("%.02f", row.expression_extent));
 						String function = "";
 						for (String type:row.gene.types){
