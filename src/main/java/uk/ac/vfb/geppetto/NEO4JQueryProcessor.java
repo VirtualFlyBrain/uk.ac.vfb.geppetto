@@ -760,6 +760,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			Boolean hasScore = false;
 			Boolean scRNAseq = false;
 			Boolean hasGene = false;
+			Boolean hasGeneScore = false;
 			List<vfb_query> table = new ArrayList<vfb_query>();
 			vfb_query vfbQuery = null;
 
@@ -875,6 +876,10 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 								break;
 							case "extra_columns":
 								hasExtra = true;
+								break;
+							case "expression_level":
+								hasGeneScore = true;
+								break;
 						}
 						tempData = new Gson().toJson(results.getValue(key, count));
 						json = json + "\"" + key  + "\":" + tempData;
@@ -924,6 +929,11 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 							//processedResults.getHeader().add("Neuron_A");
 						} else {
 							processedResults.getHeader().add("Name");
+						}
+						if (!hasGene && hasGeneScore) {
+							processedResults.getHeader().add("Level");
+							processedResults.getHeader().add("Extent");
+							processedResults.getHeader().add("Cell type");
 						}
 					}
 					if (hasTypes) processedResults.getHeader().add("Type");
@@ -990,6 +1000,11 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 						} else {
 							if (hasId) processedResult.getValues().add(row.id());
 							if (hasName && !hasSynCount) processedResult.getValues().add(row.name());
+							if (!hasGene && hasGeneScore) {
+								processedResult.getValues().add(row.expression_level);
+								processedResult.getValues().add(String.format("%.02f", row.expression_extent));
+								processedResult.getValues().add(row.anatomy.getName());
+							}
 							if (hasTypes) processedResult.getValues().add(row.types());
 							if (hasParents) processedResult.getValues().add(row.parents());
 							if (hasGrossType && !table.get(0).query.contains("connectivity_query")) processedResult.getValues().add(row.grossTypes());
