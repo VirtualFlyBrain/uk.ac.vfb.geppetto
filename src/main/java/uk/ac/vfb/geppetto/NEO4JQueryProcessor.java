@@ -986,7 +986,6 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 							if (type.indexOf("receptor") > 0 || type.indexOf("binding") > 0 || type.indexOf("channel") > 0 || type.indexOf("peptide") > 0 || type.indexOf("factor") > 0 || type.indexOf("Hormone") > 0 || type.indexOf("Enzyme") > 0 || type.indexOf("GPCR") > 0) {
 								if (!function.equals("")) function += "; ";
 								function += type;
-								break;
 							}
 						}
 						processedResult.getValues().add(function);
