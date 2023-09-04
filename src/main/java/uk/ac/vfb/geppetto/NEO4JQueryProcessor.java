@@ -983,7 +983,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 						processedResult.getValues().add(String.format("%.02f", row.expression_extent));
 						String function = "";
 						for (String type:row.gene.types){
-							if (type.indexOf("receptor") > 0 || type.indexOf("binding") > 0 || type.indexOf("channel") > 0 || type.indexOf("peptide") > 0 || type.indexOf("factor") > 0 || type.indexOf("Hormone") > 0 || type.indexOf("Enzyme") > 0 || type.indexOf("GPCR") > 0) {
+							if (type.indexOf("Class") == -1 && type.indexOf("Entity") == -1 && type.indexOf("hasScRNAseq") == -1 && type.indexOf("Feature") == -1 && type.indexOf("Gene") == -1) {
 								if (!function.equals("")) function += "; ";
 								function += type;
 							}
