@@ -69,7 +69,13 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		}
 
 		public String getName() {
-			if (this.symbol != null && this.symbol.length() > 0) return this.symbol;
+			return getName(false);
+		}
+
+		public String getName(boolean symbol) {
+			if (symbol && this.symbol != null && this.symbol.length() > 0) {
+				return this.symbol;
+			}
 			return this.label;
 		}
 	}
@@ -339,7 +345,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 		private dataset_counts dataset_counts;
 		private minimal_entity_info cluster;
 		private minimal_entity_info gene;
-		private Float expression_level;
+		private String expression_level;
 		private Float expression_extent;
 		private List<license> license;
 		private List<minimal_entity_info> stages;
@@ -754,6 +760,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			Boolean hasScore = false;
 			Boolean scRNAseq = false;
 			Boolean hasGene = false;
+			Boolean hasGeneScore = false;
 			List<vfb_query> table = new ArrayList<vfb_query>();
 			vfb_query vfbQuery = null;
 
@@ -869,6 +876,10 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 								break;
 							case "extra_columns":
 								hasExtra = true;
+								break;
+							case "expression_level":
+								hasGeneScore = true;
+								break;
 						}
 						tempData = new Gson().toJson(results.getValue(key, count));
 						json = json + "\"" + key  + "\":" + tempData;
@@ -919,6 +930,11 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 						} else {
 							processedResults.getHeader().add("Name");
 						}
+						if (!hasGene && hasGeneScore) {
+							processedResults.getHeader().add("Level");
+							processedResults.getHeader().add("Extent");
+							processedResults.getHeader().add("Cell type");
+						}
 					}
 					if (hasTypes) processedResults.getHeader().add("Type");
 					if (hasParents) processedResults.getHeader().add("Type");
@@ -963,14 +979,13 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 						processedResult.getValues().add(row.gene.short_form + delim + row.anatomy.short_form);
 						processedResult.getValues().add(row.gene.getName());
 						processedResult.getValues().add(row.anatomy.getName());
-						processedResult.getValues().add(String.format("%.02f", row.expression_level));
+						processedResult.getValues().add(row.expression_level);
 						processedResult.getValues().add(String.format("%.02f", row.expression_extent));
 						String function = "";
 						for (String type:row.gene.types){
-							if (type.indexOf("receptor") > 0 || type.indexOf("binding") > 0 || type.indexOf("channel") > 0 || type.indexOf("peptide") > 0 || type.indexOf("factor") > 0 || type.indexOf("Hormone") > 0 || type.indexOf("Enzyme") > 0 || type.indexOf("GPCR") > 0) {
+							if (type.indexOf("Class") == -1 && type.indexOf("Entity") == -1 && type.indexOf("hasScRNAseq") == -1 && type.indexOf("Feature") == -1 && type.indexOf("Gene") == -1) {
 								if (!function.equals("")) function += "; ";
 								function += type;
-								break;
 							}
 						}
 						processedResult.getValues().add(function);
@@ -984,6 +999,11 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 						} else {
 							if (hasId) processedResult.getValues().add(row.id());
 							if (hasName && !hasSynCount) processedResult.getValues().add(row.name());
+							if (!hasGene && hasGeneScore) {
+								processedResult.getValues().add(row.expression_level);
+								processedResult.getValues().add(String.format("%.02f", row.expression_extent));
+								processedResult.getValues().add(row.anatomy.getName());
+							}
 							if (hasTypes) processedResult.getValues().add(row.types());
 							if (hasParents) processedResult.getValues().add(row.parents());
 							if (hasGrossType && !table.get(0).query.contains("connectivity_query")) processedResult.getValues().add(row.grossTypes());
@@ -1029,7 +1049,16 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 				}
 				count ++;
 			}
-			if (debug) System.out.println("NEO4JQueryProcessor returning " + count.toString() + " rows");
+			if (debug) {
+				System.out.println("NEO4JQueryProcessor returning " + count.toString() + " rows");
+				if (results.getResults().size() > count) {
+					System.out.println("More rows: " + results.getResults().size());
+					System.out.println("First row: " + results.getResults().get(0).toString());
+					System.out.println("Last row: " + results.getResults().get(results.getResults().size()-1).toString());
+				} else {
+					System.out.println("No more rows");
+				}
+			}
 
 			return processedResults;
 

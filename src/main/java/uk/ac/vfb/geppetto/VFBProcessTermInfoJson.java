@@ -926,6 +926,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public String relList(String name, List<rel> entitys, Boolean showTypes) {
 			String result = "<ul class=\"terminfo-" + name + "\">";
 			for (rel rel : entitys) {
+				if (rel.intLink().indexOf("expresses ", 0) > -1 && term.core.typeList().contains("Cluster")) continue; // don't show expresses for clusters
 				if (result.indexOf(rel.intLink(showTypes))<0){
 					result += "<li>" + rel.intLink(showTypes) + "</li>";
 				}
@@ -995,7 +996,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
 			try{
 				if (template == null || template.equals("")){
-					//default to JFRC2
+					//default to JRC2018
 					template = "VFB_00101567";
 				}
 				int j = 0;
