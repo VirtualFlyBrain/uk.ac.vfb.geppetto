@@ -52,6 +52,8 @@ import org.geppetto.model.GeppettoLibrary;
 import org.geppetto.core.model.GeppettoModelAccess;
 import org.geppetto.core.model.GeppettoSerializer;
 
+import org.geppetto.model.GeppettoPackage;
+
 /**
  * @author robertcourt
  *
@@ -59,7 +61,7 @@ import org.geppetto.core.model.GeppettoSerializer;
 
 
 
-public class VFBProcessTermInfoJson extends AQueryProcessor
+public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 {
 
 	Boolean debug=false;
@@ -319,6 +321,11 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 
 	class image {
 		String image_folder;
+		String image_obj;
+		String image_nrrd;
+		String image_thumbnail;
+		String image_swc;
+		String image_wlz;
 		private List<Double> index;
 		private minimal_entity_info template_channel;
 		minimal_entity_info template_anatomy;
@@ -376,6 +383,11 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		private String voxel;
 		private String orientation;
 		String image_folder;
+		String image_obj;
+		String image_nrrd;
+		String image_thumbnail;
+		String image_swc;
+		String image_wlz;
 		private minimal_entity_info channel;
 
 		public coordinatesJsonString getVoxel() {
@@ -926,7 +938,6 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public String relList(String name, List<rel> entitys, Boolean showTypes) {
 			String result = "<ul class=\"terminfo-" + name + "\">";
 			for (rel rel : entitys) {
-				if (rel.intLink().indexOf("expresses ", 0) > -1 && term.core.typeList().contains("Cluster")) continue; // don't show expresses for clusters
 				if (result.indexOf(rel.intLink(showTypes))<0){
 					result += "<li>" + rel.intLink(showTypes) + "</li>";
 				}
@@ -996,7 +1007,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
 			try{
 				if (template == null || template.equals("")){
-					//default to JRC2018
+					//default to JRC2018U template
 					template = "VFB_00101567";
 				}
 				int j = 0;
@@ -1004,14 +1015,14 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				for (channel_image ci : this.channel_image) {
 					// add same template to the begining and others at the end.
 					if (ci != null && ci.image != null && ci.image.template_anatomy != null && ci.image.template_anatomy.short_form != null && template.equals(ci.image.template_anatomy.short_form)) {
-						addImage(ci.getUrl("", "thumbnailT.png"), this.term.core.label, this.term.core.short_form, imageArray, j);
+						addImage(ci.image.image_thumbnail.replace("template.png", "thumbnailT.png"), this.term.core.label, this.term.core.short_form, imageArray, j);
 						j++;
 					}
 				}
 				for (channel_image ci : this.channel_image) {
 					// add same template to the begining and others at the end.
 					if (ci != null && ci.image != null && ci.image.template_anatomy != null && ci.image.template_anatomy.short_form != null && !template.equals(ci.image.template_anatomy.short_form)) {
-						addImage(ci.getUrl("", "thumbnailT.png"), this.term.core.label + " [" + ci.image.template_anatomy.label + "]", "[" + ci.image.template_anatomy.short_form + "," + this.term.core.short_form + "]", imageArray, j);
+						addImage(ci.image.image_thumbnail.replace("template.png", "thumbnailT.png"), this.term.core.label + " [" + ci.image.template_anatomy.label + "]", "[" + ci.image.template_anatomy.short_form + "," + this.term.core.short_form + "]", imageArray, j);
 						j++;
 					}
 				}
@@ -1027,8 +1038,8 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
 			try{
 				if (template == null || template.equals("")){
-					//default to JFRC2
-					template = "VFB_00017894";
+					//default to JRC2018U template
+					template = "VFB_00101567";
 				}
 				int j = 0;
 				int f = this.anatomy_channel_image.size();
@@ -1057,7 +1068,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 		public ArrayValue thumbnail() {
 			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
 			try{
-				addImage(this.template_channel.image_folder + "thumbnailT.png", this.term.core.label, this.term.core.short_form, imageArray, 0);
+				addImage(this.template_channel.image_thumbnail.replace("thumbnail.png", "thumbnailT.png"), this.term.core.label, this.term.core.short_form, imageArray, 0);
 			}catch (Exception e) {
 				System.out.println("Error in vfbTerm.thumbnails(): " + e.toString());
 				e.printStackTrace();
@@ -1181,7 +1192,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	@Override
 	public QueryResults process(ProcessQuery query, DataSource dataSource, Variable variable, QueryResults results, GeppettoModelAccess geppettoModelAccess) throws GeppettoDataSourceException
 	{
-		String json = "{";
+		String json = "";
 		vfb_terminfo vfbTerm = null;
 		try
 		{
@@ -1208,9 +1219,6 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				}
 			}
 
-			// retrieving the metadatatype
-			CompositeType metadataType = (CompositeType) ModelUtility.getTypeFromLibrary(variable.getId() + "_metadata", dataSource.getTargetLibrary());
-
 			// provide access to libary of types either dynamically added (as bellow) or loaded from xmi
 			List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
 
@@ -1231,70 +1239,115 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			Variable classVariable = VariablesFactory.eINSTANCE.createVariable();
 			CompositeType classParentType = TypesFactory.eINSTANCE.createCompositeType();
 			classVariable.setId("notSet");
+			// add parent composite type
+			CompositeType parentType = TypesFactory.eINSTANCE.createCompositeType();
+
+			// Create new child composite variable & type for term info data to be stored in
+			Variable metaDataVar = VariablesFactory.eINSTANCE.createVariable();
+			CompositeType metaDataType = TypesFactory.eINSTANCE.createCompositeType();
+
+			//	Populating passed variable with Core Term Info
+			//      ID: short_form
+			String tempId = "xxxxx";
+			//	Label: label
+			String tempName = "not found";
+
+			System.out.println("Creating Variable for: " + String.valueOf(variable.getId()));
 
 			if (debug) System.out.println("Processing JSON...");
+
 			try{
 				header = "results>JSON";
-				if (debug) System.out.println("{");
-
-				for (String key:results.getHeader()) {
-					if (!json.equals("{")) {
-						json = json + ", ";
-					}
-					tempData = new Gson().toJson(results.getValue(key, 0));
-					json = json + "\"" + key  + "\":" + tempData;
-					if (debug){
-						if (tempData.length() > 1000){
-							System.out.println("\"" + key  + "\":" + tempData.replace("}","}\n") + ",");
-						}else{
-							System.out.println("\"" + key  + "\":" + tempData + ",");
-						}
-					}
-				}
-				json = json + "}";
-				if (debug) System.out.println("}");
-
+				if (debug) System.out.println("Results Header: " + results.getHeader() );
+				json = results.getValue("term_info", 0).toString();
+				if (debug) System.out.println("JSON passed: " + json.replace("}","}\n"));
 				header = "JSON>Schema";
-				vfbTerm = new Gson().fromJson(json , vfb_terminfo.class);
+				vfbTerm = new Gson().fromJson(json, vfb_terminfo.class);
 
 				if (vfbTerm.term == null || vfbTerm.term.core == null){
 					System.out.println("ERROR: term:core missing from JSON for " + variable.getId());
 					System.out.println(json.replace("}","}\n"));
-					addModelHtml(variable.getId(), "Name", "label", metadataType, geppettoModelAccess);
-					addModelHtml("ERROR: term:core missing from JSON for " + variable.getId() + "<br>" + json.replace("}","}<br>"), "Error", "error", metadataType, geppettoModelAccess);
 					return results;
+				} else {
+					//core
+					//ID/short_form
+					tempId = String.valueOf(variable.getId());
+					if (vfbTerm.term.core.short_form != null) {
+						if (String.valueOf(variable.getId()).equals(vfbTerm.term.core.short_form)) {
+							tempId = vfbTerm.term.core.short_form;
+						} else {
+							System.out.println("ERROR: Called ID: " + String.valueOf(variable.getId()) + " does not match returned ID: " + vfbTerm.term.core.short_form);
+							tempId = vfbTerm.term.core.short_form;
+						}
+					}else{
+						System.out.println("ERROR: No ID returned: " + String.valueOf(vfbTerm.term.core));
+					}
+					//label
+					if (vfbTerm.term.core.label != null) {
+						tempName = vfbTerm.term.core.label;
+					}
+					// add label to variable
+					geppettoModelAccess.setObjectAttribute(variable, GeppettoPackage.Literals.NODE__NAME, tempName);
+					// set ID of parent
+					parentType.setId(tempId);
+					// add to variable
+					variable.getAnonymousTypes().add(parentType);
+
+					// Create new child composite variable & type for term info data to be stored in
+					metaDataVar.getTypes().add(metaDataType);
+					metaDataVar.setId(tempId + "_meta");
+					metaDataType.setId(tempId + "_metadata");
+					metaDataType.setName("Info");
+					metaDataVar.setName(tempName);
+					geppettoModelAccess.addVariableToType(metaDataVar, parentType);
+
+					geppettoModelAccess.addTypeToLibrary(metaDataType, dataSource.getTargetLibrary());
+
+					// add supertypes:
+
+					if (vfbTerm.term.core.types != null) {
+						List<String> supertypes = vfbTerm.term.core.types;
+
+						for (String supertype : supertypes) {
+							if (!supertype.startsWith("_")) { // ignore supertypes starting with _
+								parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
+							}
+						}
+					} else {
+						parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Orphan", dependenciesLibrary));
+					}
 				}
 
 				// Label: {label} ({short_form}) TYPES (all on one line)
 				header = "label";
 				tempData = "<b>" + vfbTerm.term.core.label + "</b> [" + vfbTerm.term.core.short_form + "] " + vfbTerm.term.core.types(showTypes);
-				addModelHtml(tempData, "Name", header, metadataType, geppettoModelAccess);
+				addModelHtml(tempData, "Name", header, metaDataType, geppettoModelAccess);
 
 				// Title
 				header = "title";
 				if (vfbTerm.pub_specific_content != null && vfbTerm.pub_specific_content.title != null && !vfbTerm.pub_specific_content.title.equals("")) {
 					tempData = "<b>" + vfbTerm.pub_specific_content.title + "</b>";
-					addModelHtml(tempData, "Title", header, metadataType, geppettoModelAccess);
+					addModelHtml(tempData, "Title", header, metaDataType, geppettoModelAccess);
 				}
 
 				// Symbol
 				header = "symbol";
 				if (vfbTerm.term.core.symbol != null && !vfbTerm.term.core.symbol.equals("")) {
-					addModelHtml("<b>" + vfbTerm.term.core.symbol + "</b>", "Symbol", header, metadataType, geppettoModelAccess);
+					addModelHtml("<b>" + vfbTerm.term.core.symbol + "</b>", "Symbol", header, metaDataType, geppettoModelAccess);
 				}
 
 				// Logo
 				header = "logo";
 				tempData = vfbTerm.term.logo();
 				if (!tempData.equals("")) {
-					addModelHtml(tempData, "Logo", header, metadataType, geppettoModelAccess);
+					addModelHtml(tempData, "Logo", header, metaDataType, geppettoModelAccess);
 				}
 
 				// Link
 				header = "link";
 				tempData = vfbTerm.term.link();
 				if (!tempData.equals("")) {
-					addModelHtml(tempData, "Link", header, metadataType, geppettoModelAccess);
+					addModelHtml(tempData, "Link", header, metaDataType, geppettoModelAccess);
 				}
 
 				// Types
@@ -1305,14 +1358,14 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				header = "description";
 				tempData = vfbTerm.definition();
 				if (!tempData.equals("")) {
-					addModelHtml(tempData, "Description", header, metadataType, geppettoModelAccess);
+					addModelHtml(tempData, "Description", header, metaDataType, geppettoModelAccess);
 				}
 
 				// Synonyms
 				header = "synonyms";
 				tempData = vfbTerm.synonyms();
 				if (!tempData.equals("")) {
-					addModelHtml(tempData, "Alternative Names", header, metadataType, geppettoModelAccess);
+					addModelHtml(tempData, "Alternative Names", header, metaDataType, geppettoModelAccess);
 				}
 
 				// Source
@@ -1320,9 +1373,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				tempData = vfbTerm.getSource();
 				if (!tempData.equals("") && !tempData.equals("")) {
 					if (vfbTerm.pub_specific_content != null) {
-						addModelHtml(tempData, "Related DataSets", header, metadataType, geppettoModelAccess);
+						addModelHtml(tempData, "Related DataSets", header, metaDataType, geppettoModelAccess);
 					} else {
-						addModelHtml(tempData, "Source", header, metadataType, geppettoModelAccess);
+						addModelHtml(tempData, "Source", header, metaDataType, geppettoModelAccess);
 					}
 				}
 
@@ -1330,14 +1383,14 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				header = "license";
 				tempData = vfbTerm.getLicense();
 				if (!tempData.equals("") && vfbTerm.pub_specific_content == null) {
-					addModelHtml(tempData, "License", header, metadataType, geppettoModelAccess);
+					addModelHtml(tempData, "License", header, metaDataType, geppettoModelAccess);
 				}
 
 				// Classification
 				header = "Classification";
 				if (vfbTerm.parents != null && vfbTerm.parents.size() > 0) {
 					tempData = vfbTerm.compileList(header, vfbTerm.parents, showTypes);
-					addModelHtml(tempData, "Classification", "type", metadataType, geppettoModelAccess);
+					addModelHtml(tempData, "Classification", "type", metaDataType, geppettoModelAccess);
 					// store first parent as parent type for neuropil/tract queries
 					classVariable.setId(vfbTerm.parents.get(0).short_form);
 					classVariable.setName(vfbTerm.parents.get(0).label);
@@ -1354,28 +1407,24 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				header = "relationships";
 				if (vfbTerm.relationships != null && vfbTerm.relationships.size() > 0) {
 					tempData = vfbTerm.relList(header, vfbTerm.relationships, showTypes);
-					addModelHtml(tempData, "Relationships", header, metadataType, geppettoModelAccess);
+					addModelHtml(tempData, "Relationships", header, metaDataType, geppettoModelAccess);
 				}
 
 				// related individuals
 				header = "related_individuals";
 				if (vfbTerm.related_individuals != null && vfbTerm.related_individuals.size() > 0) {
 					tempData = vfbTerm.relList(header, vfbTerm.related_individuals, showTypes);
-					addModelHtml(tempData, "Related Individuals", header, metadataType, geppettoModelAccess);
+					addModelHtml(tempData, "Related Individuals", header, metaDataType, geppettoModelAccess);
 				}
 
 				// xrefs
 				header = "xrefs";
 				if ((vfbTerm.xrefs != null && vfbTerm.xrefs.size() > 0) || vfbTerm.pub_specific_content != null) {
 					tempData = vfbTerm.xrefList();
-					addModelHtml(tempData, "Cross References", header, metadataType, geppettoModelAccess);
+					addModelHtml(tempData, "Cross References", header, metaDataType, geppettoModelAccess);
 				}
 
 				// Images:
-				header = "parentType";
-				// retrieving the parent composite type for new image variables
-				CompositeType parentType = (CompositeType) variable.getAnonymousTypes().get(0);
-
 				header = "channel_image";
 				if (vfbTerm.channel_image != null && vfbTerm.channel_image.size() > 0) {
 					downloadFiles = "Aligned Image: ";
@@ -1404,31 +1453,32 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 								// Add OBJ only so the template detection is triggered
 
 								// OBJ - 3D mesh
-								tempData = vfbTerm.imageFile(alignment, "volume_man.obj");
-								if (tempData == null){
+								tempData = alignment.image.image_obj;
+								if (tempData != null && !tempData.isEmpty() && tempData != "" && tempData.contains(".obj")){
 									if (debug) System.out.println("OBJ " + tempData);
-									tempData = vfbTerm.imageFile(alignment, "volume.obj");
-									downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + "_pointCloud.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_pointCloud.obj</a>";
-									downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/PointCloudFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
-								}else {
-									downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + "_mesh.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_mesh.obj</a>";
-									downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/MeshFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
-								}
-								if (tempData != null){
-									addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId(), parentType, geppettoModelAccess, dataSource);
+									if (tempData.contains("volume.obj")) {
+										downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + "_pointCloud.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_pointCloud.obj</a>";
+										downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/PointCloudFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
+									}else {
+										downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + "_mesh.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_mesh.obj</a>";
+										downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/MeshFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
+									}
+									if (tempData != null){
+										addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId(), parentType, geppettoModelAccess, dataSource);
+									}
 								}
 
 								// Download - NRRD stack
-								tempData = vfbTerm.imageFile(alignment, "volume.nrrd");
-								if (tempData != null){
+								tempData = alignment.image.image_nrrd;
+								if (tempData != null && !tempData.isEmpty() && tempData != "" && tempData.contains(".nrrd")){
 									if (debug) System.out.println("NRRD " + tempData);
 									downloadFiles += "<br>Signal (NRRD): <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a>";
 									downloadData.add("'nrrd':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/SignalFiles(NRRD)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").nrrd" + "'}");
 									downloadFiles += "<br>Remember to cite: <a download=\"" + variable.getId() + ".bibtex\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">citations.bibtex</a>";
 									downloadData.add("'bibtex':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/RequiredCitations(BIBTEX)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").bibtex" + "'}");
 									downloadFiles += "<br>Note: see source & license above for terms of reuse and correct attribution.";
-									addModelHtml(downloadFiles, "Downloads", "downloads", metadataType, geppettoModelAccess);
-									addModelFileMeta(downloadData, "DownloadMeta", "filemeta", metadataType, geppettoModelAccess);
+									addModelHtml(downloadFiles, "Downloads", "downloads", metaDataType, geppettoModelAccess);
+									addModelFileMeta(downloadData, "DownloadMeta", "filemeta", metaDataType, geppettoModelAccess);
 								}
 							}
 
@@ -1439,23 +1489,24 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 							}
 							tempLink = alignment.image.template_anatomy.intLink();
 							// OBJ - 3D mesh
-							tempData = vfbTerm.imageFile(alignment, "volume_man.obj");
-							if (tempData == null){
+							tempData = alignment.image.image_obj;
+							if (tempData != null && !tempData.isEmpty() && tempData != "" && tempData.contains(".obj")){
 								if (debug) System.out.println("OBJ " + tempData);
-								tempData = vfbTerm.imageFile(alignment, "volume.obj");
-								downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + "_pointCloud.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_pointCloud.obj</a>";
-								downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/PointCloudFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
-							}else {
-								downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + "_mesh.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_mesh.obj</a>";
-								downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/MeshFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
-							}
-							if (tempData != null){
-								addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId(), parentType, geppettoModelAccess, dataSource);
+								if (tempData.contains("volume.obj")) {
+									downloadFiles += "<br>Pointcloud (OBJ): <a download=\"" + variable.getId() + "_pointCloud.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_pointCloud.obj</a>";
+									downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/PointCloudFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
+								}else {
+									downloadFiles += "<br>Mesh (OBJ): <a download=\"" + variable.getId() + "_mesh.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_mesh.obj</a>";
+									downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/MeshFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
+								}
+								if (tempData != null){
+									addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId(), parentType, geppettoModelAccess, dataSource);
+								}
 							}
 
 							// SWC - 3D mesh
-							tempData = vfbTerm.imageFile(alignment, "volume.swc");
-							if (tempData != null){
+							tempData = alignment.image.image_swc;
+							if (tempData != null && !tempData.isEmpty() && tempData != "" && tempData.contains(".swc")){
 								if (debug) System.out.println("SWC " + tempData);
 								addModelSwc(tempData.replace("https://","http://"), "3D Skeleton", variable.getId(), parentType, geppettoModelAccess, dataSource);
 								downloadFiles += "<br>Skeleton (SWC): <a download=\"" + variable.getId() + ".swc\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".swc</a>";
@@ -1463,8 +1514,8 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 							}
 
 							// Slices - 3D slice viewer
-							tempData = vfbTerm.imageFile(alignment, "volume.wlz");
-							if (tempData != null){
+							tempData = alignment.image.image_wlz;
+							if (tempData != null && !tempData.isEmpty() && tempData != "" && tempData.contains(".wlz")){
 								if (debug) System.out.println("WLZ " + tempData);
 								addModelSlices(tempData.replace("http://","https://"), "Stack Viewer Slices", variable.getId(), parentType, geppettoModelAccess, dataSource, vfbTerm.getDomains());
 								downloadFiles += "<br>Slices (Woolz): <a download=\"" + variable.getId() + ".wlz\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".wlz</a>";
@@ -1472,8 +1523,8 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 							}
 
 							// Download - NRRD stack
-							tempData = vfbTerm.imageFile(alignment, "volume.nrrd");
-							if (tempData != null){
+							tempData = alignment.image.image_nrrd;
+							if (tempData != null && !tempData.isEmpty() && tempData != "" && tempData.contains(".nrrd")){
 								if (debug) System.out.println("NRRD " + tempData);
 								downloadFiles += "<br>Signal (NRRD): <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a>";
 								downloadData.add("'nrrd':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/SignalFiles(NRRD)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").nrrd" + "'}");
@@ -1485,19 +1536,19 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 								} else {
 									downloadFiles += "<br>Note: see source & license above for terms of reuse and correct attribution.";
 								}
-								addModelHtml(downloadFiles, "Downloads", "downloads", metadataType, geppettoModelAccess);
-								addModelFileMeta(downloadData, "DownloadMeta", "filemeta", metadataType, geppettoModelAccess);
+								addModelHtml(downloadFiles, "Downloads", "downloads", metaDataType, geppettoModelAccess);
+								addModelFileMeta(downloadData, "DownloadMeta", "filemeta", metaDataType, geppettoModelAccess);
 							}
 							// throwing count out to prevent other OBJ loading
 							count = 1000;
 						}
 					}
-					if (template != null && template != "") {
-						addModelHtml(tempLink, "Aligned to", "template", metadataType, geppettoModelAccess);
+					if (template != null && !template.isEmpty() && template != "") {
+						addModelHtml(tempLink, "Aligned to", "template", metaDataType, geppettoModelAccess);
 						classParentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(template, dependenciesLibrary));
 						// thumbnail
 						if (vfbTerm.thumbnails(template) != null){
-							addModelThumbnails(vfbTerm.thumbnails(template), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
+							addModelThumbnails(vfbTerm.thumbnails(template), "Thumbnail", "thumbnail", metaDataType, geppettoModelAccess);
 						}
 					}
 				}
@@ -1508,27 +1559,28 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					if (!template.equals("")){
 						template = variable.getId();
 					}
-					addModelHtml(vfbTerm.term.core.intLink(), "Aligned to", "template", metadataType, geppettoModelAccess);
+					addModelHtml(vfbTerm.term.core.intLink(), "Aligned to", "template", metaDataType, geppettoModelAccess);
 					// thumbnail
-					addModelThumbnails(vfbTerm.thumbnail(), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
+					addModelThumbnails(vfbTerm.thumbnail(), "Thumbnail", "thumbnail", metaDataType, geppettoModelAccess);
 					// OBJ - 3D mesh
-					tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume_man.obj");
-					if (tempData == null){
-						tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume.obj");
-						downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + "_pointCloud.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_pointCloud.obj</a>";
-						downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/PointCloudFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
-					}else {
-						downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + "_mesh.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_mesh.obj</a>";
-						downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/MeshFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
+					tempData = vfbTerm.template_channel.image_obj;
+					if (!tempData.isEmpty() && tempData != "" && tempData.contains(".obj")){
+						if (tempData.contains("volume.obj")) {
+							downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + "_pointCloud.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_pointCloud.obj</a>";
+							downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/PointCloudFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
+						}else {
+							downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + "_mesh.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_mesh.obj</a>";
+							downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/MeshFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
+						}
+						if (tempData != null){
+							addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId(), parentType, geppettoModelAccess, dataSource);
+						}
+						if (debug) System.out.println("OBJ " + tempData);
 					}
-					if (tempData != null){
-						addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId(), parentType, geppettoModelAccess, dataSource);
-					}
-					if (debug) System.out.println("OBJ " + tempData);
 
 					// Slices - 3D slice viewer
-					tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume.wlz");
-					if (tempData != null){
+					tempData = vfbTerm.template_channel.image_wlz;
+					if (tempData != null && !tempData.isEmpty() && tempData != "" && tempData.contains(".wlz")){
 						addModelSlices(tempData.replace("http://","https://"), "Stack Viewer Slices", variable.getId(), parentType, geppettoModelAccess, dataSource, vfbTerm.getDomains());
 						downloadFiles += "<br>Slices (Woolz): <a download=\"" + variable.getId() + ".wlz\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".wlz</a>";
 						downloadData.add("'wlz':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/Slices(WOOLZ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").wlz" + "'}");
@@ -1536,33 +1588,27 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					if (debug) System.out.println("WLZ " + tempData);
 
 					// Download - NRRD stack
-					tempData = vfbTerm.imageFile(vfbTerm.template_channel, "volume.nrrd");
+					tempData = vfbTerm.template_channel.image_nrrd;
 					if (debug) System.out.println("NRRD " + tempData);
-					if (tempData != null){
-						addModelHtml(downloadFiles + "<br>Aligned Image: <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a><br>Note: see source & license above for terms of reuse and correct attribution.", "Downloads", "downloads", metadataType, geppettoModelAccess);
+					if (tempData != null && !tempData.isEmpty() && tempData != "" && tempData.contains(".nrrd")){
+						addModelHtml(downloadFiles + "<br>Aligned Image: <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a><br>Note: see source & license above for terms of reuse and correct attribution.", "Downloads", "downloads", metaDataType, geppettoModelAccess);
 						downloadData.add("'nrrd':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/SignalFiles(NRRD)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").nrrd" + "'}");
-						addModelFileMeta(downloadData, "DownloadMeta", "filemeta", metadataType, geppettoModelAccess);
+						addModelFileMeta(downloadData, "DownloadMeta", "filemeta", metaDataType, geppettoModelAccess);
 					}
 				}
 
 				// examples
 				header = "anatomy_channel_image";
 				if (vfbTerm.anatomy_channel_image != null && vfbTerm.anatomy_channel_image.size() > 0 && vfbTerm.examples(template) != null) {
-					addModelThumbnails(vfbTerm.examples(template), "Available Images", "examples", metadataType, geppettoModelAccess);
+					addModelThumbnails(vfbTerm.examples(template), "Available Images", "examples", metaDataType, geppettoModelAccess);
 					parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("hasExamples", dependenciesLibrary));
-				}
-
-				// NBLAST Cluster
-				header = "cluster";
-				if (vfbTerm.xrefs != null && vfbTerm.xrefs.size() > 0 && vfbTerm.xrefs.get(0).link_base.indexOf("flybrain.mrc-lmb.cam.ac.uk/vfb/fc/clusterv/3") > -1) {
-					addModelThumbnails(vfbTerm.clusterImage(), "Thumbnail", "thumbnail", metadataType, geppettoModelAccess);
 				}
 
 				// references
 				header = "references";
 				references = vfbTerm.getReferences();
 				if (!references.equals("")) {
-					addModelHtml(references, "References", "references", metadataType, geppettoModelAccess);
+					addModelHtml(references, "References", "references", metaDataType, geppettoModelAccess);
 				}
 
 				// set queries
@@ -1587,7 +1633,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 							querys += badge + "<a href=\"/org.geppetto.frontend/geppetto?q=" + classVariable.getId() + "," + (String) runnableQuery.getPath() + "\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + classVariable.getId() + "," + classVariable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", classVariable.getName()) + "</a></br>";
 						}
 						if (!classAdded) {
-							addModelString(classVariable.getId(), "ClassQueriesFrom", "classqueriesfrom", metadataType, geppettoModelAccess);
+							addModelString(classVariable.getId(), "ClassQueriesFrom", "classqueriesfrom", metaDataType, geppettoModelAccess);
 							classAdded = true;
 						}
 					}
@@ -1645,7 +1691,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 					tempData += String.join("<br />", ql);
 					// add footer/note
 					//tempData += "<br /><small>Note: Copy link URL for query permalink. Queries are only shown if a result is likely</small><br />";
-					addModelHtml(tempData, "Query for", "queries", metadataType, geppettoModelAccess);
+					addModelHtml(tempData, "Query for", "queries", metaDataType, geppettoModelAccess);
 				}
 
 				//Indenting embeded queries
@@ -1656,7 +1702,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				tempData = vfbTerm.targetingSplits();
 				if (tempData != null && !tempData.equals("")) {
 					tempData += badge + queryExpressedInX;
-					addModelHtml(tempData, "Targeting Splits", header, metadataType, geppettoModelAccess);
+					addModelHtml(tempData, "Targeting Splits", header, metaDataType, geppettoModelAccess);
 				}
 
 				// Targeting Neurons
@@ -1664,24 +1710,24 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				tempData = vfbTerm.targetingNeurons();
 				if (tempData != null && !tempData.equals("")) {
 					tempData += badge + queryExpressedInX;
-					addModelHtml(tempData, "Targeted Neurons", header, metadataType, geppettoModelAccess);
+					addModelHtml(tempData, "Targeted Neurons", header, metaDataType, geppettoModelAccess);
 				}
 
 				//debug query version to term info
 				if (debug) {
-					addModelHtml(vfbTerm.query + " (" + vfbTerm.version + ")<br>" + json, "Debug", "debug", metadataType, geppettoModelAccess);
+					addModelHtml(vfbTerm.query + " (" + vfbTerm.version + ")<br>" + json, "Debug", "debug", metaDataType, geppettoModelAccess);
 				}
 
-			}catch (Exception e) {
+			} catch (Exception e) {
 				System.out.println("Error creating " + header + ": " + e.toString());
 				e.printStackTrace();
 				System.out.println(json.replace("}","}\n"));
 				//debug query version to term info
 				if (debug) {
 					if (vfbTerm!=null && vfbTerm.query!=null) {
-						addModelHtml(vfbTerm.query + " (" + vfbTerm.version + ")" + "<br>" + json + "<br>" + e.toString(), "Debug", "debug", metadataType, geppettoModelAccess);
+						addModelHtml(vfbTerm.query + " (" + vfbTerm.version + ")" + "<br>" + json + "<br>" + e.toString(), "Debug", "debug", metaDataType, geppettoModelAccess);
 					}else{
-						addModelHtml(json + "<br>" + e.toString(), "Debug", "debug", metadataType, geppettoModelAccess);
+						addModelHtml(json + "<br>" + e.toString(), "Debug", "debug", metaDataType, geppettoModelAccess);
 					}
 				}
 			}
@@ -1711,6 +1757,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	private void addModelSlices(String url, String name, String reference, CompositeType parentType, GeppettoModelAccess geppettoModelAccess, DataSource dataSource, List<List<String>> domains) throws GeppettoVisitingException
 	{
 		try{
+			if (url == null || url.equals("")) {
+				return;
+			}
 			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
 			Variable slicesVar = VariablesFactory.eINSTANCE.createVariable();
 			Image slicesValue = ValuesFactory.eINSTANCE.createImage();
@@ -1738,6 +1787,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	private void addModelSwc(String url, String name, String reference, CompositeType parentType, GeppettoModelAccess geppettoModelAccess, DataSource dataSource)
 	{
 		try{
+			if (url == null || url.equals("")) {
+				return;
+			}
 			Variable Variable = VariablesFactory.eINSTANCE.createVariable();
 			ImportType importType = TypesFactory.eINSTANCE.createImportType();
 			importType.setUrl(url);
@@ -1766,6 +1818,9 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	private void addModelObj(String url, String name, String reference, CompositeType parentType, GeppettoModelAccess geppettoModelAccess, DataSource dataSource)
 	{
 		try{
+			if (url == null || url.equals("")) {
+				return;
+			}
 			Variable Variable = VariablesFactory.eINSTANCE.createVariable();
 			ImportType importType = TypesFactory.eINSTANCE.createImportType();
 			importType.setUrl(url);
@@ -1788,12 +1843,15 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	 * @param data
 	 * @param name
 	 * @param reference
-	 * @param metadataType
+	 * @param metaDataType
 	 * @return
 	 */
-	private void addModelHtml(String data, String name, String reference, CompositeType metadataType, GeppettoModelAccess geppettoModelAccess) throws GeppettoVisitingException
+	private void addModelHtml(String data, String name, String reference, CompositeType metaDataType, GeppettoModelAccess geppettoModelAccess) throws GeppettoVisitingException
 	{
 		try{
+			if (data == null || data.equals("")) {
+				return;
+			}
 			Type htmlType = geppettoModelAccess.getType(TypesPackage.Literals.HTML_TYPE);
 			Variable label = VariablesFactory.eINSTANCE.createVariable();
 			label.setId(reference);
@@ -1802,7 +1860,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			HTML labelValue = ValuesFactory.eINSTANCE.createHTML();
 			label.getInitialValues().put(htmlType, labelValue);
 			labelValue.setHtml(data);
-			geppettoModelAccess.addVariableToType(label, metadataType);
+			geppettoModelAccess.addVariableToType(label, metaDataType);
 		}
 		catch(GeppettoVisitingException e)
 		{
@@ -1818,10 +1876,10 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	 * @param images
 	 * @param name
 	 * @param reference
-	 * @param metadataType
+	 * @param metaDataType
 	 * @return
 	 */
-	private void addModelThumbnails(ArrayValue images, String name, String reference, CompositeType metadataType, GeppettoModelAccess geppettoModelAccess) throws GeppettoVisitingException
+	private void addModelThumbnails(ArrayValue images, String name, String reference, CompositeType metaDataType, GeppettoModelAccess geppettoModelAccess) throws GeppettoVisitingException
 	{
 		try{
 			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
@@ -1830,7 +1888,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			imageVariable.setId(reference);
 			imageVariable.setName(name);
 			imageVariable.getTypes().add(imageType);
-			geppettoModelAccess.addVariableToType(imageVariable, metadataType);
+			geppettoModelAccess.addVariableToType(imageVariable, metaDataType);
 
 			if (images.getElements().size() > 1){
 				imageVariable.getInitialValues().put(imageType, images);
@@ -1852,13 +1910,16 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	 * @param data
 	 * @param name
 	 * @param reference
-	 * @param metadataType
+	 * @param metaDataType
 	 * @return
 	 */
-	private void addModelString(String data, String name, String reference, CompositeType metadataType, GeppettoModelAccess geppettoModelAccess) throws GeppettoVisitingException
+	private void addModelString(String data, String name, String reference, CompositeType metaDataType, GeppettoModelAccess geppettoModelAccess) throws GeppettoVisitingException
 	{
 		try
 		{
+			if (data == null || data.equals("")) {
+				return;
+			}
 			Type textType = geppettoModelAccess.getType(TypesPackage.Literals.TEXT_TYPE);
 			Variable label = VariablesFactory.eINSTANCE.createVariable();
 			label.setId(reference);
@@ -1867,7 +1928,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			Text labelValue = ValuesFactory.eINSTANCE.createText();
 			label.getInitialValues().put(textType, labelValue);
 			labelValue.setText(data);
-			geppettoModelAccess.addVariableToType(label, metadataType);
+			geppettoModelAccess.addVariableToType(label, metaDataType);
 		}
 		catch(GeppettoVisitingException e)
 		{
@@ -1882,10 +1943,10 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 	 * @param data
 	 * @param name
 	 * @param reference
-	 * @param metadataType
+	 * @param metaDataType
 	 * @return
 	 */
-	private void addModelFileMeta(List<String> data, String name, String reference, CompositeType metadataType, GeppettoModelAccess geppettoModelAccess) throws GeppettoVisitingException
+	private void addModelFileMeta(List<String> data, String name, String reference, CompositeType metaDataType, GeppettoModelAccess geppettoModelAccess) throws GeppettoVisitingException
 	{
 		try
 		{
@@ -1905,7 +1966,7 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 			Text labelValue = ValuesFactory.eINSTANCE.createText();
 			label.getInitialValues().put(textType, labelValue);
 			labelValue.setText(result);
-			geppettoModelAccess.addVariableToType(label, metadataType);
+			geppettoModelAccess.addVariableToType(label, metaDataType);
 		}
 		catch(GeppettoVisitingException e)
 		{
