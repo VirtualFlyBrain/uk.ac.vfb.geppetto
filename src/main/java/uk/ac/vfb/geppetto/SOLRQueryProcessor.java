@@ -790,7 +790,7 @@ public class SOLRQueryProcessor extends AQueryProcessor
 			if (debug) System.out.println("Processing JSON...");
 			count = 0;
 			String keyName = "";
-			for  (String key : results.getHeaders()) {
+			for  (String key : results.getHeader()) {
 				if (debug) System.out.println("Header: " + key);
 				if (key.equals("anat_image_query")) {
 					keyName = "anat_image_query";
