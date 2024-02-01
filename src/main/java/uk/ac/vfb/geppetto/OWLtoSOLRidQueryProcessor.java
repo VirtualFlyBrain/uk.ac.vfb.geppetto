@@ -1,16 +1,21 @@
 package uk.ac.vfb.geppetto;
 
-import org.geppetto.core.datasources.GeppettoDataSourceException;
-import org.geppetto.core.model.GeppettoModelAccess;
-import org.geppetto.datasources.AQueryProcessor;
-import org.geppetto.model.datasources.DataSource;
-import org.geppetto.model.datasources.QueryResults;
-import org.geppetto.model.variables.Variable;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.geppetto.core.datasources.GeppettoDataSourceException;
+import org.geppetto.core.model.GeppettoModelAccess;
+import org.geppetto.datasources.AQueryProcessor;
+import org.geppetto.model.datasources.AQueryResult;
+import org.geppetto.model.datasources.DataSource;
+import org.geppetto.model.datasources.DatasourcesFactory;
+import org.geppetto.model.datasources.ProcessQuery;
+import org.geppetto.model.datasources.QueryResult;
+import org.geppetto.model.datasources.QueryResults;
+import org.geppetto.model.datasources.SerializableQueryResult;
+import org.geppetto.model.variables.Variable;
 
 public class OWLtoSOLRidQueryProcessor extends AQueryProcessor {
 
@@ -66,9 +71,6 @@ public class OWLtoSOLRidQueryProcessor extends AQueryProcessor {
         if (!ids.isEmpty()) {
             // Join the list of IDs into a single string with ' OR ' as separator
             joinedIdsWithOr = String.join(" OR ", ids);
-
-            
-            
         } else {
             // Handle the case where ids is empty, if necessary
             throw new GeppettoDataSourceException("No IDs found to process.");
