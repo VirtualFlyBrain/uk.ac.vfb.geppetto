@@ -793,7 +793,7 @@ public class SOLRQueryProcessor extends AQueryProcessor
 				header = "results>JSON";
 				// Match to vfb_query schema:
 				for(AQueryResult result : results.getResults()){
-					json = result.getValue("anat_image_query").toString();
+					json = results.getValues("anat_image_query",count).toString();
 					if (debug) System.out.println("JSON passed: " + json.replace("}","}\n"));
 					header = "JSON>Schema";
 					vfbQuery = new Gson().fromJson(json , vfb_query.class);
