@@ -789,22 +789,23 @@ public class SOLRQueryProcessor extends AQueryProcessor
 
 			if (debug) System.out.println("Processing JSON...");
 			count = 0;
+			String keyName = "";
+			for  (String key : results.getHeaders()) {
+				if (debug) System.out.println("Header: " + key);
+				if (key.equals("anat_image_query")) {
+					keyName = "anat_image_query";
+					break;
+				}
+				if (key.equals("anat_query")) {
+					keyName = "anat_query";
+					break;
+				}
+			}
 			try{
 				header = "results>JSON";
 				// Match to vfb_query schema:
 				for(AQueryResult result : results.getResults()){
-					json = "";
-					for  (String key : result.getHeaders()) {
-						if (debug) System.out.println("Header: " + key);
-						if (key.equals("anat_image_query")) {
-							json = results.getValue("anat_image_query",count).toString();
-							break;
-						}
-						if (key.equals("anat_query")) {
-							json = results.getValue("anat_query",count).toString();
-							break;
-						}
-					}
+					json = results.getValue(keyName,count).toString();
 					if (debug) System.out.println("JSON passed: " + json.replace("}","}\n"));
 					header = "JSON>Schema";
 					vfbQuery = new Gson().fromJson(json , vfb_query.class);
