@@ -37,6 +37,8 @@ public class OWLtoSOLRidQueryProcessor extends AQueryProcessor {
 		QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
 		int idIndex = -1;
 
+        processedResults.getHeader().add("ID");
+
 		List<String> ids = new ArrayList<String>();
 
 		switch(queryID)
@@ -51,9 +53,7 @@ public class OWLtoSOLRidQueryProcessor extends AQueryProcessor {
 				break;
 			default:
 				throw new GeppettoDataSourceException("Results header not in hasInstance, subClassOf");
-
 		}
-		processedResults.getHeader().add("ID");
 
 		if (idIndex > -1){
 			for(AQueryResult result : results.getResults())
