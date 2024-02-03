@@ -1048,7 +1048,7 @@ public class SOLRQueryProcessor extends AQueryProcessor
 				count ++;
 			}
 			if (debug) {
-				System.out.println("NEO4JQueryProcessor returning " + count.toString() + " rows");
+				System.out.println("SOLRQueryProcessor returning " + count.toString() + " rows");
 				if (results.getResults().size() > count) {
 					System.out.println("More rows: " + results.getResults().size());
 					System.out.println("First row: " + results.getResults().get(0).toString());

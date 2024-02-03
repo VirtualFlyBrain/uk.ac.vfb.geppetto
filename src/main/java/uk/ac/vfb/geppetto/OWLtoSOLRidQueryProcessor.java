@@ -37,9 +37,12 @@ public class OWLtoSOLRidQueryProcessor extends AQueryProcessor {
 		QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
 		int idIndex = -1;
 
+        if (debug) System.out.println("Processing OWL to SOLR ID Query Processor. Query ID: " + queryID);
         processedResults.getHeader().add("ID");
 
 		List<String> ids = new ArrayList<String>();
+
+        if (debug) System.out.println(results.getHeader());
 
 		switch(queryID)
 		{
