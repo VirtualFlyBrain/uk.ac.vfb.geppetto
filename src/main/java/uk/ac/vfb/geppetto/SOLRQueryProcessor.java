@@ -596,101 +596,36 @@ public class SOLRQueryProcessor extends AQueryProcessor
 
 		public ArrayValue images(String template) {
 			ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
-			try{
-				if (template == null || template.equals("")){
-					//default to JRC2018U
-					template = "VFB_00101567";
-				}
-				int j = 0;
-				List<String> loaded = new ArrayList<String>();
-				if (this.anatomy_channel_image != null) {
-					for (anatomy_channel_image anat : this.anatomy_channel_image) {
-						// add same template to the begining and others at the end.
-						if (anat.channel_image != null && anat.channel_image.image != null && anat.channel_image.image.template_anatomy != null && anat.channel_image.image.template_anatomy.short_form != null && template.equals(anat.channel_image.image.template_anatomy.short_form)) {
-							if (!loaded.contains(anat.anatomy.short_form)) {
-								addImage(anat.getUrl("", "thumbnailT.png"), anat.getLabel(false) , anat.anatomy.short_form, imageArray, j);
-								loaded.add(anat.anatomy.short_form);
-								j++;
-							}
-						}
-					}
-					if (j > 0) return imageArray;
-					for (anatomy_channel_image anat : this.anatomy_channel_image) {
-						if (!loaded.contains(anat.anatomy.short_form)) {
-							addImage(anat.getUrl("", "thumbnailT.png"), anat.getLabel(), anat.anatomy.short_form, imageArray, j);
-							loaded.add(anat.anatomy.short_form);
-							j++;
-						}
-					}
-				}
-				if (this.expressed_in != null) {
-					for (anatomy_channel_image anat : this.expressed_in) {
-						// add same template to the begining and others at the end.
-						if (anat.channel_image != null && anat.channel_image.image != null && anat.channel_image.image.template_anatomy != null && anat.channel_image.image.template_anatomy.short_form != null && template.equals(anat.channel_image.image.template_anatomy.short_form)) {
-							if (!loaded.contains(anat.anatomy.short_form)) {
-								addImage(anat.getUrl("", "thumbnailT.png"), anat.getLabel(false), anat.anatomy.short_form, imageArray, j);
-								loaded.add(anat.anatomy.short_form);
-								j++;
-							}
-						}
-					}
-					if (j > 0) return imageArray;
-					for (anatomy_channel_image anat : this.expressed_in) {
-						if (!loaded.contains(anat.anatomy.short_form)) {
-							addImage(anat.getUrl("", "thumbnailT.png"), anat.getLabel(), anat.anatomy.short_form, imageArray, j);
-							loaded.add(anat.anatomy.short_form);
-							j++;
-						}
-					}
-				}
-				if (this.channel_image != null) {
-					if (this.object != null) {
-						// if the row has a target object then the image is for that not the term.
-						for (channel_image anat : this.channel_image) {
-							// add same template to the begining and others at the end.
-							if (anat != null && anat.image != null && anat.image.template_anatomy != null && anat.image.template_anatomy.short_form != null && template.equals(anat.image.template_anatomy.short_form)) {
-								if (!loaded.contains(this.object.short_form)) {
-									addImage(anat.getUrl("", "thumbnailT.png"), this.object.getName() + anat.getLabel(false), this.object.short_form, imageArray, j);
-									loaded.add(this.object.short_form);
-									j++;
-								}
-							}
-						}
-						if (j > 0) return imageArray;
-						for (channel_image anat : this.channel_image) {
-							if (!loaded.contains(this.object.short_form)) {
-								addImage(anat.getUrl("", "thumbnailT.png"), this.object.getName() + anat.getLabel(), this.object.short_form, imageArray, j);
-								loaded.add(this.object.short_form);
-								j++;
-							}
-						}
-					} else {
-						for (channel_image anat : this.channel_image) {
-							// add same template to the begining and others at the end.
-							if (anat != null && anat.image != null && anat.image.template_anatomy != null && anat.image.template_anatomy.short_form != null && template.equals(anat.image.template_anatomy.short_form)) {
-								if (!loaded.contains(this.term.core.short_form)) {
-									addImage(anat.getUrl("", "thumbnailT.png"), this.term.core.getName(), this.term.core.short_form, imageArray, j);
-									loaded.add(this.term.core.short_form);
-									j++;
-								}
-							}
-						}
-						if (j > 0) return imageArray;
-						for (channel_image anat : this.channel_image) {
-							if (!loaded.contains(this.term.core.short_form)) {
-								addImage(anat.getUrl("", "thumbnailT.png"), this.term.core.getName(), this.term.core.short_form, imageArray, j);
-								loaded.add(this.term.core.short_form);
-								j++;
-							}
-						}
-					}
-				}
-			}catch (Exception e) {
-				System.out.println("Error in vfbQuery.images(): " + e.toString());
-				e.printStackTrace();
-				return null;
+			if (template == null || template.isEmpty()) {
+				template = "VFB_00101567"; // Default template
 			}
+			List<String> loaded = new ArrayList<>();
+			int index = 0;
+		
+			// Consolidate logic to reduce iterations and handle template-based selection more efficiently
+			List<anatomy_channel_image> allImages = new ArrayList<>();
+			if (this.anatomy_channel_image != null) {
+				allImages.addAll(this.anatomy_channel_image);
+			}
+			if (this.expressed_in != null) {
+				allImages.addAll(this.expressed_in);
+			}
+			// Prioritize images by template, then add others
+			allImages.stream().filter(anat -> template.equals(anat.channel_image.image.template_anatomy.short_form))
+					.distinct()
+					.forEach(anat -> addImageToImageArray(anat, imageArray, template, index++, loaded));
+			allImages.stream().filter(anat -> !template.equals(anat.channel_image.image.template_anatomy.short_form))
+					.distinct()
+					.forEach(anat -> addImageToImageArray(anat, imageArray, template, index++, loaded));
+		
 			return imageArray;
+		}
+
+		private void addImageToImageArray(anatomy_channel_image anat, ArrayValue imageArray, String template, int index, List<String> loaded) {
+			if (!loaded.contains(anat.anatomy.short_form)) {
+				addImage(anat.getUrl("", "thumbnailT.png"), anat.getLabel(), anat.anatomy.short_form, imageArray, index);
+				loaded.add(anat.anatomy.short_form);
+			}
 		}
 
 		/**
