@@ -73,7 +73,7 @@ public class OWLtoSOLRidQueryProcessor extends AQueryProcessor {
         // Check if ids is not empty
         if (!ids.isEmpty()) {
             // Join the list of IDs into a single string with ' OR ' as separator
-            joinedIdsWithOr = String.join(" OR ", ids);
+            joinedIdsWithOr = String.join(",", ids);
         } else {
             // Handle the case where ids is empty, if necessary
             throw new GeppettoDataSourceException("No IDs found to process.");
@@ -82,7 +82,18 @@ public class OWLtoSOLRidQueryProcessor extends AQueryProcessor {
         // Replace the list of IDs in processingOutputMap with the joined string
         processingOutputMap.put("ARRAY_ID_RESULTS", joinedIdsWithOr);
         processingOutputMap.put("EXTRA_RESULT_COLUMNS", "");
-        if (debug) System.out.println(joinedIdsWithOr);
+        if (debug) {
+            // Set the maximum length for the string
+            final int MAX_LENGTH = 100;
+            // Check if the string exceeds the maximum length
+            if (joinedIdsWithOr.length() > MAX_LENGTH) {
+                // If it does, clip the string to the maximum length and append "..." to indicate it's clipped
+                System.out.println(joinedIdsWithOr.substring(0, MAX_LENGTH) + "...");
+            } else {
+                // If it doesn't exceed the maximum length, print the entire string
+                System.out.println(joinedIdsWithOr);
+            }
+        }
         return processedResults;
     }
 
