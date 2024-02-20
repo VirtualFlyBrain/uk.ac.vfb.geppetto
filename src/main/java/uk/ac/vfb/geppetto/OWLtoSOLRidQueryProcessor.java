@@ -85,6 +85,7 @@ public class OWLtoSOLRidQueryProcessor extends AQueryProcessor {
         if (debug) {
             // Set the maximum length for the string
             final int MAX_LENGTH = 100;
+            System.out.println(ids.size() + " IDs found.");
             // Check if the string exceeds the maximum length
             if (joinedIdsWithOr.length() > MAX_LENGTH) {
                 // If it does, clip the string to the maximum length and append "..." to indicate it's clipped
