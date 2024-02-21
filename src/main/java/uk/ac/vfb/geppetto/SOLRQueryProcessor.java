@@ -673,8 +673,9 @@ public class SOLRQueryProcessor extends AQueryProcessor
 	@Override
 	public QueryResults process(ProcessQuery query, DataSource dataSource, Variable variable, QueryResults results, GeppettoModelAccess geppettoModelAccess) throws GeppettoDataSourceException
 	{
+		long startTime = System.currentTimeMillis(); // Start timing
 		try{
-			long startTime = System.currentTimeMillis(); // Start timing
+			
 			if(results == null)
 			{
 				throw new GeppettoDataSourceException("Results input to " + query.getName() + "is null");
