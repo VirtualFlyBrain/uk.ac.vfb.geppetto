@@ -978,6 +978,10 @@ public class SOLRQueryProcessor extends AQueryProcessor
 				}
 			}
 
+			long endTime = System.currentTimeMillis(); // End timing
+    		long duration = (endTime - startTime); // Compute duration
+    		System.out.println("Processing time: " + duration + " milliseconds");
+
 			return processedResults;
 
 		}
