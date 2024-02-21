@@ -611,21 +611,13 @@ public class SOLRQueryProcessor extends AQueryProcessor
 				allImages.addAll(this.expressed_in);
 			}
 			// Prioritize images by template, then add others
-			List<String> processed = new ArrayList<String>();
-
-			for (anatomy_channel_image anat : allImages) {
-				if (template.equals(anat.channel_image.image.template_anatomy.short_form) && !processed.contains(anat.anatomy.short_form)) {
-					addImageToImageArray(anat, imageArray, template, index++, loaded);
-					processed.add(anat.anatomy.short_form);
-				}
-			}
-
-			for (anatomy_channel_image anat : allImages) {
-				if (!template.equals(anat.channel_image.image.template_anatomy.short_form) && !processed.contains(anat.anatomy.short_form)) {
-					addImageToImageArray(anat, imageArray, template, index++, loaded);
-					processed.add(anat.anatomy.short_form);
-				}
-			}
+			allImages.stream().filter(anat -> template.equals(anat.channel_image.image.template_anatomy.short_form))
+					.distinct()
+					.forEach(anat -> addImageToImageArray(anat, imageArray, template, index++, loaded));
+			allImages.stream().filter(anat -> !template.equals(anat.channel_image.image.template_anatomy.short_form))
+					.distinct()
+					.forEach(anat -> addImageToImageArray(anat, imageArray, template, index++, loaded));
+		
 			return imageArray;
 		}
 
