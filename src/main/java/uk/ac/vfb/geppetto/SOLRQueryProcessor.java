@@ -666,6 +666,7 @@ public class SOLRQueryProcessor extends AQueryProcessor
 	public QueryResults process(ProcessQuery query, DataSource dataSource, Variable variable, QueryResults results, GeppettoModelAccess geppettoModelAccess) throws GeppettoDataSourceException
 	{
 		try{
+			long startTime = System.currentTimeMillis(); // Start timing
 			if(results == null)
 			{
 				throw new GeppettoDataSourceException("Results input to " + query.getName() + "is null");
@@ -982,6 +983,10 @@ public class SOLRQueryProcessor extends AQueryProcessor
 			System.out.println(e);
 			e.printStackTrace();
 		}
+
+		long endTime = System.currentTimeMillis(); // End timing
+    	long duration = (endTime - startTime); // Compute duration
+    	System.out.println("Processing time: " + duration + " milliseconds");
 
 		return null;
 	}
