@@ -676,32 +676,20 @@ public class SOLRQueryProcessor extends AQueryProcessor
 			String tempData = "";
 			String header = "start";
 			Integer count = 0;
-			Boolean	hasId = false;
-			Boolean	hasName = false;
-			Boolean hasLicense = false;
-			Boolean hasDatasetCount = false;
-			Boolean	hasExpressed_in = false;
-			Boolean	hasReference = false;
-			Boolean	hasStage = false;
-			Boolean hasImage = false;
-			Boolean hasTypes = false;
-			Boolean hasParents = false;
-			Boolean hasGrossType = false;
-			Boolean hasTemplate = false;
-			Boolean hasTechnique = false;
-			Boolean hasExtra = false;
-			Boolean hasSynCount = false;
-			Boolean hasObject = false;
-			Boolean hasScore = false;
-			Boolean scRNAseq = false;
-			Boolean hasGene = false;
-			Boolean hasGeneScore = false;
+			boolean hasId = false, hasName = false, hasLicense = false, hasDatasetCount = false, 
+                hasExpressed_in = false, hasReference = false, hasStage = false, hasImage = false, 
+                hasTypes = false, hasParents = false, hasGrossType = false, hasTemplate = false, 
+                hasTechnique = false, hasExtra = false, hasSynCount = false, hasObject = false, 
+                hasScore = false, scRNAseq = false, hasGene = false, hasGeneScore = false;
 			List<vfb_query> table = new ArrayList<vfb_query>();
-			vfb_query vfbQuery = null;
 
 			// Template space:
 			String template = "";
 			String loadedTemplate = "";
+
+			Gson gson = new Gson();
+
+			String keyName = determineKeyName(results.getHeader());
 
 			// Determine loaded template
 			CompositeType testTemplate = null;
@@ -724,18 +712,6 @@ public class SOLRQueryProcessor extends AQueryProcessor
 
 			if (debug) System.out.println("Processing JSON...");
 			count = 0;
-			String keyName = "";
-			for  (String key : results.getHeader()) {
-				if (debug) System.out.println("Header: " + key);
-				if (key.equals("anat_image_query")) {
-					keyName = "anat_image_query";
-					break;
-				}
-				if (key.equals("anat_query")) {
-					keyName = "anat_query";
-					break;
-				}
-			}
 			try{
 				header = "results>JSON";
 				// Match to vfb_query schema:
@@ -743,7 +719,7 @@ public class SOLRQueryProcessor extends AQueryProcessor
 					json = results.getValue(keyName,count).toString();
 					if (debug) System.out.println("JSON passed: " + json.replace("}","}\n"));
 					header = "JSON>Schema";
-					vfbQuery = new Gson().fromJson(json , vfb_query.class);
+					vfb_query vfbQuery = gson.fromJson(json, vfb_query.class);
 					table.add(vfbQuery);
 					count ++;
 					if (debug) System.out.println("Results Header: " + results.getHeader() );
@@ -835,7 +811,6 @@ public class SOLRQueryProcessor extends AQueryProcessor
 						}
 					}
 				}
-				vfbQuery = null;
 			}catch (Exception e) {
 				System.out.println("Error creating " + header + ": " + e.toString());
 				e.printStackTrace();
@@ -1009,6 +984,15 @@ public class SOLRQueryProcessor extends AQueryProcessor
 		}
 
 		return null;
+	}
+
+	private String determineKeyName(List<String> headers) {
+		for (String key : headers) {
+			if ("anat_image_query".equals(key) || "anat_query".equals(key)) {
+				return key;
+			}
+		}
+		return "";
 	}
 
 	@Override
