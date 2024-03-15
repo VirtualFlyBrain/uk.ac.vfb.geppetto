@@ -75,8 +75,10 @@ public class OWLtoSOLRidQueryProcessor extends AQueryProcessor {
             // Join the list of IDs into a single string with ' OR ' as separator
             joinedIdsWithOr = String.join(",", ids);
         } else {
-            // Handle the case where ids is empty, if necessary
-            throw new GeppettoDataSourceException("No IDs found to process.");
+            processingOutputMap.put("ARRAY_ID_RESULTS", "");
+            processingOutputMap.put("EXTRA_RESULT_COLUMNS", "");
+            if (debug) System.out.println("No IDs found to process.");
+            return processedResults;
         }
         if (debug) System.out.println("OWL passing ids to SOLR:");
         // Replace the list of IDs in processingOutputMap with the joined string
