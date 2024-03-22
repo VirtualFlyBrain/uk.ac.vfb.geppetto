@@ -1259,7 +1259,12 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 			try{
 				header = "results>JSON";
 				if (debug) System.out.println("Results Header: " + results.getHeader() );
-				json = results.getValue("term_info", 0).toString();
+				try{
+					json = results.getValue("term_info", 0).toString();
+				}catch (Exception e){
+					System.out.println("ERROR: No JSON term_info cashed for " + variable.getId());
+					return results;
+				}
 				if (debug) System.out.println("JSON passed: " + json.replace("}","}\n"));
 				header = "JSON>Schema";
 				vfbTerm = new Gson().fromJson(json, vfb_terminfo.class);
