@@ -218,6 +218,8 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 		private String iri;
 		private String label;
 		private String type;
+		private String database_cross_reference;
+		private String confidence_value;
 
 		public String toString() {
 			return String.format("<a href=\"%s\" target=\"_blank\">%s</a>", this.iri, this.label);
@@ -232,6 +234,21 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 
 		public String type() {
 			return this.type;
+		}
+
+		public String reference() {
+			if (this.database_cross_reference == null || this.database_cross_reference.equals("null")) return "";
+			String result = this.database_cross_reference;
+			if (this.database_cross_reference.toLowerCase().startsWith("doi:")) {
+				String doi = this.database_cross_reference.substring(4); // Remove "doi:" prefix
+				String url = "https://doi.org/" + doi;
+				result = "<a href=\"" + url + "\" target=\"_blank\" title=\"" + this.database_cross_reference + "\"><i class=\"popup-icon-link gpt-doi\"></i></a>";
+			}
+			return result;
+		}
+
+		public String confidence() {
+			return this.confidence_value;
 		}
 	}
 
@@ -315,7 +332,17 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 		}
 
 		public String intLink(Boolean showTypes) {
-			return this.relation.label() + " " + this.object.intLink(showTypes);
+			String result = this.relation.label() + " " + this.object.intLink(showTypes);
+			String confidenceValue = this.relation.confidence();
+			if (confidenceValue != null && !confidenceValue.isEmpty()) {
+				String confidenceBadge = String.format("<span class=\"badge badge-secondary\">%s</span>", confidenceValue);
+				result += " " + confidenceBadge;
+			}
+			String reference = this.relation.reference();
+			if (reference != null && !reference.isEmpty()) {
+				result += " " + reference;
+			}
+			return result;
 		}
 	}
 
