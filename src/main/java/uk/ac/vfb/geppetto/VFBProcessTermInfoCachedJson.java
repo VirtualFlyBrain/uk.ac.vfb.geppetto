@@ -218,7 +218,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 		private String iri;
 		private String label;
 		private String type;
-		private String database_cross_reference;
+		private List<String> database_cross_reference;
 		private String confidence_value;
 
 		public String toString() {
@@ -237,14 +237,26 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 		}
 
 		public String reference() {
-			if (this.database_cross_reference == null || this.database_cross_reference.equals("null")) return "";
-			String result = this.database_cross_reference;
-			if (this.database_cross_reference.toLowerCase().startsWith("doi:")) {
-				String doi = this.database_cross_reference.substring(4); // Remove "doi:" prefix
-				String url = "https://doi.org/" + doi;
-				result = "<a href=\"" + url + "\" target=\"_blank\" title=\"" + this.database_cross_reference + "\"><i class=\"popup-icon-link gpt-doi\"></i></a>";
+			if (this.database_cross_reference == null || this.database_cross_reference.equals("null") || this.database_cross_reference.isEmpty()) {
+				return "";
 			}
-			return result;
+			StringBuilder result = new StringBuilder();
+			for (String reference : this.database_cross_reference) {
+				if (reference.toLowerCase().startsWith("doi:")) {
+					String doi = reference.substring(4); // Remove "doi:" prefix
+					String url = "https://doi.org/" + doi;
+					result.append(String.format("<a href=\"%s\" target=\"_blank\" title=\"%s\"><i class=\"popup-icon-link gpt-doi\"></i></a> ", url, reference));
+				} else if (reference.toLowerCase().startsWith("flybase:")) {
+					String flybaseId = reference.substring(8); // Remove "FlyBase:" prefix
+					String url = "http://flybase.org/captcha/reports/" + flybaseId;
+					result.append(String.format("<a href=\"%s\" target=\"_blank\" title=\"%s\"><i class=\"popup-icon-link gpt-fly\"></i></a> ", url, reference));
+				} else if (reference.toLowerCase().startsWith("pmid:")) {
+					String pmid = reference.substring(5); // Remove "PMID:" prefix
+					String url = "https://pubmed.ncbi.nlm.nih.gov/" + pmid;
+					result.append(String.format("<a href=\"%s\" target=\"_blank\" title=\"%s\"><i class=\"popup-icon-link gpt-pubmed\"></i></a> ", url, reference));
+				}
+			}
+			return result.toString().trim();
 		}
 
 		public String confidence() {
