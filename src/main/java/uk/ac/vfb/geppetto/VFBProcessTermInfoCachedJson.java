@@ -16,6 +16,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.swing.GroupLayout.Alignment;
 
 import java.util.Collections;
+import java.util.Comparator;
 
 import com.google.gson.Gson;
 import com.sun.org.apache.bcel.internal.generic.Select;
@@ -240,6 +241,29 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 			if (this.database_cross_reference == null || this.database_cross_reference.equals("null") || this.database_cross_reference.isEmpty()) {
 				return "";
 			}
+
+			// Sort the database_cross_reference list
+			Collections.sort(this.database_cross_reference, new Comparator<String>() {
+				@Override
+				public int compare(String ref1, String ref2) {
+					String prefix1 = getPrefix(ref1);
+					String prefix2 = getPrefix(ref2);
+					return prefix1.compareTo(prefix2);
+				}
+
+				private String getPrefix(String ref) {
+					if (ref.toLowerCase().startsWith("doi:")) {
+						return "1_doi";
+					} else if (ref.toLowerCase().startsWith("flybase:")) {
+						return "2_flybase";
+					} else if (ref.toLowerCase().startsWith("pmid:")) {
+						return "3_pmid";
+					} else {
+						return "4_other";
+					}
+				}
+			});
+
 			StringBuilder result = new StringBuilder();
 			for (String reference : this.database_cross_reference) {
 				if (reference.toLowerCase().startsWith("doi:")) {
