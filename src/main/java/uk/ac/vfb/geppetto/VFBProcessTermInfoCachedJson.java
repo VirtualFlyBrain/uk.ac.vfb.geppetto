@@ -344,17 +344,36 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 		}
 
 		public String intLink(Boolean showTypes) {
-			String result = this.relation.label() + " " + this.object.intLink(showTypes);
+			StringBuilder result = new StringBuilder();
+
+			// Handle confidence value
 			String confidenceValue = this.relation.confidence();
 			if (confidenceValue != null && !confidenceValue.isEmpty()) {
+				try {
+					double confidence = Double.parseDouble(confidenceValue);
+					if (confidence >= 0 && confidence <= 1) {
+						confidence = confidence * 100;
+						confidenceValue = String.format("%.0f%%", confidence);
+					} else {
+						confidenceValue = confidenceValue + "%"; // Assuming it's already a percentage string without "%"
+					}
+				} catch (NumberFormatException e) {
+					// If parsing fails, use the original value
+				}
 				String confidenceBadge = String.format("<span class=\"badge badge-secondary\">%s</span>", confidenceValue);
-				result += " " + confidenceBadge;
+				result.append(confidenceBadge).append(" ");
 			}
+
+			// Handle references
 			String reference = this.relation.reference();
 			if (reference != null && !reference.isEmpty()) {
-				result += " " + reference;
+				result.append(reference).append(" ");
 			}
-			return result;
+
+			// Append the main content
+			result.append(this.relation.label()).append(" ").append(this.object.intLink(showTypes));
+
+			return result.toString().trim();
 		}
 	}
 
