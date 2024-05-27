@@ -384,7 +384,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 				} catch (NumberFormatException e) {
 					// If parsing fails, use the original value
 				}
-				String confidenceBadge = String.format("<span class=\"badge badge-secondary\">%s</span>", confidenceValue);
+				String confidenceBadge = String.format("<span class=\"badge badge-secondary\" title=\"confidence value\">%s</span>", confidenceValue);
 				result.append(confidenceBadge).append(" ");
 			}
 
