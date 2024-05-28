@@ -278,6 +278,10 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 					String pmid = reference.substring(5); // Remove "PMID:" prefix
 					String url = "https://pubmed.ncbi.nlm.nih.gov/" + pmid;
 					result.append(String.format("<a href=\"%s\" target=\"_blank\" title=\"%s\"><i class=\"popup-icon-link gpt-pubmed\"></i></a> ", url, reference));
+				} else if (reference.toLowerCase().startsWith("go_ref:")) {
+						String goref = reference.substring(7); // Remove "GO_REF:" prefix
+						String url = "https://geneontology.org/GO_REF/" + goref;
+						result.append(String.format("<a href=\"%s\" target=\"_blank\" title=\"%s\"><i class=\"popup-icon-link gpt-geneontology\"></i></a> ", url, reference));
 				}
 			}
 			return result.toString().trim();
@@ -686,6 +690,8 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 					" <a href=\"https://doi.org/$ID\" target=\"_blank\" ><i class=\"popup-icon-link gpt-doi\" title=\"doi:$ID\" aria-hidden=\"true\"></i></a>");
 			siteLinks.put("PubMed",
 					" <a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=$ID\" target=\"_blank\" ><i class=\"popup-icon-link gpt-pubmed\" title=\"PMID:$ID\" aria-hidden=\"true\"></i></a>");
+			siteLinks.put("GO_REF",
+					" <a href=\"https://geneontology.org/GO_REF/$ID\" target=\"_blank\" ><i class=\"popup-icon-link gpt-geneontology\" title=\"GO_REF:$ID\" aria-hidden=\"true\"></i></a>");
 			// TODO: ISBN
 			result = core.intLink();
 			if (this.FlyBase != null && !this.FlyBase.equals("")) {
