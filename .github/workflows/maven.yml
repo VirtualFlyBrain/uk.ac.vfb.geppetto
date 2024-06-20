@@ -45,13 +45,13 @@ jobs:
       run: | 
           git clone https://github.com/openworm/org.geppetto.simulation.git
           cd org.geppetto.simulation
-          git checkout vfb_20200604_a
+          git checkout VFBv2.1.0.2
           mvn -Dhttps.protocols=TLSv1.2 -DskipTests install
     - name: Build datasources
       run: | 
           git clone https://github.com/openworm/org.geppetto.datasources.git
           cd org.geppetto.datasources
-          git checkout vfb_20200604_a
+          git checkout passingSOLR
           mvn -Dhttps.protocols=TLSv1.2 -DskipTests install
     - name: Build uk.ac.vfb.geppetto
       run: mvn -B package --file pom.xml
