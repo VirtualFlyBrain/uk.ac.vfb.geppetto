@@ -4,88 +4,190 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.google.gson.Gson;
 
 import org.geppetto.core.datasources.GeppettoDataSourceException;
+import org.geppetto.model.util.GeppettoVisitingException;
 import org.geppetto.core.model.GeppettoModelAccess;
 import org.geppetto.datasources.AQueryProcessor;
 import org.geppetto.model.datasources.AQueryResult;
 import org.geppetto.model.datasources.DataSource;
 import org.geppetto.model.datasources.DatasourcesFactory;
 import org.geppetto.model.datasources.ProcessQuery;
-import org.geppetto.model.datasources.QueryResult;
 import org.geppetto.model.datasources.QueryResults;
 import org.geppetto.model.datasources.SerializableQueryResult;
 import org.geppetto.model.variables.Variable;
-
-/**
- * Author: [Your Name]
- *
- */
+import org.geppetto.model.values.ArrayValue;
+import org.geppetto.model.values.ValuesFactory;
+import org.geppetto.model.values.ImageFormat;
+import org.geppetto.model.values.Image;
+import org.geppetto.model.values.ArrayElement;
+import org.geppetto.core.model.GeppettoSerializer;
+import org.geppetto.model.types.TypesPackage;
 
 public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
 
     private Map<String, Object> processingOutputMap = new HashMap<String, Object>();
+    private Boolean debug = true;
 
-    Boolean debug = false;
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.geppetto.core.datasources.IQueryProcessor#process(org.geppetto.model.ProcessQuery, org.geppetto.model.variables.Variable, org.geppetto.model.QueryResults)
-     */
     @Override
     public QueryResults process(ProcessQuery query, DataSource dataSource, Variable variable, QueryResults results, GeppettoModelAccess geppettoModelAccess) throws GeppettoDataSourceException {
-        if (results == null) {
-            throw new GeppettoDataSourceException("Results input to " + query.getName() + " is null");
-        }
-        QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
-        int idIndex = results.getHeader().indexOf("neuron_id");
-        int targetIdIndex = results.getHeader().indexOf("target_neuron_id");
-        int scoreIndex = results.getHeader().indexOf("score");
-        int neuronNameIndex = results.getHeader().indexOf("neuron_name");
-        int targetNeuronNameIndex = results.getHeader().indexOf("target_neuron_name");
-        int alignmentUrlIndex = results.getHeader().indexOf("alignment_url");
-
-        processedResults.getHeader().add("Neuron ID");
-        processedResults.getHeader().add("Target Neuron ID");
-        processedResults.getHeader().add("Score");
-        processedResults.getHeader().add("Neuron Name");
-        processedResults.getHeader().add("Target Neuron Name");
-        processedResults.getHeader().add("Alignment URL");
-
-        for (AQueryResult result : results.getResults()) {
-            SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
-            try {
-                String neuronId = ((QueryResult) result).getValues().get(idIndex).toString();
-                String targetNeuronId = ((QueryResult) result).getValues().get(targetIdIndex).toString();
-                String score = ((QueryResult) result).getValues().get(scoreIndex).toString();
-                String neuronName = ((QueryResult) result).getValues().get(neuronNameIndex).toString();
-                String targetNeuronName = ((QueryResult) result).getValues().get(targetNeuronNameIndex).toString();
-                String alignmentUrl = ((QueryResult) result).getValues().get(alignmentUrlIndex).toString();
-
-                processedResult.getValues().add(neuronId);
-                processedResult.getValues().add(targetNeuronId);
-                processedResult.getValues().add(score);
-                processedResult.getValues().add(neuronName);
-                processedResult.getValues().add(targetNeuronName);
-                processedResult.getValues().add(alignmentUrl);
-
-                processedResults.getResults().add(processedResult);
-            } catch (Exception e) {
-                System.out.println("Error processing result: " + e.toString());
-                e.printStackTrace();
-                System.out.println("Result values: " + ((QueryResult) result).getValues().toString());
-            }
-        }
+        long startTime = System.currentTimeMillis();
 
         if (debug) {
-            System.out.println("CachedUploadNBLASTQueryProcessor returning " + processedResults.getResults().size() + " rows");
+            System.out.println("Starting process method for CachedUploadNBLASTQueryProcessor");
         }
-        return processedResults;
+
+        try {
+            if (results == null) {
+                throw new GeppettoDataSourceException("Results input to " + query.getName() + " is null");
+            }
+
+            QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
+            Gson gson = new Gson();
+            List<NBLASTResult> nblastResults = new ArrayList<>();
+
+            String keyName = determineKeyName(results.getHeader());
+
+            if (debug) {
+                System.out.println("Key name determined: " + keyName);
+            }
+
+            for (AQueryResult result : results.getResults()) {
+                String json = results.getValue(keyName, results.getResults().indexOf(result)).toString();
+                
+                if (debug) {
+                    System.out.println("Processing result JSON: " + json);
+                }
+
+                NBLASTResult nblastResult = gson.fromJson(json, NBLASTResult.class);
+                nblastResults.add(nblastResult);
+            }
+
+            setHeaders(processedResults);
+
+            if (debug) {
+                System.out.println("Headers set: " + processedResults.getHeader());
+            }
+
+            for (NBLASTResult result : nblastResults) {
+                SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
+                processedResult.getValues().add(result.row.get(0).core.short_form);
+                processedResult.getValues().add(result.row.get(0).core.label);
+                processedResult.getValues().add(result.row.get(0).core.types.toString());
+                processedResult.getValues().add(result.row.get(0).core.unique_facets.toString());
+                processedResult.getValues().add(result.row.get(3).get(0).image.template_anatomy.label);
+                processedResult.getValues().add(result.row.get(3).get(0).imaging_technique.label);
+                processedResult.getValues().add(serializeImages(result.row.get(3)));
+                processedResult.getValues().add(result.score.toString());
+
+                if (debug) {
+                    System.out.println("Processed result: " + processedResult);
+                }
+
+                processedResults.getResults().add(processedResult);
+            }
+
+            long endTime = System.currentTimeMillis();
+            System.out.println("Processing time: " + (endTime - startTime) + " milliseconds");
+
+            return processedResults;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new GeppettoDataSourceException(e);
+        }
+    }
+
+    private String determineKeyName(List<String> headers) {
+        if (debug) {
+            System.out.println("Determining key name from headers: " + headers);
+        }
+
+        for (String key : headers) {
+            if ("upload_nblast_query".equals(key)) {
+                if (debug) {
+                    System.out.println("Key name found: " + key);
+                }
+                return key;
+            }
+        }
+        return "";
+    }
+
+    private void setHeaders(QueryResults results) {
+        results.getHeader().add("ID");
+        results.getHeader().add("Name");
+        results.getHeader().add("Type");
+        results.getHeader().add("Gross_Type");
+        results.getHeader().add("Template_Space");
+        results.getHeader().add("Imaging_Technique");
+        results.getHeader().add("Images");
+        results.getHeader().add("Score");
+
+        if (debug) {
+            System.out.println("Headers set in QueryResults: " + results.getHeader());
+        }
+    }
+
+    private String serializeImages(List<ImageChannel> imageChannels) {
+        ArrayValue imageArray = ValuesFactory.eINSTANCE.createArrayValue();
+        int i = 0;
+        for (ImageChannel imageChannel : imageChannels) {
+            Image image = ValuesFactory.eINSTANCE.createImage();
+            image.setName(imageChannel.image.template_anatomy.label);
+            image.setData(imageChannel.image.image_folder + "thumbnailT.png");
+            image.setFormat(ImageFormat.PNG);
+            ArrayElement element = ValuesFactory.eINSTANCE.createArrayElement();
+            element.setIndex(i++);
+            element.setInitialValue(image);
+            imageArray.getElements().add(element);
+        }
+        Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
+        exampleVar.setId("images");
+        exampleVar.setName("Images");
+        exampleVar.getTypes().add(TypesPackage.Literals.IMAGE_TYPE);
+        exampleVar.getInitialValues().put(TypesPackage.Literals.IMAGE_TYPE, imageArray);
+        return GeppettoSerializer.serializeToJSON(exampleVar);
     }
 
     @Override
     public Map<String, Object> getProcessingOutputMap() {
         return processingOutputMap;
+    }
+
+    class NBLASTResult {
+        List<NBLASTRow> row;
+        Double score;
+    }
+
+    class NBLASTRow {
+        MinimalEntityInfo core;
+        String description;
+        String comment;
+        List<ImageChannel> imageChannels;
+        List<MinimalEntityInfo> types;
+    }
+
+    class MinimalEntityInfo {
+        String symbol;
+        String iri;
+        List<String> types;
+        String short_form;
+        List<String> unique_facets;
+        String label;
+    }
+
+    class ImageChannel {
+        ImageInfo image;
+        MinimalEntityInfo channel;
+        MinimalEntityInfo imaging_technique;
+    }
+
+    class ImageInfo {
+        MinimalEntityInfo template_channel;
+        List<Double> index;
+        MinimalEntityInfo template_anatomy;
+        String image_folder;
     }
 }
