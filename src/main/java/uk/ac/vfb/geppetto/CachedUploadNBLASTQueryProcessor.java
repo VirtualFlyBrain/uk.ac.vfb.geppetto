@@ -24,6 +24,7 @@ import org.geppetto.model.values.Image;
 import org.geppetto.model.values.ArrayElement;
 import org.geppetto.core.model.GeppettoSerializer;
 import org.geppetto.model.types.TypesPackage;
+import org.geppetto.model.variables.VariablesFactory;
 
 public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
 
