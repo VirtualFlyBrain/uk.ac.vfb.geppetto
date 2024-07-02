@@ -7,7 +7,6 @@ import java.util.Map;
 import com.google.gson.Gson;
 
 import org.geppetto.core.datasources.GeppettoDataSourceException;
-import org.geppetto.model.util.GeppettoVisitingException;
 import org.geppetto.core.model.GeppettoModelAccess;
 import org.geppetto.datasources.AQueryProcessor;
 import org.geppetto.model.datasources.AQueryResult;
@@ -16,15 +15,16 @@ import org.geppetto.model.datasources.DatasourcesFactory;
 import org.geppetto.model.datasources.ProcessQuery;
 import org.geppetto.model.datasources.QueryResults;
 import org.geppetto.model.datasources.SerializableQueryResult;
-import org.geppetto.model.variables.Variable;
-import org.geppetto.model.values.ArrayValue;
-import org.geppetto.model.values.ValuesFactory;
-import org.geppetto.model.values.ImageFormat;
-import org.geppetto.model.values.Image;
-import org.geppetto.model.values.ArrayElement;
-import org.geppetto.core.model.GeppettoSerializer;
 import org.geppetto.model.types.TypesPackage;
+import org.geppetto.model.util.GeppettoVisitingException;
+import org.geppetto.model.values.ArrayElement;
+import org.geppetto.model.values.ArrayValue;
+import org.geppetto.model.values.Image;
+import org.geppetto.model.values.ImageFormat;
+import org.geppetto.model.values.ValuesFactory;
+import org.geppetto.model.variables.Variable;
 import org.geppetto.model.variables.VariablesFactory;
+import org.geppetto.core.model.GeppettoSerializer;
 
 public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
 
