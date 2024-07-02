@@ -24,6 +24,7 @@ import org.geppetto.model.types.CompositeType;
 import org.geppetto.model.util.ModelUtility;
 import org.geppetto.model.types.TypesPackage;
 import org.geppetto.model.types.Type;
+import org.geppetto.core.model.GeppettoSerializer;
 
 import com.google.gson.Gson;
 
@@ -87,7 +88,7 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor
         long startTime = System.currentTimeMillis(); // Start timing
         try {
             if (results == null) {
-                throw new GeppettoDataSourceException("Results input to " + query.getName() + "is null");
+                throw new GeppettoDataSourceException("Results input to " + query.getName() + " is null");
             }
             QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
 
