@@ -25,6 +25,7 @@ import org.geppetto.model.util.ModelUtility;
 import org.geppetto.model.types.TypesPackage;
 import org.geppetto.model.types.Type;
 import org.geppetto.core.model.GeppettoSerializer;
+import org.geppetto.model.datasources.AQueryResult;
 
 import com.google.gson.Gson;
 
