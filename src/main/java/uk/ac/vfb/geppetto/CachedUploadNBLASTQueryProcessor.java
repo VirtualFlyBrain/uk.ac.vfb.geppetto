@@ -73,13 +73,13 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
 
             for (NBLASTResult result : nblastResults) {
                 SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
-                processedResult.getValues().add(result.row.get(0).core.short_form);
-                processedResult.getValues().add(result.row.get(0).core.label);
-                processedResult.getValues().add(result.row.get(0).core.types.toString());
-                processedResult.getValues().add(result.row.get(0).core.unique_facets.toString());
-                processedResult.getValues().add(result.row.get(3).get(0).image.template_anatomy.label);
-                processedResult.getValues().add(result.row.get(3).get(0).imaging_technique.label);
-                processedResult.getValues().add(serializeImages(result.row.get(3)));
+                processedResult.getValues().add(result.row.core.short_form);
+                processedResult.getValues().add(result.row.core.label);
+                processedResult.getValues().add(result.row.core.types.toString());
+                processedResult.getValues().add(result.row.core.unique_facets.toString());
+                processedResult.getValues().add(result.row.imageChannels.get(0).image.template_anatomy.label);
+                processedResult.getValues().add(result.row.imageChannels.get(0).imaging_technique.label);
+                processedResult.getValues().add(serializeImages(result.row.imageChannels));
                 processedResult.getValues().add(result.score.toString());
 
                 if (debug) {
@@ -158,7 +158,7 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
     }
 
     class NBLASTResult {
-        List<NBLASTRow> row;
+        NBLASTRow row;
         Double score;
     }
 
