@@ -15,9 +15,7 @@ import org.geppetto.model.datasources.DatasourcesFactory;
 import org.geppetto.model.datasources.ProcessQuery;
 import org.geppetto.model.datasources.QueryResults;
 import org.geppetto.model.datasources.SerializableQueryResult;
-import org.geppetto.model.types.CompositeType;
 import org.geppetto.model.types.TypesPackage;
-import org.geppetto.model.util.GeppettoVisitingException;
 import org.geppetto.model.values.ArrayElement;
 import org.geppetto.model.values.ArrayValue;
 import org.geppetto.model.values.Image;
@@ -77,14 +75,14 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
 
             for (NBLASTResult result : nblastResults) {
                 SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
-                processedResult.getValues().add(result.row.core.short_form);
-                processedResult.getValues().add(result.row.core.label);
-                processedResult.getValues().add(result.row.core.types.toString());
-                processedResult.getValues().add(result.row.core.unique_facets.toString());
-                processedResult.getValues().add(result.row.imageChannels.get(0).image.template_anatomy.label);
-                processedResult.getValues().add(result.row.imageChannels.get(0).imaging_technique.label);
-                processedResult.getValues().add(serializeImages(result.row.imageChannels));
-                processedResult.getValues().add(result.score.toString());
+                processedResult.getValues().add(result.row.getCore().getShortForm());
+                processedResult.getValues().add(result.row.getCore().getLabel());
+                processedResult.getValues().add(result.row.getCore().getTypes().toString());
+                processedResult.getValues().add(result.row.getCore().getUniqueFacets().toString());
+                processedResult.getValues().add(result.row.getImageChannels().get(0).getImage().getTemplateAnatomy().getLabel());
+                processedResult.getValues().add(result.row.getImageChannels().get(0).getImagingTechnique().getLabel());
+                processedResult.getValues().add(serializeImages(result.row.getImageChannels()));
+                processedResult.getValues().add(result.getScore().toString());
 
                 if (debug) {
                     System.out.println("Processed result: " + processedResult);
@@ -140,8 +138,8 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
         int i = 0;
         for (ImageChannel imageChannel : imageChannels) {
             Image image = ValuesFactory.eINSTANCE.createImage();
-            image.setName(imageChannel.image.template_anatomy.label);
-            image.setData(imageChannel.image.image_folder + "thumbnailT.png");
+            image.setName(imageChannel.getImage().getTemplateAnatomy().getLabel());
+            image.setData(imageChannel.getImage().getImageFolder() + "thumbnailT.png");
             image.setFormat(ImageFormat.PNG);
             ArrayElement element = ValuesFactory.eINSTANCE.createArrayElement();
             element.setIndex(i++);
@@ -162,37 +160,105 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
     }
 
     class NBLASTResult {
-        NBLASTRow row;
-        Double score;
+        private NBLASTRow row;
+        private Double score;
+
+        public NBLASTRow getRow() {
+            return row;
+        }
+
+        public Double getScore() {
+            return score;
+        }
     }
 
     class NBLASTRow {
-        MinimalEntityInfo core;
-        String description;
-        String comment;
-        List<ImageChannel> imageChannels;
-        List<MinimalEntityInfo> types;
+        private MinimalEntityInfo core;
+        private String description;
+        private String comment;
+        private List<ImageChannel> imageChannels;
+        private List<MinimalEntityInfo> types;
+
+        public MinimalEntityInfo getCore() {
+            return core;
+        }
+
+        public List<ImageChannel> getImageChannels() {
+            return imageChannels;
+        }
     }
 
     class MinimalEntityInfo {
-        String symbol;
-        String iri;
-        List<String> types;
-        String short_form;
-        List<String> unique_facets;
-        String label;
+        private String symbol;
+        private String iri;
+        private List<String> types;
+        private String short_form;
+        private List<String> unique_facets;
+        private String label;
+
+        public String getSymbol() {
+            return symbol;
+        }
+
+        public String getIri() {
+            return iri;
+        }
+
+        public List<String> getTypes() {
+            return types;
+        }
+
+        public String getShortForm() {
+            return short_form;
+        }
+
+        public List<String> getUniqueFacets() {
+            return unique_facets;
+        }
+
+        public String getLabel() {
+            return label;
+        }
     }
 
     class ImageChannel {
-        ImageInfo image;
-        MinimalEntityInfo channel;
-        MinimalEntityInfo imaging_technique;
+        private ImageInfo image;
+        private MinimalEntityInfo channel;
+        private MinimalEntityInfo imaging_technique;
+
+        public ImageInfo getImage() {
+            return image;
+        }
+
+        public MinimalEntityInfo getChannel() {
+            return channel;
+        }
+
+        public MinimalEntityInfo getImagingTechnique() {
+            return imaging_technique;
+        }
     }
 
     class ImageInfo {
-        MinimalEntityInfo template_channel;
-        List<Double> index;
-        MinimalEntityInfo template_anatomy;
-        String image_folder;
+        private MinimalEntityInfo template_channel;
+        private List<Double> index;
+        private MinimalEntityInfo template_anatomy;
+        private String image_folder;
+
+        public MinimalEntityInfo getTemplateChannel() {
+            return template_channel;
+        }
+
+        public List<Double> getIndex() {
+            return index;
+        }
+
+        public MinimalEntityInfo getTemplateAnatomy() {
+            return template_anatomy;
+        }
+
+        public String getImageFolder() {
+            return image_folder;
+        }
     }
 }
