@@ -116,10 +116,10 @@
 	<aop:scoped-proxy proxy-target-class="false"/>
 	</bean>
 	
-	<osgi:service id="CachedUploadNBLASTQueryProcessor" ref="cachedUploadNBLASTQueryProcessor"
+	<osgi:service id="CachedUploadNBLASTQueryProcessor" ref="cachedUploadNblastQueryProcessor"
 		interface="org.geppetto.core.datasources.IQueryProcessor">
 	</osgi:service>
-	<bean id="cachedUploadNBLASTQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.CachedUploadNBLASTQueryProcessor">
+	<bean id="cachedUploadNblastQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.CachedUploadNBLASTQueryProcessor">
 		<aop:scoped-proxy proxy-target-class="false"/>
 	</bean>
 
