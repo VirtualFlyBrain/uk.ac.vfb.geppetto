@@ -117,11 +117,11 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor
             // Process each result
             int count = 0;
             for (AQueryResult resultData : results.getResults()) {
-                String json = resultData.getValue("upload_nblast_query",count).toString();
+                String json = results.getValue("upload_nblast_query",count).toString();
                 if (debug) System.out.println("JSON passed: " + json.replace("}", "}\n"));
 
                 NBLASTRow row = gson.fromJson(json, NBLASTRow.class);
-                
+
                 // ID
                 processedResults.getValues().add(row.core.short_form);
 
