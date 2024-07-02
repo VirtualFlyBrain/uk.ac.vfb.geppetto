@@ -122,17 +122,19 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor
 
                 NBLASTRow row = gson.fromJson(json, NBLASTRow.class);
 
+                SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
+
                 // ID
-                processedResults.getValues().add(row.core.short_form);
+                processedResult.getValues().add(row.core.short_form);
 
                 // Name
-                processedResults.getValues().add(row.core.label);
+                processedResult.getValues().add(row.core.label);
 
                 // Type
-                processedResults.getValues().add(String.join(", ", row.core.types));
+                processedResult.getValues().add(String.join(", ", row.core.types));
 
                 // Gross_Type
-                processedResults.getValues().add(String.join(", ", row.core.unique_facets));
+                processedResult.getValues().add(String.join(", ", row.core.unique_facets));
 
                 // Template_Space and Imaging_Technique
                 String templateSpace = "";
@@ -157,22 +159,22 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor
                     images.getElements().add(element);
                 }
 
-                processedResults.getValues().add(templateSpace);
-                processedResults.getValues().add(imagingTechnique);
+                processedResult.getValues().add(templateSpace);
+                processedResult.getValues().add(imagingTechnique);
 
                 if (!images.getElements().isEmpty()) {
                     imageVariable.getTypes().add(imageType);
                     imageVariable.getInitialValues().put(imageType, images);
-                    processedResults.getValues().add(GeppettoSerializer.serializeToJSON(imageVariable));
+                    processedResult.getValues().add(GeppettoSerializer.serializeToJSON(imageVariable));
                 } else {
-                    processedResults.getValues().add("");
+                    processedResult.getValues().add("");
                 }
 
                 // Score
-                processedResults.getValues().add(String.valueOf(row.score));
+                processedResult.getValues().add(String.valueOf(row.score));
 
                 // Add the processed processedResults
-                processedResults.getResults().add(processedResults);
+                processedResults.getResults().add(processedResult);
                 count++;
             }
 
