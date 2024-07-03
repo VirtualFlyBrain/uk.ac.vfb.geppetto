@@ -1,6 +1,5 @@
 package uk.ac.vfb.geppetto;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,8 +19,6 @@ import org.geppetto.model.values.ImageFormat;
 import org.geppetto.model.values.Image;
 import org.geppetto.model.values.ArrayElement;
 import org.geppetto.model.variables.VariablesFactory;
-import org.geppetto.model.types.CompositeType;
-import org.geppetto.model.util.ModelUtility;
 import org.geppetto.model.types.TypesPackage;
 import org.geppetto.model.types.Type;
 import org.geppetto.core.model.GeppettoSerializer;
@@ -32,7 +29,7 @@ import com.google.gson.Gson;
 public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
     private Map<String, Object> processingOutputMap = new HashMap<>();
 
-    private Boolean debug = true;
+    private Boolean debug=true;
 
     // Define the row class to match the structure of the data from SOLR
     class NBLASTRow {
@@ -116,70 +113,65 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
             // Process each result
             int count = 0;
             for (AQueryResult resultData : results.getResults()) {
-                // Expecting each result to be a JSON string
-                String jsonListString = results.getValue("upload_nblast_query", count).toString();
-                if (debug) System.out.println("JSON list passed: " + jsonListString);
+                // Expecting each result to be a JSON string representing an object
+                String json = results.getValue("upload_nblast_query", count).toString();
+                if (debug) System.out.println("JSON passed: " + json);
 
-                // Parse the list of JSON strings
-                String[] jsonStrings = gson.fromJson(jsonListString, String[].class);
+                NBLASTRow row = gson.fromJson(json, NBLASTRow.class);
 
-                for (String jsonString : jsonStrings) {
-                    NBLASTRow row = gson.fromJson(jsonString, NBLASTRow.class);
+                SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 
-                    SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
+                // ID
+                processedResult.getValues().add(row.core.short_form);
 
-                    // ID
-                    processedResult.getValues().add(row.core.short_form);
+                // Name
+                processedResult.getValues().add(row.core.label);
 
-                    // Name
-                    processedResult.getValues().add(row.core.label);
+                // Type
+                processedResult.getValues().add(String.join(", ", row.core.types));
 
-                    // Type
-                    processedResult.getValues().add(String.join(", ", row.core.types));
+                // Gross_Type
+                processedResult.getValues().add(String.join(", ", row.core.unique_facets));
 
-                    // Gross_Type
-                    processedResult.getValues().add(String.join(", ", row.core.unique_facets));
+                // Template_Space and Imaging_Technique
+                String templateSpace = "";
+                String imagingTechnique = "";
+                ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
+                int index = 0;
 
-                    // Template_Space and Imaging_Technique
-                    String templateSpace = "";
-                    String imagingTechnique = "";
-                    ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
-                    int index = 0;
+                for (NBLASTRow.ImageChannel imageChannel : row.imageChannels) {
+                    templateSpace = imageChannel.image.template_anatomy.label;
+                    imagingTechnique = imageChannel.imaging_technique.label;
 
-                    for (NBLASTRow.ImageChannel imageChannel : row.imageChannels) {
-                        templateSpace = imageChannel.image.template_anatomy.label;
-                        imagingTechnique = imageChannel.imaging_technique.label;
-
-                        // Images
-                        String imageUrl = imageChannel.image.image_folder + "thumbnailT.png";
-                        Image image = ValuesFactory.eINSTANCE.createImage();
-                        image.setName(row.core.label);
-                        image.setData(imageUrl.replace("http://", "https://"));
-                        image.setReference(row.core.short_form);
-                        image.setFormat(ImageFormat.PNG);
-                        ArrayElement element = ValuesFactory.eINSTANCE.createArrayElement();
-                        element.setIndex(index++);
-                        element.setInitialValue(image);
-                        images.getElements().add(element);
-                    }
-
-                    processedResult.getValues().add(templateSpace);
-                    processedResult.getValues().add(imagingTechnique);
-
-                    if (!images.getElements().isEmpty()) {
-                        imageVariable.getTypes().add(imageType);
-                        imageVariable.getInitialValues().put(imageType, images);
-                        processedResult.getValues().add(GeppettoSerializer.serializeToJSON(imageVariable));
-                    } else {
-                        processedResult.getValues().add("");
-                    }
-
-                    // Score
-                    processedResult.getValues().add(String.valueOf(row.score));
-
-                    // Add the processed result
-                    processedResults.getResults().add(processedResult);
+                    // Images
+                    String imageUrl = imageChannel.image.image_folder + "thumbnailT.png";
+                    Image image = ValuesFactory.eINSTANCE.createImage();
+                    image.setName(row.core.label);
+                    image.setData(imageUrl.replace("http://", "https://"));
+                    image.setReference(row.core.short_form);
+                    image.setFormat(ImageFormat.PNG);
+                    ArrayElement element = ValuesFactory.eINSTANCE.createArrayElement();
+                    element.setIndex(index++);
+                    element.setInitialValue(image);
+                    images.getElements().add(element);
                 }
+
+                processedResult.getValues().add(templateSpace);
+                processedResult.getValues().add(imagingTechnique);
+
+                if (!images.getElements().isEmpty()) {
+                    imageVariable.getTypes().add(imageType);
+                    imageVariable.getInitialValues().put(imageType, images);
+                    processedResult.getValues().add(GeppettoSerializer.serializeToJSON(imageVariable));
+                } else {
+                    processedResult.getValues().add("");
+                }
+
+                // Score
+                processedResult.getValues().add(String.valueOf(row.score));
+
+                // Add the processed result
+                processedResults.getResults().add(processedResult);
                 count++;
             }
 
