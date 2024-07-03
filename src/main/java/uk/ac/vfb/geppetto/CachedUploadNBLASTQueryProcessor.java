@@ -84,6 +84,7 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
     public QueryResults process(ProcessQuery query, DataSource dataSource, Variable variable, QueryResults results, GeppettoModelAccess geppettoModelAccess) throws GeppettoDataSourceException {
         long startTime = System.currentTimeMillis(); // Start timing
         try {
+            System.out.println("CachedUploadNBLASTQueryProcessor started");
             if (results == null) {
                 throw new GeppettoDataSourceException("Results input to " + query.getName() + " is null");
             }
@@ -91,6 +92,7 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
 
             if (debug) {
                 System.out.println("CachedUploadNBLASTQueryProcessor processing " + results.getResults().size() + " rows");
+                System.out.println("CachedUploadNBLASTQueryProcessor loaded: " + results.getValue("upload_nblast_query", 0).toString());
             }
 
             // Set headers
@@ -103,77 +105,77 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
             processedResults.getHeader().add("Images");
             processedResults.getHeader().add("Score");
 
-            // Initialize Gson
-            Gson gson = new Gson();
+            // // Initialize Gson
+            // Gson gson = new Gson();
 
-            // Initialize necessary types
-            Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
-            Variable imageVariable = VariablesFactory.eINSTANCE.createVariable();
+            // // Initialize necessary types
+            // Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
+            // Variable imageVariable = VariablesFactory.eINSTANCE.createVariable();
 
-            // Process each result
-            int count = 0;
-            for (AQueryResult resultData : results.getResults()) {
-                // Expecting each result to be a JSON string representing an object
-                String json = results.getValue("upload_nblast_query", count).toString();
-                if (debug) System.out.println("JSON passed: " + json);
+            // // Process each result
+            // int count = 0;
+            // for (AQueryResult resultData : results.getResults()) {
+            //     // Expecting each result to be a JSON string representing an object
+            //     String json = results.getValue("upload_nblast_query", count).toString();
+            //     if (debug) System.out.println("JSON passed: " + json);
 
-                NBLASTRow row = gson.fromJson(json, NBLASTRow.class);
+            //     NBLASTRow row = gson.fromJson(json, NBLASTRow.class);
 
-                SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
+            //     SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 
-                // ID
-                processedResult.getValues().add(row.core.short_form);
+            //     // ID
+            //     processedResult.getValues().add(row.core.short_form);
 
-                // Name
-                processedResult.getValues().add(row.core.label);
+            //     // Name
+            //     processedResult.getValues().add(row.core.label);
 
-                // Type
-                processedResult.getValues().add(String.join(", ", row.core.types));
+            //     // Type
+            //     processedResult.getValues().add(String.join(", ", row.core.types));
 
-                // Gross_Type
-                processedResult.getValues().add(String.join(", ", row.core.unique_facets));
+            //     // Gross_Type
+            //     processedResult.getValues().add(String.join(", ", row.core.unique_facets));
 
-                // Template_Space and Imaging_Technique
-                String templateSpace = "";
-                String imagingTechnique = "";
-                ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
-                int index = 0;
+            //     // Template_Space and Imaging_Technique
+            //     String templateSpace = "";
+            //     String imagingTechnique = "";
+            //     ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
+            //     int index = 0;
 
-                for (NBLASTRow.ImageChannel imageChannel : row.imageChannels) {
-                    templateSpace = imageChannel.image.template_anatomy.label;
-                    imagingTechnique = imageChannel.imaging_technique.label;
+            //     for (NBLASTRow.ImageChannel imageChannel : row.imageChannels) {
+            //         templateSpace = imageChannel.image.template_anatomy.label;
+            //         imagingTechnique = imageChannel.imaging_technique.label;
 
-                    // Images
-                    String imageUrl = imageChannel.image.image_folder + "thumbnailT.png";
-                    Image image = ValuesFactory.eINSTANCE.createImage();
-                    image.setName(row.core.label);
-                    image.setData(imageUrl.replace("http://", "https://"));
-                    image.setReference(row.core.short_form);
-                    image.setFormat(ImageFormat.PNG);
-                    ArrayElement element = ValuesFactory.eINSTANCE.createArrayElement();
-                    element.setIndex(index++);
-                    element.setInitialValue(image);
-                    images.getElements().add(element);
-                }
+            //         // Images
+            //         String imageUrl = imageChannel.image.image_folder + "thumbnailT.png";
+            //         Image image = ValuesFactory.eINSTANCE.createImage();
+            //         image.setName(row.core.label);
+            //         image.setData(imageUrl.replace("http://", "https://"));
+            //         image.setReference(row.core.short_form);
+            //         image.setFormat(ImageFormat.PNG);
+            //         ArrayElement element = ValuesFactory.eINSTANCE.createArrayElement();
+            //         element.setIndex(index++);
+            //         element.setInitialValue(image);
+            //         images.getElements().add(element);
+            //     }
 
-                processedResult.getValues().add(templateSpace);
-                processedResult.getValues().add(imagingTechnique);
+            //     processedResult.getValues().add(templateSpace);
+            //     processedResult.getValues().add(imagingTechnique);
 
-                if (!images.getElements().isEmpty()) {
-                    imageVariable.getTypes().add(imageType);
-                    imageVariable.getInitialValues().put(imageType, images);
-                    processedResult.getValues().add(GeppettoSerializer.serializeToJSON(imageVariable));
-                } else {
-                    processedResult.getValues().add("");
-                }
+            //     if (!images.getElements().isEmpty()) {
+            //         imageVariable.getTypes().add(imageType);
+            //         imageVariable.getInitialValues().put(imageType, images);
+            //         processedResult.getValues().add(GeppettoSerializer.serializeToJSON(imageVariable));
+            //     } else {
+            //         processedResult.getValues().add("");
+            //     }
 
-                // Score
-                processedResult.getValues().add(String.valueOf(row.score));
+            //     // Score
+            //     processedResult.getValues().add(String.valueOf(row.score));
 
-                // Add the processed result
-                processedResults.getResults().add(processedResult);
-                count++;
-            }
+            //     // Add the processed result
+            //     processedResults.getResults().add(processedResult);
+            //     count++;
+            // }
 
             long endTime = System.currentTimeMillis(); // End timing
             long duration = endTime - startTime; // Compute duration
