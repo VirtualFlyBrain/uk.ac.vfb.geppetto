@@ -29,8 +29,7 @@ import org.geppetto.model.datasources.AQueryResult;
 
 import com.google.gson.Gson;
 
-public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor
-{
+public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
     private Map<String, Object> processingOutputMap = new HashMap<>();
 
     private Boolean debug = true;
@@ -117,64 +116,70 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor
             // Process each result
             int count = 0;
             for (AQueryResult resultData : results.getResults()) {
-                String json = results.getValue("upload_nblast_query",count).toString();
-                if (debug) System.out.println("JSON passed: " + json.replace("}", "}\n"));
+                // Expecting each result to be a JSON string
+                String jsonListString = results.getValue("upload_nblast_query", count).toString();
+                if (debug) System.out.println("JSON list passed: " + jsonListString);
 
-                NBLASTRow row = gson.fromJson(json, NBLASTRow.class);
+                // Parse the list of JSON strings
+                String[] jsonStrings = gson.fromJson(jsonListString, String[].class);
 
-                SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
+                for (String jsonString : jsonStrings) {
+                    NBLASTRow row = gson.fromJson(jsonString, NBLASTRow.class);
 
-                // ID
-                processedResult.getValues().add(row.core.short_form);
+                    SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 
-                // Name
-                processedResult.getValues().add(row.core.label);
+                    // ID
+                    processedResult.getValues().add(row.core.short_form);
 
-                // Type
-                processedResult.getValues().add(String.join(", ", row.core.types));
+                    // Name
+                    processedResult.getValues().add(row.core.label);
 
-                // Gross_Type
-                processedResult.getValues().add(String.join(", ", row.core.unique_facets));
+                    // Type
+                    processedResult.getValues().add(String.join(", ", row.core.types));
 
-                // Template_Space and Imaging_Technique
-                String templateSpace = "";
-                String imagingTechnique = "";
-                ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
-                int index = 0;
+                    // Gross_Type
+                    processedResult.getValues().add(String.join(", ", row.core.unique_facets));
 
-                for (NBLASTRow.ImageChannel imageChannel : row.imageChannels) {
-                    templateSpace = imageChannel.image.template_anatomy.label;
-                    imagingTechnique = imageChannel.imaging_technique.label;
+                    // Template_Space and Imaging_Technique
+                    String templateSpace = "";
+                    String imagingTechnique = "";
+                    ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
+                    int index = 0;
 
-                    // Images
-                    String imageUrl = imageChannel.image.image_folder + "thumbnailT.png";
-                    Image image = ValuesFactory.eINSTANCE.createImage();
-                    image.setName(row.core.label);
-                    image.setData(imageUrl.replace("http://", "https://"));
-                    image.setReference(row.core.short_form);
-                    image.setFormat(ImageFormat.PNG);
-                    ArrayElement element = ValuesFactory.eINSTANCE.createArrayElement();
-                    element.setIndex(index++);
-                    element.setInitialValue(image);
-                    images.getElements().add(element);
+                    for (NBLASTRow.ImageChannel imageChannel : row.imageChannels) {
+                        templateSpace = imageChannel.image.template_anatomy.label;
+                        imagingTechnique = imageChannel.imaging_technique.label;
+
+                        // Images
+                        String imageUrl = imageChannel.image.image_folder + "thumbnailT.png";
+                        Image image = ValuesFactory.eINSTANCE.createImage();
+                        image.setName(row.core.label);
+                        image.setData(imageUrl.replace("http://", "https://"));
+                        image.setReference(row.core.short_form);
+                        image.setFormat(ImageFormat.PNG);
+                        ArrayElement element = ValuesFactory.eINSTANCE.createArrayElement();
+                        element.setIndex(index++);
+                        element.setInitialValue(image);
+                        images.getElements().add(element);
+                    }
+
+                    processedResult.getValues().add(templateSpace);
+                    processedResult.getValues().add(imagingTechnique);
+
+                    if (!images.getElements().isEmpty()) {
+                        imageVariable.getTypes().add(imageType);
+                        imageVariable.getInitialValues().put(imageType, images);
+                        processedResult.getValues().add(GeppettoSerializer.serializeToJSON(imageVariable));
+                    } else {
+                        processedResult.getValues().add("");
+                    }
+
+                    // Score
+                    processedResult.getValues().add(String.valueOf(row.score));
+
+                    // Add the processed result
+                    processedResults.getResults().add(processedResult);
                 }
-
-                processedResult.getValues().add(templateSpace);
-                processedResult.getValues().add(imagingTechnique);
-
-                if (!images.getElements().isEmpty()) {
-                    imageVariable.getTypes().add(imageType);
-                    imageVariable.getInitialValues().put(imageType, images);
-                    processedResult.getValues().add(GeppettoSerializer.serializeToJSON(imageVariable));
-                } else {
-                    processedResult.getValues().add("");
-                }
-
-                // Score
-                processedResult.getValues().add(String.valueOf(row.score));
-
-                // Add the processed processedResults
-                processedResults.getResults().add(processedResult);
                 count++;
             }
 
