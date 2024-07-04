@@ -131,20 +131,43 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
 
                     // Since there can be multiple rows, we need to iterate over them
                     for (NBLASTData.NBLASTRow row : nblastData.row) {
-
                         SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 
                         // ID
-                        processedResult.getValues().add(row.core.short_form != null ? row.core.short_form : "");
+                        try {
+                            processedResult.getValues().add(row.core.short_form != null ? row.core.short_form : "");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            processedResult.getValues().add("");
+                            System.out.println("Error processing ID: " + e.getMessage());
+                        }
 
                         // Name
-                        processedResult.getValues().add(row.core.label != null ? row.core.label : "");
+                        try {
+                            processedResult.getValues().add(row.core.label != null ? row.core.label : "");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            processedResult.getValues().add("");
+                            System.out.println("Error processing Name: " + e.getMessage());
+                        }
 
                         // Type
-                        processedResult.getValues().add(row.core.types != null ? String.join(", ", row.core.types) : "");
+                        try {
+                            processedResult.getValues().add(row.core.types != null ? String.join(", ", row.core.types) : "");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            processedResult.getValues().add("");
+                            System.out.println("Error processing Type: " + e.getMessage());
+                        }
 
                         // Gross_Type
-                        processedResult.getValues().add(row.core.unique_facets != null ? String.join(", ", row.core.unique_facets) : "");
+                        try {
+                            processedResult.getValues().add(row.core.unique_facets != null ? String.join(", ", row.core.unique_facets) : "");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            processedResult.getValues().add("");
+                            System.out.println("Error processing Gross_Type: " + e.getMessage());
+                        }
 
                         // Template_Space and Imaging_Technique
                         String templateSpace = "";
