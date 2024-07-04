@@ -32,7 +32,7 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
     private Boolean debug = true;
 
     // Define the row class to match the structure of the data from SOLR
-    class NBLASTRowWrapper {
+    class NBLASTData {
         List<NBLASTRow> row;
         String mId;
         String queryType;
@@ -97,25 +97,20 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
                 throw new GeppettoDataSourceException("Results input to " + query.getName() + " is null");
             }
 
-            try {
-                if (debug) {
-                    System.out.println("CachedUploadNBLASTQueryProcessor processing " + results.getResults().size() + " rows");
-                    System.out.println("CachedUploadNBLASTQueryProcessor loaded: " + results.getValue("upload_nblast_query", 0).toString());
-                }
-
-                // Set headers
-                processedResults.getHeader().add("ID");
-                processedResults.getHeader().add("Name");
-                processedResults.getHeader().add("Type");
-                processedResults.getHeader().add("Gross_Type");
-                processedResults.getHeader().add("Template_Space");
-                processedResults.getHeader().add("Imaging_Technique");
-                processedResults.getHeader().add("Images");
-                processedResults.getHeader().add("Score");
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("Error setting headers: " + e.getMessage());
+            if (debug) {
+                System.out.println("CachedUploadNBLASTQueryProcessor processing " + results.getResults().size() + " rows");
+                System.out.println("CachedUploadNBLASTQueryProcessor loaded: " + results.getValue("upload_nblast_query", 0).toString());
             }
+
+            // Set headers
+            processedResults.getHeader().add("ID");
+            processedResults.getHeader().add("Name");
+            processedResults.getHeader().add("Type");
+            processedResults.getHeader().add("Gross_Type");
+            processedResults.getHeader().add("Template_Space");
+            processedResults.getHeader().add("Imaging_Technique");
+            processedResults.getHeader().add("Images");
+            processedResults.getHeader().add("Score");
 
             // Initialize Gson
             Gson gson = new Gson();
@@ -132,48 +127,24 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
                     String json = results.getValue("upload_nblast_query", count).toString();
                     if (debug) System.out.println("JSON passed: " + json);
 
-                    NBLASTRowWrapper rowWrapper = gson.fromJson(json, NBLASTRowWrapper.class);
+                    NBLASTData nblastData = gson.fromJson(json, NBLASTData.class);
 
                     // Since there can be multiple rows, we need to iterate over them
-                    for (NBLASTRowWrapper.NBLASTRow row : rowWrapper.row) {
+                    for (NBLASTData.NBLASTRow row : nblastData.row) {
 
                         SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 
                         // ID
-                        try {
-                            processedResult.getValues().add(row.core.short_form != null ? row.core.short_form : "");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            processedResult.getValues().add("");
-                            System.out.println("Error processing ID: " + e.getMessage());
-                        }
+                        processedResult.getValues().add(row.core.short_form != null ? row.core.short_form : "");
 
                         // Name
-                        try {
-                            processedResult.getValues().add(row.core.label != null ? row.core.label : "");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            processedResult.getValues().add("");
-                            System.out.println("Error processing Name: " + e.getMessage());
-                        }
+                        processedResult.getValues().add(row.core.label != null ? row.core.label : "");
 
                         // Type
-                        try {
-                            processedResult.getValues().add(row.core.types != null ? String.join(", ", row.core.types) : "");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            processedResult.getValues().add("");
-                            System.out.println("Error processing Type: " + e.getMessage());
-                        }
+                        processedResult.getValues().add(row.core.types != null ? String.join(", ", row.core.types) : "");
 
                         // Gross_Type
-                        try {
-                            processedResult.getValues().add(row.core.unique_facets != null ? String.join(", ", row.core.unique_facets) : "");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            processedResult.getValues().add("");
-                            System.out.println("Error processing Gross_Type: " + e.getMessage());
-                        }
+                        processedResult.getValues().add(row.core.unique_facets != null ? String.join(", ", row.core.unique_facets) : "");
 
                         // Template_Space and Imaging_Technique
                         String templateSpace = "";
@@ -181,7 +152,7 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
                         ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
                         int index = 0;
 
-                        for (NBLASTRowWrapper.ImageChannel imageChannel : rowWrapper.imageChannels) {
+                        for (NBLASTData.ImageChannel imageChannel : nblastData.imageChannels) {
                             try {
                                 templateSpace = imageChannel.image.template_anatomy != null ? imageChannel.image.template_anatomy.label : "";
                                 imagingTechnique = imageChannel.imaging_technique != null ? imageChannel.imaging_technique.label : "";
@@ -235,7 +206,7 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
 
                         // Score
                         try {
-                            processedResult.getValues().add(String.valueOf(rowWrapper.score));
+                            processedResult.getValues().add(String.valueOf(nblastData.score));
                         } catch (Exception e) {
                             e.printStackTrace();
                             processedResult.getValues().add("");
