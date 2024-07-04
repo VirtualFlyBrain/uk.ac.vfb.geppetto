@@ -132,7 +132,7 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
 
                     // ID
                     try {
-                        processedResult.getValues().add(row.core.short_form);
+                        processedResult.getValues().add(row.core.short_form != null ? row.core.short_form : "");
                     } catch (Exception e) {
                         e.printStackTrace();
                         processedResult.getValues().add("");
@@ -141,7 +141,7 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
 
                     // Name
                     try {
-                        processedResult.getValues().add(row.core.label);
+                        processedResult.getValues().add(row.core.label != null ? row.core.label : "");
                     } catch (Exception e) {
                         e.printStackTrace();
                         processedResult.getValues().add("");
@@ -150,7 +150,7 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
 
                     // Type
                     try {
-                        processedResult.getValues().add(String.join(", ", row.core.types));
+                        processedResult.getValues().add(row.core.types != null ? String.join(", ", row.core.types) : "");
                     } catch (Exception e) {
                         e.printStackTrace();
                         processedResult.getValues().add("");
@@ -159,7 +159,7 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
 
                     // Gross_Type
                     try {
-                        processedResult.getValues().add(String.join(", ", row.core.unique_facets));
+                        processedResult.getValues().add(row.core.unique_facets != null ? String.join(", ", row.core.unique_facets) : "");
                     } catch (Exception e) {
                         e.printStackTrace();
                         processedResult.getValues().add("");
@@ -174,15 +174,15 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
 
                     for (NBLASTRow.ImageChannel imageChannel : row.imageChannels) {
                         try {
-                            templateSpace = imageChannel.image.template_anatomy.label;
-                            imagingTechnique = imageChannel.imaging_technique.label;
+                            templateSpace = imageChannel.image.template_anatomy != null ? imageChannel.image.template_anatomy.label : "";
+                            imagingTechnique = imageChannel.imaging_technique != null ? imageChannel.imaging_technique.label : "";
 
                             // Images
                             String imageUrl = imageChannel.image.image_folder + "thumbnailT.png";
                             Image image = ValuesFactory.eINSTANCE.createImage();
-                            image.setName(row.core.label);
+                            image.setName(row.core.label != null ? row.core.label : "");
                             image.setData(imageUrl.replace("http://", "https://"));
-                            image.setReference(row.core.short_form);
+                            image.setReference(row.core.short_form != null ? row.core.short_form : "");
                             image.setFormat(ImageFormat.PNG);
                             ArrayElement element = ValuesFactory.eINSTANCE.createArrayElement();
                             element.setIndex(index++);
