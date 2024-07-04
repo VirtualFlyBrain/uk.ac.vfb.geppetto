@@ -36,8 +36,8 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
         List<NBLASTRow> row;
         String mId;
         String queryType;
-        List<NBLASTRow.ImageChannel> imageChannels;
-        List<NBLASTRow.TypeInfo> types;
+        List<ImageChannel> imageChannels;
+        List<TypeInfo> types;
         double score;
 
         class NBLASTRow {
@@ -53,36 +53,36 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
                 List<String> unique_facets;
                 String label;
             }
+        }
 
-            class ImageChannel {
-                ImageInfo image;
-                EntityInfo channel;
-                EntityInfo imaging_technique;
+        class ImageChannel {
+            ImageInfo image;
+            EntityInfo channel;
+            EntityInfo imaging_technique;
 
-                class ImageInfo {
-                    EntityInfo template_channel;
-                    List<Double> index;
-                    EntityInfo template_anatomy;
-                    String image_folder;
-                }
+            class ImageInfo {
+                EntityInfo template_channel;
+                List<Double> index;
+                EntityInfo template_anatomy;
+                String image_folder;
             }
+        }
 
-            class EntityInfo {
-                String symbol;
-                String iri;
-                List<String> types;
-                String short_form;
-                List<String> unique_facets;
-                String label;
-            }
+        class EntityInfo {
+            String symbol;
+            String iri;
+            List<String> types;
+            String short_form;
+            List<String> unique_facets;
+            String label;
+        }
 
-            class TypeInfo {
-                String symbol;
-                String iri;
-                List<String> types;
-                String short_form;
-                String label;
-            }
+        class TypeInfo {
+            String symbol;
+            String iri;
+            List<String> types;
+            String short_form;
+            String label;
         }
     }
 
@@ -181,7 +181,7 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
                         ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
                         int index = 0;
 
-                        for (NBLASTRowWrapper.NBLASTRow.ImageChannel imageChannel : rowWrapper.imageChannels) {
+                        for (NBLASTRowWrapper.ImageChannel imageChannel : rowWrapper.imageChannels) {
                             try {
                                 templateSpace = imageChannel.image.template_anatomy != null ? imageChannel.image.template_anatomy.label : "";
                                 imagingTechnique = imageChannel.imaging_technique != null ? imageChannel.imaging_technique.label : "";
