@@ -42,6 +42,8 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
 
         class NBLASTRow {
             Core core;
+            List<String> description;
+            List<String> comment;
 
             class Core {
                 String symbol;
