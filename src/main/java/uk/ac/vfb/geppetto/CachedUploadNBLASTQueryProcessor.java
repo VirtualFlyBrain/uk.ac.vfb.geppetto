@@ -131,7 +131,7 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
                     if (debug) System.out.println("JSON passed: " + json);
 
                     NBLASTRow row = gson.fromJson(json, NBLASTRow.class);
-
+                    
                     SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 
                     // ID
@@ -187,7 +187,7 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
                     ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
                     int index = 0;
 
-                    for (NBLASTRow.ImageChannel imageChannel : nblastData.imageChannels) {
+                    for (NBLASTRow.ImageChannel imageChannel : row.imageChannels) {
                         try {
                             templateSpace = imageChannel.image.template_anatomy != null ? imageChannel.image.template_anatomy.label : "";
                             imagingTechnique = imageChannel.imaging_technique != null ? imageChannel.imaging_technique.label : "";
@@ -241,7 +241,7 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
 
                     // Score
                     try {
-                        processedResult.getValues().add(String.valueOf(nblastData.score));
+                        processedResult.getValues().add(String.valueOf(row.score));
                     } catch (Exception e) {
                         e.printStackTrace();
                         processedResult.getValues().add("");
