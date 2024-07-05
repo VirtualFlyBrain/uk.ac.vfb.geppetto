@@ -26,21 +26,24 @@ import org.geppetto.model.datasources.AQueryResult;
 
 import com.google.gson.Gson;
 
+import uk.ac.vfb.geppetto.CachedUploadNBLASTQueryProcessor.NBLASTRow.Term.Core;
+
 public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
     private Map<String, Object> processingOutputMap = new HashMap<>();
 
     private Boolean debug = true;
 
     // Define the row class to match the structure of the data from SOLR
-    class NBLASTData {
-        List<NBLASTRow> row;
-        String mId;
-        String queryType;
+    class NBLASTRow {
+        Term term;
+        String version;
+        String query;
         List<ImageChannel> imageChannels;
-        List<TypeInfo> types;
+        List<TypeInfo> grossTypes;
         double score;
+        List<Core> parents;
 
-        class NBLASTRow {
+        class Term {
             Core core;
             List<String> description;
             List<String> comment;
@@ -127,118 +130,126 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
                     String json = results.getValue("upload_nblast_query", count).toString();
                     if (debug) System.out.println("JSON passed: " + json);
 
-                    NBLASTData nblastData = gson.fromJson(json, NBLASTData.class);
+                    NBLASTRow row = gson.fromJson(json, NBLASTRow.class);
 
-                    // Since there can be multiple rows, we need to iterate over them
-                    for (NBLASTData.NBLASTRow row : nblastData.row) {
-                        SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
+                    SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 
-                        // ID
-                        try {
-                            processedResult.getValues().add(row.core.short_form != null ? row.core.short_form : "");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            processedResult.getValues().add("");
-                            System.out.println("Error processing ID: " + e.getMessage());
-                        }
-
-                        // Name
-                        try {
-                            processedResult.getValues().add(row.core.label != null ? row.core.label : "");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            processedResult.getValues().add("");
-                            System.out.println("Error processing Name: " + e.getMessage());
-                        }
-
-                        // Type
-                        try {
-                            processedResult.getValues().add(row.core.types != null ? String.join(", ", row.core.types) : "");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            processedResult.getValues().add("");
-                            System.out.println("Error processing Type: " + e.getMessage());
-                        }
-
-                        // Gross_Type
-                        try {
-                            processedResult.getValues().add(row.core.unique_facets != null ? String.join(", ", row.core.unique_facets) : "");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            processedResult.getValues().add("");
-                            System.out.println("Error processing Gross_Type: " + e.getMessage());
-                        }
-
-                        // Template_Space and Imaging_Technique
-                        String templateSpace = "";
-                        String imagingTechnique = "";
-                        ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
-                        int index = 0;
-
-                        for (NBLASTData.ImageChannel imageChannel : nblastData.imageChannels) {
-                            try {
-                                templateSpace = imageChannel.image.template_anatomy != null ? imageChannel.image.template_anatomy.label : "";
-                                imagingTechnique = imageChannel.imaging_technique != null ? imageChannel.imaging_technique.label : "";
-
-                                // Images
-                                String imageUrl = imageChannel.image.image_folder + "thumbnailT.png";
-                                Image image = ValuesFactory.eINSTANCE.createImage();
-                                image.setName(row.core.label != null ? row.core.label : "");
-                                image.setData(imageUrl.replace("http://", "https://"));
-                                image.setReference(row.core.short_form != null ? row.core.short_form : "");
-                                image.setFormat(ImageFormat.PNG);
-                                ArrayElement element = ValuesFactory.eINSTANCE.createArrayElement();
-                                element.setIndex(index++);
-                                element.setInitialValue(image);
-                                images.getElements().add(element);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                System.out.println("Error processing ImageChannel: " + e.getMessage());
-                            }
-                        }
-
-                        try {
-                            processedResult.getValues().add(templateSpace);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            processedResult.getValues().add("");
-                            System.out.println("Error processing Template_Space: " + e.getMessage());
-                        }
-
-                        try {
-                            processedResult.getValues().add(imagingTechnique);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            processedResult.getValues().add("");
-                            System.out.println("Error processing Imaging_Technique: " + e.getMessage());
-                        }
-
-                        try {
-                            if (!images.getElements().isEmpty()) {
-                                imageVariable.getTypes().add(imageType);
-                                imageVariable.getInitialValues().put(imageType, images);
-                                processedResult.getValues().add(GeppettoSerializer.serializeToJSON(imageVariable));
-                            } else {
-                                processedResult.getValues().add("");
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            processedResult.getValues().add("");
-                            System.out.println("Error processing Images: " + e.getMessage());
-                        }
-
-                        // Score
-                        try {
-                            processedResult.getValues().add(String.valueOf(nblastData.score));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            processedResult.getValues().add("");
-                            System.out.println("Error processing Score: " + e.getMessage());
-                        }
-
-                        // Add the processed result
-                        processedResults.getResults().add(processedResult);
+                    // ID
+                    try {
+                        processedResult.getValues().add(row.term.core.short_form != null ? row.term.core.short_form : "");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        processedResult.getValues().add("");
+                        System.out.println("Error processing ID: " + e.getMessage());
                     }
+
+                    // Name
+                    try {
+                        processedResult.getValues().add(row.term.core.label != null ? row.term.core.label : "");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        processedResult.getValues().add("");
+                        System.out.println("Error processing Name: " + e.getMessage());
+                    }
+
+                    // Type
+                    try {
+                        StringBuilder typeLabels = new StringBuilder();
+                        if (row.parents != null && !row.parents.isEmpty()) {
+                            for (Core parent : row.parents) {
+                                if (typeLabels.length() > 0) {
+                                    typeLabels.append("|");
+                                }
+                                typeLabels.append(parent.label);
+                            }
+                            processedResult.getValues().add(typeLabels.toString());
+                        } else {
+                            processedResult.getValues().add("");
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        processedResult.getValues().add("");
+                        System.out.println("Error processing Type: " + e.getMessage());
+                    }
+
+                    // Gross_Type
+                    try {
+                        processedResult.getValues().add(row.term.core.unique_facets != null ? String.join(", ", row.term.core.unique_facets) : "");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        processedResult.getValues().add("");
+                        System.out.println("Error processing Gross_Type: " + e.getMessage());
+                    }
+
+                    // Template_Space and Imaging_Technique
+                    String templateSpace = "";
+                    String imagingTechnique = "";
+                    ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
+                    int index = 0;
+
+                    for (NBLASTRow.ImageChannel imageChannel : nblastData.imageChannels) {
+                        try {
+                            templateSpace = imageChannel.image.template_anatomy != null ? imageChannel.image.template_anatomy.label : "";
+                            imagingTechnique = imageChannel.imaging_technique != null ? imageChannel.imaging_technique.label : "";
+
+                            // Images
+                            String imageUrl = imageChannel.image.image_folder + "thumbnailT.png";
+                            Image image = ValuesFactory.eINSTANCE.createImage();
+                            image.setName(row.term.core.label != null ? row.term.core.label : "");
+                            image.setData(imageUrl.replace("http://", "https://"));
+                            image.setReference(row.term.core.short_form != null ? row.term.core.short_form : "");
+                            image.setFormat(ImageFormat.PNG);
+                            ArrayElement element = ValuesFactory.eINSTANCE.createArrayElement();
+                            element.setIndex(index++);
+                            element.setInitialValue(image);
+                            images.getElements().add(element);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            System.out.println("Error processing ImageChannel: " + e.getMessage());
+                        }
+                    }
+
+                    try {
+                        processedResult.getValues().add(templateSpace);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        processedResult.getValues().add("");
+                        System.out.println("Error processing Template_Space: " + e.getMessage());
+                    }
+
+                    try {
+                        processedResult.getValues().add(imagingTechnique);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        processedResult.getValues().add("");
+                        System.out.println("Error processing Imaging_Technique: " + e.getMessage());
+                    }
+
+                    try {
+                        if (!images.getElements().isEmpty()) {
+                            imageVariable.getTypes().add(imageType);
+                            imageVariable.getInitialValues().put(imageType, images);
+                            processedResult.getValues().add(GeppettoSerializer.serializeToJSON(imageVariable));
+                        } else {
+                            processedResult.getValues().add("");
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        processedResult.getValues().add("");
+                        System.out.println("Error processing Images: " + e.getMessage());
+                    }
+
+                    // Score
+                    try {
+                        processedResult.getValues().add(String.valueOf(nblastData.score));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        processedResult.getValues().add("");
+                        System.out.println("Error processing Score: " + e.getMessage());
+                    }
+
+                    // Add the processed result
+                    processedResults.getResults().add(processedResult);
                 } catch (Exception e) {
                     e.printStackTrace();
                     System.out.println("Error processing result row: " + e.getMessage());
