@@ -261,12 +261,11 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
             long duration = endTime - startTime; // Compute duration
             System.out.println("Processing time: " + duration + " milliseconds");
 
-            return processedResults;
-
         } catch (Exception e) {
+            System.out.println("Error processing results: " + e.getMessage());
             e.printStackTrace();
-            throw new GeppettoDataSourceException(e);
         }
+        return processedResults;
     }
 
     @Override
