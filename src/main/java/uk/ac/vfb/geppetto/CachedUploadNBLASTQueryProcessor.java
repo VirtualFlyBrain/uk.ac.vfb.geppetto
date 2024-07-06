@@ -110,7 +110,7 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
 
             if (debug) {
                 System.out.println("CachedUploadNBLASTQueryProcessor processing " + results.getResults().size() + " rows");
-                System.out.println("CachedUploadNBLASTQueryProcessor loaded: " + results.getResults()[0].toString());
+                System.out.println("CachedUploadNBLASTQueryProcessor loaded: " + results.getValue("upload_nblast_query", 0).toString());
             }
 
             // Set headers
