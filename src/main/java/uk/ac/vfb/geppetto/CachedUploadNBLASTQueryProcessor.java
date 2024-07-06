@@ -1,8 +1,11 @@
 package uk.ac.vfb.geppetto;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.management.openmbean.CompositeType;
 
 import org.geppetto.core.datasources.GeppettoDataSourceException;
 import org.geppetto.core.model.GeppettoModelAccess;
@@ -102,7 +105,7 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
 
             if (debug) {
                 System.out.println("CachedUploadNBLASTQueryProcessor processing " + results.getResults().size() + " rows");
-                System.out.println("CachedUploadNBLASTQueryProcessor loaded: " + results.getValue("upload_nblast_query", 0).toString());
+                System.out.println("CachedUploadNBLASTQueryProcessor loaded: " + results.getValue("upload_nblast_query").toString());
             }
 
             // Set headers
@@ -126,6 +129,26 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
             int count = 0;
             for (Object resultData : results.getValue("upload_nblast_query")) {
                 try {
+
+                    // Determine loaded template
+                    CompositeType testTemplate = null;
+                    List<String> availableTemplates = Arrays.asList("VFB_00101567","VFB_00200000","VFB_00017894","VFB_00101384","VFB_00050000","VFB_00049000","VFB_00100000","VFB_00030786","VFB_00110000","VFB_00120000");
+                    for (String at:availableTemplates) {
+                        try {
+                            testTemplate = (CompositeType) ModelUtility.getTypeFromLibrary(at + "_metadata", dataSource.getTargetLibrary());
+                        } catch (Exception e) {
+                            testTemplate = null;
+                        }
+                        if (testTemplate != null) {
+                            template = at;
+                            loadedTemplate = at;
+                            if (debug) System.out.println("Template detected: " + at);
+                            break;
+                        } else {
+                            loadedTemplate = "VFB_00101567";
+                        }
+                    }
+
                     // Expecting each result to be a JSON string representing an object
                     String json = results.getValue("upload_nblast_query", count).toString();
                     if (debug) System.out.println("JSON passed: " + json);
@@ -189,20 +212,22 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
 
                     for (NBLASTRow.ImageChannel channel_image : row.channel_images) {
                         try {
-                            templateSpace = channel_image.image.template_anatomy != null ? channel_image.image.template_anatomy.label : "";
-                            imagingTechnique = channel_image.imaging_technique != null ? channel_image.imaging_technique.label : "";
+                            if (channel_image.image.template_anatomy.short_form == loadedTemplate) {
+                                templateSpace = channel_image.image.template_anatomy != null ? channel_image.image.template_anatomy.label : "";
+                                imagingTechnique = channel_image.imaging_technique != null ? channel_image.imaging_technique.label : "";
 
-                            // Images
-                            String imageUrl = channel_image.image.image_folder + "thumbnailT.png";
-                            Image image = ValuesFactory.eINSTANCE.createImage();
-                            image.setName(row.term.core.label != null ? row.term.core.label : "");
-                            image.setData(imageUrl.replace("http://", "https://"));
-                            image.setReference(row.term.core.short_form != null ? row.term.core.short_form : "");
-                            image.setFormat(ImageFormat.PNG);
-                            ArrayElement element = ValuesFactory.eINSTANCE.createArrayElement();
-                            element.setIndex(index++);
-                            element.setInitialValue(image);
-                            images.getElements().add(element);
+                                // Images
+                                String imageUrl = channel_image.image.image_folder + "thumbnailT.png";
+                                Image image = ValuesFactory.eINSTANCE.createImage();
+                                image.setName(row.term.core.label != null ? row.term.core.label : "");
+                                image.setData(imageUrl.replace("http://", "https://"));
+                                image.setReference(row.term.core.short_form != null ? row.term.core.short_form : "");
+                                image.setFormat(ImageFormat.PNG);
+                                ArrayElement element = ValuesFactory.eINSTANCE.createArrayElement();
+                                element.setIndex(index++);
+                                element.setInitialValue(image);
+                                images.getElements().add(element);
+                            }
                         } catch (Exception e) {
                             e.printStackTrace();
                             System.out.println("Error processing ImageChannel: " + e.getMessage());
