@@ -110,7 +110,7 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
 
             if (debug) {
                 System.out.println("CachedUploadNBLASTQueryProcessor processing " + results.getResults().size() + " rows");
-                System.out.println("CachedUploadNBLASTQueryProcessor loaded: " + results.getResults()[0].getValues().toString());
+                System.out.println("CachedUploadNBLASTQueryProcessor loaded: " + results.getResults()[0].toString());
             }
 
             // Set headers
@@ -130,32 +130,38 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
             Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
             Variable imageVariable = VariablesFactory.eINSTANCE.createVariable();
 
+            // Determine loaded template
+            CompositeType testTemplate = null;
+            List<String> availableTemplates = Arrays.asList("VFB_00101567","VFB_00200000","VFB_00017894","VFB_00101384","VFB_00050000","VFB_00049000","VFB_00100000","VFB_00030786","VFB_00110000","VFB_00120000");
+            for (String at : availableTemplates) {
+                try {
+                    testTemplate = (CompositeType) ModelUtility.getTypeFromLibrary(at + "_metadata", dataSource.getTargetLibrary());
+                } catch (Exception e) {
+                    testTemplate = null;
+                }
+                if (testTemplate != null) {
+                    template = at;
+                    loadedTemplate = at;
+                    if (debug) System.out.println("Template detected: " + at);
+                    break;
+                } else {
+                    loadedTemplate = "VFB_00101567";
+                }
+            }
+
             // Process each result
-            int rowCount = results.getResults()[0].getValues().size();
+            int rowCount = 20;
             for (int i = 0; i < rowCount; i++) {
                 try {
-                    // Determine loaded template
-                    CompositeType testTemplate = null;
-                    List<String> availableTemplates = Arrays.asList("VFB_00101567","VFB_00200000","VFB_00017894","VFB_00101384","VFB_00050000","VFB_00049000","VFB_00100000","VFB_00030786","VFB_00110000","VFB_00120000");
-                    for (String at : availableTemplates) {
-                        try {
-                            testTemplate = (CompositeType) ModelUtility.getTypeFromLibrary(at + "_metadata", dataSource.getTargetLibrary());
-                        } catch (Exception e) {
-                            testTemplate = null;
-                        }
-                        if (testTemplate != null) {
-                            template = at;
-                            loadedTemplate = at;
-                            if (debug) System.out.println("Template detected: " + at);
-                            break;
-                        } else {
-                            loadedTemplate = "VFB_00101567";
-                        }
-                    }
-
+                    
                     // Expecting each result to be a JSON string representing an object
                     String json = results.getValue("upload_nblast_query", i).toString();
                     if (debug) System.out.println("JSON passed: " + json);
+
+                    if (json == null || json.isEmpty()) {
+                        System.out.println("Empty JSON string");
+                        continue;
+                    }
 
                     NBLASTRow row = gson.fromJson(json, NBLASTRow.class);
 
