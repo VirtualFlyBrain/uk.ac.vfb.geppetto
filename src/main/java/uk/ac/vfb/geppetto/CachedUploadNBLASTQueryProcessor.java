@@ -17,6 +17,7 @@ import org.geppetto.model.datasources.QueryResults;
 import org.geppetto.model.datasources.SerializableQueryResult;
 import org.geppetto.model.variables.Variable;
 import org.geppetto.model.values.ArrayValue;
+import org.geppetto.model.util.ModelUtility;
 import org.geppetto.model.values.ValuesFactory;
 import org.geppetto.model.values.ImageFormat;
 import org.geppetto.model.values.Image;
