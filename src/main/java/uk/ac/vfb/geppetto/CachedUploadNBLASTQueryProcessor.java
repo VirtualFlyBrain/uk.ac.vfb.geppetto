@@ -110,7 +110,7 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
 
             if (debug) {
                 System.out.println("CachedUploadNBLASTQueryProcessor processing " + results.getResults().size() + " rows");
-                System.out.println("CachedUploadNBLASTQueryProcessor loaded: " + results.getValues().toString());
+                System.out.println("CachedUploadNBLASTQueryProcessor loaded: " + results.getResults()[0].getValues().toString());
             }
 
             // Set headers
@@ -131,7 +131,7 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
             Variable imageVariable = VariablesFactory.eINSTANCE.createVariable();
 
             // Process each result
-            int rowCount = results.getValues().size();
+            int rowCount = results.getResults()[0].getValues().size();
             for (int i = 0; i < rowCount; i++) {
                 try {
                     // Determine loaded template
