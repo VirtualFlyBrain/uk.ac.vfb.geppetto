@@ -124,7 +124,7 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
 
             // Process each result
             int count = 0;
-            for (AQueryResult resultData : results.getResults()) {
+            for (Object resultData : results.getValue("upload_nblast_query")) {
                 try {
                     // Expecting each result to be a JSON string representing an object
                     String json = results.getValue("upload_nblast_query", count).toString();
