@@ -97,6 +97,10 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
         long startTime = System.currentTimeMillis(); // Start timing
         QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
 
+        // Template space:
+        String template = "";
+        String loadedTemplate = "";
+
         try {
             System.out.println("CachedUploadNBLASTQueryProcessor started");
             if (results == null) {
