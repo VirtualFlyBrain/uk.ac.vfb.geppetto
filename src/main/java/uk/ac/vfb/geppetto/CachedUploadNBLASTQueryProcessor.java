@@ -38,7 +38,7 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
         Term term;
         String version;
         String query;
-        List<ImageChannel> imageChannels;
+        List<ImageChannel> channel_images;
         List<TypeInfo> grossTypes;
         double score;
         List<Core> parents;
@@ -187,13 +187,13 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
                     ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
                     int index = 0;
 
-                    for (NBLASTRow.ImageChannel imageChannel : row.imageChannels) {
+                    for (NBLASTRow.ImageChannel channel_image : row.channel_images) {
                         try {
-                            templateSpace = imageChannel.image.template_anatomy != null ? imageChannel.image.template_anatomy.label : "";
-                            imagingTechnique = imageChannel.imaging_technique != null ? imageChannel.imaging_technique.label : "";
+                            templateSpace = channel_image.image.template_anatomy != null ? channel_image.image.template_anatomy.label : "";
+                            imagingTechnique = channel_image.imaging_technique != null ? channel_image.imaging_technique.label : "";
 
                             // Images
-                            String imageUrl = imageChannel.image.image_folder + "thumbnailT.png";
+                            String imageUrl = channel_image.image.image_folder + "thumbnailT.png";
                             Image image = ValuesFactory.eINSTANCE.createImage();
                             image.setName(row.term.core.label != null ? row.term.core.label : "");
                             image.setData(imageUrl.replace("http://", "https://"));
