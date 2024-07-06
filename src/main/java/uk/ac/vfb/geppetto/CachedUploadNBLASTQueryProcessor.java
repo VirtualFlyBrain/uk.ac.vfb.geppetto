@@ -105,7 +105,7 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
 
             if (debug) {
                 System.out.println("CachedUploadNBLASTQueryProcessor processing " + results.getResults().size() + " rows");
-                System.out.println("CachedUploadNBLASTQueryProcessor loaded: " + results.getValue("upload_nblast_query").toString());
+                System.out.println("CachedUploadNBLASTQueryProcessor loaded: " + results.getResults().toString());
             }
 
             // Set headers
@@ -126,14 +126,13 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
             Variable imageVariable = VariablesFactory.eINSTANCE.createVariable();
 
             // Process each result
-            int count = 0;
-            for (Object resultData : results.getValue("upload_nblast_query")) {
+            int rowCount = results.getResults().size();
+            for (int i = 0; i < rowCount; i++) {
                 try {
-
                     // Determine loaded template
                     CompositeType testTemplate = null;
                     List<String> availableTemplates = Arrays.asList("VFB_00101567","VFB_00200000","VFB_00017894","VFB_00101384","VFB_00050000","VFB_00049000","VFB_00100000","VFB_00030786","VFB_00110000","VFB_00120000");
-                    for (String at:availableTemplates) {
+                    for (String at : availableTemplates) {
                         try {
                             testTemplate = (CompositeType) ModelUtility.getTypeFromLibrary(at + "_metadata", dataSource.getTargetLibrary());
                         } catch (Exception e) {
@@ -150,11 +149,11 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
                     }
 
                     // Expecting each result to be a JSON string representing an object
-                    String json = results.getValue("upload_nblast_query", count).toString();
+                    String json = results.getValue("upload_nblast_query", i).toString();
                     if (debug) System.out.println("JSON passed: " + json);
 
                     NBLASTRow row = gson.fromJson(json, NBLASTRow.class);
-                    
+
                     SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 
                     // ID
@@ -212,7 +211,7 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
 
                     for (NBLASTRow.ImageChannel channel_image : row.channel_images) {
                         try {
-                            if (channel_image.image.template_anatomy.short_form == loadedTemplate) {
+                            if (channel_image.image.template_anatomy.short_form.equals(loadedTemplate)) {
                                 templateSpace = channel_image.image.template_anatomy != null ? channel_image.image.template_anatomy.label : "";
                                 imagingTechnique = channel_image.imaging_technique != null ? channel_image.imaging_technique.label : "";
 
@@ -279,7 +278,6 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
                     e.printStackTrace();
                     System.out.println("Error processing result row: " + e.getMessage());
                 }
-                count++;
             }
 
             long endTime = System.currentTimeMillis(); // End timing
@@ -292,6 +290,7 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
         }
         return processedResults;
     }
+
 
     @Override
     public Map<String, Object> getProcessingOutputMap() {
