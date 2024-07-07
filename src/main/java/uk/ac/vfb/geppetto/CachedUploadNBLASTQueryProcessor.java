@@ -38,6 +38,9 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
     private Boolean debug = true;
 
     // Define the row class to match the structure of the data from SOLR
+    class NBLASTRows {
+        List<NBLASTRow> rows;
+    }
     class NBLASTRow {
         Term term;
         String version;
@@ -151,18 +154,11 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
 
             // Process the result
             String jsonList = results.getValue("upload_nblast_query", 0).toString();
-            List<String> jsonResults = gson.fromJson(jsonList, List.class);
+            NBLASTRows jsonResults = gson.fromJson(jsonList, NBLASTRows.class);
 
-            for (String json : jsonResults) {
+            for (NBLASTRow row : jsonResults) {
                 try {
-                    if (debug) System.out.println("JSON passed: " + json);
-
-                    if (json == null || json.isEmpty()) {
-                        System.out.println("Empty JSON string");
-                        continue;
-                    }
-
-                    NBLASTRow row = gson.fromJson(json, NBLASTRow.class);
+                    if (debug) System.out.println("JSON passed: " + row.toString());
 
                     SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 
