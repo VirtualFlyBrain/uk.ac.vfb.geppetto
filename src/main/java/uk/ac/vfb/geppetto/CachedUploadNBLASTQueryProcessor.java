@@ -156,7 +156,7 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
             String jsonList = results.getValue("upload_nblast_query", 0).toString();
             NBLASTRows jsonResults = gson.fromJson(jsonList, NBLASTRows.class);
 
-            for (NBLASTRow row : jsonResults) {
+            for (NBLASTRow row : jsonResults.rows) {
                 try {
                     if (debug) System.out.println("JSON passed: " + row.toString());
 
