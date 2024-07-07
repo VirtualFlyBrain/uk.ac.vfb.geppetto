@@ -149,13 +149,12 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
                 }
             }
 
-            // Process each result
-            int rowCount = 20;
-            for (int i = 0; i < rowCount; i++) {
+            // Process the result
+            String jsonList = results.getValue("upload_nblast_query", 0).toString();
+            List<String> jsonResults = gson.fromJson(jsonList, List.class);
+
+            for (String json : jsonResults) {
                 try {
-                    
-                    // Expecting each result to be a JSON string representing an object
-                    String json = results.getValue("upload_nblast_query", i).toString();
                     if (debug) System.out.println("JSON passed: " + json);
 
                     if (json == null || json.isEmpty()) {
@@ -301,7 +300,6 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
         }
         return processedResults;
     }
-
 
     @Override
     public Map<String, Object> getProcessingOutputMap() {
