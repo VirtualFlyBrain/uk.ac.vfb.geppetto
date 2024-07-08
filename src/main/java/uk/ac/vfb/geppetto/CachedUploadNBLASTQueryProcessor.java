@@ -35,7 +35,7 @@ import uk.ac.vfb.geppetto.CachedUploadNBLASTQueryProcessor.NBLASTRow.Term.Core;
 public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
     private Map<String, Object> processingOutputMap = new HashMap<>();
 
-    private Boolean debug = true;
+    private Boolean debug = false;
 
     // Define the row class to match the structure of the data from SOLR
     class NBLASTRows {
@@ -98,7 +98,7 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
 
     @Override
     public QueryResults process(ProcessQuery query, DataSource dataSource, Variable variable, QueryResults results, GeppettoModelAccess geppettoModelAccess) throws GeppettoDataSourceException {
-        long startTime = System.currentTimeMillis(); // Start timing
+        if (debug) long startTime = System.currentTimeMillis(); // Start timing
         QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
 
         // Template space:
@@ -106,7 +106,7 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
         String loadedTemplate = "";
 
         try {
-            System.out.println("CachedUploadNBLASTQueryProcessor started");
+            if (debug) System.out.println("CachedUploadNBLASTQueryProcessor started");
             if (results == null) {
                 throw new GeppettoDataSourceException("Results input to " + query.getName() + " is null");
             }
@@ -302,10 +302,11 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
                 }
             }
 
-            long endTime = System.currentTimeMillis(); // End timing
-            long duration = endTime - startTime; // Compute duration
-            System.out.println("Processing time: " + duration + " milliseconds");
-
+            if (debug) {
+                long endTime = System.currentTimeMillis(); // End timing
+                long duration = endTime - startTime; // Compute duration
+                System.out.println("Processing time: " + duration + " milliseconds");
+            }
         } catch (Exception e) {
             System.out.println("Error processing results: " + e.getMessage());
             e.printStackTrace();
