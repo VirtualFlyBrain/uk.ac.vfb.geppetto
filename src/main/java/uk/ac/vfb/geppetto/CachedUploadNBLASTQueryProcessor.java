@@ -98,7 +98,7 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
 
     @Override
     public QueryResults process(ProcessQuery query, DataSource dataSource, Variable variable, QueryResults results, GeppettoModelAccess geppettoModelAccess) throws GeppettoDataSourceException {
-        if (debug) long startTime = System.currentTimeMillis(); // Start timing
+        long startTime = System.currentTimeMillis(); // Start timing
         QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
 
         // Template space:
@@ -302,9 +302,9 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
                 }
             }
 
+            long endTime = System.currentTimeMillis(); // End timing
+            long duration = endTime - startTime; // Compute duration
             if (debug) {
-                long endTime = System.currentTimeMillis(); // End timing
-                long duration = endTime - startTime; // Compute duration
                 System.out.println("Processing time: " + duration + " milliseconds");
             }
         } catch (Exception e) {
