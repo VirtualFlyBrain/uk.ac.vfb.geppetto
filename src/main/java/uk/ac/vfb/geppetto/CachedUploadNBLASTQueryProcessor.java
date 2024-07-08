@@ -162,9 +162,32 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
 
                     SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 
+                    //Parent Type extractions
+                    StringBuilder typeLabels = new StringBuilder();
+                    StringBuilder typeIds = new StringBuilder();
+                    try {
+                        if (row.parents != null && !row.parents.isEmpty()) {
+                            for (Core parent : row.parents) {
+                                if (typeLabels.length() > 0) {
+                                    typeLabels.append("|");
+                                }
+                                typeIds.append("----");
+                                typeIds.append(parent.short_form);
+                                typeLabels.append(parent.label);
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        System.out.println("Error extracting Types: " + e.getMessage());
+                    }
+
                     // ID
                     try {
-                        processedResult.getValues().add(row.term.core.short_form != null ? row.term.core.short_form : "");
+                        if (typeLabels.length() > 0) {
+                            processedResult.getValues().add(row.term.core.short_form + typeIds.toString());
+                        } else {
+                            processedResult.getValues().add(row.term.core.short_form != null ? row.term.core.short_form : "");
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                         processedResult.getValues().add("");
@@ -182,14 +205,7 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
 
                     // Type
                     try {
-                        StringBuilder typeLabels = new StringBuilder();
-                        if (row.parents != null && !row.parents.isEmpty()) {
-                            for (Core parent : row.parents) {
-                                if (typeLabels.length() > 0) {
-                                    typeLabels.append("|");
-                                }
-                                typeLabels.append(parent.label);
-                            }
+                        if (typeLabels.length() > 0) {
                             processedResult.getValues().add(typeLabels.toString());
                         } else {
                             processedResult.getValues().add("");
