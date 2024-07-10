@@ -816,6 +816,10 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 		private List<minimal_entity_info> target_neurons;
 		private pub_specific_content pub_specific_content;
 
+		public List<anatomy_channel_image> getAnatomy_channel_image() {
+			return anatomy_channel_image;
+		}
+
 		public String getSource() {
 			String result = "";
 			if (dataset_license != null && dataset_license.size() > 0) {
