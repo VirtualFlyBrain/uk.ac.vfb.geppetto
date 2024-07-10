@@ -798,7 +798,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 		term term;
 		public String query;
 		public String version;
-		private List<anatomy_channel_image> anatomy_channel_image;
+		public List<anatomy_channel_image> anatomy_channel_image;
 		public List<xref> xrefs;
 		private List<pub_syn> pub_syn;
 		private List<pub> def_pubs;
@@ -815,10 +815,6 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 		private List<minimal_entity_info> targeting_splits;
 		private List<minimal_entity_info> target_neurons;
 		private pub_specific_content pub_specific_content;
-
-		public List<anatomy_channel_image> getAnatomy_channel_image() {
-			return anatomy_channel_image;
-		}
 
 		public String getSource() {
 			String result = "";
