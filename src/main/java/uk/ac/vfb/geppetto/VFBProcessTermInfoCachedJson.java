@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sun.org.apache.bcel.internal.generic.Select;
 
 import org.geppetto.datasources.AQueryProcessor;
@@ -1355,7 +1356,15 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 				}
 				if (debug) System.out.println("JSON passed: " + json.replace("}","}\n"));
 				header = "JSON>Schema";
-				vfbTerm = new Gson().fromJson(json, vfb_terminfo.class);
+				Gson gson = new GsonBuilder()
+					.registerTypeAdapter(vfb_terminfo.class, new VfbTermInfoDeserializer())
+					.create();
+				vfbTerm = gson.fromJson(json, vfb_terminfo.class);
+
+				if (vfbTerm == null) {
+					System.err.println("Failed to parse vfb_terminfo from JSON for variable " + variable.getId());
+					return results;
+				}
 
 				if (vfbTerm.term == null || vfbTerm.term.core == null){
 					System.out.println("ERROR: term:core missing from JSON for " + variable.getId());
