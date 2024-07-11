@@ -800,21 +800,21 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 		public String version;
 		public List<anatomy_channel_image> anatomy_channel_image;
 		public List<xref> xrefs;
-		private List<pub_syn> pub_syn;
-		private List<pub> def_pubs;
-		private List<pub> pubs;
-		private pub pub;
-		private List<license> license;
-		private List<dataset_license> dataset_license;
-		private List<rel> relationships;
-		private List<rel> related_individuals;
-		private List<minimal_entity_info> parents;
-		private List<channel_image> channel_image;
-		private List<domain> template_domains;
-		private template_channel template_channel;
-		private List<minimal_entity_info> targeting_splits;
-		private List<minimal_entity_info> target_neurons;
-		private pub_specific_content pub_specific_content;
+		public List<pub_syn> pub_syn;
+		public List<pub> def_pubs;
+		public List<pub> pubs;
+		public pub pub;
+		public List<license> license;
+		public List<dataset_license> dataset_license;
+		public List<rel> relationships;
+		public List<rel> related_individuals;
+		public List<minimal_entity_info> parents;
+		public List<channel_image> channel_image;
+		public List<domain> template_domains;
+		public template_channel template_channel;
+		public List<minimal_entity_info> targeting_splits;
+		public List<minimal_entity_info> target_neurons;
+		public pub_specific_content pub_specific_content;
 
 		public String getSource() {
 			String result = "";
@@ -1356,10 +1356,15 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 				}
 				if (debug) System.out.println("JSON passed: " + json.replace("}","}\n"));
 				header = "JSON>Schema";
-				Gson gson = new GsonBuilder()
-					.registerTypeAdapter(vfb_terminfo.class, new VfbTermInfoDeserializer())
-					.create();
-				vfbTerm = gson.fromJson(json, vfb_terminfo.class);
+				try{
+					vfbTerm = new Gson().fromJson(json, vfb_terminfo.class);
+				} catch (Exception e) {
+					System.err.println("First parse of vfb_terminfo from JSON failed for variable " + variable.getId());
+					Gson gson = new GsonBuilder()
+						.registerTypeAdapter(vfb_terminfo.class, new VfbTermInfoDeserializer())
+						.create();
+					vfbTerm = gson.fromJson(json, vfb_terminfo.class);
+				}
 
 				if (vfbTerm == null) {
 					System.err.println("Failed to parse vfb_terminfo from JSON for variable " + variable.getId());
