@@ -936,6 +936,9 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 							processedResults.getHeader().add("Cell type");
 						}
 					}
+					if (table[0].query.contains("dataset scRNAseq query")) {
+						processedResults.getHeader().add("Cell type");
+					}
 					if (hasTypes) processedResults.getHeader().add("Type");
 					if (hasParents) processedResults.getHeader().add("Type");
 					if (hasGrossType && !table.get(0).query.contains("connectivity_query")) processedResults.getHeader().add("Gross_Type");
@@ -1002,6 +1005,9 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 							if (!hasGene && hasGeneScore) {
 								processedResult.getValues().add(row.expression_level);
 								processedResult.getValues().add(String.format("%.02f", row.expression_extent));
+								processedResult.getValues().add(row.anatomy.getName());
+							}
+							if (row.query.contains("dataset scRNAseq query")) {
 								processedResult.getValues().add(row.anatomy.getName());
 							}
 							if (hasTypes) processedResult.getValues().add(row.types());
