@@ -936,7 +936,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 							processedResults.getHeader().add("Cell type");
 						}
 					}
-					if (table[0].query.contains("dataset scRNAseq query")) {
+					if (table.get(0).query.contains("dataset scRNAseq query")) {
 						processedResults.getHeader().add("Cell type");
 					}
 					if (hasTypes) processedResults.getHeader().add("Type");
