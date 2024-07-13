@@ -737,6 +737,14 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			}
 			QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
 
+			// Check if the results list is empty
+			if (results.isEmpty()) {
+				// Log the issue or handle it appropriately
+				System.err.println("No results found for query: " + query);
+				// Return a default empty result
+				return processedResults; 
+			}
+
 			String json = "{";
 			String tempData = "";
 			String header = "start";
