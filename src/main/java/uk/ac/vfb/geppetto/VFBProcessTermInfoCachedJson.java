@@ -1587,8 +1587,11 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 									if (debug) System.out.println("NRRD " + tempData);
 									downloadFiles += "<br>Signal (NRRD): <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a>";
 									downloadData.add("'nrrd':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/SignalFiles(NRRD)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").nrrd" + "'}");
-									downloadFiles += "<br>Remember to cite: <a download=\"" + variable.getId() + ".bibtex\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">citations.bibtex</a>";
-									downloadData.add("'bibtex':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/RequiredCitations(BIBTEX)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").bibtex" + "'}");
+									tempData = vfbTerm.imageFile(alignment, "citations.bibtex");
+									if (tempData != null){
+										downloadFiles += "<br>Remember to cite: <a download=\"" + variable.getId() + ".bibtex\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "\">citations.bibtex</a>";
+										downloadData.add("'bibtex':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/RequiredCitations(BIBTEX)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").bibtex" + "'}");
+									}
 									downloadFiles += "<br>Note: see source & license above for terms of reuse and correct attribution.";
 									addModelHtml(downloadFiles, "Downloads", "downloads", metaDataType, geppettoModelAccess);
 									addModelFileMeta(downloadData, "DownloadMeta", "filemeta", metaDataType, geppettoModelAccess);
