@@ -1301,6 +1301,12 @@ public class VFBProcessTermInfoJson extends AQueryProcessor
 				header = "types";
 				superTypes = vfbTerm.term.core.typeList();
 
+				if (vfbTerm.term.core.types.contains("Template")) {
+					// Template loaded
+					template = vfbTerm.term.core.short_form;
+					loadedTemplate = template;
+				}
+
 				// Description
 				header = "description";
 				tempData = vfbTerm.definition();
