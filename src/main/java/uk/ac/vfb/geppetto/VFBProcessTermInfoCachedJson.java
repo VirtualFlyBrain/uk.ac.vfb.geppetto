@@ -895,8 +895,10 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 					String[] domainCentre = new String[600];
 					String[] voxelSize = new String[4];
 					domainId[0] = this.term.core.short_form;
-					domainName[0] = this.parents.get(0).label;
-					domainType[0] = this.parents.get(0).short_form;
+					if (this.parents != null && this.parents.size() > 0){
+						domainName[0] = this.parents.get(0).label;
+						domainType[0] = this.parents.get(0).short_form;
+					}
 					voxelSize[0] = String.valueOf(this.template_channel.getVoxel().getX());
 					voxelSize[1] = String.valueOf(this.template_channel.getVoxel().getY());
 					voxelSize[2] = String.valueOf(this.template_channel.getVoxel().getZ());
