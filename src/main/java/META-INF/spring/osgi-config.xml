@@ -201,6 +201,13 @@
 	<aop:scoped-proxy proxy-target-class="false"/>
 	</bean>
 	
+	<osgi:service id="Neo4jToSOLRidQueryProcessorExporter" ref="neo4jToSOLRidQueryProcessor"
+              interface="org.geppetto.core.datasources.IQueryProcessor">
+	</osgi:service>
+	<bean id="neo4jToSOLRidQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.Neo4jToSOLRidQueryProcessor">
+	<aop:scoped-proxy proxy-target-class="false"/>
+	</bean>
+	
 	<bean id="eventListenerBean" class="org.geppetto.core.services.registry.ApplicationListenerBean" />
 	
 </beans>
