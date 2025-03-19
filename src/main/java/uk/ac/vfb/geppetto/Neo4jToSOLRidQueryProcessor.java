@@ -19,7 +19,7 @@ import org.geppetto.model.variables.Variable;
 public class Neo4jToSOLRidQueryProcessor extends AQueryProcessor {
 
     private Map<String, Object> processingOutputMap = new HashMap<>();
-    private Boolean debug = false;
+    private Boolean debug = true;
 
     @Override
     public QueryResults process(ProcessQuery query, DataSource dataSource, Variable variable, QueryResults results, GeppettoModelAccess geppettoModelAccess) throws GeppettoDataSourceException {
