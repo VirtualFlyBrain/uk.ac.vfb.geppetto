@@ -51,27 +51,31 @@ public class Neo4jToSOLRidQueryProcessor extends AQueryProcessor {
                 if (debug) System.out.println("Looking for targetId column");
                 break;
             default:
-                // Try to find an 'id' column if one exists
+                // Try to find columns named 'id' or 'ids' if they exist
                 idIndex = results.getHeader().indexOf("id");
                 if (idIndex == -1) {
-                    throw new GeppettoDataSourceException("No ID column found in Neo4j results for query: " + queryID);
+                    // Check for plural 'ids' column
+                    idIndex = results.getHeader().indexOf("ids");
+                    if (idIndex == -1) {
+                        throw new GeppettoDataSourceException("No ID column found in Neo4j results for query: " + queryID);
+                    }
                 }
         }
 
         if (idIndex > -1) {
             for (AQueryResult result : results.getResults()) {
-                List<String> idsList = (ArrayList)((QueryResult) result).getValues().get(idIndex);
-                for (String id : idsList) {
-                    // Neo4j IDs might need different formatting than OWL IDs
-                    // Assuming Neo4j IDs are already in the correct format, but this can be adjusted
-                    if (id.contains("/")) {
-                        // If ID contains path separator, extract the last part
-                        String subID = id.substring((id.lastIndexOf('/')+1), id.length());
-                        ids.add(subID);
-                    } else {
-                        // Otherwise use the ID as is
-                        ids.add(id);
+                Object value = ((QueryResult) result).getValues().get(idIndex);
+                
+                // Handle both single IDs and collections of IDs
+                if (value instanceof List) {
+                    // For columns like 'ids' that return pre-collected lists
+                    List<String> idsList = (ArrayList)value;
+                    for (String id : idsList) {
+                        processId(id, ids);
                     }
+                } else if (value instanceof String) {
+                    // For single ID values
+                    processId((String)value, ids);
                 }
             }
         }
@@ -109,5 +113,17 @@ public class Neo4jToSOLRidQueryProcessor extends AQueryProcessor {
     @Override
     public Map<String, Object> getProcessingOutputMap() {
         return processingOutputMap;
+    }
+
+    // Add this helper method
+    private void processId(String id, List<String> ids) {
+        if (id.contains("/")) {
+            // If ID contains path separator, extract the last part
+            String subID = id.substring((id.lastIndexOf('/')+1), id.length());
+            ids.add(subID);
+        } else {
+            // Otherwise use the ID as is
+            ids.add(id);
+        }
     }
 }
