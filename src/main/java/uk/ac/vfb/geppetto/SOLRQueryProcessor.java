@@ -44,7 +44,7 @@ public class SOLRQueryProcessor extends AQueryProcessor
 
 	private Map<String, Object> processingOutputMap = new HashMap<String, Object>();
 
-	private Boolean debug=false;
+	private Boolean debug=true;
 
 	private String delim="----";
 

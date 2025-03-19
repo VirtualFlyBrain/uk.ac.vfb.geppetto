@@ -68,14 +68,11 @@ public class Neo4jToSOLRidQueryProcessor extends AQueryProcessor {
                 
                 // Handle both single IDs and collections of IDs
                 if (value instanceof List) {
-                    // For columns like 'ids' that return pre-collected lists
-                    List<String> idsList = (ArrayList)value;
-                    for (String id : idsList) {
-                        processId(id, ids);
-                    }
+                    // Neo4j IDs are already short forms, just add them directly
+                    ids.addAll((List<String>)value);
                 } else if (value instanceof String) {
-                    // For single ID values
-                    processId((String)value, ids);
+                    // Add single ID directly
+                    ids.add((String)value);
                 }
             }
         }
