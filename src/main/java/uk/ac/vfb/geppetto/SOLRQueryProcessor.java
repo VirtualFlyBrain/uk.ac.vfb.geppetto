@@ -1031,6 +1031,7 @@ public class SOLRQueryProcessor extends AQueryProcessor
 					System.out.println("Last row: " + results.getResults().get(results.getResults().size()-1).toString());
 				} else {
 					System.out.println("No more rows");
+					System.out.println("First row: " + results.getResults().get(0).toString());
 				}
 			}
 
