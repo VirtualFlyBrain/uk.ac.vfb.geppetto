@@ -50,6 +50,10 @@ public class Neo4jToSOLRidQueryProcessor extends AQueryProcessor {
                 idIndex = results.getHeader().indexOf("targetId");
                 if (debug) System.out.println("Looking for targetId column");
                 break;
+            case "neo4JDataSourceService":
+                idIndex = results.getHeader().indexOf("ids");
+                if (debug) System.out.println("Looking for ids column");
+                break;
             default:
                 // Try to find columns named 'id' or 'ids' if they exist
                 idIndex = results.getHeader().indexOf("id");
@@ -101,6 +105,13 @@ public class Neo4jToSOLRidQueryProcessor extends AQueryProcessor {
                 System.out.println(joinedIds.substring(0, MAX_LENGTH) + "...");
             } else {
                 System.out.println(joinedIds);
+            }
+        }
+        
+        if (debug) {
+            System.out.println("Processing output map contents:");
+            for (Map.Entry<String, Object> entry : processingOutputMap.entrySet()) {
+                System.out.println(entry.getKey() + " = " + entry.getValue());
             }
         }
         
