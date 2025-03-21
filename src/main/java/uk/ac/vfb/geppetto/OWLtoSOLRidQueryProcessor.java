@@ -103,7 +103,7 @@ public class OWLtoSOLRidQueryProcessor extends AQueryProcessor {
     @Override
     public Map<String, Object> getProcessingOutputMap() {
         if (debug) {
-            System.out.println("Processing output map contents:");
+            System.out.println("Processing output map contents from " + this.getClass().getName());
             for (Map.Entry<String, Object> entry : processingOutputMap.entrySet()) {
                 System.out.println(entry.getKey() + " = " + entry.getValue());
             }
