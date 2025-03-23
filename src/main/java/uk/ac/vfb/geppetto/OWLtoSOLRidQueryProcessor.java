@@ -21,7 +21,7 @@ public class OWLtoSOLRidQueryProcessor extends AQueryProcessor {
 
     private Map<String, Object> processingOutputMap = new HashMap<>();
 
-    private Boolean debug=true;
+    private Boolean debug=false;
 
     @Override
     public QueryResults process(ProcessQuery query, DataSource dataSource, Variable variable, QueryResults results, GeppettoModelAccess geppettoModelAccess) throws GeppettoDataSourceException {
