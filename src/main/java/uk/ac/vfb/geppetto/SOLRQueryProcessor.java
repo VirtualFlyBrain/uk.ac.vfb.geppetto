@@ -789,12 +789,12 @@ public class SOLRQueryProcessor extends AQueryProcessor
 				// Match to vfb_query schema:
 				for(AQueryResult result : results.getResults()){
 					json = results.getValue(keyName,count).toString();
-					if (debug) System.out.println("JSON passed: " + json.replace("}","}\n"));
+					if (debug && count < 10) System.out.println("JSON passed: " + json.replace("}","}\n"));
 					header = "JSON>Schema";
 					vfb_query vfbQuery = gson.fromJson(json, vfb_query.class);
 					table.add(vfbQuery);
 					count ++;
-					if (debug) System.out.println("Results Header: " + results.getHeader() );
+					if (debug && count < 10) System.out.println("Results Header: " + results.getHeader() );
 					if (table.size() == 1) {
 						// Check for non-null properties in vfbQuery and set flags accordingly
 
