@@ -384,17 +384,23 @@ public class SOLRQueryProcessor extends AQueryProcessor
 				}
 
 			}
-			if (this.term != null) {
+			if (this.term != null && this.term.core.short_form != null) {
 				result = this.term.core.short_form;
 				if (this.types != null && this.types.size() > 0 && this.types.get(0).short_form != null) {
 					result += delim + this.types.get(0).short_form;
 				}
+			} else {
+				result = "undefined";
 			}
-			if (this.parents != null) {
+			if (this.parents != null && this.parents.size() > 0) {
 				result += delim + this.parents.get(0).short_form;
+			} else {
+				result += delim + "undefined";
 			}
-			if (this.object != null) {
+			if (this.object != null && this.object.short_form != null) {
 				result += delim + this.object.short_form;
+			} else {
+				result += delim + "undefined";
 			}
 			return result;
 		}

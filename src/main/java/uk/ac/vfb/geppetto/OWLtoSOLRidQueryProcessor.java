@@ -69,6 +69,15 @@ public class OWLtoSOLRidQueryProcessor extends AQueryProcessor {
 			}
 		}
 
+        // Handle the case where no IDs are found by adding a default ID that won't match anything
+        if (ids.isEmpty()) {
+            // Either add a placeholder ID that won't match any real records
+            ids.add("NO_RESULTS_PLACEHOLDER");
+            
+            // Or you could set a special flag in the processing output map
+            processingOutputMap.put("NO_RESULTS", true);
+        }
+
         String joinedIdsWithOr = "";
         // Check if ids is not empty
         if (!ids.isEmpty()) {
