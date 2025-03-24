@@ -47,6 +47,8 @@ public class SOLRQueryProcessor extends AQueryProcessor
 
 	private String delim="----";
 
+    private static final Gson GSON_INSTANCE = new Gson();
+
 	// START VFB term info schema https://github.com/VirtualFlyBrain/VFB_json_schema/blob/master/src/json_schema/vfb_query.json
 
 	class minimal_entity_info {
@@ -759,7 +761,7 @@ public class SOLRQueryProcessor extends AQueryProcessor
 			String template = "";
 			String loadedTemplate = "";
 
-			Gson gson = new Gson();
+            Gson gson = GSON_INSTANCE;
 
 			String keyName = determineKeyName(results.getHeader());
 
@@ -789,13 +791,13 @@ public class SOLRQueryProcessor extends AQueryProcessor
 				// Match to vfb_query schema:
 				for(AQueryResult result : results.getResults()){
 					json = results.getValue(keyName,count).toString();
-					if (debug && count < 10) System.out.println("JSON passed: " + json.replace("}","}\n"));
+					if (debug && count < 2) System.out.println("JSON passed: " + json.replace("}","}\n"));
 					header = "JSON>Schema";
 					vfb_query vfbQuery = gson.fromJson(json, vfb_query.class);
 					table.add(vfbQuery);
 					count ++;
-					if (debug && count < 10) System.out.println("Results Header: " + results.getHeader() );
 					if (table.size() == 1) {
+						if (debug) System.out.println("Results Header: " + results.getHeader() );
 						// Check for non-null properties in vfbQuery and set flags accordingly
 
 						if (vfbQuery.cluster != null) {
