@@ -737,38 +737,35 @@ public class SOLRQueryProcessor extends AQueryProcessor
 	@Override
 	public QueryResults process(ProcessQuery query, DataSource dataSource, Variable variable, QueryResults results, GeppettoModelAccess geppettoModelAccess) throws GeppettoDataSourceException
 	{
-		long startTime = System.currentTimeMillis(); // Start timing
+		long startTime = System.currentTimeMillis();
 		try{
-			
 			if(results == null)
 			{
-				throw new GeppettoDataSourceException("Results input to " + query.getName() + "is null");
+				throw new GeppettoDataSourceException("Results input to " + query.getName() + " is null");
 			}
 			QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
-
-			String json = "{";
-			String tempData = "";
-			String header = "start";
-			Integer count = 0;
+		  
+			// ...existing code...
+			String keyName = determineKeyName(results.getHeader());
+			Gson gson = GSON_INSTANCE;
+			int totalResults = results.getResults().size();
+		  
+			// Streaming: Process each JSON result immediately.
+			boolean processedFirstRow = false;
+			// Flag variables:
 			boolean hasId = false, hasName = false, hasLicense = false, hasDatasetCount = false, 
-                hasExpressed_in = false, hasReference = false, hasStage = false, hasImage = false, 
-                hasTypes = false, hasParents = false, hasGrossType = false, hasTemplate = false, 
-                hasTechnique = false, hasExtra = false, hasSynCount = false, hasObject = false, 
-                hasScore = false, scRNAseq = false, hasGene = false, hasGeneScore = false;
-			List<vfb_query> table = new ArrayList<vfb_query>();
-
-			// Template space:
+				hasExpressed_in = false, hasReference = false, hasStage = false, hasImage = false, 
+				hasTypes = false, hasParents = false, hasGrossType = false, hasTemplate = false, 
+				hasTechnique = false, hasExtra = false, hasSynCount = false, hasObject = false, 
+				hasScore = false, scRNAseq = false, hasGene = false, hasGeneScore = false;
+		  
+			// Determine template
 			String template = "";
 			String loadedTemplate = "";
-
-            Gson gson = GSON_INSTANCE;
-
-			String keyName = determineKeyName(results.getHeader());
-
-			// Determine loaded template
+			List<String> availableTemplates = Arrays.asList("VFB_00101567","VFB_00200000","VFB_00017894",
+				"VFB_00101384","VFB_00050000","VFB_00049000","VFB_00030786");
 			CompositeType testTemplate = null;
-			List<String> availableTemplates = Arrays.asList("VFB_00101567","VFB_00200000","VFB_00017894","VFB_00101384","VFB_00050000","VFB_00049000","VFB_00030786");
-			for (String at:availableTemplates) {
+			for (String at: availableTemplates) {
 				try {
 					testTemplate = (CompositeType) ModelUtility.getTypeFromLibrary(at + "_metadata", dataSource.getTargetLibrary());
 				} catch (Exception e) {
@@ -781,273 +778,225 @@ public class SOLRQueryProcessor extends AQueryProcessor
 					break;
 				}
 			}
-
-			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);Variable imageVariable = VariablesFactory.eINSTANCE.createVariable();
-
-			if (debug) System.out.println("Processing JSON...");
-			count = 0;
-			try{
-				header = "results>JSON";
-				// Match to vfb_query schema:
-				for(AQueryResult result : results.getResults()){
-					json = results.getValue(keyName,count).toString();
-					if (debug && count < 2) System.out.println("JSON passed: " + json.replace("}","}\n"));
-					header = "JSON>Schema";
-					vfb_query vfbQuery = gson.fromJson(json, vfb_query.class);
-					table.add(vfbQuery);
-					count ++;
-					if (table.size() == 1) {
-						if (debug) System.out.println("Results Header: " + results.getHeader() );
-						// Check for non-null properties in vfbQuery and set flags accordingly
-
-						if (vfbQuery.cluster != null) {
-							scRNAseq = true;
-						}
-
-						if (vfbQuery.gene != null) {
-							hasGene = true;
-						}
-
-						if (vfbQuery.anatomy != null) {
-							hasId = true;
-							hasName = true;
-							hasGrossType = true;
-						}
-
-						if (vfbQuery.term != null) {
-							hasId = true;
-							hasName = true;
-							hasGrossType = true;
-						}
-
-						if (vfbQuery.dataset != null) {
-							hasId = true;
-							hasName = true;
-							hasGrossType = true;
-						}
-
-						if (vfbQuery.expression_pattern != null) {
-							hasId = true;
-							hasName = true;
-							hasExpressed_in = true;
-							hasGrossType = true;
-						}
-
-						if (vfbQuery.pubs != null || vfbQuery.pub != null) {
-							hasReference = true;
-						}
-
-						if (vfbQuery.license != null) {
-							hasLicense = true;
-						}
-
-						if (vfbQuery.dataset_counts != null) {
-							hasDatasetCount = true;
-						}
-
-						if (vfbQuery.stages != null) {
-							hasStage = true;
-						}
-
-						if (vfbQuery.anatomy_channel_image != null || vfbQuery.channel_image != null || vfbQuery.expressed_in != null) {
-							hasImage = true;
-							hasTemplate = true; // Check if hasTemplate and hasTechnique need to be set for 'expressed_in'
-							hasTechnique = true;
-						}
-
-						if (vfbQuery.types != null) {
-							hasTypes = true;
-						}
-
-						if (vfbQuery.parents != null) {
-							hasParents = true;
-						}
-
-						if (vfbQuery.synapse_counts != null) {
-							hasSynCount = true;
-							hasName = true; // Consider if hasName should be set here based on your data structure
-						}
-
-						if (vfbQuery.object != null) {
-							hasObject = true;
-						}
-
-						if (vfbQuery.score != null) {
-							hasScore = true;
-						}
-
-						if (vfbQuery.extra_columns != null) {
-							hasExtra = true;
-						}
-
-						if (vfbQuery.expression_level != null) {
-							hasGeneScore = true;
-						}
+		  
+			// Obtain image type for processing images
+			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
+		  
+			// Process each result in a streaming fashion:
+			for (int i=0; i < totalResults; i++){
+				String json = results.getValue(keyName, i).toString();
+				if (debug && i < 2) System.out.println("JSON passed: " + json.replace("}","}\n"));
+				vfb_query row = gson.fromJson(json, vfb_query.class);
+			  
+				// For the first row determine header flag values:
+				if (!processedFirstRow) {
+					processedFirstRow = true;
+					if (row.cluster != null) {
+						scRNAseq = true;
 					}
-				}
-			}catch (Exception e) {
-				System.out.println("Error creating " + header + ": " + e.toString());
-				e.printStackTrace();
-				System.out.println(json.replace("}","}\n"));
-			}
-
-			// set headers
-			processedResults.getHeader().add("ID");
-			if (hasGene) {
-				processedResults.getHeader().add("Gene");
-				processedResults.getHeader().add("Cell type");
-				processedResults.getHeader().add("Level");
-				processedResults.getHeader().add("Extent");
-				processedResults.getHeader().add("Function");
-			} else {
-				if (scRNAseq) {
-					processedResults.getHeader().add("Cluster");
-					processedResults.getHeader().add("Cell type");
-					processedResults.getHeader().add("Dataset");
-					processedResults.getHeader().add("Reference");
-				} else {
-					if (hasName) {
-						if (hasSynCount) {
-							//processedResults.getHeader().add("Neuron_A");
-						} else {
-							processedResults.getHeader().add("Name");
-						}
-						if (!hasGene && hasGeneScore) {
-							processedResults.getHeader().add("Level");
-							processedResults.getHeader().add("Extent");
-							processedResults.getHeader().add("Cell type");
-						}
+					if (row.gene != null) {
+						hasGene = true;
 					}
-					if (hasTypes) processedResults.getHeader().add("Type");
-					if (hasParents) processedResults.getHeader().add("Type");
-					if (hasGrossType && !table.get(0).query.contains("connectivity_query")) processedResults.getHeader().add("Gross_Type");
-					if (hasExpressed_in) processedResults.getHeader().add("Expressed_in");
-					if (hasLicense) processedResults.getHeader().add("License");
-					if (hasReference) processedResults.getHeader().add("Reference");
-					if (hasStage) processedResults.getHeader().add("Stage");
-					if (hasImage) processedResults.getHeader().add("Images");
-					if (hasTemplate) processedResults.getHeader().add("Imaging_Technique");
-					if (hasTechnique) processedResults.getHeader().add("Template_Space");
-					if (hasDatasetCount) processedResults.getHeader().add("Image_count");
-					if (hasExtra && table.get(0).extra_columns.size() > 0 && table.get(0).extra_columns.get(0).Score != null) processedResults.getHeader().add("Score");
-					if (hasScore) processedResults.getHeader().add("Score");
-					if (hasSynCount) {
-						processedResults.getHeader().add("Outputs");
-						if (!table.get(0).query.contains("neuron_neuron")) processedResults.getHeader().add("Outputs (Tbars)");
-						processedResults.getHeader().add("Inputs");
-						//processedResults.getHeader().add("Weight");
-						if (hasObject) {
-							if (table.get(0).query.contains("neuron_neuron")) {
-								processedResults.getHeader().add("Partner_Neuron");
-							} else if (table.get(0).query.contains("neuron_region")) {
-								processedResults.getHeader().add("Region");
-							} else {
-								processedResults.getHeader().add("Target");
-							}
-						}else{
-							if (hasObject) processedResults.getHeader().add("Target");
-						}
+					if (row.anatomy != null) {
+						hasId = true;
+						hasName = true;
+						hasGrossType = true;
 					}
-				}
-			}
-
-			if (debug) System.out.println("Headers: " + String.join(",",processedResults.getHeader()));
-
-			for (vfb_query row:table){
-				try{
-					SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
-					String length = "8";
+					if (row.term != null) {
+						hasId = true;
+						hasName = true;
+						hasGrossType = true;
+					}
+					if (row.dataset != null) {
+						hasId = true;
+						hasName = true;
+						hasGrossType = true;
+					}
+					if (row.expression_pattern != null) {
+						hasId = true;
+						hasName = true;
+						hasExpressed_in = true;
+						hasGrossType = true;
+					}
+					if (row.pubs != null || row.pub != null) {
+						hasReference = true;
+					}
+					if (row.license != null) {
+						hasLicense = true;
+					}
+					if (row.dataset_counts != null) {
+						hasDatasetCount = true;
+					}
+					if (row.stages != null) {
+						hasStage = true;
+					}
+					if (row.anatomy_channel_image != null || row.channel_image != null || row.expressed_in != null) {
+						hasImage = true;
+						hasTemplate = true;
+						hasTechnique = true;
+					}
+					if (row.types != null) {
+						hasTypes = true;
+					}
+					if (row.parents != null) {
+						hasParents = true;
+					}
+					if (row.synapse_counts != null) {
+						hasSynCount = true;
+						hasName = true;
+					}
+					if (row.object != null) {
+						hasObject = true;
+					}
+					if (row.score != null) {
+						hasScore = true;
+					}
+					if (row.extra_columns != null) {
+						hasExtra = true;
+					}
+					if (row.expression_level != null) {
+						hasGeneScore = true;
+					}
+					
+					// Build header based on flag values
+					processedResults.getHeader().add("ID");
 					if (hasGene) {
-						processedResult.getValues().add(row.gene.short_form + delim + row.anatomy.short_form);
-						processedResult.getValues().add(row.gene.getName());
-						processedResult.getValues().add(row.anatomy.getName());
-						processedResult.getValues().add(row.expression_level);
-						processedResult.getValues().add(String.format("%.02f", row.expression_extent));
-						String function = "";
-						for (String type:row.gene.types){
-							if (type.indexOf("Class") == -1 && type.indexOf("Entity") == -1 && type.indexOf("hasScRNAseq") == -1 && type.indexOf("Feature") == -1 && type.indexOf("Gene") == -1) {
-								if (!function.equals("")) function += "; ";
-								function += type;
-							}
-						}
-						processedResult.getValues().add(function);
+						processedResults.getHeader().add("Gene");
+						processedResults.getHeader().add("Cell type");
+						processedResults.getHeader().add("Level");
+						processedResults.getHeader().add("Extent");
+						processedResults.getHeader().add("Function");
 					} else {
 						if (scRNAseq) {
-							processedResult.getValues().add(row.cluster.short_form + delim + row.term.core.short_form + delim + row.pubs.get(0).core.short_form + delim + row.dataset.short_form);
-							processedResult.getValues().add(row.cluster.getName());
-							processedResult.getValues().add(row.term.core.getName());
-							processedResult.getValues().add(row.dataset.getName());
-							processedResult.getValues().add(row.pubs.get(0).core.getName());
+							processedResults.getHeader().add("Cluster");
+							processedResults.getHeader().add("Cell type");
+							processedResults.getHeader().add("Dataset");
+							processedResults.getHeader().add("Reference");
 						} else {
-							if (hasId) processedResult.getValues().add(row.id());
-							if (hasName && !hasSynCount) processedResult.getValues().add(row.name());
-							if (!hasGene && hasGeneScore) {
-								processedResult.getValues().add(row.expression_level);
-								processedResult.getValues().add(String.format("%.02f", row.expression_extent));
-								processedResult.getValues().add(row.anatomy.getName());
-							}
-							if (hasTypes) processedResult.getValues().add(row.types());
-							if (hasParents) processedResult.getValues().add(row.parents());
-							if (hasGrossType && !table.get(0).query.contains("connectivity_query")) processedResult.getValues().add(row.grossTypes());
-							if (hasExpressed_in) processedResult.getValues().add(row.expressed_in());
-							if (hasLicense) processedResult.getValues().add(row.licenseLabel());
-							if (hasReference) processedResult.getValues().add(row.reference());
-							if (hasStage) processedResult.getValues().add(row.stages());
-							if (hasImage){
-								Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
-								exampleVar.setId("images");
-								exampleVar.setName("Images");
-								exampleVar.getTypes().add(imageType);
-								ArrayValue images = row.images(template);
-								if (!images.getElements().isEmpty() && images.getElements().size() > 0)
-								{
-									exampleVar.getInitialValues().put(imageType, images);
-									processedResult.getValues().add(GeppettoSerializer.serializeToJSON(exampleVar));
-									if (false && debug) System.out.println("DEBUG: Image: " + GeppettoSerializer.serializeToJSON(exampleVar) );
+							if (hasName) {
+								if (hasSynCount) {
+									// ...existing header logic...
+								} else {
+									processedResults.getHeader().add("Name");
 								}
-								else
-								{
-									processedResult.getValues().add("");
+								if (!hasGene && hasGeneScore) {
+									processedResults.getHeader().add("Level");
+									processedResults.getHeader().add("Extent");
+									processedResults.getHeader().add("Cell type");
 								}
 							}
-							if (hasTechnique) processedResult.getValues().add(row.technique());
-							if (hasTemplate) processedResult.getValues().add(row.template(template));
-							if (hasDatasetCount) processedResult.getValues().add(String.format("%1$" + length + "s", row.dataset_counts.images.toString()));
-							if (hasExtra && row.extra_columns.size() > 0 && row.getScore() != null) processedResult.getValues().add(row.getScore());
-							if (hasScore) processedResult.getValues().add(row.score);
+							if (hasTypes) processedResults.getHeader().add("Type");
+							if (hasParents) processedResults.getHeader().add("Type");
+							if (hasGrossType && !row.query.contains("connectivity_query"))
+								processedResults.getHeader().add("Gross_Type");
+							if (hasExpressed_in) processedResults.getHeader().add("Expressed_in");
+							if (hasLicense) processedResults.getHeader().add("License");
+							if (hasReference) processedResults.getHeader().add("Reference");
+							if (hasStage) processedResults.getHeader().add("Stage");
+							if (hasImage) processedResults.getHeader().add("Images");
+							if (hasTemplate) processedResults.getHeader().add("Imaging_Technique");
+							if (hasTechnique) processedResults.getHeader().add("Template_Space");
+							if (hasDatasetCount) processedResults.getHeader().add("Image_count");
+							if (hasExtra && row.extra_columns.size() > 0 && row.extra_columns.get(0).Score != null)
+								processedResults.getHeader().add("Score");
+							if (hasScore) processedResults.getHeader().add("Score");
 							if (hasSynCount){
-								processedResult.getValues().add(row.synapse_counts.getDownstream());
-								if (!row.query.contains("neuron_neuron"))processedResult.getValues().add(row.synapse_counts.getTbars());
-								processedResult.getValues().add(row.synapse_counts.getUpstream());
-								//processedResult.getValues().add(row.synapse_counts.getWeight());
+								processedResults.getHeader().add("Outputs");
+								if (!row.query.contains("neuron_neuron"))
+									processedResults.getHeader().add("Outputs (Tbars)");
+								processedResults.getHeader().add("Inputs");
+								if (hasObject) {
+									if (row.query.contains("neuron_neuron"))
+										processedResults.getHeader().add("Partner_Neuron");
+									else if (row.query.contains("neuron_region"))
+										processedResults.getHeader().add("Region");
+									else
+										processedResults.getHeader().add("Target");
+								} else {
+									if (hasObject) processedResults.getHeader().add("Target");
+								}
 							}
-							if (hasObject) processedResult.getValues().add(row.object.getName());
 						}
 					}
-					processedResults.getResults().add(processedResult);
-				}catch (Exception e) {
-					System.out.println("Error creating results row: " + count.toString() + " - " + e.toString());
-					e.printStackTrace();
 				}
-				count ++;
-			}
-			if (debug) {
-				System.out.println("SOLRQueryProcessor returning " + count.toString() + " rows");
-				if (results.getResults().size() > count) {
-					System.out.println("More rows: " + results.getResults().size());
-					System.out.println("First row: " + results.getResults().get(0).toString());
-					System.out.println("Last row: " + results.getResults().get(results.getResults().size()-1).toString());
+			  
+				// Process the current row immediately:
+				SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
+				String length = "8";
+				if (hasGene) {
+					processedResult.getValues().add(row.gene.short_form + delim + row.anatomy.short_form);
+					processedResult.getValues().add(row.gene.getName());
+					processedResult.getValues().add(row.anatomy.getName());
+					processedResult.getValues().add(row.expression_level);
+					processedResult.getValues().add(String.format("%.02f", row.expression_extent));
+					String function = "";
+					for (String type : row.gene.types){
+						if (type.indexOf("Class") == -1 && type.indexOf("Entity") == -1 && type.indexOf("hasScRNAseq") == -1 &&
+							type.indexOf("Feature") == -1 && type.indexOf("Gene") == -1) {
+							if (!function.equals(""))
+								function += "; ";
+							function += type;
+						}
+					}
+					processedResult.getValues().add(function);
 				} else {
-					System.out.println("No more rows");
+					if (scRNAseq) {
+						processedResult.getValues().add(row.cluster.short_form + delim + row.term.core.short_form + delim + row.pubs.get(0).core.short_form + delim + row.dataset.short_form);
+						processedResult.getValues().add(row.cluster.getName());
+						processedResult.getValues().add(row.term.core.getName());
+						processedResult.getValues().add(row.dataset.getName());
+						processedResult.getValues().add(row.pubs.get(0).core.getName());
+					} else {
+						if (hasId) processedResult.getValues().add(row.id());
+						if (hasName && !hasSynCount) processedResult.getValues().add(row.name());
+						if (!hasGene && hasGeneScore) {
+							processedResult.getValues().add(row.expression_level);
+							processedResult.getValues().add(String.format("%.02f", row.expression_extent));
+							processedResult.getValues().add(row.anatomy.getName());
+						}
+						if (hasTypes) processedResult.getValues().add(row.types());
+						if (hasParents) processedResult.getValues().add(row.parents());
+						if (hasGrossType && !row.query.contains("connectivity_query"))
+							processedResult.getValues().add(row.grossTypes());
+						if (hasExpressed_in) processedResult.getValues().add(row.expressed_in());
+						if (hasLicense) processedResult.getValues().add(row.licenseLabel());
+						if (hasReference) processedResult.getValues().add(row.reference());
+						if (hasStage) processedResult.getValues().add(row.stages());
+						if (hasImage){
+							Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
+							exampleVar.setId("images");
+							exampleVar.setName("Images");
+							exampleVar.getTypes().add(imageType);
+							ArrayValue images = row.images(template);
+							if (!images.getElements().isEmpty() && images.getElements().size() > 0) {
+								exampleVar.getInitialValues().put(imageType, images);
+								processedResult.getValues().add(GeppettoSerializer.serializeToJSON(exampleVar));
+							} else {
+								processedResult.getValues().add("");
+							}
+						}
+						if (hasTechnique) processedResult.getValues().add(row.technique());
+						if (hasTemplate) processedResult.getValues().add(row.template(template));
+						if (hasDatasetCount)
+							processedResult.getValues().add(String.format("%1$" + length + "s", row.dataset_counts.images.toString()));
+						if (hasExtra && row.extra_columns.size() > 0 && row.getScore() != null)
+							processedResult.getValues().add(row.getScore());
+						if (hasScore) processedResult.getValues().add(row.score);
+						if (hasSynCount){
+							processedResult.getValues().add(row.synapse_counts.getDownstream());
+							if (!row.query.contains("neuron_neuron"))
+								processedResult.getValues().add(row.synapse_counts.getTbars());
+							processedResult.getValues().add(row.synapse_counts.getUpstream());
+						}
+						if (hasObject) processedResult.getValues().add(row.object.getName());
+					}
 				}
+				processedResults.getResults().add(processedResult);
 			}
-
-			long endTime = System.currentTimeMillis(); // End timing
-    		long duration = (endTime - startTime); // Compute duration
-    		System.out.println("Processing time: " + duration + " milliseconds");
-
+		  
+			long endTime = System.currentTimeMillis();
+			System.out.println("Processing time: " + (endTime - startTime) + " milliseconds");
 			return processedResults;
-
 		}
 		catch(GeppettoVisitingException e)
 		{
@@ -1060,11 +1009,9 @@ public class SOLRQueryProcessor extends AQueryProcessor
 			System.out.println(e);
 			e.printStackTrace();
 		}
-
-		long endTime = System.currentTimeMillis(); // End timing
-    	long duration = (endTime - startTime); // Compute duration
-    	System.out.println("Processing time: " + duration + " milliseconds");
-
+		  
+		long endTime = System.currentTimeMillis();
+		System.out.println("Processing time: " + (endTime - startTime) + " milliseconds");
 		return null;
 	}
 
