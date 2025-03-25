@@ -750,7 +750,10 @@ public class SOLRQueryProcessor extends AQueryProcessor
 			Gson gson = GSON_INSTANCE;
 			int totalResults = results.getResults().size();
 		  
-			 // Reuse temporary objects inside the loop
+			// Obtain image type for processing images
+			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
+			
+			// Reuse temporary objects inside the loop
 			final StringBuilder sbFunction = new StringBuilder();
 			final Variable tempImageVar = VariablesFactory.eINSTANCE.createVariable();
 			tempImageVar.setId("images");
@@ -787,9 +790,7 @@ public class SOLRQueryProcessor extends AQueryProcessor
 				}
 			}
 		  
-			// Obtain image type for processing images
-			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
-		  
+			  
 			// Process each result in a streaming fashion:
 			for (int i=0; i < totalResults; i++){
 				String json = results.getValue(keyName, i).toString();
