@@ -1002,11 +1002,24 @@ public class SOLRQueryProcessor extends AQueryProcessor
 					}
 				}
 				processedResults.getResults().add(processedResult);
-				row = null; // null reference for GC after processing each row
+				
+				// Clear references to help with garbage collection after each row
+				processedResult = null;
+				row = null;
+				
+				// Process in batches of 100 - write partial results to log
+				if ((i+1) % 100 == 0) {
+					if (debug) System.out.println("Processed " + (i+1) + " of " + totalResults + " results");
+					// Force GC to run on batch completion (optional)
+					if (i > 1000) {
+						System.gc();
+					}
+				}
 			}
 		  
 			long endTime = System.currentTimeMillis();
 			System.out.println("Processing time: " + (endTime - startTime) + " milliseconds");
+			System.out.println("Total results processed: " + processedResults.getResults().size());
 			return processedResults;
 		}
 		catch(GeppettoVisitingException e)
