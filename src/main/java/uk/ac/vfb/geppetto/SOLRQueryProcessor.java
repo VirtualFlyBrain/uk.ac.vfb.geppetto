@@ -750,6 +750,14 @@ public class SOLRQueryProcessor extends AQueryProcessor
 			Gson gson = GSON_INSTANCE;
 			int totalResults = results.getResults().size();
 		  
+			 // Reuse temporary objects inside the loop
+			final StringBuilder sbFunction = new StringBuilder();
+			final Variable tempImageVar = VariablesFactory.eINSTANCE.createVariable();
+			tempImageVar.setId("images");
+			tempImageVar.setName("Images");
+			tempImageVar.getTypes().clear();
+			tempImageVar.getTypes().add(imageType);
+		  
 			// Streaming: Process each JSON result immediately.
 			boolean processedFirstRow = false;
 			// Flag variables:
@@ -929,17 +937,20 @@ public class SOLRQueryProcessor extends AQueryProcessor
 					processedResult.getValues().add(row.anatomy.getName());
 					processedResult.getValues().add(row.expression_level);
 					processedResult.getValues().add(String.format("%.02f", row.expression_extent));
-					String function = "";
+					// Reuse sbFunction for gene function string
+					sbFunction.setLength(0);
 					for (String type : row.gene.types){
 						if (type.indexOf("Class") == -1 && type.indexOf("Entity") == -1 && type.indexOf("hasScRNAseq") == -1 &&
 							type.indexOf("Feature") == -1 && type.indexOf("Gene") == -1) {
-							if (!function.equals(""))
-								function += "; ";
-							function += type;
+							if(sbFunction.length() > 0){
+								sbFunction.append("; ");
+							}
+							sbFunction.append(type);
 						}
 					}
-					processedResult.getValues().add(function);
-				} else {
+					processedResult.getValues().add(sbFunction.toString());
+				}
+				else {
 					if (scRNAseq) {
 						processedResult.getValues().add(row.cluster.short_form + delim + row.term.core.short_form + delim + row.pubs.get(0).core.short_form + delim + row.dataset.short_form);
 						processedResult.getValues().add(row.cluster.getName());
@@ -963,14 +974,12 @@ public class SOLRQueryProcessor extends AQueryProcessor
 						if (hasReference) processedResult.getValues().add(row.reference());
 						if (hasStage) processedResult.getValues().add(row.stages());
 						if (hasImage){
-							Variable exampleVar = VariablesFactory.eINSTANCE.createVariable();
-							exampleVar.setId("images");
-							exampleVar.setName("Images");
-							exampleVar.getTypes().add(imageType);
+							// Reuse tempImageVar for image processing
+							tempImageVar.getInitialValues().clear();
 							ArrayValue images = row.images(template);
 							if (!images.getElements().isEmpty() && images.getElements().size() > 0) {
-								exampleVar.getInitialValues().put(imageType, images);
-								processedResult.getValues().add(GeppettoSerializer.serializeToJSON(exampleVar));
+								tempImageVar.getInitialValues().put(imageType, images);
+								processedResult.getValues().add(GeppettoSerializer.serializeToJSON(tempImageVar));
 							} else {
 								processedResult.getValues().add("");
 								}
