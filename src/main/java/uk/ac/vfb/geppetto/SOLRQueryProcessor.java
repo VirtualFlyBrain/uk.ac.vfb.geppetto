@@ -973,8 +973,8 @@ public class SOLRQueryProcessor extends AQueryProcessor
 								processedResult.getValues().add(GeppettoSerializer.serializeToJSON(exampleVar));
 							} else {
 								processedResult.getValues().add("");
+								}
 							}
-						}
 						if (hasTechnique) processedResult.getValues().add(row.technique());
 						if (hasTemplate) processedResult.getValues().add(row.template(template));
 						if (hasDatasetCount)
@@ -992,6 +992,7 @@ public class SOLRQueryProcessor extends AQueryProcessor
 					}
 				}
 				processedResults.getResults().add(processedResult);
+				row = null; // null reference for GC after processing each row
 			}
 		  
 			long endTime = System.currentTimeMillis();
