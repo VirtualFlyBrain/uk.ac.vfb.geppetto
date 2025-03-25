@@ -1008,10 +1008,8 @@ public class SOLRQueryProcessor extends AQueryProcessor
 				row = null;
 				
 				// Process in batches of 100 - write partial results to log
-				if ((i+1) % 10000 == 0) {
+				if ((i+1) % 20000 == 0) {
 					if (debug) System.out.println("Processed " + (i+1) + " of " + totalResults + " results");
-				}
-				if ((i+1) % 100 == 0) {
 					System.gc();
 				}
 			}
