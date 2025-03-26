@@ -58,6 +58,33 @@ public class SOLRQueryProcessor extends AQueryProcessor
 
     // Replace Gson with Jackson ObjectMapper
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    
+    // Add a method to validate if a string is valid JSON
+    private boolean isValidJSON(String jsonString) {
+        try {
+            OBJECT_MAPPER.readTree(jsonString);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
+    // Add a method to create valid JSON for image data
+    private String createSafeImageJSON(Variable imageVar) {
+        try {
+            String json = GeppettoSerializer.serializeToJSON(imageVar);
+            // Validate the JSON
+            if (isValidJSON(json)) {
+                return json;
+            } else {
+                // If not valid JSON, create a fallback JSON object
+                return "{}";
+            }
+        } catch (Exception e) {
+            System.out.println("Error serializing image data: " + e.getMessage());
+            return "{}"; // Return empty JSON object as fallback
+        }
+    }
 
 	// START VFB term info schema https://github.com/VirtualFlyBrain/VFB_json_schema/blob/master/src/json_schema/vfb_query.json
 
@@ -1060,13 +1087,15 @@ public class SOLRQueryProcessor extends AQueryProcessor
 									ArrayValue images = getImages(node, template);
 									if (images != null && !images.getElements().isEmpty()) {
 										tempImageVar.getInitialValues().put(imageType, images);
-										processedResult.getValues().add(GeppettoSerializer.serializeToJSON(tempImageVar));
+										// Use the safe JSON serialization method
+										String imageJson = createSafeImageJSON(tempImageVar);
+										processedResult.getValues().add(imageJson);
 									} else {
-										processedResult.getValues().add("");
+										processedResult.getValues().add("{}"); // Empty JSON object instead of empty string
 									}
 								} catch (Exception e) {
 									System.out.println("Error processing images for row " + i + ": " + e.getMessage());
-									processedResult.getValues().add(""); // Add empty value on error
+									processedResult.getValues().add("{}"); // Empty JSON object instead of empty string
 								}
 							}
 							
@@ -1671,8 +1700,14 @@ public class SOLRQueryProcessor extends AQueryProcessor
 	}
 	
 	private String getAnatomyChannelImageLabel(JsonNode anatomyChannelImage, boolean showTemplate) {
-		StringBuilder result = new StringBuilder(getEntityName(anatomyChannelImage.path("anatomy")));
-		result.append(getChannelImageLabel(anatomyChannelImage.path("channel_image"), showTemplate));
+		StringBuilder result = new StringBuilder();
+		// Add null checks
+		if (anatomyChannelImage != null && anatomyChannelImage.has("anatomy")) {
+			result.append(getEntityName(anatomyChannelImage.path("anatomy")));
+			if (anatomyChannelImage.has("channel_image")) {
+				result.append(getChannelImageLabel(anatomyChannelImage.path("channel_image"), showTemplate));
+			}
+		}
 		return result.toString();
 	}
 	
@@ -1775,6 +1810,10 @@ public class SOLRQueryProcessor extends AQueryProcessor
 	}
 	
 	private String secureUrl(String url) {
+		// Add null check to prevent NullPointerException
+		if (url == null) {
+			return "";
+		}
 		return url.replace("http://", "https://");
 	}
 	
