@@ -820,17 +820,23 @@ public class SOLRQueryProcessor extends AQueryProcessor
 				try {
 					// Get the current row's JSON as a string
 					AQueryResult row = results.getResults().get(i);
-					if (row instanceof SerializableQueryResult) {
-						SerializableQueryResult sqr = (SerializableQueryResult) row;
-						int keyIndex = results.getHeader().indexOf(keyName);
-						if (keyIndex >= 0 && keyIndex < sqr.getValues().size()) {
-							json = sqr.getValues().get(keyIndex).toString();
+					if (!(row instanceof SerializableQueryResult)) {
+						// If the row is a raw QueryResult, wrap its values into a SerializableQueryResult
+						SerializableQueryResult temp = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
+						if (row instanceof QueryResult) {
+							temp.getValues().addAll(((QueryResult) row).getValues());
 						} else {
-							System.out.println("Warning: Key index out of bounds for row " + i + ": " + keyIndex);
+							System.out.println("Warning: Skipping unsupported result at index " + i + ": " + row.getClass().getName());
 							continue;
 						}
+						row = temp;
+					}
+					SerializableQueryResult sqr = (SerializableQueryResult) row;
+					int keyIndex = results.getHeader().indexOf(keyName);
+					if (keyIndex >= 0 && keyIndex < sqr.getValues().size()) {
+						json = sqr.getValues().get(keyIndex).toString();
 					} else {
-						System.out.println("Warning: Skipping non-serializable result at index " + i);
+						System.out.println("Warning: Key index out of bounds for row " + i + ": " + keyIndex);
 						continue;
 					}
 					
