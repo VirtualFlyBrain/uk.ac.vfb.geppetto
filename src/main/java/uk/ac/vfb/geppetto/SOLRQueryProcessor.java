@@ -824,7 +824,10 @@ public class SOLRQueryProcessor extends AQueryProcessor
 						// If the row is a raw QueryResult, wrap its values into a SerializableQueryResult
 						SerializableQueryResult temp = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 						if (row instanceof QueryResult) {
-							temp.getValues().addAll(((QueryResult) row).getValues());
+							// Fix type mismatch by converting each value to string individually
+							for (Object value : ((QueryResult) row).getValues()) {
+								temp.getValues().add(value.toString());
+							}
 						} else {
 							System.out.println("Warning: Skipping unsupported result at index " + i + ": " + row.getClass().getName());
 							continue;
