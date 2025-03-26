@@ -1437,4 +1437,279 @@ public class SOLRQueryProcessor extends AQueryProcessor
 	}
 	
 	// ... more helper methods for other properties like types(), parents(), etc.
+	
+	// Helper methods for processing JsonNode objects
+	private String getTypes(JsonNode node) {
+		StringBuilder result = new StringBuilder();
+		if (node.has("types") && node.path("types").isArray()) {
+			for (JsonNode type : node.path("types")) {
+				if (result.length() > 0) {
+					result.append("; ");
+				}
+				result.append(type.path("label").asText());
+			}
+		}
+		return result.toString();
+	}
+	
+	private String getParents(JsonNode node) {
+		StringBuilder result = new StringBuilder();
+		if (node.has("parents") && node.path("parents").isArray()) {
+			for (JsonNode parent : node.path("parents")) {
+				if (!result.toString().contains(parent.path("label").asText())) {
+					if (result.length() > 0) {
+						result.append("; ");
+					}
+					result.append(parent.path("label").asText());
+				}
+			}
+		}
+		return result.toString();
+	}
+	
+	private String getGrossTypes(JsonNode node) {
+		List<String> types = new ArrayList<>();
+		
+		if (node.has("expression_pattern") && !node.path("expression_pattern").isNull()) {
+			JsonNode expPattern = node.path("expression_pattern");
+			if (expPattern.has("unique_facets") && expPattern.path("unique_facets").isArray() && 
+				expPattern.path("unique_facets").size() > 0) {
+				for (JsonNode facet : expPattern.path("unique_facets")) {
+					types.add(facet.asText());
+				}
+			} else if (expPattern.has("types") && expPattern.path("types").isArray()) {
+				for (JsonNode type : expPattern.path("types")) {
+					types.add(type.asText());
+				}
+			}
+		}
+		
+		if (node.has("dataset") && !node.path("dataset").isNull()) {
+			JsonNode dataset = node.path("dataset");
+			if (dataset.has("unique_facets") && dataset.path("unique_facets").isArray() && 
+				dataset.path("unique_facets").size() > 0) {
+				for (JsonNode facet : dataset.path("unique_facets")) {
+					types.add(facet.asText());
+				}
+			} else if (dataset.has("types") && dataset.path("types").isArray()) {
+				for (JsonNode type : dataset.path("types")) {
+					types.add(type.asText());
+				}
+			}
+		}
+		
+		if (node.has("term") && !node.path("term").isNull() && 
+			node.path("term").has("core") && !node.path("term").path("core").isNull()) {
+			JsonNode termCore = node.path("term").path("core");
+			if (termCore.has("unique_facets") && termCore.path("unique_facets").isArray() && 
+				termCore.path("unique_facets").size() > 0) {
+				for (JsonNode facet : termCore.path("unique_facets")) {
+					types.add(facet.asText());
+				}
+			} else if (termCore.has("types") && termCore.path("types").isArray()) {
+				for (JsonNode type : termCore.path("types")) {
+					types.add(type.asText());
+				}
+			}
+		}
+		
+		if (node.has("anatomy") && !node.path("anatomy").isNull()) {
+			JsonNode anatomy = node.path("anatomy");
+			if (anatomy.has("unique_facets") && anatomy.path("unique_facets").isArray() && 
+				anatomy.path("unique_facets").size() > 0) {
+				for (JsonNode facet : anatomy.path("unique_facets")) {
+					types.add(facet.asText());
+				}
+			} else if (anatomy.has("types") && anatomy.path("types").isArray()) {
+				for (JsonNode type : anatomy.path("types")) {
+					types.add(type.asText());
+				}
+			}
+		}
+		
+		return formatTypeList(types);
+	}
+	
+	private String formatTypeList(List<String> types) {
+		StringBuilder result = new StringBuilder();
+		for (String type : types) {
+			type = type.replace("DataSet", "Dataset");
+			if (type.equals("pub")) type = "Publication";
+			if (result.length() == 0) {
+				result.append(type);
+			} else {
+				result.append("; ").append(type);
+			}
+		}
+		return result.toString();
+	}
+	
+	private String getExpressedIn(JsonNode node) {
+		if (node.has("expression_pattern") && !node.path("expression_pattern").isNull() &&
+			node.has("anatomy") && !node.path("anatomy").isNull()) {
+			return getEntityName(node.path("anatomy"));
+		}
+		return "";
+	}
+	
+	private String getLicenseLabel(JsonNode node) {
+		StringBuilder result = new StringBuilder();
+		if (node.has("license") && node.path("license").isArray()) {
+			for (JsonNode license : node.path("license")) {
+				if (result.length() > 0) result.append("; ");
+				result.append(getEntityName(license.path("core")));
+			}
+		}
+		return result.toString();
+	}
+	
+	private String getStages(JsonNode node) {
+		StringBuilder result = new StringBuilder();
+		if (node.has("stages") && node.path("stages").isArray()) {
+			for (JsonNode stage : node.path("stages")) {
+				if (result.length() > 0) result.append("; ");
+				result.append(getEntityName(stage));
+			}
+		}
+		return result.toString();
+	}
+	
+	private String getReference(JsonNode node) {
+		StringBuilder result = new StringBuilder();
+		if (node.has("pub") && !node.path("pub").isNull()) {
+			result.append(getEntityName(node.path("pub").path("core")));
+		}
+		if (node.has("pubs") && node.path("pubs").isArray() && node.path("pubs").size() > 0) {
+			for (JsonNode pub : node.path("pubs")) {
+				if (result.length() > 0) result.append("; ");
+				result.append(getEntityName(pub.path("core")));
+			}
+		}
+		return result.toString();
+	}
+	
+	private String getTechnique(JsonNode node) {
+		StringBuilder result = new StringBuilder();
+		
+		// Check channel_image
+		if (node.has("channel_image") && node.path("channel_image").isArray()) {
+			for (JsonNode ci : node.path("channel_image")) {
+				if (ci.has("imaging_technique") && !ci.path("imaging_technique").isNull() &&
+					ci.path("imaging_technique").has("label")) {
+					
+					String technique = techniqueSymbol(ci.path("imaging_technique").path("label").asText());
+					if (result.indexOf(technique) < 0) {
+						if (result.length() > 0) result.append("; ");
+						result.append(technique);
+					}
+				}
+			}
+		}
+		
+		// Check anatomy_channel_image
+		if (node.has("anatomy_channel_image") && node.path("anatomy_channel_image").isArray()) {
+			for (JsonNode aci : node.path("anatomy_channel_image")) {
+				if (aci.has("channel_image") && !aci.path("channel_image").isNull() &&
+					aci.path("channel_image").has("imaging_technique") && 
+					!aci.path("channel_image").path("imaging_technique").isNull() &&
+					aci.path("channel_image").path("imaging_technique").has("label")) {
+					
+					String technique = techniqueSymbol(aci.path("channel_image").path("imaging_technique").path("label").asText());
+					if (result.indexOf(technique) < 0) {
+						if (result.length() > 0) result.append("; ");
+						result.append(technique);
+					}
+				}
+			}
+		}
+		
+		return result.toString();
+	}
+	
+	private String getTemplate(JsonNode node, String template) {
+		StringBuilder result = new StringBuilder();
+		
+		if (template == null || template.isEmpty()) {
+			// default to JRC2018U
+			template = "VFB_00101567";
+		}
+		
+		// Check channel_image
+		boolean foundMatchingTemplate = false;
+		if (node.has("channel_image") && node.path("channel_image").isArray()) {
+			for (JsonNode ci : node.path("channel_image")) {
+				if (ci.has("image") && !ci.path("image").isNull() &&
+					ci.path("image").has("template_anatomy") && !ci.path("image").path("template_anatomy").isNull() &&
+					ci.path("image").path("template_anatomy").has("label")) {
+					
+					String templateName = templateSymbol(ci.path("image").path("template_anatomy").path("label").asText());
+					
+					if (result.indexOf(templateName) < 0) {
+						if (ci.path("image").path("template_anatomy").has("short_form") &&
+							template.equals(ci.path("image").path("template_anatomy").path("short_form").asText())) {
+							
+							// Matching template goes to the beginning
+							result.insert(0, templateName + "\nalso in: ");
+							foundMatchingTemplate = true;
+						} else {
+							if (result.length() > 0 && !result.toString().endsWith(": ")) result.append("; ");
+							result.append(templateName);
+						}
+					}
+				}
+			}
+		}
+		
+		// Check anatomy_channel_image
+		if (node.has("anatomy_channel_image") && node.path("anatomy_channel_image").isArray()) {
+			for (JsonNode aci : node.path("anatomy_channel_image")) {
+				if (aci.has("channel_image") && !aci.path("channel_image").isNull() &&
+					aci.path("channel_image").has("image") && !aci.path("channel_image").path("image").isNull() &&
+					aci.path("channel_image").path("image").has("template_anatomy") && 
+					!aci.path("channel_image").path("image").path("template_anatomy").isNull() &&
+					aci.path("channel_image").path("image").path("template_anatomy").has("label")) {
+					
+					String templateName = templateSymbol(aci.path("channel_image").path("image").path("template_anatomy").path("label").asText());
+					
+					if (result.indexOf(templateName) < 0) {
+						if (aci.path("channel_image").path("image").path("template_anatomy").has("short_form") &&
+							template.equals(aci.path("channel_image").path("image").path("template_anatomy").path("short_form").asText())) {
+							
+							// Matching template goes to the beginning
+							result.insert(0, templateName + "\nalso in: ");
+							foundMatchingTemplate = true;
+						} else {
+							if (result.length() > 0 && !result.toString().endsWith(": ")) result.append("; ");
+							result.append(templateName);
+						}
+					}
+				}
+			}
+		}
+		
+		// Clean up the result if needed
+		String finalResult = result.toString();
+		if (finalResult.endsWith(": ")) {
+			finalResult = finalResult.replace("also in: ", "");
+		}
+		
+		return finalResult;
+	}
+	
+	private String getSynapseCounts(JsonNode row, String countType) {
+		if (row.has("synapse_counts") && !row.path("synapse_counts").isNull()) {
+			JsonNode counts = row.path("synapse_counts");
+			if (counts.has(countType) && counts.path(countType).isArray()) {
+				StringBuilder result = new StringBuilder();
+				for (JsonNode value : counts.path(countType)) {
+					if (result.length() > 0) {
+						result.append("; ");
+					}
+					result.append(String.format("% 5d", (int)Math.ceil(value.asDouble())));
+				}
+				return result.toString();
+			}
+		}
+		return "";
+	}
 }
