@@ -69,7 +69,7 @@ public class SOLRQueryProcessor extends AQueryProcessor
         }
     }
     
-    // Add a method to create valid JSON for image data
+    // Modify createSafeImageJSON to return empty array instead of empty object
     private String createSafeImageJSON(Variable imageVar) {
         try {
             String json = GeppettoSerializer.serializeToJSON(imageVar);
@@ -77,12 +77,12 @@ public class SOLRQueryProcessor extends AQueryProcessor
             if (isValidJSON(json)) {
                 return json;
             } else {
-                // If not valid JSON, create a fallback JSON object
-                return "{}";
+                // Return empty array instead of empty object as fallback
+                return "[]";
             }
         } catch (Exception e) {
             System.out.println("Error serializing image data: " + e.getMessage());
-            return "{}"; // Return empty JSON object as fallback
+            return "[]"; // Return empty JSON array as fallback
         }
     }
 
@@ -1082,20 +1082,42 @@ public class SOLRQueryProcessor extends AQueryProcessor
 							
 							// Process images if needed
 							if (hasImage) {
-								try {
-									tempImageVar.getInitialValues().clear();
-									ArrayValue images = getImages(node, template);
-									if (images != null && !images.getElements().isEmpty()) {
-										tempImageVar.getInitialValues().put(imageType, images);
-										// Use the safe JSON serialization method
-										String imageJson = createSafeImageJSON(tempImageVar);
-										processedResult.getValues().add(imageJson);
-									} else {
-										processedResult.getValues().add("{}"); // Empty JSON object instead of empty string
+								int imageColumnIndex = processedResults.getHeader().indexOf("Images");
+								if (imageColumnIndex >= 0) {
+									try {
+										tempImageVar.getInitialValues().clear();
+										ArrayValue images = getImages(node, template);
+										
+										// Ensure we have enough positions in the values list
+										while (processedResult.getValues().size() <= imageColumnIndex) {
+											processedResult.getValues().add("");
+										}
+										
+										if (images != null && !images.getElements().isEmpty()) {
+											tempImageVar.getInitialValues().put(imageType, images);
+											// Use the safe JSON serialization method
+											String imageJson = createSafeImageJSON(tempImageVar);
+											// Set at the correct column position
+											processedResult.getValues().set(imageColumnIndex, imageJson);
+										} else {
+											// Empty array for no images
+											processedResult.getValues().set(imageColumnIndex, "[]");
+										}
+									} catch (Exception e) {
+										System.out.println("Error processing images for row " + i + ": " + e.getMessage());
+										// Ensure we have enough positions in the values list
+										while (processedResult.getValues().size() <= imageColumnIndex) {
+											processedResult.getValues().add("");
+										}
+										// Set empty array at the correct position
+										processedResult.getValues().set(imageColumnIndex, "[]");
 									}
-								} catch (Exception e) {
-									System.out.println("Error processing images for row " + i + ": " + e.getMessage());
-									processedResult.getValues().add("{}"); // Empty JSON object instead of empty string
+								} else {
+									if (debug) {
+										System.out.println("Warning: Images column not found in headers, adding at end");
+									}
+									// Images header not found, add at the end
+									processedResult.getValues().add("[]");
 								}
 							}
 							
