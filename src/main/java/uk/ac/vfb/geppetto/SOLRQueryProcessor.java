@@ -854,7 +854,7 @@ public class SOLRQueryProcessor extends AQueryProcessor
 								String fieldName = parser.getCurrentName();
 								parser.nextToken(); // Move to the value
 								
-								if (!parser.isExpired() && !parser.isNull()) {
+								if (!parser.isClosed() && parser.getCurrentToken() != JsonToken.VALUE_NULL) {
 									switch (fieldName) {
 										case "cluster": scRNAseq = true; break;
 										case "gene": hasGene = true; break;
