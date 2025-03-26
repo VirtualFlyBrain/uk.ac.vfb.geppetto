@@ -755,9 +755,20 @@ public class SOLRQueryProcessor extends AQueryProcessor
 			}
 			QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
 		  
-			// ...existing code...
+			  
+			// Determine key name from headers
 			String keyName = determineKeyName(results.getHeader());
+			if (keyName.isEmpty()) {
+				System.out.println("Warning: Could not determine key name from headers. Using first header.");
+				if (!results.getHeader().isEmpty()) {
+					keyName = results.getHeader().get(0);
+				} else {
+					throw new GeppettoDataSourceException("No headers found in results");
+				}
+			}
+			
 			int totalResults = results.getResults().size();
+			if (debug) System.out.println("Processing " + totalResults + " results");
 		  
 			// Obtain image type for processing images
 			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
@@ -770,9 +781,9 @@ public class SOLRQueryProcessor extends AQueryProcessor
 			tempImageVar.getTypes().clear();
 			tempImageVar.getTypes().add(imageType);
 		  
-			// Streaming: Process each JSON result immediately.
+			  
+			// Flag variables for header determination
 			boolean processedFirstRow = false;
-			// Flag variables:
 			boolean hasId = false, hasName = false, hasLicense = false, hasDatasetCount = false, 
 				hasExpressed_in = false, hasReference = false, hasStage = false, hasImage = false, 
 				hasTypes = false, hasParents = false, hasGrossType = false, hasTemplate = false, 
@@ -797,319 +808,367 @@ public class SOLRQueryProcessor extends AQueryProcessor
 					if (debug) System.out.println("Template detected: " + at);
 					break;
 				}
+			  
 			}
-		  
-			  
-			// Process each result in a streaming fashion:
+			
+			// Process each result in a streaming fashion
 			for (int i=0; i < totalResults; i++){
-				String json = results.getValue(keyName, i).toString();
-				if (debug && i < 2) System.out.println("JSON passed: " + json.replace("}","}\n"));
-				JsonParser parser = OBJECT_MAPPER.getFactory().createParser(json);
-			  
-				// For the first row determine header flag values:
-				if (!processedFirstRow) {
-					processedFirstRow = true;
-					while (parser.nextToken() != null) {
-						if (parser.getCurrentToken() == JsonToken.FIELD_NAME) {
-							String fieldName = parser.getCurrentName();
-							
-							switch (fieldName) {
-								case "cluster":
-									parser.nextToken();
-									if (!parser.isExpired() && !parser.isNull()) {
-										scRNAseq = true;
+				String json = null;
+				JsonNode node = null;
+				JsonParser parser = null;
+				
+				try {
+					// Get the current row's JSON as a string
+					AQueryResult row = results.getResults().get(i);
+					if (row instanceof SerializableQueryResult) {
+						SerializableQueryResult sqr = (SerializableQueryResult) row;
+						int keyIndex = results.getHeader().indexOf(keyName);
+						if (keyIndex >= 0 && keyIndex < sqr.getValues().size()) {
+							json = sqr.getValues().get(keyIndex).toString();
+						} else {
+							System.out.println("Warning: Key index out of bounds for row " + i + ": " + keyIndex);
+							continue;
+						}
+					} else {
+						System.out.println("Warning: Skipping non-serializable result at index " + i);
+						continue;
+					}
+					
+					if (json == null || json.trim().isEmpty()) {
+						System.out.println("Warning: Empty JSON at index " + i);
+						continue;
+					}
+					
+					if (debug && i < 2) {
+						System.out.println("Processing JSON: " + (json.length() > 100 ? json.substring(0, 100) + "..." : json));
+					}
+					
+					// Create a parser for the current JSON string
+					parser = OBJECT_MAPPER.getFactory().createParser(json);
+					
+					// For the first row, determine header flag values
+					if (!processedFirstRow) {
+						processedFirstRow = true;
+						while (parser.nextToken() != null) {
+							if (parser.getCurrentToken() == JsonToken.FIELD_NAME) {
+								String fieldName = parser.getCurrentName();
+								parser.nextToken(); // Move to the value
+								
+								if (!parser.isExpired() && !parser.isNull()) {
+									switch (fieldName) {
+										case "cluster": scRNAseq = true; break;
+										case "gene": hasGene = true; break;
+										case "anatomy":
+										case "term":
+										case "dataset":
+											hasId = true;
+											hasName = true;
+											hasGrossType = true;
+											break;
+										case "expression_pattern":
+											hasId = true;
+											hasName = true;
+											hasExpressed_in = true;
+											hasGrossType = true;
+											break;
+										case "pubs":
+										case "pub":
+											hasReference = true;
+											break;
+										case "license": hasLicense = true; break;
+										case "dataset_counts": hasDatasetCount = true; break;
+										case "stages": hasStage = true; break;
+										case "anatomy_channel_image":
+										case "channel_image":
+										case "expressed_in":
+											hasImage = true;
+											hasTemplate = true;
+											hasTechnique = true;
+											break;
+										case "types": hasTypes = true; break;
+										case "parents": hasParents = true; break;
+										case "synapse_counts": hasSynCount = true; hasName = true; break;
+										case "object": hasObject = true; break;
+										case "score": hasScore = true; break;
+										case "extra_columns": hasExtra = true; break;
+										case "expression_level": hasGeneScore = true; break;
 									}
-									break;
-								case "gene":
-									parser.nextToken();
-									if (!parser.isExpired() && !parser.isNull()) {
-										hasGene = true;
+								}
+							}
+						}
+						
+						// Close and recreate parser to reset position
+						parser.close();
+						parser = OBJECT_MAPPER.getFactory().createParser(json);
+						
+						// Build header based on detected fields
+						processedResults.getHeader().add("ID");
+						if (hasGene) {
+							processedResults.getHeader().add("Gene");
+							processedResults.getHeader().add("Cell type");
+							processedResults.getHeader().add("Level");
+							processedResults.getHeader().add("Extent");
+							processedResults.getHeader().add("Function");
+						} else {
+							if (scRNAseq) {
+								processedResults.getHeader().add("Cluster");
+								processedResults.getHeader().add("Cell type");
+								processedResults.getHeader().add("Dataset");
+								processedResults.getHeader().add("Reference");
+							} else {
+								if (hasName) {
+									if (hasSynCount) {
+										processedResults.getHeader().add("Name");
+										if (hasObject) {
+											if (checkQueryForNeuronNeuron(json)) {
+												processedResults.getHeader().add("Name");
+											}
+										}
+									} else {
+										processedResults.getHeader().add("Name");
 									}
-									break;
-								case "anatomy":
-								case "term":
-								case "dataset":
-									parser.nextToken();
-									if (!parser.isExpired() && !parser.isNull()) {
-										hasId = true;
-										hasName = true;
-										hasGrossType = true;
+									if (!hasGene && hasGeneScore) {
+										processedResults.getHeader().add("Level");
+										processedResults.getHeader().add("Extent");
+										processedResults.getHeader().add("Cell type");
 									}
-									break;
-								case "expression_pattern":
-									parser.nextToken();
-									if (!parser.isExpired() && !parser.isNull()) {
-										hasId = true;
-										hasName = true;
-										hasExpressed_in = true;
-										hasGrossType = true;
+								}
+								if (hasTypes) processedResults.getHeader().add("Type");
+								if (hasParents) processedResults.getHeader().add("Type");
+								if (hasGrossType && !checkQueryForConnectivity(json))
+									processedResults.getHeader().add("Gross_Type");
+								if (hasExpressed_in) processedResults.getHeader().add("Expressed_in");
+								if (hasLicense) processedResults.getHeader().add("License");
+								if (hasReference) processedResults.getHeader().add("Reference");
+								if (hasStage) processedResults.getHeader().add("Stage");
+								if (hasImage) processedResults.getHeader().add("Images");
+								if (hasTemplate) processedResults.getHeader().add("Imaging_Technique");
+								if (hasTechnique) processedResults.getHeader().add("Template_Space");
+								if (hasDatasetCount) processedResults.getHeader().add("Image_count");
+								
+								// Check for Score field in extra_columns
+								try {
+									node = OBJECT_MAPPER.readTree(json);
+									if (hasExtra && node.has("extra_columns") && node.path("extra_columns").isArray() && 
+										node.path("extra_columns").size() > 0 && node.path("extra_columns").get(0).has("Score")) {
+										processedResults.getHeader().add("Score");
 									}
-									break;
-								case "pubs":
-								case "pub":
-									hasReference = true;
-									break;
-								case "license":
-									parser.nextToken();
-									if (!parser.isExpired() && !parser.isNull()) {
-										hasLicense = true;
+								} catch (Exception e) {
+									System.out.println("Error checking extra columns in first row: " + e.getMessage());
+								}
+								
+								if (hasScore) processedResults.getHeader().add("Score");
+								if (hasSynCount){
+									processedResults.getHeader().add("Outputs");
+									if (!checkQueryForNeuronNeuron(json))
+										processedResults.getHeader().add("Outputs (Tbars)");
+									processedResults.getHeader().add("Inputs");
+									if (hasObject) {
+										if (checkQueryForNeuronNeuron(json))
+											processedResults.getHeader().add("Partner_Neuron");
+										else if (checkQueryForNeuronRegion(json))
+											processedResults.getHeader().add("Region");
+										else
+											processedResults.getHeader().add("Target");
+									} else {
+										if (hasObject) processedResults.getHeader().add("Target");
 									}
-									break;
-								case "dataset_counts":
-									parser.nextToken();
-									if (!parser.isExpired() && !parser.isNull()) {
-										hasDatasetCount = true;
-									}
-									break;
-								case "stages":
-									parser.nextToken();
-									if (!parser.isExpired() && !parser.isNull()) {
-										hasStage = true;
-									}
-									break;
-								case "anatomy_channel_image":
-								case "channel_image":
-								case "expressed_in":
-									parser.nextToken();
-									if (!parser.isExpired() && !parser.isNull()) {
-										hasImage = true;
-										hasTemplate = true;
-										hasTechnique = true;
-									}
-									break;
-								case "types":
-									parser.nextToken();
-									if (!parser.isExpired() && !parser.isNull()) {
-										hasTypes = true;
-									}
-									break;
-								case "parents":
-									parser.nextToken();
-									if (!parser.isExpired() && !parser.isNull()) {
-										hasParents = true;
-									}
-									break;
-								case "synapse_counts":
-									parser.nextToken();
-									if (!parser.isExpired() && !parser.isNull()) {
-										hasSynCount = true;
-										hasName = true;
-									}
-									break;
-								case "object":
-									parser.nextToken();
-									if (!parser.isExpired() && !parser.isNull()) {
-										hasObject = true;
-									}
-									break;
-								case "score":
-									parser.nextToken();
-									if (!parser.isExpired() && !parser.isNull()) {
-										hasScore = true;
-									}
-									break;
-								case "extra_columns":
-									parser.nextToken();
-									if (!parser.isExpired() && !parser.isNull()) {
-										hasExtra = true;
-									}
-									break;
-								case "expression_level":
-									parser.nextToken();
-									if (!parser.isExpired() && !parser.isNull()) {
-										hasGeneScore = true;
-									}
-									break;
+								}
 							}
 						}
 					}
 					
-					// Reset parser to beginning for actual processing
-					parser.close();
-					parser = OBJECT_MAPPER.getFactory().createParser(json);
+					// Close parser and read the full node for processing the current row
+					if (parser != null) {
+						parser.close();
+					}
 					
-					// Build header based on flag values
-					processedResults.getHeader().add("ID");
+					// Use try-with-resources for new parser to ensure proper cleanup
+					try {
+						node = OBJECT_MAPPER.readTree(json);
+					} catch (JsonProcessingException e) {
+						System.out.println("Error parsing JSON at row " + i + ": " + e.getMessage());
+						System.out.println("Problematic JSON: " + json);
+						continue; // Skip this row and continue with the next
+					}
+					
+					// Process the current row
+					SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
+					String length = "8";
+					
+					// Extract values based on detected fields
 					if (hasGene) {
-						processedResults.getHeader().add("Gene");
-						processedResults.getHeader().add("Cell type");
-						processedResults.getHeader().add("Level");
-						processedResults.getHeader().add("Extent");
-						processedResults.getHeader().add("Function");
+						processedResult.getValues().add(node.path("gene").path("short_form").asText() + delim + node.path("anatomy").path("short_form").asText());
+						processedResult.getValues().add(getEntityName(node.path("gene")));
+						processedResult.getValues().add(getEntityName(node.path("anatomy")));
+						processedResult.getValues().add(node.path("expression_level").asText());
+						processedResult.getValues().add(String.format("%.02f", node.path("expression_extent").asDouble()));
+						
+						// Reuse sbFunction for gene function string
+						sbFunction.setLength(0);
+						for (JsonNode type : node.path("gene").path("types")) {
+							if (type.asText().indexOf("Class") == -1 && type.asText().indexOf("Entity") == -1 && 
+								type.asText().indexOf("hasScRNAseq") == -1 && type.asText().indexOf("Feature") == -1 && 
+								type.asText().indexOf("Gene") == -1) {
+								if(sbFunction.length() > 0){
+									sbFunction.append("; ");
+								}
+								sbFunction.append(type.asText());
+							}
+						}
+						processedResult.getValues().add(sbFunction.toString());
 					} else {
 						if (scRNAseq) {
-							processedResults.getHeader().add("Cluster");
-							processedResults.getHeader().add("Cell type");
-							processedResults.getHeader().add("Dataset");
-							processedResults.getHeader().add("Reference");
+							processedResult.getValues().add(node.path("cluster").path("short_form").asText() + delim + 
+														node.path("term").path("core").path("short_form").asText() + delim + 
+														node.path("pubs").get(0).path("core").path("short_form").asText() + delim + 
+														node.path("dataset").path("short_form").asText());
+							processedResult.getValues().add(getEntityName(node.path("cluster")));
+							processedResult.getValues().add(getEntityName(node.path("term").path("core")));
+							processedResult.getValues().add(getEntityName(node.path("dataset")));
+							processedResult.getValues().add(getEntityName(node.path("pubs").get(0).path("core")));
 						} else {
-							if (hasName) {
-								if (hasSynCount) {
-									// ...existing header logic...
-								} else {
-									processedResults.getHeader().add("Name");
-								}
-								if (!hasGene && hasGeneScore) {
-									processedResults.getHeader().add("Level");
-									processedResults.getHeader().add("Extent");
-									processedResults.getHeader().add("Cell type");
+							if (hasId) processedResult.getValues().add(getId(node));
+							if (hasName && !hasSynCount) processedResult.getValues().add(getName(node));
+							if (!hasGene && hasGeneScore) {
+								processedResult.getValues().add(node.path("expression_level").asText());
+								processedResult.getValues().add(String.format("%.02f", node.path("expression_extent").asDouble()));
+								processedResult.getValues().add(getEntityName(node.path("anatomy")));
+							}
+							if (hasTypes) processedResult.getValues().add(getTypes(node));
+							if (hasParents) processedResult.getValues().add(getParents(node));
+							if (hasGrossType && !node.path("query").asText().contains("connectivity_query"))
+								processedResult.getValues().add(getGrossTypes(node));
+							if (hasExpressed_in) processedResult.getValues().add(getExpressedIn(node));
+							if (hasLicense) processedResult.getValues().add(getLicenseLabel(node));
+							if (hasReference) processedResult.getValues().add(getReference(node));
+							if (hasStage) processedResult.getValues().add(getStages(node));
+							
+							// Process images if needed
+							if (hasImage) {
+								try {
+									tempImageVar.getInitialValues().clear();
+									ArrayValue images = getImages(node, template);
+									if (images != null && !images.getElements().isEmpty()) {
+										tempImageVar.getInitialValues().put(imageType, images);
+										processedResult.getValues().add(GeppettoSerializer.serializeToJSON(tempImageVar));
+									} else {
+										processedResult.getValues().add("");
+									}
+								} catch (Exception e) {
+									System.out.println("Error processing images for row " + i + ": " + e.getMessage());
+									processedResult.getValues().add(""); // Add empty value on error
 								}
 							}
-							if (hasTypes) processedResults.getHeader().add("Type");
-							if (hasParents) processedResults.getHeader().add("Type");
-							if (hasGrossType && !checkQueryForConnectivity(parser))
-								processedResults.getHeader().add("Gross_Type");
-							if (hasExpressed_in) processedResults.getHeader().add("Expressed_in");
-							if (hasLicense) processedResults.getHeader().add("License");
-							if (hasReference) processedResults.getHeader().add("Reference");
-							if (hasStage) processedResults.getHeader().add("Stage");
-							if (hasImage) processedResults.getHeader().add("Images");
-							if (hasTemplate) processedResults.getHeader().add("Imaging_Technique");
-							if (hasTechnique) processedResults.getHeader().add("Template_Space");
-							if (hasDatasetCount) processedResults.getHeader().add("Image_count");
-							if (hasExtra && node.path("extra_columns").isArray() && node.path("extra_columns").size() > 0 && node.path("extra_columns").get(0).has("Score"))
-								processedResults.getHeader().add("Score");
-							if (hasScore) processedResults.getHeader().add("Score");
-							if (hasSynCount){
-								processedResults.getHeader().add("Outputs");
-								if (!checkQueryForNeuronNeuron(parser))
-									processedResults.getHeader().add("Outputs (Tbars)");
-								processedResults.getHeader().add("Inputs");
-								if (hasObject) {
-									if (checkQueryForNeuronNeuron(parser))
-										processedResults.getHeader().add("Partner_Neuron");
-									else if (checkQueryForNeuronRegion(parser))
-										processedResults.getHeader().add("Region");
-									else
-										processedResults.getHeader().add("Target");
-								} else {
-									if (hasObject) processedResults.getHeader().add("Target");
-								}
+							
+							if (hasTechnique) processedResult.getValues().add(getTechnique(node));
+							if (hasTemplate) processedResult.getValues().add(getTemplate(node, template));
+							if (hasDatasetCount)
+								processedResult.getValues().add(String.format("%1$" + length + "s", node.path("dataset_counts").path("images").asText()));
+							if (hasExtra && node.path("extra_columns").isArray() && node.path("extra_columns").size() > 0 && 
+								node.path("extra_columns").get(0).has("Score"))
+								processedResult.getValues().add(node.path("extra_columns").get(0).path("Score").asText());
+							if (hasScore) processedResult.getValues().add(node.path("score").asText());
+							if (hasSynCount) {
+								processedResult.getValues().add(getSynapseCounts(node, "downstream"));
+								if (!node.path("query").asText().contains("neuron_neuron"))
+									processedResult.getValues().add(getSynapseCounts(node, "Tbars"));
+								processedResult.getValues().add(getSynapseCounts(node, "upstream"));
 							}
+							if (hasObject) processedResult.getValues().add(getEntityName(node.path("object")));
 						}
 					}
 					
-					// Reset parser again for actual processing
-					parser.close();
-					parser = OBJECT_MAPPER.getFactory().createParser(json);
-				}
-			  
-				// Process the current row immediately:
-				SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
-				String length = "8";
-				JsonNode node = OBJECT_MAPPER.readTree(parser);
-				if (hasGene) {
-					processedResult.getValues().add(node.path("gene").path("short_form").asText() + delim + node.path("anatomy").path("short_form").asText());
-					processedResult.getValues().add(getEntityName(node.path("gene")));
-					processedResult.getValues().add(getEntityName(node.path("anatomy")));
-					processedResult.getValues().add(node.path("expression_level").asText());
-					processedResult.getValues().add(String.format("%.02f", node.path("expression_extent").asDouble()));
-					// Reuse sbFunction for gene function string
-					sbFunction.setLength(0);
-					for (JsonNode type : node.path("gene").path("types")){
-						if (type.asText().indexOf("Class") == -1 && type.asText().indexOf("Entity") == -1 && type.asText().indexOf("hasScRNAseq") == -1 &&
-							type.asText().indexOf("Feature") == -1 && type.asText().indexOf("Gene") == -1) {
-							if(sbFunction.length() > 0){
-								sbFunction.append("; ");
-							}
-							sbFunction.append(type.asText());
+					// Add processed result to results collection
+					processedResults.getResults().add(processedResult);
+					
+				} catch (JsonProcessingException e) {
+					System.out.println("JSON parsing error at row " + i + ": " + e.getMessage());
+					e.printStackTrace();
+				} catch (IOException e) {
+					System.out.println("I/O error at row " + i + ": " + e.getMessage());
+					e.printStackTrace();
+				} catch (Exception e) {
+					System.out.println("Unexpected error processing row " + i + ": " + e.getMessage());
+					e.printStackTrace();
+				} finally {
+					// Clean up resources to help with garbage collection
+					if (parser != null) {
+						try {
+							parser.close();
+						} catch (IOException e) {
+							// Ignore close errors
 						}
 					}
-					processedResult.getValues().add(sbFunction.toString());
+					// Explicitly null references to help garbage collection
+					parser = null;
+					node = null;
+					json = null;
 				}
-				else {
-					if (scRNAseq) {
-						processedResult.getValues().add(node.path("cluster").path("short_form").asText() + delim + node.path("term").path("core").path("short_form").asText() + delim + node.path("pubs").get(0).path("core").path("short_form").asText() + delim + node.path("dataset").path("short_form").asText());
-						processedResult.getValues().add(getEntityName(node.path("cluster")));
-						processedResult.getValues().add(getEntityName(node.path("term").path("core")));
-						processedResult.getValues().add(getEntityName(node.path("dataset")));
-						processedResult.getValues().add(getEntityName(node.path("pubs").get(0).path("core")));
-					} else {
-						if (hasId) processedResult.getValues().add(getId(node));
-						if (hasName && !hasSynCount) processedResult.getValues().add(getName(node));
-						if (!hasGene && hasGeneScore) {
-							processedResult.getValues().add(node.path("expression_level").asText());
-							processedResult.getValues().add(String.format("%.02f", node.path("expression_extent").asDouble()));
-							processedResult.getValues().add(getEntityName(node.path("anatomy")));
-						}
-						if (hasTypes) processedResult.getValues().add(getTypes(node));
-						if (hasParents) processedResult.getValues().add(getParents(node));
-						if (hasGrossType && !node.path("query").asText().contains("connectivity_query"))
-							processedResult.getValues().add(getGrossTypes(node));
-						if (hasExpressed_in) processedResult.getValues().add(getExpressedIn(node));
-						if (hasLicense) processedResult.getValues().add(getLicenseLabel(node));
-						if (hasReference) processedResult.getValues().add(getReference(node));
-						if (hasStage) processedResult.getValues().add(getStages(node));
-						if (hasImage){
-							// Reuse tempImageVar for image processing
-							tempImageVar.getInitialValues().clear();
-							ArrayValue images = getImages(node, template);
-							if (!images.getElements().isEmpty() && images.getElements().size() > 0) {
-								tempImageVar.getInitialValues().put(imageType, images);
-								processedResult.getValues().add(GeppettoSerializer.serializeToJSON(tempImageVar));
-							} else {
-								processedResult.getValues().add("");
-								}
-							}
-						if (hasTechnique) processedResult.getValues().add(getTechnique(node));
-						if (hasTemplate) processedResult.getValues().add(getTemplate(node, template));
-						if (hasDatasetCount)
-							processedResult.getValues().add(String.format("%1$" + length + "s", node.path("dataset_counts").path("images").asText()));
-						if (hasExtra && node.path("extra_columns").isArray() && node.path("extra_columns").size() > 0 && node.path("extra_columns").get(0).has("Score"))
-							processedResult.getValues().add(node.path("extra_columns").get(0).path("Score").asText());
-						if (hasScore) processedResult.getValues().add(node.path("score").asText());
-						if (hasSynCount){
-							processedResult.getValues().add(getSynapseCounts(node, "downstream"));
-							if (!node.path("query").asText().contains("neuron_neuron"))
-								processedResult.getValues().add(getSynapseCounts(node, "Tbars"));
-							processedResult.getValues().add(getSynapseCounts(node, "upstream"));
-						}
-						if (hasObject) processedResult.getValues().add(getEntityName(node.path("object")));
-					}
-				}
-				processedResults.getResults().add(processedResult);
 				
-				// Clear references to help with garbage collection after each row
-				processedResult = null;
-				node = null;
-				parser.close();
-				
-				// Process in batches of 100 - write partial results to log
+				// Perform garbage collection periodically to prevent memory issues
 				if ((i+1) % 20000 == 0) {
 					if (debug) System.out.println("Processed " + (i+1) + " of " + totalResults + " results");
 					System.gc();
 				}
+			  
 			}
-		  
+			
 			long endTime = System.currentTimeMillis();
 			System.out.println("Processing time: " + (endTime - startTime) + " milliseconds");
 			System.out.println("Total results processed: " + processedResults.getResults().size());
+			
 			return processedResults;
-		}
-		catch(GeppettoVisitingException e)
-		{
-			System.out.println(e);
+		} catch(GeppettoVisitingException e) {
+			System.out.println("GeppettoVisitingException: " + e.getMessage());
 			e.printStackTrace();
 			throw new GeppettoDataSourceException(e);
-		}
-		catch(Exception e)
-		{
-			System.out.println(e);
+		} catch(Exception e) {
+			System.out.println("Unexpected exception: " + e.getMessage());
 			e.printStackTrace();
+			throw new GeppettoDataSourceException("Error processing query: " + e.getMessage(), e);
 		}
-		  
-		long endTime = System.currentTimeMillis();
-		System.out.println("Processing time: " + (endTime - startTime) + " milliseconds");
-		return null;
 	}
 
+	/**
+	 * Determine the appropriate key name from headers
+	 * @param headers List of available headers
+	 * @return The appropriate key name or empty string if not found
+	 */
 	private String determineKeyName(List<String> headers) {
 		for (String key : headers) {
 			if ("anat_image_query".equals(key) || "anat_query".equals(key)) {
 				return key;
 			}
 		}
-		return "";
+		return headers.isEmpty() ? "" : headers.get(0);
+	}
+	
+	/**
+	 * Check if the query is for connectivity
+	 * @param json The JSON string to check
+	 * @return True if it's a connectivity query
+	 */
+	private boolean checkQueryForConnectivity(String json) {
+		return json != null && json.contains("connectivity_query");
+	}
+	
+	/**
+	 * Check if the query is for neuron-to-neuron connectivity
+	 * @param json The JSON string to check
+	 * @return True if it's a neuron-to-neuron query
+	 */
+	private boolean checkQueryForNeuronNeuron(String json) {
+		return json != null && json.contains("neuron_neuron");
+	}
+	
+	/**
+	 * Check if the query is for neuron-to-region connectivity
+	 * @param json The JSON string to check
+	 * @return True if it's a neuron-to-region query
+	 */
+	private boolean checkQueryForNeuronRegion(String json) {
+		return json != null && json.contains("neuron_region");
 	}
 
 	@Override
@@ -1210,6 +1269,155 @@ public class SOLRQueryProcessor extends AQueryProcessor
 			return entity.path("label").asText();
 		}
 		return "";
+	}
+	
+	private String getTypes(JsonNode node) {
+		StringBuilder result = new StringBuilder();
+		if (node.has("types") && node.path("types").isArray()) {
+			for (JsonNode type : node.path("types")) {
+				if (result.length() > 0) {
+					result.append("; ");
+				}
+				result.append(type.path("label").asText());
+			}
+		}
+		return result.toString();
+	}
+	
+	private String getParents(JsonNode node) {
+		StringBuilder result = new StringBuilder();
+		if (node.has("parents") && node.path("parents").isArray()) {
+			for (JsonNode parent : node.path("parents")) {
+				if (!result.toString().contains(parent.path("label").asText())) {
+					if (result.length() > 0) {
+						result.append("; ");
+					}
+					result.append(parent.path("label").asText());
+				}
+			}
+		}
+		return result.toString();
+	}
+	
+	private String getGrossTypes(JsonNode node) {
+		List<String> types = new ArrayList<>();
+		
+		if (node.has("expression_pattern") && !node.path("expression_pattern").isNull()) {
+			JsonNode expPattern = node.path("expression_pattern");
+			if (expPattern.has("unique_facets") && expPattern.path("unique_facets").isArray() && 
+				expPattern.path("unique_facets").size() > 0) {
+				for (JsonNode facet : expPattern.path("unique_facets")) {
+					types.add(facet.asText());
+				}
+			} else if (expPattern.has("types") && expPattern.path("types").isArray()) {
+				for (JsonNode type : expPattern.path("types")) {
+					types.add(type.asText());
+				}
+			}
+		}
+		
+		if (node.has("dataset") && !node.path("dataset").isNull()) {
+			JsonNode dataset = node.path("dataset");
+			if (dataset.has("unique_facets") && dataset.path("unique_facets").isArray() && 
+				dataset.path("unique_facets").size() > 0) {
+				for (JsonNode facet : dataset.path("unique_facets")) {
+					types.add(facet.asText());
+				}
+			} else if (dataset.has("types") && dataset.path("types").isArray()) {
+				for (JsonNode type : dataset.path("types")) {
+					types.add(type.asText());
+				}
+			}
+		}
+		
+		if (node.has("term") && !node.path("term").isNull() && 
+			node.path("term").has("core") && !node.path("term").path("core").isNull()) {
+			JsonNode termCore = node.path("term").path("core");
+			if (termCore.has("unique_facets") && termCore.path("unique_facets").isArray() && 
+				termCore.path("unique_facets").size() > 0) {
+				for (JsonNode facet : termCore.path("unique_facets")) {
+					types.add(facet.asText());
+				}
+			} else if (termCore.has("types") && termCore.path("types").isArray()) {
+				for (JsonNode type : termCore.path("types")) {
+					types.add(type.asText());
+				}
+			}
+		}
+		
+		if (node.has("anatomy") && !node.path("anatomy").isNull()) {
+			JsonNode anatomy = node.path("anatomy");
+			if (anatomy.has("unique_facets") && anatomy.path("unique_facets").isArray() && 
+				anatomy.path("unique_facets").size() > 0) {
+				for (JsonNode facet : anatomy.path("unique_facets")) {
+					types.add(facet.asText());
+				}
+			} else if (anatomy.has("types") && anatomy.path("types").isArray()) {
+				for (JsonNode type : anatomy.path("types")) {
+					types.add(type.asText());
+				}
+			}
+		}
+		
+		return formatTypeList(types);
+	}
+	
+	private String formatTypeList(List<String> types) {
+		StringBuilder result = new StringBuilder();
+		for (String type : types) {
+			type = type.replace("DataSet", "Dataset");
+			if (type.equals("pub")) type = "Publication";
+			if (result.length() == 0) {
+				result.append(type);
+			} else {
+				result.append("; ").append(type);
+			}
+		}
+		return result.toString();
+	}
+	
+	private String getExpressedIn(JsonNode node) {
+		if (node.has("expression_pattern") && !node.path("expression_pattern").isNull() &&
+			node.has("anatomy") && !node.path("anatomy").isNull()) {
+			return getEntityName(node.path("anatomy"));
+		}
+		return "";
+	}
+	
+	private String getLicenseLabel(JsonNode node) {
+		StringBuilder result = new StringBuilder();
+		if (node.has("license") && node.path("license").isArray()) {
+			for (JsonNode license : node.path("license")) {
+				if (result.length() > 0) result.append("; ");
+				result.append(getEntityName(license.path("core")));
+			}
+		}
+		return result.toString();
+	}
+	
+	private String getStages(JsonNode node) {
+		StringBuilder result = new StringBuilder();
+		if (node.has("stages") && node.path("stages").isArray()) {
+			for (JsonNode stage : node.path("stages")) {
+				if (result.length() > 0) result.append("; ");
+				result.append(getEntityName(stage));
+			}
+		}
+		return result.toString();
+	}
+	
+	private String getReference(JsonNode node) {
+		StringBuilder result = new StringBuilder();
+		if (node.has("pub") && !node.path("pub").isNull()) {
+			result.append(getEntityName(node.path("pub").path("core")));
+		}
+		if (node.has("pubs") && node.path("pubs").isArray() && node.path("pubs").size() > 0) {
+			for (JsonNode pub : node.path("pubs")) {
+				if (result.length() > 0) result.append("; ");
+				result.append(getEntityName(pub.path("core")));
+			}
+		}
+		return result.toString();
 	}
 	
 	private ArrayValue getImages(JsonNode node, String template) {
@@ -1363,8 +1571,8 @@ public class SOLRQueryProcessor extends AQueryProcessor
 							anat.path("image").path("template_anatomy").has("short_form") &&
 							template.equals(anat.path("image").path("template_anatomy").path("short_form").asText())) {
 							
-							// Now use helper methods to access term information
-							if (node.has("term") && !loaded.contains(node.path("term").path("core").path("short_form").asText())) {
+							if (node.has("term") && node.path("term").has("core") && 
+								!loaded.contains(node.path("term").path("core").path("short_form").asText())) {
 								addImage(
 									getImageUrl(anat, "", "thumbnailT.png"),
 									getEntityName(node.path("term").path("core")),
@@ -1378,7 +1586,23 @@ public class SOLRQueryProcessor extends AQueryProcessor
 						}
 					}
 					
-					// ... continue implementation for the rest of channel_image processing
+					if (j > 0) return imageArray;
+					
+					// Second pass - add rest of images
+					for (JsonNode anat : node.path("channel_image")) {
+						if (node.has("term") && node.path("term").has("core") && 
+							!loaded.contains(node.path("term").path("core").path("short_form").asText())) {
+							addImage(
+								getImageUrl(anat, "", "thumbnailT.png"),
+								getEntityName(node.path("term").path("core")),
+								node.path("term").path("core").path("short_form").asText(),
+								imageArray,
+								j
+							);
+							loaded.add(node.path("term").path("core").path("short_form").asText());
+							j++;
+						}
+					}
 				}
 			}
 			
@@ -1394,7 +1618,7 @@ public class SOLRQueryProcessor extends AQueryProcessor
 	private String getImageUrl(JsonNode channelImage, String pre, String post) {
 		String result = "";
 		if (channelImage != null && !channelImage.isNull() && 
-			channelImage.has("image") && !channelImage.isNull() && 
+			channelImage.has("image") && !channelImage.path("image").isNull() && 
 			channelImage.path("image").has("image_folder") && 
 			!channelImage.path("image").path("image_folder").asText().equals("")) {
 			
@@ -1444,7 +1668,6 @@ public class SOLRQueryProcessor extends AQueryProcessor
 	}
 	
 	private String templateSymbol(String label) {
-		// Reuse existing implementation
 		switch (label) {
 			case "adult brain template JFRC2":
 				return "JFRC2";
@@ -1468,7 +1691,6 @@ public class SOLRQueryProcessor extends AQueryProcessor
 	}
 	
 	private String techniqueSymbol(String label) {
-		// Reuse existing implementation
 		switch (label) {
 			case "structured illumination microscopy (SIM)":
 				return "SIM";
@@ -1476,14 +1698,62 @@ public class SOLRQueryProcessor extends AQueryProcessor
 				return "PMT";
 			case "scanning electron microscopy (SEM)":
 				return "SEM";
-			// ... keep all existing cases from the original implementation
+			case "charge coupled device (CCD)":
+				return "CCD";
+			case "Fluorescein (FITC)":
+				return "FITC";
+			case "Tetramethyl rhodamine (TRITC)":
+				return "TRITC";
+			case "intermediate voltage electron microacopy (IVEM)":
+				return "IVEM";
+			case "high-voltage electron microscopy (HVEM)":
+				return "HVEM";
+			case "interference reflection contrast (IRM)":
+				return "IRM";
+			case "inelastic scattering of photons (Raman scattering)":
+				return "Raman scattering";
+			case "transmission electron microscopy (TEM)":
+				return "TEM";
+			case "nearfield scanning optical microscopy (ANSOM)":
+				return "ANSOM";
+			case "single sideband edge enhancement (SSBE)":
+				return "SSBE";
+			case "complementary metal oxide semiconductor (CMOS)":
+				return "CMOS";
+			case "electron bombardment CCD (EBCCD)":
+				return "EBCCD";
+			case "intensified CCD (ICCD)":
+				return "ICCD";
+			case "silicon intensified target tube (SIT)":
+				return "SIT";
+			case "4\',6-diamidino-2-phenylindole (DAPI)":
+				return "DAPI";
+			case "ground state depletion scanning (GSD)":
+				return "GSD";
+			case "Arachis hypogaea (PNA)":
+				return "PNA";
+			case "avalanche photodiode (APD)":
+				return "APD";
+			case "stimulated emission depletion (STED)":
+				return "STED";
+			case "serial block face SEM (SBFSEM)":
+				return "SBFSEM";
+			case "electron multiplying CCD (EMCCD)":
+				return "EMCCD";
+			case "saturated structured-illumination microscopy (SSIM)":
+				return "SSIM";
+			case "intensified SIT (ISIT)":
+				return "ISIT";
+			case "confocal microscopy":
+				return "Confocal";
+			case "focussed ion beam scanning electron microscopy (FIB-SEM)":
+				return "FIB-SEM";
 			default:
 				return label;
 		}
 	}
-
+	
 	private void addImage(String data, String name, String reference, ArrayValue images, int i) {
-		// Reuse existing implementation
 		Image image = ValuesFactory.eINSTANCE.createImage();
 		image.setName(name);
 		image.setData(secureUrl(data));
@@ -1497,158 +1767,6 @@ public class SOLRQueryProcessor extends AQueryProcessor
 	
 	private String secureUrl(String url) {
 		return url.replace("http://", "https://");
-	}
-	
-	// ... more helper methods for other properties like types(), parents(), etc.
-	
-	// Helper methods for processing JsonNode objects
-	private String getTypes(JsonNode node) {
-		StringBuilder result = new StringBuilder();
-		if (node.has("types") && node.path("types").isArray()) {
-			for (JsonNode type : node.path("types")) {
-				if (result.length() > 0) {
-					result.append("; ");
-				}
-				result.append(type.path("label").asText());
-			}
-		}
-		return result.toString();
-	}
-	
-	private String getParents(JsonNode node) {
-		StringBuilder result = new StringBuilder();
-		if (node.has("parents") && node.path("parents").isArray()) {
-			for (JsonNode parent : node.path("parents")) {
-				if (!result.toString().contains(parent.path("label").asText())) {
-					if (result.length() > 0) {
-						result.append("; ");
-					}
-					result.append(parent.path("label").asText());
-				}
-			}
-		}
-		return result.toString();
-	}
-	
-	private String getGrossTypes(JsonNode node) {
-		List<String> types = new ArrayList<>();
-		
-		if (node.has("expression_pattern") && !node.path("expression_pattern").isNull()) {
-			JsonNode expPattern = node.path("expression_pattern");
-			if (expPattern.has("unique_facets") && expPattern.path("unique_facets").isArray() && 
-				expPattern.path("unique_facets").size() > 0) {
-				for (JsonNode facet : expPattern.path("unique_facets")) {
-					types.add(facet.asText());
-				}
-			} else if (expPattern.has("types") && expPattern.path("types").isArray()) {
-				for (JsonNode type : expPattern.path("types")) {
-					types.add(type.asText());
-				}
-			}
-		}
-		
-		if (node.has("dataset") && !node.path("dataset").isNull()) {
-			JsonNode dataset = node.path("dataset");
-			if (dataset.has("unique_facets") && dataset.path("unique_facets").isArray() && 
-				dataset.path("unique_facets").size() > 0) {
-				for (JsonNode facet : dataset.path("unique_facets")) {
-					types.add(facet.asText());
-				}
-			} else if (dataset.has("types") && dataset.path("types").isArray()) {
-				for (JsonNode type : dataset.path("types")) {
-					types.add(type.asText());
-				}
-			}
-		}
-		
-		if (node.has("term") && !node.path("term").isNull() && 
-			node.path("term").has("core") && !node.path("term").path("core").isNull()) {
-			JsonNode termCore = node.path("term").path("core");
-			if (termCore.has("unique_facets") && termCore.path("unique_facets").isArray() && 
-				termCore.path("unique_facets").size() > 0) {
-				for (JsonNode facet : termCore.path("unique_facets")) {
-					types.add(facet.asText());
-				}
-			} else if (termCore.has("types") && termCore.path("types").isArray()) {
-				for (JsonNode type : termCore.path("types")) {
-					types.add(type.asText());
-				}
-			}
-		}
-		
-		if (node.has("anatomy") && !node.path("anatomy").isNull()) {
-			JsonNode anatomy = node.path("anatomy");
-			if (anatomy.has("unique_facets") && anatomy.path("unique_facets").isArray() && 
-				anatomy.path("unique_facets").size() > 0) {
-				for (JsonNode facet : anatomy.path("unique_facets")) {
-					types.add(facet.asText());
-				}
-			} else if (anatomy.has("types") && anatomy.path("types").isArray()) {
-				for (JsonNode type : anatomy.path("types")) {
-					types.add(type.asText());
-				}
-			}
-		}
-		
-		return formatTypeList(types);
-	}
-	
-	private String formatTypeList(List<String> types) {
-		StringBuilder result = new StringBuilder();
-		for (String type : types) {
-			type = type.replace("DataSet", "Dataset");
-			if (type.equals("pub")) type = "Publication";
-			if (result.length() == 0) {
-				result.append(type);
-			} else {
-				result.append("; ").append(type);
-			}
-		}
-		return result.toString();
-	}
-	
-	private String getExpressedIn(JsonNode node) {
-		if (node.has("expression_pattern") && !node.path("expression_pattern").isNull() &&
-			node.has("anatomy") && !node.path("anatomy").isNull()) {
-			return getEntityName(node.path("anatomy"));
-		}
-		return "";
-	}
-	
-	private String getLicenseLabel(JsonNode node) {
-		StringBuilder result = new StringBuilder();
-		if (node.has("license") && node.path("license").isArray()) {
-			for (JsonNode license : node.path("license")) {
-				if (result.length() > 0) result.append("; ");
-				result.append(getEntityName(license.path("core")));
-			}
-		}
-		return result.toString();
-	}
-	
-	private String getStages(JsonNode node) {
-		StringBuilder result = new StringBuilder();
-		if (node.has("stages") && node.path("stages").isArray()) {
-			for (JsonNode stage : node.path("stages")) {
-				if (result.length() > 0) result.append("; ");
-				result.append(getEntityName(stage));
-			}
-		}
-		return result.toString();
-	}
-	
-	private String getReference(JsonNode node) {
-		StringBuilder result = new StringBuilder();
-		if (node.has("pub") && !node.path("pub").isNull()) {
-			result.append(getEntityName(node.path("pub").path("core")));
-		}
-		if (node.has("pubs") && node.path("pubs").isArray() && node.path("pubs").size() > 0) {
-			for (JsonNode pub : node.path("pubs")) {
-				if (result.length() > 0) result.append("; ");
-				result.append(getEntityName(pub.path("core")));
-			}
-		}
-		return result.toString();
 	}
 	
 	private String getTechnique(JsonNode node) {
@@ -1759,9 +1877,9 @@ public class SOLRQueryProcessor extends AQueryProcessor
 		return finalResult;
 	}
 	
-	private String getSynapseCounts(JsonNode row, String countType) {
-		if (row.has("synapse_counts") && !row.path("synapse_counts").isNull()) {
-			JsonNode counts = row.path("synapse_counts");
+	private String getSynapseCounts(JsonNode node, String countType) {
+		if (node.has("synapse_counts") && !node.path("synapse_counts").isNull()) {
+			JsonNode counts = node.path("synapse_counts");
 			if (counts.has(countType) && counts.path(countType).isArray()) {
 				StringBuilder result = new StringBuilder();
 				for (JsonNode value : counts.path(countType)) {
