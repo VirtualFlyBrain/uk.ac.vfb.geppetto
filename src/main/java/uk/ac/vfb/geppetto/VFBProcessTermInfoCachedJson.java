@@ -273,7 +273,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 					result.append(String.format("<a href=\"%s\" target=\"_blank\" title=\"%s\"><i class=\"popup-icon-link gpt-doi\"></i></a> ", url, reference));
 				} else if (reference.toLowerCase().startsWith("flybase:")) {
 					String flybaseId = reference.substring(8); // Remove "FlyBase:" prefix
-					String url = "http://flybase.org/captcha/reports/" + flybaseId;
+					String url = "http://flybase.org/reports/" + flybaseId;
 					result.append(String.format("<a href=\"%s\" target=\"_blank\" title=\"%s\"><i class=\"popup-icon-link gpt-fly\"></i></a> ", url, reference));
 				} else if (reference.toLowerCase().startsWith("pmid:")) {
 					String pmid = reference.substring(5); // Remove "PMID:" prefix
