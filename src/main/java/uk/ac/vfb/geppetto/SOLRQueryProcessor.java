@@ -1070,7 +1070,8 @@ public class SOLRQueryProcessor extends AQueryProcessor
 
 	private String determineKeyName(List<String> headers) {
 		for (String key : headers) {
-			if ("anat_image_query".equals(key) || "anat_query".equals(key) || "template_2_datasets_query".equals(key)) {
+			if (key.endsWith("_query")) {
+				if (debug) System.out.println("Found query key: " + key);
 				return key;
 			}
 		}
