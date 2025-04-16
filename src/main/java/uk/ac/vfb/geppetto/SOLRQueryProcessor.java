@@ -363,47 +363,56 @@ public class SOLRQueryProcessor extends AQueryProcessor
 		public String id(){
 			String delim="----";
 			String result = "undefined";
+			
+			// First determine the primary ID
 			if (this.expression_pattern != null){
 				result = this.expression_pattern.short_form;
-			}else if (this.dataset != null){
+			} else if (this.dataset != null){
 				result = this.dataset.short_form;
-			}else if (this.anatomy != null) {
+			} else if (this.term != null && this.term.core.short_form != null) {
+				result = this.term.core.short_form;
+			} else if (this.anatomy != null) {
 				result = this.anatomy.short_form;
 			}
+			
+			// Add secondary anatomy ID if available
 			if (this.anatomy != null) {
 				result += delim + this.anatomy.short_form;
-			}else if (this.license != null && this.license.size() > 0){
-				// single license per DataSet assumed:
+			} else if (this.license != null && this.license.size() > 0) {
 				result += delim + this.license.get(0).core.short_form;
-			}else{
+			} else {
 				result += delim + "undefined";
 			}
+			
+			// Add publication info
 			if (this.pub != null) result += delim + this.pub.core.short_form;
 			if (this.pubs != null && this.pubs.size() == 1) result += delim + this.pubs.get(0).core.short_form;
 			if (this.pubs != null && this.pubs.size() > 1) {
 				for (pub pub:this.pubs){
 					result += delim + pub.core.short_form;
 				}
-
 			}
-			if (this.term != null && this.term.core.short_form != null) {
-				result = this.term.core.short_form;
-				if (this.types != null && this.types.size() > 0 && this.types.get(0).short_form != null) {
-					result += delim + this.types.get(0).short_form;
-				}
+			
+			// Add type info if available
+			if (this.types != null && this.types.size() > 0 && this.types.get(0).short_form != null) {
+				result += delim + this.types.get(0).short_form;
 			} else {
-				result = "undefined";
+				result += delim + "undefined";
 			}
+			
+			// Add parent and object info
 			if (this.parents != null && this.parents.size() > 0) {
 				result += delim + this.parents.get(0).short_form;
 			} else {
 				result += delim + "undefined";
-			}
+				}
+			
 			if (this.object != null && this.object.short_form != null) {
 				result += delim + this.object.short_form;
 			} else {
 				result += delim + "undefined";
-			}
+				}
+			
 			return result;
 		}
 
