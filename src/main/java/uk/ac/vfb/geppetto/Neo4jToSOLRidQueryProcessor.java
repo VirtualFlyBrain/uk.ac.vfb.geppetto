@@ -2,8 +2,10 @@ package uk.ac.vfb.geppetto;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet; // Added import
 import java.util.List;
 import java.util.Map;
+import java.util.Set; // Added import
 
 import org.geppetto.core.datasources.GeppettoDataSourceException;
 import org.geppetto.core.model.GeppettoModelAccess;
@@ -37,6 +39,7 @@ public class Neo4jToSOLRidQueryProcessor extends AQueryProcessor {
         processedResults.getHeader().add("ID");
 
         List<String> ids = new ArrayList<String>();
+        Set<String> uniqueIds = new HashSet<String>(); // Use HashSet to store unique IDs
 
         if (debug) System.out.println(results.getHeader());
 
@@ -73,17 +76,19 @@ public class Neo4jToSOLRidQueryProcessor extends AQueryProcessor {
                 // Handle both single IDs and collections of IDs
                 if (value instanceof List) {
                     // Neo4j IDs are already short forms, just add them directly
-                    ids.addAll((List<String>)value);
+                    uniqueIds.addAll((List<String>)value); // Add to HashSet
                 } else if (value instanceof String) {
                     // Add single ID directly
-                    ids.add((String)value);
+                    uniqueIds.add((String)value); // Add to HashSet
                 }
             }
         }
 
         String joinedIds = "";
-        // Check if ids is not empty
-        if (!ids.isEmpty()) {
+        // Check if uniqueIds is not empty
+        if (!uniqueIds.isEmpty()) {
+            // Convert the Set to a List before joining
+            ids.addAll(uniqueIds);
             // Join the list of IDs into a single string with commas
             joinedIds = String.join(",", ids);
         } else {
