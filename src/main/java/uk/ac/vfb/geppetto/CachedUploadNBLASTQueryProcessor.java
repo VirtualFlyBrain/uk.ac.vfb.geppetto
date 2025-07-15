@@ -218,7 +218,21 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
 
                     // Gross_Type
                     try {
-                        processedResult.getValues().add(row.term.core.unique_facets != null ? String.join(", ", row.term.core.unique_facets) : "");
+                        if (row.term.core.unique_facets != null && !row.term.core.unique_facets.isEmpty()) {
+                            StringBuilder result = new StringBuilder();
+                            for (String type : row.term.core.unique_facets) {
+                                type = type.replace("DataSet", "Dataset");
+                                if (type.equals("pub")) type = "Publication";
+                                if (result.length() == 0) {
+                                    result.append(type);
+                                } else {
+                                    result.append("; ").append(type);
+                                }
+                            }
+                            processedResult.getValues().add(result.toString());
+                        } else {
+                            processedResult.getValues().add("");
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                         processedResult.getValues().add("");
