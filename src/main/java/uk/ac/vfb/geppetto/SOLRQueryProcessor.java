@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Arrays;
+import java.util.LinkedHashMap; // Added import
 
 import org.geppetto.core.datasources.GeppettoDataSourceException;
 import org.geppetto.model.util.GeppettoVisitingException;
@@ -785,18 +786,24 @@ public class SOLRQueryProcessor extends AQueryProcessor
 			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);Variable imageVariable = VariablesFactory.eINSTANCE.createVariable();
 
 			if (debug) System.out.println("Processing JSON...");
-			count = 0;
+			// count here is used as an index for results.getValue(keyName, count)
+			// and also to track successfully parsed items for the hasFlags logic.
+			int parsedDocCount = 0; 
 			try{
 				header = "results>JSON";
 				// Match to vfb_query schema:
-				for(AQueryResult result : results.getResults()){
-					json = results.getValue(keyName,count).toString();
-					if (debug && count < 2) System.out.println("JSON passed: " + json.replace("}","}\n"));
+				for(AQueryResult result : results.getResults()){ // Iterates over each SOLR document
+					// json = results.getValue(keyName,count).toString(); // Original use of count
+					// Assuming 'count' (now parsedDocCount) is the correct index for results.getValue
+					json = results.getValue(keyName, parsedDocCount).toString(); 
+					if (debug && parsedDocCount < 2) System.out.println("JSON passed: " + json.replace("}","}\\n"));
 					header = "JSON>Schema";
 					vfb_query vfbQuery = gson.fromJson(json, vfb_query.class);
 					table.add(vfbQuery);
-					count ++;
-					if (table.size() == 1) {
+					
+					// Logic for hasFlags (based on the first successfully parsed item)
+					// This condition means it's the first item added to 'table'
+					if (table.size() == 1) { 
 						if (debug) System.out.println("Results Header: " + results.getHeader() );
 						// Check for non-null properties in vfbQuery and set flags accordingly
 
@@ -849,9 +856,10 @@ public class SOLRQueryProcessor extends AQueryProcessor
 							hasStage = true;
 						}
 
+						// Check if hasTemplate and hasTechnique need to be set for 'expressed_in'
 						if (vfbQuery.anatomy_channel_image != null || vfbQuery.channel_image != null || vfbQuery.expressed_in != null) {
 							hasImage = true;
-							hasTemplate = true; // Check if hasTemplate and hasTechnique need to be set for 'expressed_in'
+							hasTemplate = true; 
 							hasTechnique = true;
 						}
 
@@ -863,9 +871,10 @@ public class SOLRQueryProcessor extends AQueryProcessor
 							hasParents = true;
 						}
 
+						// Consider if hasName should be set here based on your data structure
 						if (vfbQuery.synapse_counts != null) {
 							hasSynCount = true;
-							hasName = true; // Consider if hasName should be set here based on your data structure
+							hasName = true; 
 						}
 
 						if (vfbQuery.object != null) {
@@ -884,11 +893,32 @@ public class SOLRQueryProcessor extends AQueryProcessor
 							hasGeneScore = true;
 						}
 					}
+					parsedDocCount++; // Increment after successful parsing and adding to table
 				}
 			}catch (Exception e) {
 				System.out.println("Error creating " + header + ": " + e.toString());
 				e.printStackTrace();
-				System.out.println(json.replace("}","}\n"));
+				System.out.println(json.replace("}","}\\n"));
+			}
+
+			// De-duplicate rows based on id(), preferring rows with images.
+			Map<String, vfb_query> mergedQueries = new LinkedHashMap<>();
+			for (vfb_query currentQuery : table) {
+				String currentId = currentQuery.id();
+				if (mergedQueries.containsKey(currentId)) {
+					vfb_query existingQuery = mergedQueries.get(currentId);
+					// Check if currentQuery has images and existingQuery doesn't
+					boolean currentHasImages = (currentQuery.images(template) != null && !currentQuery.images(template).getElements().isEmpty());
+					boolean existingHasImages = (existingQuery.images(template) != null && !existingQuery.images(template).getElements().isEmpty());
+
+					if (currentHasImages && !existingHasImages) {
+						mergedQueries.put(currentId, currentQuery); // Replace if current is better
+					}
+					// If existingQuery already has images, or if neither have images,
+					// the first one encountered (existingQuery) is kept.
+				} else {
+					mergedQueries.put(currentId, currentQuery); // Add new entry
+				}
 			}
 
 			// set headers
@@ -953,7 +983,8 @@ public class SOLRQueryProcessor extends AQueryProcessor
 
 			if (debug) System.out.println("Headers: " + String.join(",",processedResults.getHeader()));
 
-			for (vfb_query row:table){
+			int outputRowCount = 0; // Counter for the final output rows
+			for (vfb_query row:mergedQueries.values()){ // Iterate over de-duplicated and merged queries
 				try{
 					SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 					String length = "8";
@@ -1026,19 +1057,24 @@ public class SOLRQueryProcessor extends AQueryProcessor
 					}
 					processedResults.getResults().add(processedResult);
 				}catch (Exception e) {
-					System.out.println("Error creating results row: " + count.toString() + " - " + e.toString());
+					System.out.println("Error creating results row: " + (outputRowCount + 1) + " (ID: " + (row != null ? row.id() : "unknown") + ") - " + e.toString());
 					e.printStackTrace();
 				}
-				count ++;
+				outputRowCount++; // Increment output row counter
 			}
 			if (debug) {
-				System.out.println("SOLRQueryProcessor returning " + count.toString() + " rows");
-				if (results.getResults().size() > count) {
-					System.out.println("More rows: " + results.getResults().size());
-					System.out.println("First row: " + results.getResults().get(0).toString());
-					System.out.println("Last row: " + results.getResults().get(results.getResults().size()-1).toString());
+				System.out.println("SOLRQueryProcessor returning " + outputRowCount + " rows (processed from " + table.size() + " initial SOLR documents)");
+				// The following debug output compares original SOLR results count with parsedDocCount
+				if (results.getResults().size() > parsedDocCount) {
+					System.out.println("Note: SOLR returned " + results.getResults().size() + " documents, but only " + parsedDocCount + " were processed into the initial table before merging.");
+					if (!results.getResults().isEmpty()) {
+						System.out.println("First original SOLR result (example): " + results.getResults().get(0).toString());
+						System.out.println("Last original SOLR result (example): " + results.getResults().get(results.getResults().size()-1).toString());
+					}
+				} else if (results.getResults().size() < parsedDocCount) {
+					System.out.println("Note: Parsed document count (" + parsedDocCount + ") is greater than original SOLR results count (" + results.getResults().size() + "). This might indicate an issue in parsing loop logic.");
 				} else {
-					System.out.println("No more rows");
+					System.out.println("All " + results.getResults().size() + " SOLR documents were processed into the initial table before merging.");
 				}
 			}
 
