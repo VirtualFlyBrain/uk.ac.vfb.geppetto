@@ -149,12 +149,6 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
                     break;
                 }
             }
-            
-            // Only set default if no template was found
-            if (testTemplate == null) {
-                loadedTemplate = "VFB_00101567";
-                if (debug) System.out.println("No template found, using default: " + loadedTemplate);
-            }
 
             // Process the result
             String jsonList = results.getValue("upload_nblast_query", 0).toString();
@@ -248,6 +242,28 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
                     String imagingTechnique = "";
                     ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
                     int index = 0;
+
+                    // Only set default template from images if no loaded template was found
+                    if (testTemplate == null) {
+                        for (String at : availableTemplates) {
+                            try {
+                                for (NBLASTRow.ImageChannel channel_image : row.channel_images) {
+                                    if (channel_image.image.template_anatomy.short_form.equals(at)) {
+                                        testTemplate = channel_image.image.template_anatomy;
+                                        break;
+                                    }
+                                }
+                            } catch (Exception e) {
+                                testTemplate = null;
+                            }
+                            if (testTemplate != null) {
+                                template = at;
+                                loadedTemplate = at;
+                                if (debug) System.out.println("Priority template taken from image: " + at);
+                                break;
+                            }
+                        }
+                    }
 
                     for (NBLASTRow.ImageChannel channel_image : row.channel_images) {
                         try {
