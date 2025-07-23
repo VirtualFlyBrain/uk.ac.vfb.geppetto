@@ -246,17 +246,18 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
                     // Only set default template from images if no loaded template was found
                     if (testTemplate == null) {
                         for (String at : availableTemplates) {
+                            boolean templateFound = false;
                             try {
                                 for (NBLASTRow.ImageChannel channel_image : row.channel_images) {
                                     if (channel_image.image.template_anatomy.short_form.equals(at)) {
-                                        testTemplate = channel_image.image.template_anatomy;
+                                        templateFound = true;
                                         break;
                                     }
                                 }
                             } catch (Exception e) {
-                                testTemplate = null;
+                                templateFound = false;
                             }
-                            if (testTemplate != null) {
+                            if (templateFound) {
                                 template = at;
                                 loadedTemplate = at;
                                 if (debug) System.out.println("Priority template taken from image: " + at);
