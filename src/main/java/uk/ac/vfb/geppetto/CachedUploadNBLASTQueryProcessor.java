@@ -147,9 +147,13 @@ public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
                     loadedTemplate = at;
                     if (debug) System.out.println("Template detected: " + at);
                     break;
-                } else {
-                    loadedTemplate = "VFB_00101567";
                 }
+            }
+            
+            // Only set default if no template was found
+            if (testTemplate == null) {
+                loadedTemplate = "VFB_00101567";
+                if (debug) System.out.println("No template found, using default: " + loadedTemplate);
             }
 
             // Process the result
