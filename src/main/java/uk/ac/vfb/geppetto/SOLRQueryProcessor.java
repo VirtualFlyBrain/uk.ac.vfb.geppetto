@@ -795,7 +795,13 @@ public class SOLRQueryProcessor extends AQueryProcessor
 				for(AQueryResult result : results.getResults()){ // Iterates over each SOLR document
 					// json = results.getValue(keyName,count).toString(); // Original use of count
 					// Assuming 'count' (now parsedDocCount) is the correct index for results.getValue
-					json = results.getValue(keyName, parsedDocCount).toString(); 
+					Object jsonValue = results.getValue(keyName, parsedDocCount);
+					if (jsonValue == null) {
+						if (debug) System.out.println("Skipping result with null JSON value at index: " + parsedDocCount);
+						parsedDocCount++;
+						continue;
+					}
+					json = jsonValue.toString(); 
 					if (debug && parsedDocCount < 2) System.out.println("JSON passed: " + json.replace("}","}\\n"));
 					header = "JSON>Schema";
 					vfb_query vfbQuery = gson.fromJson(json, vfb_query.class);
