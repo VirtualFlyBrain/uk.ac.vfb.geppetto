@@ -25,6 +25,20 @@ jobs:
         java-version: '8'
         distribution: 'temurin'
         cache: maven
+    - name: Create stub artifacts for missing Spring Source dependencies
+      run: |
+        mkdir -p $HOME/.m2/repository/org/apache/log4j/com.springsource.org.apache.log4j/1.2.15
+        mkdir -p $HOME/.m2/repository/org/junit/com.springsource.org.junit/4.7.0
+        # Create minimal valid JAR files (empty JARs with manifest)
+        cd /tmp
+        mkdir -p stub
+        cd stub
+        mkdir -p META-INF
+        echo "Manifest-Version: 1.0" > META-INF/MANIFEST.MF
+        jar cfm log4j-stub.jar META-INF/MANIFEST.MF
+        jar cfm junit-stub.jar META-INF/MANIFEST.MF
+        cp log4j-stub.jar $HOME/.m2/repository/org/apache/log4j/com.springsource.org.apache.log4j/1.2.15/com.springsource.org.apache.log4j-1.2.15.jar
+        cp junit-stub.jar $HOME/.m2/repository/org/junit/com.springsource.org.junit/4.7.0/com.springsource.org.junit-4.7.0.jar
     - name: Setup security
       run: mvn --encrypt-master-password 1234
     - name: Build model
