@@ -34,27 +34,27 @@ jobs:
           git checkout vfb_20200604_a
           export LOG4J_FORMAT_MSG_NO_LOOKUPS=true
           npm install jest@24.8.0 jest-image-snapshot@4.1.0 puppeteer@1.17.0 jest-puppeteer@4.3.0 @babel/preset-env@7.4.5 url-join@4.0.0 @babel/core@7.4.5
-          mvn -X -U -Dhttps.protocols=TLSv1.2 -DskipTests --file pom.xml install -nsu
+          mvn -X -U -Dhttps.protocols=TLSv1.2 -DskipTests --file pom.xml install -nsu -s ../.mvn/settings.xml
     - name: Build core
       run: | 
           git clone https://github.com/openworm/org.geppetto.core.git
           cd org.geppetto.core
           git checkout VFBv2.2.0
-          mvn -Dhttps.protocols=TLSv1.2 -DskipTests install
+          mvn -Dhttps.protocols=TLSv1.2 -DskipTests install -s ../.mvn/settings.xml
     - name: Build simulation
       run: | 
           git clone https://github.com/openworm/org.geppetto.simulation.git
           cd org.geppetto.simulation
           git checkout VFBv2.1.0.2
-          mvn -Dhttps.protocols=TLSv1.2 -DskipTests install
+          mvn -Dhttps.protocols=TLSv1.2 -DskipTests install -s ../.mvn/settings.xml
     - name: Build datasources
       run: | 
           git clone https://github.com/openworm/org.geppetto.datasources.git
           cd org.geppetto.datasources
           git checkout passingSOLR
-          mvn -Dhttps.protocols=TLSv1.2 -DskipTests install
+          mvn -Dhttps.protocols=TLSv1.2 -DskipTests install -s ../.mvn/settings.xml
     - name: Build uk.ac.vfb.geppetto
-      run: mvn -B package --file pom.xml
+      run: mvn -B package --file pom.xml -s .mvn/settings.xml
       
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     - name: Update dependency graph
