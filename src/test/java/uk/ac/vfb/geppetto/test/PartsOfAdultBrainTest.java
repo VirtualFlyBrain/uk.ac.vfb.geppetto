@@ -56,6 +56,7 @@ import org.geppetto.model.datasources.RunnableQuery;
 import org.geppetto.model.util.GeppettoModelException;
 import org.geppetto.model.util.GeppettoVisitingException;
 import org.geppetto.model.variables.Variable;
+import org.geppetto.model.variables.VariablesFactory;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -209,20 +210,8 @@ public class PartsOfAdultBrainTest
 		}
 
 		neo4JDataSource.fetchVariable("FBbt_00003624");
-
-		// Find the variable in the model after fetching
-		Variable variable = null;
-		for (Variable v : model.getVariables()) {
-			if (v.getId().equals("FBbt_00003624")) {
-				variable = v;
-				break;
-			}
-		}
 		
-		if (variable == null) {
-			// Variable may be accessible via getPointer despite the error
-			variable = geppettoModelAccess.getPointer("FBbt_00003624").getElements().get(0).getVariable();
-		}
+		Variable variable = geppettoModelAccess.getPointer("FBbt_00003624").getElements().get(0).getVariable();
 
 		int countOWL = owleryDataSource.getNumberOfResults(getRunnableQueries(model.getQueries().get(avQ.get("partsof")), variable));
 		try{

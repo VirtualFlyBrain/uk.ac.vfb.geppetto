@@ -53,6 +53,7 @@ import org.geppetto.model.datasources.RunnableQuery;
 import org.geppetto.model.util.GeppettoModelException;
 import org.geppetto.model.util.GeppettoVisitingException;
 import org.geppetto.model.variables.Variable;
+import org.geppetto.model.variables.VariablesFactory;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -200,25 +201,9 @@ public class MultipleQueriesVFBQueryTest
 
 		neo4JDataSource.fetchVariable("FBbt_00003748");
 		neo4JDataSource.fetchVariable("FBbt_00003852");
-		
-		// Find the variables in the model after fetching
-		Variable variable1 = null;
-		Variable variable2 = null;
-		for (Variable v : model.getVariables()) {
-			if (v.getId().equals("FBbt_00003748")) {
-				variable1 = v;
-			}
-			if (v.getId().equals("FBbt_00003852")) {
-				variable2 = v;
-			}
-		}
-		
-		if (variable1 == null) {
-			variable1 = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
-		}
-		if (variable2 == null) {
-			variable2 = geppettoModelAccess.getPointer("FBbt_00003852").getElements().get(0).getVariable();
-		}
+
+		Variable variable1 = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
+		Variable variable2 = geppettoModelAccess.getPointer("FBbt_00003852").getElements().get(0).getVariable();
 
 		EList<RunnableQuery> runnableQueriesEMF = new BasicEList<RunnableQuery>();
 
@@ -296,26 +281,8 @@ public class MultipleQueriesVFBQueryTest
 		neo4JDataSource.fetchVariable("FBbt_00003748");
 		neo4JDataSource.fetchVariable("FBbt_00045048");
 		
-		System.out.println(GeppettoSerializer.serializeToJSON(model, false));
-			
-		// Find the variables in the model after fetching
-		Variable variable1 = null;
-		Variable variable2 = null;
-		for (Variable v : model.getVariables()) {
-			if (v.getId().equals("FBbt_00003748")) {
-				variable1 = v;
-			}
-			if (v.getId().equals("FBbt_00045048")) {
-				variable2 = v;
-			}
-		}
-		
-		if (variable1 == null) {
-			variable1 = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
-		}
-		if (variable2 == null) {
-			variable2 = geppettoModelAccess.getPointer("FBbt_00045048").getElements().get(0).getVariable();
-		}
+		Variable variable1 = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
+		Variable variable2 = geppettoModelAccess.getPointer("FBbt_00045048").getElements().get(0).getVariable();
 
 		EList<RunnableQuery> runnableQueriesEMF = new BasicEList<RunnableQuery>();
 

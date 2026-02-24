@@ -125,6 +125,12 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
 
 			// Extract metadata
+			System.out.println("DEBUG: QueryResults content: " + results);
+			System.out.println("DEBUG: QueryResults.getValue(\"node\", 0): " + results.getValue("node", 0));
+			System.out.println("DEBUG: QueryResults headers: " + (results.getHeader() != null ? results.getHeader().toString() : "null"));
+			System.out.println("DEBUG: QueryResults results: " + (results.getResults() != null ? results.getResults().size() + " rows" : "null"));
+			System.out.println("DEBUG: QueryResults.eAllContents(): " + results.eAllContents());
+			
 			if (results.getValue("node", 0) != null) {
 				Map<String, Object> resultNode = (Map<String, Object>) results.getValue("node", 0);
 				String labelLink = "";
@@ -949,7 +955,18 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 				geppettoModelAccess.addTypeToLibrary(metaDataType, dataSource.getTargetLibrary());
 
 			} else {
-				System.out.println("Error node not returned: " + results.eAllContents().toString());
+				System.out.println("Error node not returned for variable: " + variable.getId());
+				System.out.println("DEBUG: Results object: " + results);
+				System.out.println("DEBUG: Results eAllContents: " + results.eAllContents());
+				if (results.getHeader() != null) {
+					System.out.println("DEBUG: Result headers: " + results.getHeader());
+				}
+				if (results.getResults() != null) {
+					System.out.println("DEBUG: Result rows count: " + results.getResults().size());
+					if (results.getResults().size() > 0) {
+						System.out.println("DEBUG: First result row: " + results.getResults().get(0));
+					}
+				}
 			}
 
 
