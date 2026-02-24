@@ -215,11 +215,11 @@ public class CrossDataSourceVFBQueryTest
 
 		
 		
-		neo4JDataSource.fetchVariable("FBbt_00003748");
+		Variable variable = neo4JDataSource.fetchVariable("FBbt_00003748");
 		
-		
-
-		Variable variable = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
+		if (variable != null) {
+			model.getVariables().add(variable);
+		}
 
 		int count = owleryDataSource.getNumberOfResults(getRunnableQueries(model.getQueries().get(avQ.get("partsof")), variable));
 
@@ -242,9 +242,11 @@ public class CrossDataSourceVFBQueryTest
 		System.out.println(GeppettoSerializer.serializeToJSON(results, false));
 
 		
-		neo4JDataSource.fetchVariable("VFB_00014755");
+		Variable variable2 = neo4JDataSource.fetchVariable("VFB_00014755");
 		
-		Variable variable2 = geppettoModelAccess.getPointer("VFB_00014755").getElements().get(0).getVariable();
+		if (variable2 != null) {
+			model.getVariables().add(variable2);
+		}
 		
 		int countNBLAST = nblastDataSource.getNumberOfResults(getRunnableQueries(model.getQueries().get(avQ.get("similarto")), variable2));
 		

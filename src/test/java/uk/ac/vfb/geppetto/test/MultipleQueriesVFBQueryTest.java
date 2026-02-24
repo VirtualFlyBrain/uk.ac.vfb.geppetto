@@ -198,12 +198,15 @@ public class MultipleQueriesVFBQueryTest
 		
 		System.out.println(GeppettoSerializer.serializeToJSON(model, true));
 
-		neo4JDataSource.fetchVariable("FBbt_00003748");
-		neo4JDataSource.fetchVariable("FBbt_00003852");
+		Variable variable1 = neo4JDataSource.fetchVariable("FBbt_00003748");
+		Variable variable2 = neo4JDataSource.fetchVariable("FBbt_00003852");
 		
-
-		Variable variable1 = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
-		Variable variable2 = geppettoModelAccess.getPointer("FBbt_00003852").getElements().get(0).getVariable();
+		if (variable1 != null) {
+			model.getVariables().add(variable1);
+		}
+		if (variable2 != null) {
+			model.getVariables().add(variable2);
+		}
 
 		EList<RunnableQuery> runnableQueriesEMF = new BasicEList<RunnableQuery>();
 
@@ -278,13 +281,17 @@ public class MultipleQueriesVFBQueryTest
         
         System.out.println(GeppettoSerializer.serializeToJSON(model, false));
 
-		neo4JDataSource.fetchVariable("FBbt_00003748");
-		neo4JDataSource.fetchVariable("FBbt_00045048");
+		Variable variable1 = neo4JDataSource.fetchVariable("FBbt_00003748");
+		Variable variable2 = neo4JDataSource.fetchVariable("FBbt_00045048");
+		
+		if (variable1 != null) {
+			model.getVariables().add(variable1);
+		}
+		if (variable2 != null) {
+			model.getVariables().add(variable2);
+		}
 		
 		System.out.println(GeppettoSerializer.serializeToJSON(model, false));
-			
-   		Variable variable1 = geppettoModelAccess.getPointer("FBbt_00003748").getElements().get(0).getVariable();
-		Variable variable2 = geppettoModelAccess.getPointer("FBbt_00045048").getElements().get(0).getVariable();
 
 		EList<RunnableQuery> runnableQueriesEMF = new BasicEList<RunnableQuery>();
 

@@ -208,9 +208,11 @@ public class PartsOfAdultBrainTest
 			i++;
 		}
 
-		neo4JDataSource.fetchVariable("FBbt_00003624");
-
-		Variable variable = geppettoModelAccess.getPointer("FBbt_00003624").getElements().get(0).getVariable();
+		Variable variable = neo4JDataSource.fetchVariable("FBbt_00003624");
+		
+		if (variable != null) {
+			model.getVariables().add(variable);
+		}
 
 		int countOWL = owleryDataSource.getNumberOfResults(getRunnableQueries(model.getQueries().get(avQ.get("partsof")), variable));
 		try{
