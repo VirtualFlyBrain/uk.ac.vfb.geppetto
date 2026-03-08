@@ -52,39 +52,23 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 public class VFBProcessTermInfo extends AQueryProcessor {
 
 	/**
-	 * Safely extract a String value from a property that may be either a String or a List.
-	 * Neo4j 4.x+ returns some node/relationship properties as single-element lists.
+	 * Unwrap single-element lists back to scalar values in a map.
+	 * Neo4j 4.x+ returns some node/relationship properties as single-element
+	 * lists instead of scalars. This normalizes the map in-place so all
+	 * existing (String)/(Double) casts continue to work.
 	 */
 	@SuppressWarnings("unchecked")
-	private static String getStr(Map<String, ?> map, String key) {
-		if (map == null) return null;
-		Object val = map.get(key);
-		if (val == null) return null;
-		if (val instanceof String) return (String) val;
-		if (val instanceof List) {
-			List<?> list = (List<?>) val;
-			if (list.isEmpty()) return null;
-			Object first = list.get(0);
-			return first != null ? first.toString() : null;
+	private static void unwrapLists(Map<String, Object> map) {
+		if (map == null) return;
+		for (Map.Entry<String, Object> entry : map.entrySet()) {
+			Object val = entry.getValue();
+			if (val instanceof List) {
+				List<?> list = (List<?>) val;
+				if (list.size() == 1) {
+					entry.setValue(list.get(0));
+				}
+			}
 		}
-		return val.toString();
-	}
-
-	/**
-	 * Safely extract a Double value from a property that may be either a Number or a List.
-	 * Neo4j 4.x+ returns some node/relationship properties as single-element lists.
-	 */
-	@SuppressWarnings("unchecked")
-	private static Double getNum(Map<String, ?> map, String key) {
-		if (map == null) return null;
-		Object val = map.get(key);
-		if (val == null) return null;
-		if (val instanceof Number) return ((Number) val).doubleValue();
-		if (val instanceof List) {
-			List<?> list = (List<?>) val;
-			if (!list.isEmpty() && list.get(0) instanceof Number) return ((Number) list.get(0)).doubleValue();
-		}
-		return null;
 	}
 
 	/*
@@ -169,6 +153,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 			
 			if (results.getValue("node", 0) != null) {
 				Map<String, Object> resultNode = (Map<String, Object>) results.getValue("node", 0);
+				unwrapLists(resultNode);
 				String labelLink = "";
 				if (resultNode.get("label") != null) {
 					tempName = (String) resultNode.get("label");
@@ -259,6 +244,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 						depictedType = "";
 					}
 					resultNode = (Map<String, Object>) results.getValue("node", r);
+					unwrapLists(resultNode);
 					// get description:
 					if (r == 0 || ((synapticNP || tract) && desc.length() < 2)){
 						if (resultNode.get("description") != null) {
@@ -282,6 +268,11 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 					while (i < resultLinks.size()) {
 						try {
 							Map<String, Object> resultLink = (Map<String, Object>) resultLinks.get(i);
+							// Normalize sub-maps: Neo4j 4.x returns some properties as single-element lists
+							if (resultLink.get("to") instanceof Map) unwrapLists((Map<String, Object>) resultLink.get("to"));
+							if (resultLink.get("edge") instanceof Map) unwrapLists((Map<String, Object>) resultLink.get("edge"));
+							if (resultLink.get("tempIm") instanceof Map) unwrapLists((Map<String, Object>) resultLink.get("tempIm"));
+							if (resultLink.get("temp") instanceof Map) unwrapLists((Map<String, Object>) resultLink.get("temp"));
 							edge = (String) resultLink.get("types");
 							if ("node".equals(((String) resultLink.get("start")))) {
 								// edge from term
