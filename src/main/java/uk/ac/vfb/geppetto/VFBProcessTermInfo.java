@@ -51,6 +51,42 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
  */
 public class VFBProcessTermInfo extends AQueryProcessor {
 
+	/**
+	 * Safely extract a String value from a property that may be either a String or a List.
+	 * Neo4j 4.x+ returns some node/relationship properties as single-element lists.
+	 */
+	@SuppressWarnings("unchecked")
+	private static String getStr(Map<String, ?> map, String key) {
+		if (map == null) return null;
+		Object val = map.get(key);
+		if (val == null) return null;
+		if (val instanceof String) return (String) val;
+		if (val instanceof List) {
+			List<?> list = (List<?>) val;
+			if (list.isEmpty()) return null;
+			Object first = list.get(0);
+			return first != null ? first.toString() : null;
+		}
+		return val.toString();
+	}
+
+	/**
+	 * Safely extract a Double value from a property that may be either a Number or a List.
+	 * Neo4j 4.x+ returns some node/relationship properties as single-element lists.
+	 */
+	@SuppressWarnings("unchecked")
+	private static Double getNum(Map<String, ?> map, String key) {
+		if (map == null) return null;
+		Object val = map.get(key);
+		if (val == null) return null;
+		if (val instanceof Number) return ((Number) val).doubleValue();
+		if (val instanceof List) {
+			List<?> list = (List<?>) val;
+			if (!list.isEmpty() && list.get(0) instanceof Number) return ((Number) list.get(0)).doubleValue();
+		}
+		return null;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 *
