@@ -231,7 +231,13 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 
 				// get alt names
 				if (resultNode.get("synonym") != null) {
-					synonyms = (List<String>) resultNode.get("synonym");
+					Object synObj = resultNode.get("synonym");
+					if (synObj instanceof List) {
+						synonyms = new ArrayList<>((List<String>) synObj);
+					} else {
+						synonyms = new ArrayList<>();
+						synonyms.add((String) synObj);
+					}
 				}
 
 				while (results.getValue("links", r) != null && (synapticNP || cluster || tract || r < 1)) {
@@ -249,7 +255,12 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 					if (r == 0 || ((synapticNP || tract) && desc.length() < 2)){
 						if (resultNode.get("description") != null) {
 							try{
-								desc = ((List<String>) resultNode.get("description")).get(0);
+								Object descObj = resultNode.get("description");
+								if (descObj instanceof List) {
+									desc = ((List<String>) descObj).get(0);
+								} else {
+									desc = (String) descObj;
+								}
 								if (".".equals(desc)) {
 									desc = "";
 								}
@@ -257,12 +268,14 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 								System.out.println("Error processing node desc: " + e.toString());
 								e.printStackTrace();
 								System.out.println(tempName + " (" + tempId + ")");	
-								desc = (String) resultNode.get("description");
+								desc = String.valueOf(resultNode.get("description"));
 							}
 						}
 						// get description comment:
 						if (resultNode.get("annotation-comment") != null) {
-							desc = desc + "<br><h5>Comment<h5><br>" + highlightLinks(((List<String>) resultNode.get("annotation-comment")).get(0));
+							Object commentObj = resultNode.get("annotation-comment");
+							String comment = (commentObj instanceof List) ? ((List<String>) commentObj).get(0) : (String) commentObj;
+							desc = desc + "<br><h5>Comment<h5><br>" + highlightLinks(comment);
 						}
 					}
 					while (i < resultLinks.size()) {
