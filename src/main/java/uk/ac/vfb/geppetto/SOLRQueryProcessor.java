@@ -335,6 +335,19 @@ public class SOLRQueryProcessor extends AQueryProcessor
 		public String Score;
 	}
 
+	class class_connectivity {
+		public String upstream_class;
+		public String upstream_class_id;
+		public String downstream_class;
+		public String downstream_class_id;
+		public Integer total_upstream_count;
+		public Integer connected_upstream_count;
+		public Float percent_connected;
+		public Integer pairwise_connections;
+		public Float total_weight;
+		public Float average_weight;
+	}
+
 	class vfb_query {
 		private minimal_entity_info anatomy;
 		public String query;
@@ -360,6 +373,7 @@ public class SOLRQueryProcessor extends AQueryProcessor
 		public List<columns> extra_columns;
 		public synapse_counts synapse_counts;
 		public minimal_entity_info object;
+		public class_connectivity class_connectivity;
 
 		public String id(){
 			String delim="----";
@@ -755,7 +769,8 @@ public class SOLRQueryProcessor extends AQueryProcessor
                 hasExpressed_in = false, hasReference = false, hasStage = false, hasImage = false, 
                 hasTypes = false, hasParents = false, hasGrossType = false, hasTemplate = false, 
                 hasTechnique = false, hasExtra = false, hasSynCount = false, hasObject = false, 
-                hasScore = false, scRNAseq = false, hasGene = false, hasGeneScore = false;
+                hasScore = false, scRNAseq = false, hasGene = false, hasGeneScore = false,
+                hasClassConnectivity = false;
 			List<vfb_query> table = new ArrayList<vfb_query>();
 
 			// Template space:
@@ -804,7 +819,14 @@ public class SOLRQueryProcessor extends AQueryProcessor
 					json = jsonValue.toString(); 
 					if (debug && parsedDocCount < 2) System.out.println("JSON passed: " + json.replace("}","}\\n"));
 					header = "JSON>Schema";
-					vfb_query vfbQuery = gson.fromJson(json, vfb_query.class);
+					List<vfb_query> parsedQueries = new ArrayList<>();
+					if (json.trim().startsWith("[")) {
+						vfb_query[] arr = gson.fromJson(json, vfb_query[].class);
+						parsedQueries.addAll(Arrays.asList(arr));
+					} else {
+						parsedQueries.add(gson.fromJson(json, vfb_query.class));
+					}
+					for (vfb_query vfbQuery : parsedQueries) {
 					table.add(vfbQuery);
 					
 					// Logic for hasFlags (based on the first successfully parsed item)
@@ -898,7 +920,12 @@ public class SOLRQueryProcessor extends AQueryProcessor
 						if (vfbQuery.expression_level != null) {
 							hasGeneScore = true;
 						}
+						if (vfbQuery.class_connectivity != null) {
+							hasClassConnectivity = true;
+							hasId = true;
+						}
 					}
+					} // end inner vfbQuery loop
 					parsedDocCount++; // Increment after successful parsing and adding to table
 				}
 			}catch (Exception e) {
@@ -928,6 +955,17 @@ public class SOLRQueryProcessor extends AQueryProcessor
 			}
 
 			// set headers
+			if (hasClassConnectivity) {
+				processedResults.getHeader().add("ID");
+				processedResults.getHeader().add("Upstream_Class");
+				processedResults.getHeader().add("Downstream_Class");
+				processedResults.getHeader().add("Total_N");
+				processedResults.getHeader().add("Connected_N");
+				processedResults.getHeader().add("Percent_Connected");
+				processedResults.getHeader().add("Pairwise_Connections");
+				processedResults.getHeader().add("Total_Weight");
+				processedResults.getHeader().add("Avg_Weight");
+			} else {
 			processedResults.getHeader().add("ID");
 			if (hasGene) {
 				processedResults.getHeader().add("Gene");
@@ -987,6 +1025,7 @@ public class SOLRQueryProcessor extends AQueryProcessor
 				}
 			}
 
+			} // end else (non-class-connectivity headers)
 			if (debug) System.out.println("Headers: " + String.join(",",processedResults.getHeader()));
 
 			int outputRowCount = 0; // Counter for the final output rows
@@ -994,7 +1033,18 @@ public class SOLRQueryProcessor extends AQueryProcessor
 				try{
 					SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 					String length = "8";
-					if (hasGene) {
+					if (hasClassConnectivity) {
+						class_connectivity cc = row.class_connectivity;
+						processedResult.getValues().add(cc.upstream_class_id + delim + cc.downstream_class_id);
+						processedResult.getValues().add(cc.upstream_class != null ? cc.upstream_class : "");
+						processedResult.getValues().add(cc.downstream_class != null ? cc.downstream_class : "");
+						processedResult.getValues().add(cc.total_upstream_count != null ? String.valueOf(cc.total_upstream_count) : "");
+						processedResult.getValues().add(cc.connected_upstream_count != null ? String.valueOf(cc.connected_upstream_count) : "");
+						processedResult.getValues().add(cc.percent_connected != null ? String.format("%.1f%%", cc.percent_connected) : "");
+						processedResult.getValues().add(cc.pairwise_connections != null ? String.valueOf(cc.pairwise_connections) : "");
+						processedResult.getValues().add(cc.total_weight != null ? String.format("%.0f", cc.total_weight) : "");
+						processedResult.getValues().add(cc.average_weight != null ? String.format("%.1f", cc.average_weight) : "");
+					} else if (hasGene) {
 						processedResult.getValues().add(row.gene.short_form + delim + row.anatomy.short_form);
 						processedResult.getValues().add(row.gene.getName());
 						processedResult.getValues().add(row.anatomy.getName());
