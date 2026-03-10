@@ -365,8 +365,9 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 									try{
 									    edgeLabel = ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("typ"));
                                         if ("syn".equals(edgeLabel)) {
-                                            if (!listContains(synonyms,(String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("synonym"))){
-                                                synonyms.add(((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("synonym")));
+                                            String refSynonym = (((Map<String, Object>) resultLinks.get(i)).get("edge") != null) ? (String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("synonym") : null;
+                                            if (refSynonym != null && !listContains(synonyms, refSynonym)){
+                                                synonyms.add(refSynonym);
                                             }
                                             if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref")) != null){
                                                 if (((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")) != null){
@@ -390,7 +391,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                                             + "<i class=\"popup-icon-link gpt-doi\" title=\"doi:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("DOI")) + "\" ></i></a>";
                                                 }
                                                 for (int s = 0; s < synonyms.size(); s++) {
-                                                    if (synonyms.get(s).equals((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("synonym"))) {
+                                                    if (refSynonym != null && synonyms.get(s) != null && synonyms.get(s).equals(refSynonym)) {
                                                         if (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).containsKey("label")) {
                                                             synonyms.set(s, synonyms.get(s) + " (" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("label")) + ")"); // TODO: add hyperlink
                                                         } else if ((!"null".equals((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref"))) && (((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("miniref") != null)) {
@@ -408,7 +409,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                                 edgeLabel = "<a href=\"" + edgeLabel + "\" target=\"_blank\" title=\""+edgeLabel+"\">"
                                                         + bits[0] + "<i class=\"popup-icon-link fa fa-external-link\" ></i>" + "</a>";
                                                 for (int s = 0; s < synonyms.size(); s++) {
-                                                    if (synonyms.get(s).equals((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("synonym"))) {
+                                                    if (refSynonym != null && synonyms.get(s) != null && synonyms.get(s).equals(refSynonym)) {
                                                         synonyms.set(s, synonyms.get(s) + " (" + edgeLabel + ")"); 
                                                     }
                                                 }
@@ -416,7 +417,7 @@ public class VFBProcessTermInfo extends AQueryProcessor {
                                                 edgeLabel = "<a href=\"http://www.ncbi.nlm.nih.gov/pubmed/?term=" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "\" target=\"_blank\" >"
                                                         + "PMID:" + ((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("to")).get("PMID")) + "</a>";
                                                 for (int s = 0; s < synonyms.size(); s++) {
-                                                    if (synonyms.get(s).equals((String) ((Map<String, String>) ((Map<String, Object>) resultLinks.get(i)).get("edge")).get("synonym"))) {
+                                                    if (refSynonym != null && synonyms.get(s) != null && synonyms.get(s).equals(refSynonym)) {
                                                         synonyms.set(s, synonyms.get(s) + " (" + edgeLabel + ")"); 
                                                     }
                                                 }
@@ -1055,8 +1056,9 @@ public class VFBProcessTermInfo extends AQueryProcessor {
 	}
 
 	private boolean listContains(List<String> myList, String search) {
+		if (search == null) return false;
 		for (String str : myList) {
-			if (str.trim().contains(search)) return true;
+			if (str != null && str.trim().contains(search)) return true;
 		}
 		return false;
 	}
