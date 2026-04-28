@@ -1038,12 +1038,12 @@ public class SOLRQueryProcessor extends AQueryProcessor
 						processedResult.getValues().add(cc.upstream_class_id + delim + cc.downstream_class_id);
 						processedResult.getValues().add(cc.upstream_class != null ? cc.upstream_class : "");
 						processedResult.getValues().add(cc.downstream_class != null ? cc.downstream_class : "");
-						processedResult.getValues().add(cc.total_upstream_count != null ? String.valueOf(cc.total_upstream_count) : "");
-						processedResult.getValues().add(cc.connected_upstream_count != null ? String.valueOf(cc.connected_upstream_count) : "");
-						processedResult.getValues().add(cc.percent_connected != null ? String.format("%.1f%%", cc.percent_connected) : "");
-						processedResult.getValues().add(cc.pairwise_connections != null ? String.valueOf(cc.pairwise_connections) : "");
-						processedResult.getValues().add(cc.total_weight != null ? String.format("%.0f", cc.total_weight) : "");
-						processedResult.getValues().add(cc.average_weight != null ? String.format("%.1f", cc.average_weight) : "");
+						processedResult.getValues().add(cc.total_upstream_count != null ? String.format("%6d", cc.total_upstream_count) : "");
+						processedResult.getValues().add(cc.connected_upstream_count != null ? String.format("%6d", cc.connected_upstream_count) : "");
+						processedResult.getValues().add(cc.percent_connected != null ? String.format("%5.1f%%", cc.percent_connected) : "");
+						processedResult.getValues().add(cc.pairwise_connections != null ? String.format("%8d", cc.pairwise_connections) : "");
+						processedResult.getValues().add(cc.total_weight != null ? String.format("%9.0f", cc.total_weight) : "");
+						processedResult.getValues().add(cc.average_weight != null ? String.format("%7.1f", cc.average_weight) : "");
 					} else if (hasGene) {
 						processedResult.getValues().add(row.gene.short_form + delim + row.anatomy.short_form);
 						processedResult.getValues().add(row.gene.getName());
