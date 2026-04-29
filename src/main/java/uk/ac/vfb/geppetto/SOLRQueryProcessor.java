@@ -739,8 +739,9 @@ public class SOLRQueryProcessor extends AQueryProcessor
 		private String secureUrl(String url) {
 			return url.replace("http://","https://");
 		}
+	}
 
-
+	// END VFB term info schema
 
 	private String stripOldZeroPaddingOfNumericString(String value) {
 		if (value == null) {
@@ -771,9 +772,6 @@ public class SOLRQueryProcessor extends AQueryProcessor
 			query.expression_level = stripOldZeroPaddingOfNumericString(query.expression_level);
 		}
 	}
-	}
-
-	// END VFB term info schema
 
 	/*
 	 * (non-Javadoc)
