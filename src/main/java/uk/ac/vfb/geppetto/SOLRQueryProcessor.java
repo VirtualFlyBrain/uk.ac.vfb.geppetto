@@ -740,6 +740,37 @@ public class SOLRQueryProcessor extends AQueryProcessor
 			return url.replace("http://","https://");
 		}
 
+
+
+	private String stripOldZeroPaddingOfNumericString(String value) {
+		if (value == null) {
+			return null;
+		}
+		String sign = "";
+		if (value.startsWith("-")) {
+			sign = "-";
+			value = value.substring(1);
+		}
+		if (!value.matches("0*\\d+(\\.\\d+)?")) {
+			return sign + value;
+		}
+		if (value.matches("0+")) {
+			return sign + "0";
+		}
+		if (value.matches("0+\\.\\d+")) {
+			return sign + "0" + value.substring(value.indexOf('.'));
+		}
+		return sign + value.replaceFirst("^0+", "");
+	}
+
+	private void sanitizeCachedQuery(vfb_query query) {
+		if (query == null) {
+			return;
+		}
+		if (query.expression_level != null) {
+			query.expression_level = stripOldZeroPaddingOfNumericString(query.expression_level);
+		}
+	}
 	}
 
 	// END VFB term info schema
@@ -827,6 +858,7 @@ public class SOLRQueryProcessor extends AQueryProcessor
 						parsedQueries.add(gson.fromJson(json, vfb_query.class));
 					}
 					for (vfb_query vfbQuery : parsedQueries) {
+						sanitizeCachedQuery(vfbQuery);
 					table.add(vfbQuery);
 					
 					// Logic for hasFlags (based on the first successfully parsed item)
@@ -1048,7 +1080,7 @@ public class SOLRQueryProcessor extends AQueryProcessor
 						processedResult.getValues().add(row.gene.short_form + delim + row.anatomy.short_form);
 						processedResult.getValues().add(row.gene.getName());
 						processedResult.getValues().add(row.anatomy.getName());
-						processedResult.getValues().add(row.expression_level);
+						processedResult.getValues().add(stripOldZeroPaddingOfNumericString(row.expression_level));
 						processedResult.getValues().add(String.format("%.02f", row.expression_extent));
 						String function = "";
 						for (String type:row.gene.types){
@@ -1069,7 +1101,7 @@ public class SOLRQueryProcessor extends AQueryProcessor
 							if (hasId) processedResult.getValues().add(row.id());
 							if (hasName && !hasSynCount) processedResult.getValues().add(row.name());
 							if (!hasGene && hasGeneScore) {
-								processedResult.getValues().add(row.expression_level);
+								processedResult.getValues().add(stripOldZeroPaddingOfNumericString(row.expression_level));
 								processedResult.getValues().add(String.format("%.02f", row.expression_extent));
 								processedResult.getValues().add(row.anatomy.getName());
 							}

@@ -3,6 +3,7 @@ package uk.ac.vfb.geppetto;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Arrays;
@@ -720,6 +721,84 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 
 	}
 
+	private String stripOldZeroPaddingOfNumericString(String value) {
+		if (value == null) {
+			return null;
+		}
+		String sign = "";
+		if (value.startsWith("-")) {
+			sign = "-";
+			value = value.substring(1);
+		}
+		if (!value.matches("0*\\d+(\\.\\d+)?")) {
+			return sign + value;
+		}
+		if (value.matches("0+")) {
+			return sign + "0";
+		}
+		if (value.matches("0+\\.\\d+")) {
+			return sign + "0" + value.substring(value.indexOf('.'));
+		}
+		return sign + value.replaceFirst("^0+", "");
+	}
+
+	private Object sanitizeDisplayValue(String key, Object rawValue) {
+		if (rawValue == null) {
+			return null;
+		}
+		if ("expression_level".equals(key)) {
+			if (rawValue instanceof String) {
+				return stripOldZeroPaddingOfNumericString((String) rawValue);
+			}
+		}
+		if ("dataset_counts".equals(key)) {
+			if (rawValue instanceof Map<?, ?>) {
+				Map<String, Object> sanitized = new LinkedHashMap<String, Object>();
+				for (Map.Entry<?, ?> entry : ((Map<?, ?>) rawValue).entrySet()) {
+					Object value = entry.getValue();
+					if (value instanceof String) {
+						value = stripOldZeroPaddingOfNumericString((String) value);
+					} else if (value instanceof Map<?, ?> || value instanceof List<?>) {
+						value = sanitizeDisplayStructure(value);
+					}
+					sanitized.put(entry.getKey().toString(), value);
+				}
+				return sanitized;
+			}
+		}
+		return rawValue;
+	}
+
+	private Object sanitizeDisplayStructure(Object value) {
+		if (value instanceof Map<?, ?>) {
+			Map<String, Object> sanitized = new LinkedHashMap<String, Object>();
+			for (Map.Entry<?, ?> entry : ((Map<?, ?>) value).entrySet()) {
+				Object child = entry.getValue();
+				if (child instanceof String) {
+					child = stripOldZeroPaddingOfNumericString((String) child);
+				} else if (child instanceof Map<?, ?> || child instanceof List<?>) {
+					child = sanitizeDisplayStructure(child);
+				}
+				sanitized.put(entry.getKey().toString(), child);
+			}
+			return sanitized;
+		}
+		if (value instanceof List<?>) {
+			List<Object> sanitizedList = new ArrayList<Object>();
+			for (Object element : (List<?>) value) {
+				if (element instanceof String) {
+					sanitizedList.add(stripOldZeroPaddingOfNumericString((String) element));
+				} else if (element instanceof Map<?, ?> || element instanceof List<?>) {
+					sanitizedList.add(sanitizeDisplayStructure(element));
+				} else {
+					sanitizedList.add(element);
+				}
+			}
+			return sanitizedList;
+		}
+		return value;
+	}
+
 	// END VFB term info schema
 
 	/*
@@ -889,7 +968,9 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 								hasGeneScore = true;
 								break;
 						}
-						tempData = new Gson().toJson(results.getValue(key, count));
+						Object rawValue = results.getValue(key, count);
+						Object displayValue = sanitizeDisplayValue(key, rawValue);
+						tempData = new Gson().toJson(displayValue);
 						json = json + "\"" + key  + "\":" + tempData;
 						if (debug){
 							if (tempData.length() > 1000){
