@@ -764,6 +764,14 @@ public class SOLRQueryProcessor extends AQueryProcessor
 		return sign + value.replaceFirst("^0+", "");
 	}
 
+	private String formatExpressionLevel(String expressionLevel, int width) {
+		String normalized = stripOldZeroPaddingOfNumericString(expressionLevel);
+		if (normalized == null) {
+			return "";
+		}
+		return String.format("%1$" + width + "s", normalized);
+	}
+
 	private void sanitizeCachedQuery(vfb_query query) {
 		if (query == null) {
 			return;
@@ -1058,7 +1066,17 @@ public class SOLRQueryProcessor extends AQueryProcessor
 			} // end else (non-class-connectivity headers)
 			if (debug) System.out.println("Headers: " + String.join(",",processedResults.getHeader()));
 
-			int outputRowCount = 0; // Counter for the final output rows
+			int expressionLevelFieldWidth = 0;
+		for (vfb_query row : mergedQueries.values()) {
+			if (row.expression_level != null) {
+				expressionLevelFieldWidth = Math.max(expressionLevelFieldWidth, stripOldZeroPaddingOfNumericString(row.expression_level).length());
+			}
+		}
+		if (expressionLevelFieldWidth < 1) {
+			expressionLevelFieldWidth = 1;
+		}
+
+		int outputRowCount = 0; // Counter for the final output rows
 			for (vfb_query row:mergedQueries.values()){ // Iterate over de-duplicated and merged queries
 				try{
 					SerializableQueryResult processedResult = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
@@ -1078,7 +1096,7 @@ public class SOLRQueryProcessor extends AQueryProcessor
 						processedResult.getValues().add(row.gene.short_form + delim + row.anatomy.short_form);
 						processedResult.getValues().add(row.gene.getName());
 						processedResult.getValues().add(row.anatomy.getName());
-						processedResult.getValues().add(String.format("%10s", stripOldZeroPaddingOfNumericString(row.expression_level)));
+						processedResult.getValues().add(formatExpressionLevel(row.expression_level, expressionLevelFieldWidth));
 						processedResult.getValues().add(String.format("%.02f", row.expression_extent));
 						String function = "";
 						for (String type:row.gene.types){
@@ -1099,7 +1117,7 @@ public class SOLRQueryProcessor extends AQueryProcessor
 							if (hasId) processedResult.getValues().add(row.id());
 							if (hasName && !hasSynCount) processedResult.getValues().add(row.name());
 							if (!hasGene && hasGeneScore) {
-								processedResult.getValues().add(String.format("%10s", stripOldZeroPaddingOfNumericString(row.expression_level)));
+								processedResult.getValues().add(formatExpressionLevel(row.expression_level, expressionLevelFieldWidth));
 								processedResult.getValues().add(String.format("%.02f", row.expression_extent));
 								processedResult.getValues().add(row.anatomy.getName());
 							}
