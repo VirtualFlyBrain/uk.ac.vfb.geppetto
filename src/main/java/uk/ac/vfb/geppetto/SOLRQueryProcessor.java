@@ -1078,7 +1078,7 @@ public class SOLRQueryProcessor extends AQueryProcessor
 						processedResult.getValues().add(row.gene.short_form + delim + row.anatomy.short_form);
 						processedResult.getValues().add(row.gene.getName());
 						processedResult.getValues().add(row.anatomy.getName());
-						processedResult.getValues().add(stripOldZeroPaddingOfNumericString(row.expression_level));
+						processedResult.getValues().add(String.format("%10s", stripOldZeroPaddingOfNumericString(row.expression_level)));
 						processedResult.getValues().add(String.format("%.02f", row.expression_extent));
 						String function = "";
 						for (String type:row.gene.types){
@@ -1099,7 +1099,7 @@ public class SOLRQueryProcessor extends AQueryProcessor
 							if (hasId) processedResult.getValues().add(row.id());
 							if (hasName && !hasSynCount) processedResult.getValues().add(row.name());
 							if (!hasGene && hasGeneScore) {
-								processedResult.getValues().add(stripOldZeroPaddingOfNumericString(row.expression_level));
+								processedResult.getValues().add(String.format("%10s", stripOldZeroPaddingOfNumericString(row.expression_level)));
 								processedResult.getValues().add(String.format("%.02f", row.expression_extent));
 								processedResult.getValues().add(row.anatomy.getName());
 							}
