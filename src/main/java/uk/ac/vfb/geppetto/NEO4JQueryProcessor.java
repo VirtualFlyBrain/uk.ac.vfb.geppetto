@@ -763,13 +763,13 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 			integerPart = "0";
 		}
 		if (integerPart.length() < integerWidth) {
-			integerPart = String.format("%0" + (integerWidth - integerPart.length()) + "d", 0).replace('0', '0') + integerPart;
+			integerPart = String.format("%1$" + integerWidth + "s", integerPart);
 		}
 		if (fractionWidth > 0) {
 			if (fractionPart.length() < fractionWidth) {
 				StringBuilder sb = new StringBuilder(fractionPart);
 				while (sb.length() < fractionWidth) {
-					sb.append('0');
+					sb.append(' ');
 				}
 				fractionPart = sb.toString();
 			}
