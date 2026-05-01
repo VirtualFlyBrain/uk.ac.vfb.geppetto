@@ -1099,14 +1099,28 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 
 			if (debug) System.out.println("Headers: " + String.join(",",processedResults.getHeader()));
 
-		int expressionLevelFieldWidth = 0;
+		int expressionLevelIntegerWidth = 0;
+		int expressionLevelFractionWidth = 0;
 		for (vfb_query row : table) {
 			if (row.expression_level != null) {
-				expressionLevelFieldWidth = Math.max(expressionLevelFieldWidth, stripOldZeroPaddingOfNumericString(row.expression_level).length());
+				String normalized = stripOldZeroPaddingOfNumericString(row.expression_level);
+				if (normalized != null) {
+					if (normalized.startsWith("-")) {
+						normalized = normalized.substring(1);
+					}
+					int dotIndex = normalized.indexOf('.');
+					String integerPart = dotIndex >= 0 ? normalized.substring(0, dotIndex) : normalized;
+					String fractionPart = dotIndex >= 0 ? normalized.substring(dotIndex + 1) : "";
+					if (integerPart.isEmpty()) {
+						integerPart = "0";
+					}
+					expressionLevelIntegerWidth = Math.max(expressionLevelIntegerWidth, integerPart.length());
+					expressionLevelFractionWidth = Math.max(expressionLevelFractionWidth, fractionPart.length());
+				}
 			}
 		}
-		if (expressionLevelFieldWidth < 1) {
-			expressionLevelFieldWidth = 1;
+		if (expressionLevelIntegerWidth < 1) {
+			expressionLevelIntegerWidth = 1;
 		}
 
 			for (vfb_query row:table){
@@ -1117,7 +1131,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 						processedResult.getValues().add(row.gene.short_form + delim + row.anatomy.short_form);
 						processedResult.getValues().add(row.gene.getName());
 						processedResult.getValues().add(row.anatomy.getName());
-						processedResult.getValues().add(formatExpressionLevel(row.expression_level, expressionLevelFieldWidth));
+						processedResult.getValues().add(formatExpressionLevel(row.expression_level, expressionLevelIntegerWidth, expressionLevelFractionWidth));
 						processedResult.getValues().add(String.format("%.02f", row.expression_extent));
 						String function = "";
 						for (String type:row.gene.types){
@@ -1138,7 +1152,7 @@ public class NEO4JQueryProcessor extends AQueryProcessor
 							if (hasId) processedResult.getValues().add(row.id());
 							if (hasName && !hasSynCount) processedResult.getValues().add(row.name());
 							if (!hasGene && hasGeneScore) {
-								processedResult.getValues().add(formatExpressionLevel(row.expression_level, expressionLevelFieldWidth));
+								processedResult.getValues().add(formatExpressionLevel(row.expression_level, expressionLevelIntegerWidth, expressionLevelFractionWidth));
 								processedResult.getValues().add(String.format("%.02f", row.expression_extent));
 								processedResult.getValues().add(row.anatomy.getName());
 							}
