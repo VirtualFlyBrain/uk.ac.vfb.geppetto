@@ -35,7 +35,7 @@ import uk.ac.vfb.geppetto.CachedUploadNBLASTQueryProcessor.NBLASTRow.Term.Core;
 public class CachedUploadNBLASTQueryProcessor extends AQueryProcessor {
     private Map<String, Object> processingOutputMap = new HashMap<>();
 
-    private Boolean debug = false;
+    private Boolean debug=false;
 
     // Define the row class to match the structure of the data from SOLR
     class NBLASTRows {
