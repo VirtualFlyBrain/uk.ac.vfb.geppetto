@@ -144,6 +144,13 @@
 	<aop:scoped-proxy proxy-target-class="false"/>
 	</bean>
 
+	<osgi:service id="owleryToSolrIdWithSelfQueryProcessorExporter" ref="owleryToSolrIdWithSelfQueryProcessor"
+		interface="org.geppetto.core.datasources.IQueryProcessor">
+	</osgi:service>
+	<bean id="owleryToSolrIdWithSelfQueryProcessor" scope="prototype" class="uk.ac.vfb.geppetto.OWLtoSOLRidWithSelfQueryProcessor">
+	<aop:scoped-proxy proxy-target-class="false"/>
+	</bean>
+
 	<osgi:service id="solrQueryProcessorExporter" ref="solrQueryProcessor"
 		interface="org.geppetto.core.datasources.IQueryProcessor">
 	</osgi:service>
