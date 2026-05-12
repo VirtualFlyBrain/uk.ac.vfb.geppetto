@@ -31,7 +31,7 @@ public class OWLtoSOLRidWithSelfQueryProcessor extends AQueryProcessor {
 
     private Map<String, Object> processingOutputMap = new HashMap<>();
 
-    private Boolean debug = false;
+    private Boolean debug=false;
 
     @Override
     public QueryResults process(ProcessQuery query, DataSource dataSource, Variable variable, QueryResults results, GeppettoModelAccess geppettoModelAccess) throws GeppettoDataSourceException {
@@ -45,6 +45,9 @@ public class OWLtoSOLRidWithSelfQueryProcessor extends AQueryProcessor {
         QueryResults processedResults = DatasourcesFactory.eINSTANCE.createQueryResults();
         int idIndex = -1;
 
+        System.out.println("[OWLtoSOLRidWithSelfQueryProcessor] called. queryID=" + queryID
+                + " variable=" + (variable != null ? variable.getId() : "null")
+                + " results.size=" + (results.getResults() != null ? results.getResults().size() : "null"));
         if (debug) System.out.println("Processing OWL to SOLR ID (with self) Query Processor. Query ID: " + queryID);
         processedResults.getHeader().add("ID");
 
@@ -91,6 +94,7 @@ public class OWLtoSOLRidWithSelfQueryProcessor extends AQueryProcessor {
         }
 
         String joinedIds = String.join(",", ids);
+        System.out.println("[OWLtoSOLRidWithSelfQueryProcessor] ARRAY_ID_RESULTS=" + joinedIds);
         processingOutputMap.put("ARRAY_ID_RESULTS", joinedIds);
         processingOutputMap.put("EXTRA_RESULT_COLUMNS", "");
 
