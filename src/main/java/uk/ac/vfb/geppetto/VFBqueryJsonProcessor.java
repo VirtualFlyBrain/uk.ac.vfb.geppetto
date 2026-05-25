@@ -40,7 +40,10 @@ import org.geppetto.model.variables.Variable;
 public class VFBqueryJsonProcessor extends AQueryProcessor
 {
 
-	private Boolean debug = false;
+	// Spacing here is significant: the geppetto-vfb Dockerfile runs a sed
+	// 's@Boolean debug=.*;@Boolean debug=$DEBUG;@g' against this bundle on
+	// dev builds. The pattern requires NO SPACES around the `=` — leave it.
+	private Boolean debug=false;
 
 	private static final String DELIM = "----";
 
@@ -81,6 +84,14 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 
 		QueryResults out = DatasourcesFactory.eINSTANCE.createQueryResults();
 
+		if (debug)
+		{
+			System.out.println("VFBqueryJsonProcessor.process: variable="
+					+ (variable != null ? variable.getId() : "null")
+					+ ", inputRows=" + results.getResults().size()
+					+ ", inputHeader=" + results.getHeader());
+		}
+
 		// Detect connectivity-style responses by header titles. The upstream-class
 		// VFBquery call returns ["ID", "Upstream Class", "Total N", ...]; downstream
 		// returns ["ID", "Downstream Class", ...]. We synthesise the missing column
@@ -90,6 +101,13 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 		boolean isDownstreamCall = results.getHeader().contains(COL_DOWNSTREAM)
 				&& !results.getHeader().contains(COL_UPSTREAM);
 		boolean isClassConnectivity = isUpstreamCall || isDownstreamCall;
+
+		if (debug)
+		{
+			System.out.println("VFBqueryJsonProcessor.process: isUpstreamCall=" + isUpstreamCall
+					+ ", isDownstreamCall=" + isDownstreamCall
+					+ ", isClassConnectivity=" + isClassConnectivity);
+		}
 
 		if (isClassConnectivity)
 		{
@@ -142,6 +160,18 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 		String partnerColumn = upstreamCall ? COL_UPSTREAM : COL_DOWNSTREAM;
 
 		int n = in.getResults().size();
+		if (debug)
+		{
+			System.out.println("VFBqueryJsonProcessor.buildClassConnectivityRows: queriedId=" + queriedId
+					+ ", partnerColumn=" + partnerColumn + ", n=" + n);
+			if (n > 0)
+			{
+				System.out.println("VFBqueryJsonProcessor.buildClassConnectivityRows: first row probe -- "
+						+ "ID=" + safeGetValue(in, COL_ID, 0)
+						+ ", " + partnerColumn + "=" + safeGetValue(in, partnerColumn, 0)
+						+ ", " + COL_TOTAL_N + "=" + safeGetValue(in, COL_TOTAL_N, 0));
+			}
+		}
 		for (int i = 0; i < n; i++)
 		{
 			SerializableQueryResult r = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
@@ -239,10 +269,17 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 	{
 		try
 		{
-			return in.getValue(col, rowIdx);
+			Object v = in.getValue(col, rowIdx);
+			return v;
 		}
 		catch (RuntimeException e)
 		{
+			// QueryResults.getValue throws if the column name isn't in the header.
+			// In normal flow this should never fire (we only ask for columns we
+			// know are present), so log loudly when it does — it's a header-name
+			// mismatch we'd otherwise lose silently.
+			System.out.println("VFBqueryJsonProcessor.safeGetValue: column '" + col
+					+ "' row " + rowIdx + " threw " + e + " — header is " + in.getHeader());
 			return null;
 		}
 	}
