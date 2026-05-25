@@ -115,7 +115,14 @@
 	<bean id="vfbProcessTermInfoCachedJson" scope="prototype" class="uk.ac.vfb.geppetto.VFBProcessTermInfoCachedJson">
 	<aop:scoped-proxy proxy-target-class="false"/>
 	</bean>
-	
+
+	<osgi:service id="VFBqueryJsonProcessorExporter" ref="vfbqueryJsonProcessor"
+		interface="org.geppetto.core.datasources.IQueryProcessor">
+	</osgi:service>
+	<bean id="vfbqueryJsonProcessor" scope="prototype" class="uk.ac.vfb.geppetto.VFBqueryJsonProcessor">
+	<aop:scoped-proxy proxy-target-class="false"/>
+	</bean>
+
 	<osgi:service id="CachedUploadNBLASTQueryProcessor" ref="cachedUploadNblastQueryProcessor"
 		interface="org.geppetto.core.datasources.IQueryProcessor">
 	</osgi:service>
