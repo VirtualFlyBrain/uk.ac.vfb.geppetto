@@ -1,6 +1,7 @@
 package uk.ac.vfb.geppetto;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.geppetto.core.datasources.GeppettoDataSourceException;
@@ -167,9 +168,22 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 	}
 
 	/**
-	 * Generic Object-to-String stringification for non-connectivity VFBquery
-	 * responses. Used by Shape-A migrations (single-step Cypher queries) once
-	 * those land. Header titles are passed through unchanged.
+	 * Generic value-to-String pass for non-connectivity VFBquery responses.
+	 * Used by Shape-A migrations (single-step Cypher queries like neuron-
+	 * neuron and neuron-region connectivity). Header titles are passed through
+	 * unchanged.
+	 *
+	 * Per-cell formatting rules (duck-typed against the parsed JSON value):
+	 *   - null               -> ""
+	 *   - java.util.List     -> pipe-joined elements ("Adult|Nervous_system|...")
+	 *                           matching the v2 SOLRQueryProcessor convention
+	 *                           for tag columns (see SOLRQueryProcessor.java
+	 *                           row.grossTypes()).
+	 *   - java.lang.Number   -> integer string if the value is whole; else
+	 *                           a plain Double.toString(). Avoids "2.0" /
+	 *                           "31.0" in counter columns.
+	 *   - anything else      -> Object.toString() pass-through (markdown,
+	 *                           short_form ids, etc.).
 	 */
 	private void buildGenericRows(QueryResults in, QueryResults out)
 	{
@@ -180,11 +194,45 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 			SerializableQueryResult r = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 			for (String col : in.getHeader())
 			{
-				Object v = safeGetValue(in, col, i);
-				r.getValues().add(v == null ? "" : v.toString());
+				r.getValues().add(formatGenericCell(safeGetValue(in, col, i)));
 			}
 			out.getResults().add(r);
 		}
+	}
+
+	private static String formatGenericCell(Object v)
+	{
+		if (v == null)
+		{
+			return "";
+		}
+		if (v instanceof List)
+		{
+			StringBuilder sb = new StringBuilder();
+			for (Object e : (List<?>) v)
+			{
+				if (e == null)
+				{
+					continue;
+				}
+				if (sb.length() > 0)
+				{
+					sb.append('|');
+				}
+				sb.append(e.toString());
+			}
+			return sb.toString();
+		}
+		if (v instanceof Number)
+		{
+			double d = ((Number) v).doubleValue();
+			if (d == Math.floor(d) && !Double.isInfinite(d))
+			{
+				return Long.toString((long) d);
+			}
+			return v.toString();
+		}
+		return v.toString();
 	}
 
 	private static Object safeGetValue(QueryResults in, String col, int rowIdx)
