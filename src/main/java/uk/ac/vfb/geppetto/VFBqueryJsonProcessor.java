@@ -6,7 +6,6 @@ import java.util.Map;
 import org.geppetto.core.datasources.GeppettoDataSourceException;
 import org.geppetto.core.model.GeppettoModelAccess;
 import org.geppetto.datasources.AQueryProcessor;
-import org.geppetto.model.datasources.AQueryResult;
 import org.geppetto.model.datasources.DataSource;
 import org.geppetto.model.datasources.DatasourcesFactory;
 import org.geppetto.model.datasources.ProcessQuery;
@@ -16,18 +15,24 @@ import org.geppetto.model.variables.Variable;
 
 /**
  * Converts the QueryResults emitted by VFBqueryResponseProcessor (one row per
- * VFBquery `rows` entry, values still typed as Object) into the
- * SerializableQueryResult shape the geppetto-vfb frontend expects (string-
- * formatted cells, composite IDs for connectivity tables, synthesised
- * "queried term" column where the v2 chain produced both Upstream_Class and
- * Downstream_Class regardless of direction).
+ * VFBquery `rows` entry, values still typed as Object and addressed by column
+ * header name) into the SerializableQueryResult shape the geppetto-vfb
+ * frontend expects (string-formatted cells, composite IDs for connectivity
+ * tables, synthesised "queried term" column where the v2 chain produced both
+ * Upstream_Class and Downstream_Class regardless of direction).
  *
  * Output shape is byte-equivalent to the existing SOLRQueryProcessor output
  * for hasClassConnectivity, so no frontend change is needed for the pilot.
  *
  * For non-connectivity VFBquery responses this processor degrades to a
- * straight Object→String stringification per cell, which is the right
- * behaviour for the Shape-A single-step migrations that come next.
+ * straight Object-to-String pass-through of every column in header order,
+ * which is the right behaviour for the Shape-A single-step migrations that
+ * come next.
+ *
+ * Value access deliberately mirrors SOLRQueryProcessor.process(): iterate by
+ * row index and pull each cell via results.getValue(headerName, rowIdx),
+ * rather than calling .getValues() on the AQueryResult loop variable (which
+ * the abstract parent does not expose).
  *
  * @author robertcourt
  */
@@ -37,6 +42,18 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 	private Boolean debug = false;
 
 	private static final String DELIM = "----";
+
+	// Header titles emitted by VFBqueryResponseProcessor for class connectivity.
+	// These are the `title` fields from the VFBquery /run_query response.
+	private static final String COL_ID = "ID";
+	private static final String COL_UPSTREAM = "Upstream Class";
+	private static final String COL_DOWNSTREAM = "Downstream Class";
+	private static final String COL_TOTAL_N = "Total N";
+	private static final String COL_CONNECTED_N = "Connected N";
+	private static final String COL_PERCENT = "% Connected";
+	private static final String COL_PAIRWISE = "Pairwise Connections";
+	private static final String COL_TOTAL_WEIGHT = "Total Weight";
+	private static final String COL_AVG_WEIGHT = "Avg Weight";
 
 	private final Map<String, Object> processingOutputMap = new HashMap<String, Object>();
 
@@ -63,19 +80,19 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 
 		QueryResults out = DatasourcesFactory.eINSTANCE.createQueryResults();
 
-		// Detect connectivity-style responses by header names. The upstream-class
-		// VFBquery call returns headers ["ID", "Upstream Class", "Total N", ...]
-		// (titles, not raw col ids); downstream returns ["ID", "Downstream Class", ...].
-		// We synthesise the missing column so output matches the v2 9-column shape.
-		boolean isUpstreamClassConnectivity = headerContains(results, "Upstream Class")
-				&& !headerContains(results, "Downstream Class");
-		boolean isDownstreamClassConnectivity = headerContains(results, "Downstream Class")
-				&& !headerContains(results, "Upstream Class");
-		boolean isClassConnectivity = isUpstreamClassConnectivity || isDownstreamClassConnectivity;
+		// Detect connectivity-style responses by header titles. The upstream-class
+		// VFBquery call returns ["ID", "Upstream Class", "Total N", ...]; downstream
+		// returns ["ID", "Downstream Class", ...]. We synthesise the missing column
+		// so output matches the v2 9-column shape.
+		boolean isUpstreamCall = results.getHeader().contains(COL_UPSTREAM)
+				&& !results.getHeader().contains(COL_DOWNSTREAM);
+		boolean isDownstreamCall = results.getHeader().contains(COL_DOWNSTREAM)
+				&& !results.getHeader().contains(COL_UPSTREAM);
+		boolean isClassConnectivity = isUpstreamCall || isDownstreamCall;
 
 		if (isClassConnectivity)
 		{
-			buildClassConnectivityRows(variable, results, out, isUpstreamClassConnectivity);
+			buildClassConnectivityRows(variable, results, out, isUpstreamCall);
 		}
 		else
 		{
@@ -86,7 +103,7 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 		{
 			System.out.println("VFBqueryJsonProcessor: " + out.getResults().size() + " rows in "
 					+ (System.currentTimeMillis() - t0) + " ms (mode="
-					+ (isClassConnectivity ? (isUpstreamClassConnectivity ? "upstream-class" : "downstream-class") : "generic")
+					+ (isClassConnectivity ? (isUpstreamCall ? "upstream-class" : "downstream-class") : "generic")
 					+ ")");
 		}
 
@@ -114,32 +131,22 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 		out.getHeader().add("Total_Weight");
 		out.getHeader().add("Avg_Weight");
 
-		// Resolve the column positions we need from the input header.
-		int idxId = headerIndex(in, "ID");
-		int idxClass = upstreamCall ? headerIndex(in, "Upstream Class") : headerIndex(in, "Downstream Class");
-		int idxTotalN = headerIndex(in, "Total N");
-		int idxConnectedN = headerIndex(in, "Connected N");
-		int idxPercent = headerIndex(in, "% Connected");
-		int idxPairwise = headerIndex(in, "Pairwise Connections");
-		int idxTotalWeight = headerIndex(in, "Total Weight");
-		int idxAvgWeight = headerIndex(in, "Avg Weight");
+		String queriedId = variable != null && variable.getId() != null ? variable.getId() : "";
+		// Markdown link form matches the rest of the VFB table column format —
+		// the V3 frontend renders these as in-app navigation links. We don't
+		// have the term's human label at this layer; the renderer resolves it
+		// from the id, same as it does for the partner classes.
+		String queriedMarkdown = "[" + queriedId + "](" + queriedId + ")";
 
-		String queriedId = variable != null ? variable.getId() : "";
-		String queriedLabel = variable != null ? variable.getName() : "";
-		if (queriedLabel == null || queriedLabel.isEmpty())
-		{
-			queriedLabel = queriedId;
-		}
-		// Markdown link form matches the rest of the VFB table column format
-		// (the V3 frontend renders these as in-app navigation links).
-		String queriedMarkdown = "[" + queriedLabel + "](" + queriedId + ")";
+		String partnerColumn = upstreamCall ? COL_UPSTREAM : COL_DOWNSTREAM;
 
-		for (AQueryResult row : in.getResults())
+		int n = in.getResults().size();
+		for (int i = 0; i < n; i++)
 		{
 			SerializableQueryResult r = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 
-			String partnerId = stringAt(row, idxId);
-			String partnerMarkdown = stringAt(row, idxClass);
+			String partnerId = stringValue(in, COL_ID, i);
+			String partnerMarkdown = stringValue(in, partnerColumn, i);
 			String upstreamId = upstreamCall ? partnerId : queriedId;
 			String downstreamId = upstreamCall ? queriedId : partnerId;
 			String upstreamMarkdown = upstreamCall ? partnerMarkdown : queriedMarkdown;
@@ -148,88 +155,85 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 			r.getValues().add(upstreamId + DELIM + downstreamId);
 			r.getValues().add(upstreamMarkdown);
 			r.getValues().add(downstreamMarkdown);
-			r.getValues().add(formatInt(valueAt(row, idxTotalN), 6));
-			r.getValues().add(formatInt(valueAt(row, idxConnectedN), 6));
-			r.getValues().add(formatPercent(valueAt(row, idxPercent)));
-			r.getValues().add(formatInt(valueAt(row, idxPairwise), 8));
-			r.getValues().add(formatInt(valueAt(row, idxTotalWeight), 9));
-			r.getValues().add(formatFloat(valueAt(row, idxAvgWeight), 7, 1));
+			r.getValues().add(formatInt(in, COL_TOTAL_N, i, 6));
+			r.getValues().add(formatInt(in, COL_CONNECTED_N, i, 6));
+			r.getValues().add(formatPercent(in, COL_PERCENT, i));
+			r.getValues().add(formatInt(in, COL_PAIRWISE, i, 8));
+			r.getValues().add(formatInt(in, COL_TOTAL_WEIGHT, i, 9));
+			r.getValues().add(formatFloat(in, COL_AVG_WEIGHT, i, 7, 1));
 
 			out.getResults().add(r);
 		}
 	}
 
 	/**
-	 * Generic Object→String stringification for non-connectivity VFBquery
+	 * Generic Object-to-String stringification for non-connectivity VFBquery
 	 * responses. Used by Shape-A migrations (single-step Cypher queries) once
 	 * those land. Header titles are passed through unchanged.
 	 */
 	private void buildGenericRows(QueryResults in, QueryResults out)
 	{
 		out.getHeader().addAll(in.getHeader());
-		for (AQueryResult row : in.getResults())
+		int n = in.getResults().size();
+		for (int i = 0; i < n; i++)
 		{
 			SerializableQueryResult r = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
-			for (Object v : row.getValues())
+			for (String col : in.getHeader())
 			{
+				Object v = safeGetValue(in, col, i);
 				r.getValues().add(v == null ? "" : v.toString());
 			}
 			out.getResults().add(r);
 		}
 	}
 
-	private static boolean headerContains(QueryResults r, String title)
+	private static Object safeGetValue(QueryResults in, String col, int rowIdx)
 	{
-		return r.getHeader().indexOf(title) >= 0;
-	}
-
-	private static int headerIndex(QueryResults r, String title)
-	{
-		return r.getHeader().indexOf(title);
-	}
-
-	private static Object valueAt(AQueryResult row, int idx)
-	{
-		if (idx < 0 || idx >= row.getValues().size())
+		try
+		{
+			return in.getValue(col, rowIdx);
+		}
+		catch (RuntimeException e)
 		{
 			return null;
 		}
-		return row.getValues().get(idx);
 	}
 
-	private static String stringAt(AQueryResult row, int idx)
+	private static String stringValue(QueryResults in, String col, int rowIdx)
 	{
-		Object v = valueAt(row, idx);
+		Object v = safeGetValue(in, col, rowIdx);
 		return v == null ? "" : v.toString();
 	}
 
-	private static String formatInt(Object v, int width)
+	private static String formatInt(QueryResults in, String col, int rowIdx, int width)
 	{
+		Object v = safeGetValue(in, col, rowIdx);
 		if (v == null)
 		{
 			return "";
 		}
-		long n;
+		long ln;
 		if (v instanceof Number)
 		{
-			n = ((Number) v).longValue();
+			ln = ((Number) v).longValue();
 		}
 		else
 		{
 			try
 			{
-				n = (long) Double.parseDouble(v.toString());
+				ln = (long) Double.parseDouble(v.toString());
 			}
 			catch (NumberFormatException e)
 			{
 				return v.toString();
 			}
 		}
-		return String.format("%1$" + width + "d", n);
+		return String.format("%1$" + width + "d", ln);
 	}
 
-	private static String formatPercent(Object v)
+	private static String formatPercent(QueryResults in, String col, int rowIdx)
 	{
+		Object v = safeGetValue(in, col, rowIdx);
 		if (v == null)
 		{
 			return "";
@@ -253,8 +257,9 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 		return String.format("%5.1f%%", d);
 	}
 
-	private static String formatFloat(Object v, int width, int precision)
+	private static String formatFloat(QueryResults in, String col, int rowIdx, int width, int precision)
 	{
+		Object v = safeGetValue(in, col, rowIdx);
 		if (v == null)
 		{
 			return "";
