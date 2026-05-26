@@ -3,16 +3,27 @@ package uk.ac.vfb.geppetto;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.geppetto.core.datasources.GeppettoDataSourceException;
 import org.geppetto.core.model.GeppettoModelAccess;
+import org.geppetto.core.model.GeppettoSerializer;
 import org.geppetto.datasources.AQueryProcessor;
 import org.geppetto.model.datasources.DataSource;
 import org.geppetto.model.datasources.DatasourcesFactory;
 import org.geppetto.model.datasources.ProcessQuery;
 import org.geppetto.model.datasources.QueryResults;
 import org.geppetto.model.datasources.SerializableQueryResult;
+import org.geppetto.model.types.Type;
+import org.geppetto.model.types.TypesPackage;
+import org.geppetto.model.values.ArrayElement;
+import org.geppetto.model.values.ArrayValue;
+import org.geppetto.model.values.Image;
+import org.geppetto.model.values.ImageFormat;
+import org.geppetto.model.values.ValuesFactory;
 import org.geppetto.model.variables.Variable;
+import org.geppetto.model.variables.VariablesFactory;
 
 /**
  * Converts the QueryResults emitted by VFBqueryResponseProcessor (one row per
@@ -115,7 +126,19 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 		}
 		else
 		{
-			buildGenericRows(results, out);
+			// Resolve the geppetto IMAGE type once per call so the generic path
+			// can convert markdown-image cells into the JSON Variable form the
+			// V2 frontend renders (matching SOLRQueryProcessor.java:1131-1146).
+			Type imageType = null;
+			try
+			{
+				imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
+			}
+			catch (Exception e)
+			{
+				if (debug) System.out.println("VFBqueryJsonProcessor: could not resolve IMAGE_TYPE: " + e);
+			}
+			buildGenericRows(results, out, imageType);
 		}
 
 		if (debug)
@@ -223,7 +246,7 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 	 *   - anything else      -> Object.toString() pass-through (markdown,
 	 *                           short_form ids, etc.).
 	 */
-	private void buildGenericRows(QueryResults in, QueryResults out)
+	private void buildGenericRows(QueryResults in, QueryResults out, Type imageType)
 	{
 		out.getHeader().addAll(in.getHeader());
 		int n = in.getResults().size();
@@ -232,13 +255,13 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 			SerializableQueryResult r = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 			for (String col : in.getHeader())
 			{
-				r.getValues().add(formatGenericCell(safeGetValue(in, col, i)));
+				r.getValues().add(formatGenericCell(safeGetValue(in, col, i), imageType));
 			}
 			out.getResults().add(r);
 		}
 	}
 
-	private static String formatGenericCell(Object v)
+	private static String formatGenericCell(Object v, Type imageType)
 	{
 		if (v == null)
 		{
@@ -270,10 +293,77 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 			}
 			return v.toString();
 		}
-		// Strip `[label](id)` markdown wrappers when present so the v2 frontend
-		// table renderer (which is plain-text + composite-ID-driven linking)
-		// shows clean labels. Plain-text cells pass through untouched.
-		return stripMarkdownLink(v.toString());
+		String s = v.toString();
+		// Image-markdown form: `[![alt](url 'alt')](ref)` — convert into the
+		// serialised JSON Variable form the V2 frontend renders as an image
+		// card. Matches SOLRQueryProcessor.java:1131-1146 output shape.
+		if (s.length() > 2 && s.charAt(0) == '[' && s.charAt(1) == '!')
+		{
+			String json = imageMarkdownToVariableJson(s, imageType);
+			if (json != null) return json;
+		}
+		// Plain markdown link `[label](id)` — strip to label so the
+		// composite-ID-driven frontend linker can render plain text + links.
+		return stripMarkdownLink(s);
+	}
+
+	/**
+	 * Match a markdown-image-wrapped-link cell as VFBquery emits it:
+	 *   [![ALT](URL 'TITLE')](REF)
+	 *   [![ALT](URL)](REF)
+	 *
+	 * The 'TITLE' (in single quotes) is optional; URL is anything not
+	 * whitespace or `)`; REF is anything up to the final `)`.
+	 *
+	 * Builds a Variable carrying an ArrayValue of one Image with
+	 *   - data      = URL
+	 *   - name      = ALT
+	 *   - reference = REF
+	 *   - format    = PNG
+	 * and returns GeppettoSerializer.serializeToJSON(variable).
+	 *
+	 * Returns {@code null} if the cell isn't an image-markdown form or if
+	 * we couldn't build the JSON (e.g. imageType wasn't resolvable) — the
+	 * caller then falls back to stripMarkdownLink or pass-through.
+	 */
+	private static final Pattern IMAGE_MARKDOWN = Pattern.compile(
+			"\\[!\\[([^\\]]*)\\]\\(([^\\s)]+)(?:\\s+'[^']*')?\\)\\]\\(([^)]+)\\)");
+
+	private static String imageMarkdownToVariableJson(String s, Type imageType)
+	{
+		if (imageType == null) return null;
+		Matcher m = IMAGE_MARKDOWN.matcher(s);
+		if (!m.find()) return null;
+		String alt = m.group(1);
+		String url = m.group(2);
+		String ref = m.group(3);
+
+		try
+		{
+			ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
+			Image image = ValuesFactory.eINSTANCE.createImage();
+			image.setName(alt == null ? "" : alt);
+			image.setData(url);
+			image.setReference(ref);
+			image.setFormat(ImageFormat.PNG);
+			ArrayElement element = ValuesFactory.eINSTANCE.createArrayElement();
+			element.setIndex(0);
+			element.setInitialValue(image);
+			images.getElements().add(element);
+
+			Variable v = VariablesFactory.eINSTANCE.createVariable();
+			v.setId("images");
+			v.setName("Images");
+			v.getTypes().add(imageType);
+			v.getInitialValues().put(imageType, images);
+			return GeppettoSerializer.serializeToJSON(v);
+		}
+		catch (Exception e)
+		{
+			// Don't blow up the row over a single bad thumbnail — return null
+			// so the caller falls back to text rendering.
+			return null;
+		}
 	}
 
 	/**
@@ -293,6 +383,11 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 	{
 		if (s == null || s.length() < 4) return s == null ? "" : s;
 		if (s.charAt(0) != '[' || s.charAt(s.length() - 1) != ')') return s;
+		// Don't touch image-wrapped markdown links of the form
+		//   [![alt](url 'alt')](link)
+		// (Shape-B thumbnail cells use this form; stripping them would
+		// corrupt the image rendering). Detect by the "[!" prefix.
+		if (s.length() > 1 && s.charAt(1) == '!') return s;
 		int close = s.indexOf("](");
 		if (close <= 0) return s;
 		return s.substring(1, close);
