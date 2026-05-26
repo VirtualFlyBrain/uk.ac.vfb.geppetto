@@ -237,6 +237,9 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 			// Resolve the geppetto IMAGE type once per call so the generic path
 			// can convert markdown-image cells into the JSON Variable form the
 			// V2 frontend renders (matching SOLRQueryProcessor.java:1131-1146).
+			// Unconditionally log the outcome — if this comes back null the
+			// thumbnail column will silently downgrade to empty strings and the
+			// only way to know is from the server log.
 			Type imageType = null;
 			try
 			{
@@ -244,8 +247,11 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 			}
 			catch (Exception e)
 			{
-				if (debug) System.out.println("VFBqueryJsonProcessor: could not resolve IMAGE_TYPE: " + e);
+				System.out.println("VFBqueryJsonProcessor: getType(IMAGE_TYPE) threw " + e);
 			}
+			System.out.println("VFBqueryJsonProcessor.process: imageType="
+					+ (imageType == null ? "null" : imageType.getId())
+					+ ", header=" + results.getHeader());
 			buildGenericRows(results, out, imageType);
 		}
 
@@ -372,17 +378,51 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 			SerializableQueryResult r = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 			for (String col : in.getHeader())
 			{
-				r.getValues().add(formatGenericCell(safeGetValue(in, col, i), imageType));
+				r.getValues().add(formatGenericCell(col, safeGetValue(in, col, i), imageType));
 			}
 			out.getResults().add(r);
 		}
 	}
 
-	private static String formatGenericCell(Object v, Type imageType)
+	/**
+	 * Some VFBquery columns map to V2 frontend custom components that expect a
+	 * specific in-cell delimiter, which is NOT the same as the API's wire
+	 * format. The "tags"/Gross_Type column is the canonical example:
+	 * GrossTypeLabelsComponent.split(';') is hard-wired (matching
+	 * SOLRQueryProcessor.grossTypes() which joins with "; "), but VFBquery
+	 * emits tags pipe-joined. Without re-delimiting we get one giant chip
+	 * instead of one chip per tag.
+	 */
+	private static boolean isTagsColumn(String apiCol)
+	{
+		return apiCol != null && (apiCol.equals("tags") || apiCol.equals("gross_type"));
+	}
+
+	private static String formatGenericCell(String apiCol, Object v, Type imageType)
 	{
 		if (v == null)
 		{
 			return "";
+		}
+		// Tag/Gross_Type column: re-delimit to "; " so GrossTypeLabelsComponent
+		// (split(';')) renders one chip per tag instead of one chip per row.
+		// Handles both String input ("Adult|Nervous_system|..." — the VFBquery
+		// API's wire format) and List input (defensive, if a future API
+		// returns a JSON array).
+		if (isTagsColumn(apiCol))
+		{
+			if (v instanceof List)
+			{
+				StringBuilder sb = new StringBuilder();
+				for (Object e : (List<?>) v)
+				{
+					if (e == null) continue;
+					if (sb.length() > 0) sb.append("; ");
+					sb.append(e.toString());
+				}
+				return sb.toString();
+			}
+			return v.toString().replace("|", "; ");
 		}
 		if (v instanceof List)
 		{
@@ -414,10 +454,25 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 		// Image-markdown form: `[![alt](url 'alt')](ref)` — convert into the
 		// serialised JSON Variable form the V2 frontend renders as an image
 		// card. Matches SOLRQueryProcessor.java:1131-1146 output shape.
+		//
+		// The V2 SlideshowImageComponent does JSON.parse(cell) unconditionally
+		// for columns whose displayName maps to "Images" (queryBuilderConfiguration.js).
+		// So once a cell looks like an image markdown, ONLY two outputs are
+		// safe: the serialised Variable JSON, or the empty string. Anything
+		// else — including the raw markdown — will throw SyntaxError in
+		// SlideshowImageComponent.buildCarousel.
 		if (s.length() > 2 && s.charAt(0) == '[' && s.charAt(1) == '!')
 		{
 			String json = imageMarkdownToVariableJson(s, imageType);
 			if (json != null) return json;
+			// Converter returned null (imageType unresolvable, regex miss, or
+			// serialiser exception). Emit empty string to match
+			// SOLRQueryProcessor.java:1144-1145's empty-images branch.
+			System.out.println("VFBqueryJsonProcessor.formatGenericCell: image-markdown cell could not be"
+					+ " converted to Variable JSON (imageType="
+					+ (imageType == null ? "null" : "resolved")
+					+ ", cell-prefix=" + s.substring(0, Math.min(60, s.length())) + ") — emitting empty string");
+			return "";
 		}
 		// Plain markdown link `[label](id)` — strip to label so the
 		// composite-ID-driven frontend linker can render plain text + links.
@@ -460,7 +515,10 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 			ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
 			Image image = ValuesFactory.eINSTANCE.createImage();
 			image.setName(alt == null ? "" : alt);
-			image.setData(url);
+			// Match SOLRQueryProcessor.secureUrl: any http:// URL gets promoted
+			// to https:// so the v2 frontend (HTTPS-served) doesn't break mixed-
+			// content blocking when rendering the thumbnail.
+			image.setData(url == null ? "" : url.replace("http://", "https://"));
 			image.setReference(ref);
 			image.setFormat(ImageFormat.PNG);
 			ArrayElement element = ValuesFactory.eINSTANCE.createArrayElement();
