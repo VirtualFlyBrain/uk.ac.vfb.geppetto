@@ -58,17 +58,83 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 
 	private static final String DELIM = "----";
 
-	// Header titles emitted by VFBqueryResponseProcessor for class connectivity.
-	// These are the `title` fields from the VFBquery /run_query response.
-	private static final String COL_ID = "ID";
-	private static final String COL_UPSTREAM = "Upstream Class";
-	private static final String COL_DOWNSTREAM = "Downstream Class";
-	private static final String COL_TOTAL_N = "Total N";
-	private static final String COL_CONNECTED_N = "Connected N";
-	private static final String COL_PERCENT = "% Connected";
-	private static final String COL_PAIRWISE = "Pairwise Connections";
-	private static final String COL_TOTAL_WEIGHT = "Total Weight";
-	private static final String COL_AVG_WEIGHT = "Avg Weight";
+	// VFBqueryResponseProcessor emits the API column id (the dict key) as the
+	// QueryResults header. Below are the keys for class-connectivity columns.
+	private static final String COL_ID = "id";
+	private static final String COL_UPSTREAM = "upstream_class";
+	private static final String COL_DOWNSTREAM = "downstream_class";
+	private static final String COL_TOTAL_N = "total_n";
+	private static final String COL_CONNECTED_N = "connected_n";
+	private static final String COL_PERCENT = "percent_connected";
+	private static final String COL_PAIRWISE = "pairwise_connections";
+	private static final String COL_TOTAL_WEIGHT = "total_weight";
+	private static final String COL_AVG_WEIGHT = "avg_weight";
+
+	/**
+	 * Mapping from VFBquery API field id (the dict key returned by the API)
+	 * to the V2 frontend's expected backend column name — which matches the
+	 * `displayName` values in queryBuilderConfiguration.js so the existing
+	 * table renderer keeps its custom components, click handlers, sort
+	 * direction and CSS classes.
+	 *
+	 * The frontend table renderer matches column headers against
+	 * `displayName` (verified against the live behaviour where the legacy
+	 * SOLR-blob pipeline emitted "Outputs"/"Inputs" headers and the config
+	 * has `columnName: "downstream"`/`"upstream"` with those displayNames).
+	 * So we emit the V2 displayName string as the header column name.
+	 *
+	 * For VFBquery API ids that already match a config columnName (id,
+	 * upstream_class, downstream_class, total_n, …) we pass through. For
+	 * names the V2 config doesn't know about (label, outputs, tags, etc.)
+	 * we map to the closest existing legacy name.
+	 */
+	private static final Map<String, String> COL_HEADER_MAP = new HashMap<String, String>();
+	static
+	{
+		// Identity / known matches
+		COL_HEADER_MAP.put("id", "ID");
+		COL_HEADER_MAP.put("upstream_class", "Upstream_Class");
+		COL_HEADER_MAP.put("downstream_class", "Downstream_Class");
+		COL_HEADER_MAP.put("total_n", "Total_N");
+		COL_HEADER_MAP.put("connected_n", "Connected_N");
+		COL_HEADER_MAP.put("percent_connected", "Percent_Connected");
+		COL_HEADER_MAP.put("pairwise_connections", "Pairwise_Connections");
+		COL_HEADER_MAP.put("total_weight", "Total_Weight");
+		COL_HEADER_MAP.put("avg_weight", "Avg_Weight");
+		COL_HEADER_MAP.put("region", "Region");
+		COL_HEADER_MAP.put("score", "Score");
+		// VFBquery -> legacy V2 aliases
+		COL_HEADER_MAP.put("label", "Name");
+		COL_HEADER_MAP.put("name", "Name");
+		COL_HEADER_MAP.put("outputs", "Outputs");
+		COL_HEADER_MAP.put("inputs", "Inputs");
+		COL_HEADER_MAP.put("presynaptic_terminals", "Outputs");
+		COL_HEADER_MAP.put("postsynaptic_terminals", "Inputs");
+		COL_HEADER_MAP.put("tags", "Gross_Type");
+		COL_HEADER_MAP.put("thumbnail", "Images");
+		COL_HEADER_MAP.put("pubs", "Reference");
+		COL_HEADER_MAP.put("publications", "Reference");
+		COL_HEADER_MAP.put("partner_neuron", "Name");
+		COL_HEADER_MAP.put("dataset", "Dataset");
+		COL_HEADER_MAP.put("template", "Template");
+		COL_HEADER_MAP.put("cell_type", "Cell type");
+		COL_HEADER_MAP.put("cluster", "Cluster");
+		COL_HEADER_MAP.put("gene", "Gene");
+		COL_HEADER_MAP.put("level", "Level");
+		COL_HEADER_MAP.put("extent", "Extent");
+		COL_HEADER_MAP.put("stage", "Stage");
+		COL_HEADER_MAP.put("license", "License");
+		COL_HEADER_MAP.put("technique", "Imaging_Technique");
+		COL_HEADER_MAP.put("description", "Definition");
+		COL_HEADER_MAP.put("definition", "Definition");
+	}
+
+	private static String mapHeader(String apiId)
+	{
+		if (apiId == null) return "";
+		String mapped = COL_HEADER_MAP.get(apiId);
+		return mapped != null ? mapped : apiId;
+	}
 
 	private final Map<String, Object> processingOutputMap = new HashMap<String, Object>();
 
@@ -103,10 +169,13 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 					+ ", inputHeader=" + results.getHeader());
 		}
 
-		// Detect connectivity-style responses by header titles. The upstream-class
-		// VFBquery call returns ["ID", "Upstream Class", "Total N", ...]; downstream
-		// returns ["ID", "Downstream Class", ...]. We synthesise the missing column
-		// so output matches the v2 9-column shape.
+		// Detect connectivity-style responses by API column id. The upstream-class
+		// VFBquery call returns headers [id, upstream_class, total_n, ...];
+		// downstream returns [id, downstream_class, ...]. We synthesise the
+		// missing column so output matches the v2 9-column shape.
+		// (Headers are API ids — VFBqueryResponseProcessor emits the dict key
+		// not the human title, so mapping is stable across server-side title
+		// changes.)
 		boolean isUpstreamCall = results.getHeader().contains(COL_UPSTREAM)
 				&& !results.getHeader().contains(COL_DOWNSTREAM);
 		boolean isDownstreamCall = results.getHeader().contains(COL_DOWNSTREAM)
@@ -248,7 +317,16 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 	 */
 	private void buildGenericRows(QueryResults in, QueryResults out, Type imageType)
 	{
-		out.getHeader().addAll(in.getHeader());
+		// Map each input API-id header to its V2 legacy name so the frontend
+		// table renderer (which matches against queryBuilderConfiguration.js
+		// displayName entries) picks up the right customComponent, click
+		// handlers, sort direction and CSS class for each column.
+		// Unknown ids pass through unchanged so future VFBquery fields don't
+		// disappear — they just render as plain text under their raw API name.
+		for (String col : in.getHeader())
+		{
+			out.getHeader().add(mapHeader(col));
+		}
 		int n = in.getResults().size();
 		for (int i = 0; i < n; i++)
 		{
