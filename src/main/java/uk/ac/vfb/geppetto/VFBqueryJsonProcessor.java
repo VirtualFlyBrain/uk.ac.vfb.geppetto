@@ -158,11 +158,12 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 		// the plain label text. VFBquery's API returns the partner column as
 		// markdown ("[label](id)"); strip that to the label only so the v2
 		// frontend can link both label columns from the composite ID.
-		// For the queried-term column we don't have the human label (the
-		// Variable EClass doesn't expose it cleanly at compile time and we'd
-		// otherwise need a second API call). Fall back to the id; the
-		// frontend will still resolve and link it via the composite ID.
-		String queriedLabel = queriedId;
+		// For the queried-term column we synthesise the label from the
+		// Variable's Node.getName() (the human label, set when the term-info
+		// processor created the variable). Fall back to the id if the name
+		// is null/empty.
+		String queriedName = variable != null ? variable.getName() : null;
+		String queriedLabel = (queriedName != null && !queriedName.isEmpty()) ? queriedName : queriedId;
 
 		String partnerColumn = upstreamCall ? COL_UPSTREAM : COL_DOWNSTREAM;
 
