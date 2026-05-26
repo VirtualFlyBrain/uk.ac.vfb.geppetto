@@ -151,11 +151,18 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 		out.getHeader().add("Avg_Weight");
 
 		String queriedId = variable != null && variable.getId() != null ? variable.getId() : "";
-		// Markdown link form matches the rest of the VFB table column format —
-		// the V3 frontend renders these as in-app navigation links. We don't
-		// have the term's human label at this layer; the renderer resolves it
-		// from the id, same as it does for the partner classes.
-		String queriedMarkdown = "[" + queriedId + "](" + queriedId + ")";
+		// V2 SOLRQueryProcessor emits PLAIN LABEL TEXT in the Upstream_Class /
+		// Downstream_Class columns (SOLRQueryProcessor.java:1087-1088), not
+		// markdown — the frontend reads the composite ID column
+		// (upstream_id----downstream_id) and applies its own linking on top of
+		// the plain label text. VFBquery's API returns the partner column as
+		// markdown ("[label](id)"); strip that to the label only so the v2
+		// frontend can link both label columns from the composite ID.
+		// For the queried-term column we don't have the human label (the
+		// Variable EClass doesn't expose it cleanly at compile time and we'd
+		// otherwise need a second API call). Fall back to the id; the
+		// frontend will still resolve and link it via the composite ID.
+		String queriedLabel = queriedId;
 
 		String partnerColumn = upstreamCall ? COL_UPSTREAM : COL_DOWNSTREAM;
 
@@ -177,15 +184,15 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 			SerializableQueryResult r = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 
 			String partnerId = stringValue(in, COL_ID, i);
-			String partnerMarkdown = stringValue(in, partnerColumn, i);
+			String partnerLabel = stripMarkdownLink(stringValue(in, partnerColumn, i));
 			String upstreamId = upstreamCall ? partnerId : queriedId;
 			String downstreamId = upstreamCall ? queriedId : partnerId;
-			String upstreamMarkdown = upstreamCall ? partnerMarkdown : queriedMarkdown;
-			String downstreamMarkdown = upstreamCall ? queriedMarkdown : partnerMarkdown;
+			String upstreamLabel = upstreamCall ? partnerLabel : queriedLabel;
+			String downstreamLabel = upstreamCall ? queriedLabel : partnerLabel;
 
 			r.getValues().add(upstreamId + DELIM + downstreamId);
-			r.getValues().add(upstreamMarkdown);
-			r.getValues().add(downstreamMarkdown);
+			r.getValues().add(upstreamLabel);
+			r.getValues().add(downstreamLabel);
 			r.getValues().add(formatInt(in, COL_TOTAL_N, i, 6));
 			r.getValues().add(formatInt(in, COL_CONNECTED_N, i, 6));
 			r.getValues().add(formatPercent(in, COL_PERCENT, i));
@@ -262,7 +269,32 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 			}
 			return v.toString();
 		}
-		return v.toString();
+		// Strip `[label](id)` markdown wrappers when present so the v2 frontend
+		// table renderer (which is plain-text + composite-ID-driven linking)
+		// shows clean labels. Plain-text cells pass through untouched.
+		return stripMarkdownLink(v.toString());
+	}
+
+	/**
+	 * Strip a markdown link wrapper {@code [label](id)} down to just the label
+	 * text. VFBquery returns its `markdown`-typed columns in that wrapped form
+	 * (because V3 renders them as markdown), but the v2 frontend's table
+	 * renderer is plain-text + splits the composite ID column
+	 * ({@code upstream_id----downstream_id}) to apply linking on top — so the
+	 * label columns must NOT contain markdown.
+	 *
+	 * Pattern: starts with '[', has a "](" somewhere in the middle, ends with
+	 * ')'. Anything not matching is passed through unchanged so plain-text
+	 * cells (e.g. the `label` column on NeuronNeuronConnectivityQuery, which
+	 * is already plain) are unaffected.
+	 */
+	private static String stripMarkdownLink(String s)
+	{
+		if (s == null || s.length() < 4) return s == null ? "" : s;
+		if (s.charAt(0) != '[' || s.charAt(s.length() - 1) != ')') return s;
+		int close = s.indexOf("](");
+		if (close <= 0) return s;
+		return s.substring(1, close);
 	}
 
 	private static Object safeGetValue(QueryResults in, String col, int rowIdx)
