@@ -127,6 +127,45 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 		COL_HEADER_MAP.put("technique", "Imaging_Technique");
 		COL_HEADER_MAP.put("description", "Definition");
 		COL_HEADER_MAP.put("definition", "Definition");
+
+		// Lower-frequency fields that appear in specific queries — verified
+		// against VFBquery/src/vfbquery/vfb_queries.py preview_columns lists
+		// (the full set of column ids returned by any /run_query endpoint).
+		COL_HEADER_MAP.put("anatomy", "Expressed_in");
+		COL_HEADER_MAP.put("expression_level", "Level");
+		COL_HEADER_MAP.put("expression_extent", "Extent");
+		// Some VFBquery responses capitalise these column ids (ribbon-format
+		// outputs like NeuronInputsTo). Map both cases since Java map lookup
+		// is case-sensitive.
+		COL_HEADER_MAP.put("Neurotransmitter", "Type");
+		COL_HEADER_MAP.put("neurotransmitter", "Type");
+		COL_HEADER_MAP.put("Weight", "Weight");
+		COL_HEADER_MAP.put("weight", "Weight");
+		// Additional V2 columnNames that may appear in less common queries.
+		COL_HEADER_MAP.put("type", "Type");
+		COL_HEADER_MAP.put("parent", "Parent");
+		COL_HEADER_MAP.put("expressed_in", "Expressed_in");
+		COL_HEADER_MAP.put("reference", "Reference");
+		COL_HEADER_MAP.put("function", "Function");
+		COL_HEADER_MAP.put("tbars", "Outputs (Tbars)");
+		COL_HEADER_MAP.put("controls", "Controls");
+		COL_HEADER_MAP.put("images", "Images");
+		COL_HEADER_MAP.put("image_count", "Image_count");
+		COL_HEADER_MAP.put("neuron_A", "Neuron_A");
+		COL_HEADER_MAP.put("neuron_a", "Neuron_A");
+		COL_HEADER_MAP.put("neuron_B", "Partner_Neuron");
+		COL_HEADER_MAP.put("neuron_b", "Partner_Neuron");
+		COL_HEADER_MAP.put("target", "Target");
+		// preview_columns naming sometimes uses <entity>_label / <entity>_id
+		// for the simpler queries (NeuronClassesFasciculatingHere etc.).
+		// Map all *_label to Name and *_id to ID so they integrate with the
+		// V2 frontend's name + selection_id columns.
+		COL_HEADER_MAP.put("neuron_label", "Name");
+		COL_HEADER_MAP.put("neuron_id", "ID");
+		COL_HEADER_MAP.put("tract_label", "Name");
+		COL_HEADER_MAP.put("tract_id", "ID");
+		COL_HEADER_MAP.put("clone_label", "Name");
+		COL_HEADER_MAP.put("clone_id", "ID");
 	}
 
 	private static String mapHeader(String apiId)
