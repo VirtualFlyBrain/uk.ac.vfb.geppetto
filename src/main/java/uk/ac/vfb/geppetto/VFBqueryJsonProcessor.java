@@ -425,6 +425,56 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 		return apiCol != null && apiCol.equals("thumbnail");
 	}
 
+	private static boolean isPubsColumn(String apiCol)
+	{
+		return apiCol != null && (apiCol.equals("pubs") || apiCol.equals("publications"));
+	}
+
+	/**
+	 * Format VFBquery's `pubs` field — a List of dicts shaped as
+	 *   {core: {iri, symbol, types, short_form, label}, FlyBase, PubMed, DOI}
+	 * — into a pipe-joined markdown string the V2 reference column
+	 * renderer can split and link. Each non-empty pub becomes
+	 * {@code [label](short_form)}; empty pubs are skipped. Falls back to
+	 * {@code Object.toString()} if a list element isn't a Map (defensive).
+	 */
+	@SuppressWarnings("unchecked")
+	private static String formatPubsList(List<?> pubs)
+	{
+		StringBuilder sb = new StringBuilder();
+		for (Object e : pubs)
+		{
+			if (e == null) continue;
+			String formatted = null;
+			if (e instanceof Map)
+			{
+				Map<String, Object> pub = (Map<String, Object>) e;
+				Object coreObj = pub.get("core");
+				if (coreObj instanceof Map)
+				{
+					Map<String, Object> core = (Map<String, Object>) coreObj;
+					Object labelObj = core.get("label");
+					Object shortFormObj = core.get("short_form");
+					String label = labelObj != null ? labelObj.toString() : "";
+					String shortForm = shortFormObj != null ? shortFormObj.toString() : "";
+					if (label.length() > 0 || shortForm.length() > 0)
+					{
+						formatted = "[" + label + "](" + shortForm + ")";
+					}
+				}
+			}
+			if (formatted == null)
+			{
+				// Defensive — if the shape is unexpected, fall back to a
+				// readable representation rather than dumping the dict.
+				formatted = e.toString();
+			}
+			if (sb.length() > 0) sb.append('|');
+			sb.append(formatted);
+		}
+		return sb.toString();
+	}
+
 	/**
 	 * Wrap a plain thumbnail URL in the canonical `[![alt](url 'alt')](ref)`
 	 * markdown form so formatGenericCell can route it through the existing
@@ -479,6 +529,20 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 				return sb.toString();
 			}
 			return v.toString().replace("|", "; ");
+		}
+		// Publications column (`pubs` / `publications`): VFBquery returns a
+		// List of nested dicts:
+		//   [{core:{iri,symbol,types,short_form,label}, FlyBase, PubMed, DOI}, ...]
+		// The generic List branch below would join them with `|` and rely on
+		// Map.toString() per element, producing the unreadable
+		// "{core={iri=..., ...}, FlyBase=..., PubMed=..., DOI=...}" output
+		// seen on TransgeneExpressionHere's Reference column.
+		// Instead, extract core.label + core.short_form and render as
+		// pipe-joined `[label](short_form)` markdown so the V2 frontend's
+		// reference column renderer can split + link each pub.
+		if (isPubsColumn(apiCol) && v instanceof List)
+		{
+			return formatPubsList((List<?>) v);
 		}
 		if (v instanceof List)
 		{
