@@ -378,7 +378,29 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 			SerializableQueryResult r = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 			for (String col : in.getHeader())
 			{
-				r.getValues().add(formatGenericCell(col, safeGetValue(in, col, i), imageType));
+				Object cellValue = safeGetValue(in, col, i);
+				// Some VFBquery functions (PaintedDomains is the canonical
+				// example) return `thumbnail` as a plain URL string rather
+				// than the `[![alt](url 'alt')](ref)` markdown form that
+				// formatGenericCell's image-cell branch knows how to handle.
+				// SlideshowImageComponent JSON.parses every Images-column
+				// cell unconditionally, so a raw URL crashes the whole page.
+				// Synthesise the markdown wrapper here so the existing
+				// formatGenericCell path can convert it cleanly. Uses the
+				// row's id as the ref (template is parsed from the URL when
+				// present — the canonical path is
+				// .../data/VFB/i/XXXX/YYYY/VFB_template/thumbnail*.png).
+				if (isThumbnailColumn(col) && cellValue instanceof String)
+				{
+					String urlOrMd = (String) cellValue;
+					if (urlOrMd.length() > 0 && urlOrMd.charAt(0) != '[' && (urlOrMd.startsWith("http://") || urlOrMd.startsWith("https://")))
+					{
+						Object idObj = safeGetValue(in, COL_ID, i);
+						String imageId = idObj != null ? idObj.toString() : "";
+						cellValue = wrapPlainUrlAsImageMarkdown(urlOrMd, imageId);
+					}
+				}
+				r.getValues().add(formatGenericCell(col, cellValue, imageType));
 			}
 			out.getResults().add(r);
 		}
@@ -396,6 +418,40 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 	private static boolean isTagsColumn(String apiCol)
 	{
 		return apiCol != null && (apiCol.equals("tags") || apiCol.equals("gross_type"));
+	}
+
+	private static boolean isThumbnailColumn(String apiCol)
+	{
+		return apiCol != null && apiCol.equals("thumbnail");
+	}
+
+	/**
+	 * Wrap a plain thumbnail URL in the canonical `[![alt](url 'alt')](ref)`
+	 * markdown form so formatGenericCell can route it through the existing
+	 * image-markdown → Variable JSON converter. The template short_form is
+	 * parsed from the canonical VFB URL layout
+	 * ({@code .../data/VFB/i/XXXX/YYYY/VFB_template/thumbnail*.png}); ref is
+	 * built as {@code template,imageId} when found, otherwise just
+	 * {@code imageId}. Always preserves the original URL.
+	 */
+	private static final Pattern VFB_THUMBNAIL_URL_TEMPLATE = Pattern.compile(".*?/i/[^/]+/[^/]+/+([^/]+)/+thumbnail[^/]*\\.(?:png|jpg|jpeg|gif)$");
+
+	private static String wrapPlainUrlAsImageMarkdown(String url, String imageId)
+	{
+		String ref = imageId == null ? "" : imageId;
+		Matcher m = VFB_THUMBNAIL_URL_TEMPLATE.matcher(url);
+		if (m.matches())
+		{
+			String template = m.group(1);
+			if (template != null && template.length() > 0)
+			{
+				ref = template + (imageId != null && imageId.length() > 0 ? ("," + imageId) : "");
+			}
+		}
+		// Alt is empty — the V2 image card renderer falls back to the cell's
+		// reference for tooltip text, and we have no human-readable label
+		// for the thumbnail itself at this point in the row processing.
+		return "[![](" + url + ")](" + ref + ")";
 	}
 
 	private static String formatGenericCell(String apiCol, Object v, Type imageType)
