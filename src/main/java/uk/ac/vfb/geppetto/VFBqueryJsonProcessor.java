@@ -433,10 +433,22 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 	/**
 	 * Format VFBquery's `pubs` field — a List of dicts shaped as
 	 *   {core: {iri, symbol, types, short_form, label}, FlyBase, PubMed, DOI}
-	 * — into a pipe-joined markdown string the V2 reference column
-	 * renderer can split and link. Each non-empty pub becomes
-	 * {@code [label](short_form)}; empty pubs are skipped. Falls back to
-	 * {@code Object.toString()} if a list element isn't a Map (defensive).
+	 * — into the form the V2 reference column expects: each pub's
+	 * {@code core.label} joined by `"; "`, exactly matching
+	 * SOLRQueryProcessor.reference() (the legacy v2 prod processor):
+	 *
+	 *   if (!result.equals("")) result += "; ";
+	 *   result += pub.core.getName();
+	 *
+	 * The V2 Reference column's customComponent (QueryLinkArrayComponent)
+	 * splits on `";"` per queryBuilderConfiguration.js:151, and falls back
+	 * to plain-text rendering when the per-item value doesn't contain the
+	 * entityDelimiter `"----"` — which is the case for both prod's output
+	 * and ours. Matching this format gives v2-dev the same plain-text
+	 * reference column styling as v2 prod.
+	 *
+	 * Defensive: if an element isn't a Map (unexpected shape), fall back to
+	 * Object.toString() rather than dumping a HashMap.
 	 */
 	@SuppressWarnings("unchecked")
 	private static String formatPubsList(List<?> pubs)
@@ -454,12 +466,19 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 				{
 					Map<String, Object> core = (Map<String, Object>) coreObj;
 					Object labelObj = core.get("label");
-					Object shortFormObj = core.get("short_form");
-					String label = labelObj != null ? labelObj.toString() : "";
-					String shortForm = shortFormObj != null ? shortFormObj.toString() : "";
-					if (label.length() > 0 || shortForm.length() > 0)
+					String label = labelObj != null ? labelObj.toString().trim() : "";
+					if (label.length() > 0)
 					{
-						formatted = "[" + label + "](" + shortForm + ")";
+						formatted = label;
+					}
+					else
+					{
+						Object symbolObj = core.get("symbol");
+						String symbol = symbolObj != null ? symbolObj.toString().trim() : "";
+						if (symbol.length() > 0)
+						{
+							formatted = symbol;
+						}
 					}
 				}
 			}
@@ -469,7 +488,7 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 				// readable representation rather than dumping the dict.
 				formatted = e.toString();
 			}
-			if (sb.length() > 0) sb.append('|');
+			if (sb.length() > 0) sb.append("; ");
 			sb.append(formatted);
 		}
 		return sb.toString();
@@ -537,9 +556,11 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 		// Map.toString() per element, producing the unreadable
 		// "{core={iri=..., ...}, FlyBase=..., PubMed=..., DOI=...}" output
 		// seen on TransgeneExpressionHere's Reference column.
-		// Instead, extract core.label + core.short_form and render as
-		// pipe-joined `[label](short_form)` markdown so the V2 frontend's
-		// reference column renderer can split + link each pub.
+		// Match SOLRQueryProcessor.reference() exactly: emit plain `core.label`
+		// (or `core.symbol` fallback) joined by `"; "` — V2's Reference column
+		// custom component (QueryLinkArrayComponent) uses stringDelimiter=";"
+		// and falls back to plain text when no entityDelimiter "----" is
+		// present, so this renders identically to v2 prod.
 		if (isPubsColumn(apiCol) && v instanceof List)
 		{
 			return formatPubsList((List<?>) v);
@@ -603,9 +624,16 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 	 * Match a markdown-image-wrapped-link cell as VFBquery emits it:
 	 *   [![ALT](URL 'TITLE')](REF)
 	 *   [![ALT](URL)](REF)
+	 *   [![ALT]( 'TITLE')](REF)      empty URL, common when thumbnail not
+	 *                                materialised for a neuron — title still
+	 *                                present because the Cypher
+	 *                                apoc.text.format always emits it
 	 *
-	 * The 'TITLE' (in single quotes) is optional; URL is anything not
-	 * whitespace or `)`; REF is anything up to the final `)`.
+	 * The 'TITLE' (in single quotes) is optional; URL is anything up to the
+	 * optional ` 'title'` part or the closing `)`; REF is anything up to the
+	 * final `)`. URL group can be empty/whitespace, in which case the
+	 * surrounding caller treats the cell as "no image" (returns empty string
+	 * for the Images column).
 	 *
 	 * Builds a Variable carrying an ArrayValue of one Image with
 	 *   - data      = URL
@@ -618,8 +646,14 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 	 * we couldn't build the JSON (e.g. imageType wasn't resolvable) — the
 	 * caller then falls back to stripMarkdownLink or pass-through.
 	 */
+	// URL group is lazy-empty-permissive ([^']*?) so we tolerate cells where
+	// the API returned an empty URL (no thumbnail materialised) — those come
+	// through as `[![alt]( 'alt')](ref)` because the Cypher's apoc.text.format
+	// always emits the title slot. The optional title part stops the lazy URL
+	// match cleanly. Trailing `\s*` swallows any whitespace before `)` for
+	// URL-only cells like `[![alt](url )](ref)`.
 	private static final Pattern IMAGE_MARKDOWN = Pattern.compile(
-			"\\[!\\[([^\\]]*)\\]\\(([^\\s)]+)(?:\\s+'[^']*')?\\)\\]\\(([^)]+)\\)");
+			"\\[!\\[([^\\]]*)\\]\\(([^']*?)(?:\\s+'([^']*)')?\\s*\\)\\]\\(([^)]+)\\)");
 
 	private static String imageMarkdownToVariableJson(String s, Type imageType)
 	{
@@ -628,7 +662,17 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 		if (!m.find()) return null;
 		String alt = m.group(1);
 		String url = m.group(2);
-		String ref = m.group(3);
+		String ref = m.group(4);
+		// Cells where the API has no thumbnail URL but still produces the
+		// `[![alt]( 'alt')](ref)` form — return "" so the caller emits an
+		// empty Images cell (matches SOLRQueryProcessor empty-images branch).
+		// Distinct from "regex didn't match" (returns null) so the caller can
+		// suppress the warning log for this expected case.
+		if (url == null || url.trim().length() == 0)
+		{
+			return "";
+		}
+		url = url.trim();
 
 		try
 		{
