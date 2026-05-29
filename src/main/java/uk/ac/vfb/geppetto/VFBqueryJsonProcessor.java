@@ -116,7 +116,7 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 		COL_HEADER_MAP.put("publications", "Reference");
 		COL_HEADER_MAP.put("partner_neuron", "Name");
 		COL_HEADER_MAP.put("dataset", "Dataset");
-		COL_HEADER_MAP.put("template", "Template");
+		COL_HEADER_MAP.put("template", "Template_Space");
 		COL_HEADER_MAP.put("cell_type", "Cell type");
 		COL_HEADER_MAP.put("cluster", "Cluster");
 		COL_HEADER_MAP.put("gene", "Gene");
