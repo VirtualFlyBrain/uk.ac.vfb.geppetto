@@ -652,8 +652,17 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 	// always emits the title slot. The optional title part stops the lazy URL
 	// match cleanly. Trailing `\s*` swallows any whitespace before `)` for
 	// URL-only cells like `[![alt](url )](ref)`.
+	// URL group is lazy-empty-permissive and forbids both quote styles so it
+	// can't gobble the title. The optional title now accepts EITHER
+	// 'title' (Cypher-emitted, single-quoted apoc.text.format output) OR
+	// "title" (post-processed shape after vfb_queries.encode_markdown_links
+	// re-emits with double quotes via the secure_image_url replacement at
+	// vfb_queries.py:340-355). Both pair-styles seen in production responses
+	// from vfbquery.virtualflybrain.org — anything single-only would miss
+	// the double-quoted variant and the URL match would eat into the title
+	// area, producing a malformed <img src> on the V2 frontend.
 	private static final Pattern IMAGE_MARKDOWN = Pattern.compile(
-			"\\[!\\[([^\\]]*)\\]\\(([^']*?)(?:\\s+'([^']*)')?\\s*\\)\\]\\(([^)]+)\\)");
+			"\\[!\\[([^\\]]*)\\]\\(([^'\"]*?)(?:\\s+['\"]([^'\"]*)['\"])?\\s*\\)\\]\\(([^)]+)\\)");
 
 	private static String imageMarkdownToVariableJson(String s, Type imageType)
 	{
