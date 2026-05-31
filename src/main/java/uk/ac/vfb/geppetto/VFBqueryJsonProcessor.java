@@ -653,16 +653,22 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 	// match cleanly. Trailing `\s*` swallows any whitespace before `)` for
 	// URL-only cells like `[![alt](url )](ref)`.
 	// URL group is lazy-empty-permissive and forbids both quote styles so it
-	// can't gobble the title. The optional title now accepts EITHER
+	// can't gobble the title. The optional title accepts EITHER
 	// 'title' (Cypher-emitted, single-quoted apoc.text.format output) OR
 	// "title" (post-processed shape after vfb_queries.encode_markdown_links
 	// re-emits with double quotes via the secure_image_url replacement at
 	// vfb_queries.py:340-355). Both pair-styles seen in production responses
-	// from vfbquery.virtualflybrain.org — anything single-only would miss
-	// the double-quoted variant and the URL match would eat into the title
-	// area, producing a malformed <img src> on the V2 frontend.
+	// from vfbquery.virtualflybrain.org.
+	//
+	// Title body is `.*?` (lazy any-char) with the closing quote tied to the
+	// opener via backreference \3. That accepts apostrophes inside the title
+	// — e.g. Kenyon-cell labels like `KCa'b'-ap1_R` or dopaminergic PAM
+	// labels like `PAM03(B2B'2a)_L` — which the previous `[^'"]*` body
+	// silently rejected, emitting empty-string thumbnails for every row
+	// whose label contained a `'`. Group numbers preserved: 1=alt, 2=url,
+	// 4=ref (group 3 is now the quote-delimiter, was the unused title body).
 	private static final Pattern IMAGE_MARKDOWN = Pattern.compile(
-			"\\[!\\[([^\\]]*)\\]\\(([^'\"]*?)(?:\\s+['\"]([^'\"]*)['\"])?\\s*\\)\\]\\(([^)]+)\\)");
+			"\\[!\\[([^\\]]*)\\]\\(([^'\"]*?)(?:\\s+(['\"]).*?\\3\\s*)?\\)\\]\\(([^)]+)\\)");
 
 	private static String imageMarkdownToVariableJson(String s, Type imageType)
 	{
