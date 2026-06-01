@@ -368,16 +368,39 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 		// handlers, sort direction and CSS class for each column.
 		// Unknown ids pass through unchanged so future VFBquery fields don't
 		// disappear — they just render as plain text under their raw API name.
-		for (String col : in.getHeader())
+		List<String> headers = in.getHeader();
+		for (String col : headers)
 		{
 			out.getHeader().add(mapHeader(col));
 		}
 		int n = in.getResults().size();
+		// Pass 1: per-column numeric width analysis. For any column whose
+		// every non-null value parses as a "real" number (rejecting ID-shaped
+		// huge integers — see analyseNumericColumns) we capture the maximum
+		// integer-digit width and the maximum fractional-digit width so the
+		// emit pass can left-pad the integer side and right-pad the fractional
+		// side to a single column-wide string template. The table component
+		// sorts cells as strings, so without this `47` sorts BEFORE `5`. Pad
+		// rule (matches Robbie's spec):
+		//   integer 9 in a column whose max is 999  -> "  9"
+		//   integer 1 in a column whose max frac=3  -> "1    " (1 + space-dot + 3 spaces)
+		//   "0.009" in same column                  -> "0.009"
+		// allNumeric=false for any column with a mixed/string cell, any
+		// known string-shaped column (tags, pubs, thumbnail, …), or any
+		// magnitude / digit-count signature suggesting an ID rather than a
+		// count.
+		int nCols = headers.size();
+		boolean[] allNumeric = new boolean[nCols];
+		int[] intWidths = new int[nCols];
+		int[] fracWidths = new int[nCols];
+		analyseNumericColumns(in, n, allNumeric, intWidths, fracWidths);
+
 		for (int i = 0; i < n; i++)
 		{
 			SerializableQueryResult r = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
-			for (String col : in.getHeader())
+			for (int ci = 0; ci < nCols; ci++)
 			{
+				String col = headers.get(ci);
 				Object cellValue = safeGetValue(in, col, i);
 				// Some VFBquery functions (PaintedDomains is the canonical
 				// example) return `thumbnail` as a plain URL string rather
@@ -400,10 +423,215 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 						cellValue = wrapPlainUrlAsImageMarkdown(urlOrMd, imageId);
 					}
 				}
-				r.getValues().add(formatGenericCell(col, cellValue, imageType));
+				if (allNumeric[ci])
+				{
+					r.getValues().add(padNumericCell(cellValue, intWidths[ci], fracWidths[ci]));
+				}
+				else
+				{
+					r.getValues().add(formatGenericCell(col, cellValue, imageType));
+				}
 			}
 			out.getResults().add(r);
 		}
+	}
+
+	/**
+	 * Maximum int-part digit count we will treat as a "real" count column.
+	 * 10^10 = 10 digits covers every real VFB count (synapses, weights, etc.
+	 * top out at low millions). Anything bigger is almost certainly an ID
+	 * embedded as a Number — FlyWire root ids are ~18 digits — and must not
+	 * be padded as a numeric column.
+	 */
+	private static final int NUMERIC_COLUMN_MAX_INT_DIGITS = 10;
+
+	/**
+	 * Same threshold expressed as a magnitude, used to short-circuit columns
+	 * that contain an ID disguised as a numeric value. 1e10 is well above any
+	 * VFB count column and far below any FlyWire / hemibrain body id.
+	 */
+	private static final double NUMERIC_COLUMN_MAX_MAGNITUDE = 1.0e10;
+
+	/**
+	 * Pass 1 of buildGenericRows. Populates allNumeric / intWidths / fracWidths
+	 * for every column. A column is flagged numeric only if EVERY non-null
+	 * value parses as a finite number under the safety caps above, AND the
+	 * column isn't one of the known string-shaped types (tags / pubs /
+	 * thumbnail / gross_type). Columns where every cell is null stay
+	 * non-numeric so the emit pass falls back to formatGenericCell's
+	 * empty-string handling (no whitespace cells where there's nothing
+	 * meaningful to align).
+	 */
+	private static void analyseNumericColumns(QueryResults in, int rowCount,
+			boolean[] allNumeric, int[] intWidths, int[] fracWidths)
+	{
+		List<String> headers = in.getHeader();
+		for (int ci = 0; ci < headers.size(); ci++)
+		{
+			String col = headers.get(ci);
+			if (isTagsColumn(col) || isPubsColumn(col) || isThumbnailColumn(col))
+			{
+				allNumeric[ci] = false;
+				continue;
+			}
+			boolean numeric = true;
+			boolean seenAny = false;
+			int maxInt = 0;
+			int maxFrac = 0;
+			for (int i = 0; i < rowCount; i++)
+			{
+				Object v = safeGetValue(in, col, i);
+				if (v == null) continue;
+				Double d = parseNumericCell(v);
+				if (d == null)
+				{
+					numeric = false;
+					break;
+				}
+				if (Math.abs(d) > NUMERIC_COLUMN_MAX_MAGNITUDE)
+				{
+					numeric = false;
+					break;
+				}
+				seenAny = true;
+				String s = bareNumberString(d);
+				int dot = s.indexOf('.');
+				int iw = dot < 0 ? s.length() : dot;
+				int fw = dot < 0 ? 0 : s.length() - dot - 1;
+				// signed values: strip a leading '-' from the integer width
+				// so the digit count is what we left-pad against; the sign
+				// rides along inside the integer part naturally.
+				if (s.length() > 0 && s.charAt(0) == '-') iw -= 1;
+				if (iw > maxInt) maxInt = iw;
+				if (fw > maxFrac) maxFrac = fw;
+				if (maxInt > NUMERIC_COLUMN_MAX_INT_DIGITS)
+				{
+					numeric = false;
+					break;
+				}
+			}
+			allNumeric[ci] = numeric && seenAny;
+			intWidths[ci] = maxInt;
+			fracWidths[ci] = maxFrac;
+		}
+	}
+
+	/**
+	 * Best-effort number parse. Accepts java.lang.Number directly; otherwise
+	 * tries Double.parseDouble against the string form. Returns null for
+	 * anything that isn't finite, anything that contains characters Double
+	 * won't accept (markdown, short_forms, hex), or anything blank.
+	 */
+	private static Double parseNumericCell(Object v)
+	{
+		if (v instanceof Number)
+		{
+			double d = ((Number) v).doubleValue();
+			return Double.isFinite(d) ? Double.valueOf(d) : null;
+		}
+		String s = v.toString().trim();
+		if (s.length() == 0) return null;
+		// Reject anything with a non-numeric character early — Double.parseDouble
+		// is permissive enough to accept hex literals on some JDKs ("0x…").
+		for (int k = 0; k < s.length(); k++)
+		{
+			char c = s.charAt(k);
+			if (!(Character.isDigit(c) || c == '.' || c == '-' || c == '+' || c == 'e' || c == 'E'))
+			{
+				return null;
+			}
+		}
+		try
+		{
+			double d = Double.parseDouble(s);
+			return Double.isFinite(d) ? Double.valueOf(d) : null;
+		}
+		catch (NumberFormatException e)
+		{
+			return null;
+		}
+	}
+
+	/**
+	 * String form for column-width analysis: whole numbers are integer
+	 * strings; non-whole numbers use Double.toString(), which preserves the
+	 * user-supplied precision in the common case (the API hands us doubles
+	 * that round-trip via JSON). Returns no leading/trailing whitespace.
+	 */
+	private static String bareNumberString(double d)
+	{
+		if (d == Math.floor(d) && !Double.isInfinite(d))
+		{
+			return Long.toString((long) d);
+		}
+		return Double.toString(d);
+	}
+
+	/**
+	 * Format a single numeric cell against the column's pre-computed integer
+	 * and fractional widths so column-wide string sort matches column-wide
+	 * numeric sort. Padding rules:
+	 *   - Integer side: left-pad the integer digits with spaces to intWidth.
+	 *     `9` in a column whose max is `999` becomes `"  9"`.
+	 *   - Fractional side: if the column has any decimals (fracWidth > 0) and
+	 *     this value has none, append `1 + fracWidth` trailing spaces to fill
+	 *     the slot a `"."xxx` would have occupied.
+	 *   - Fractional side: if the column has any decimals and this value has
+	 *     fewer than max, right-pad with spaces.
+	 *   - null or unparseable cells emit an all-spaces string of the column's
+	 *     full width so the column visual width stays uniform.
+	 * The output preserves user-typed precision: `1` stays `1` rather than
+	 * being expanded to `1.000`; the missing decimal slot becomes whitespace.
+	 */
+	private static String padNumericCell(Object v, int intWidth, int fracWidth)
+	{
+		int totalWidth = intWidth + (fracWidth > 0 ? 1 + fracWidth : 0);
+		if (v == null)
+		{
+			return repeatSpace(totalWidth);
+		}
+		Double d = parseNumericCell(v);
+		if (d == null)
+		{
+			// Shouldn't happen — the pass-1 analyser already rejected non-numeric
+			// columns — but be defensive: drop through to a plain stringify.
+			return v.toString();
+		}
+		String s = bareNumberString(d.doubleValue());
+		int dot = s.indexOf('.');
+		int iw = dot < 0 ? s.length() : dot;
+		// Strip a leading '-' from the integer-width calculation; the sign
+		// will ride along inside the digits when we emit.
+		boolean negative = s.length() > 0 && s.charAt(0) == '-';
+		if (negative) iw -= 1;
+		int fw = dot < 0 ? 0 : s.length() - dot - 1;
+		StringBuilder sb = new StringBuilder(totalWidth);
+		// Left-pad the integer side.
+		for (int k = 0; k < intWidth - iw; k++) sb.append(' ');
+		sb.append(s);
+		// Right-pad the fractional side.
+		if (fracWidth > 0)
+		{
+			if (dot < 0)
+			{
+				// Value has no decimal but the column does — fill the entire
+				// `.xxx…` slot with whitespace.
+				for (int k = 0; k < 1 + fracWidth; k++) sb.append(' ');
+			}
+			else
+			{
+				for (int k = 0; k < fracWidth - fw; k++) sb.append(' ');
+			}
+		}
+		return sb.toString();
+	}
+
+	private static String repeatSpace(int n)
+	{
+		if (n <= 0) return "";
+		StringBuilder sb = new StringBuilder(n);
+		for (int k = 0; k < n; k++) sb.append(' ');
+		return sb.toString();
 	}
 
 	/**
