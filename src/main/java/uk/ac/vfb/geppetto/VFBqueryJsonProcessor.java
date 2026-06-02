@@ -398,10 +398,40 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 		for (int i = 0; i < n; i++)
 		{
 			SerializableQueryResult r = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
+			// Track where the `id` column lands in this row's values list
+			// + accumulate per-clickable-column entity ids so we can
+			// replace the id-column value with a DELIM-packed string at
+			// the end of the row. This mirrors SOLRQueryProcessor's
+			// approach (e.g. row.cluster.short_form + delim + row.term...
+			// + delim + row.pubs.get(0)... + delim + row.dataset...):
+			// griddle reads the click target via
+			//   path.split(entityDelimiter)[entityIndex]
+			// where path is the id-column value. With per-cell
+			// `[label](id)` markdown, the natural API-column order
+			// (excluding `id`) maps 1:1 onto the entityIndex values
+			// declared in queryBuilderConfiguration.js (name=0,
+			// expressed_in=1, reference=2, dataset=3, ...).
+			int idColIdx = -1;
+			StringBuilder packedIds = new StringBuilder();
 			for (int ci = 0; ci < nCols; ci++)
 			{
 				String col = headers.get(ci);
 				Object cellValue = safeGetValue(in, col, i);
+				if (col.equals(COL_ID))
+				{
+					idColIdx = ci;
+				}
+				else
+				{
+					// Capture this column's slot in the packed id BEFORE
+					// any thumbnail-wrapping or numeric-padding rewrites
+					// alter the markdown. Non-markdown / non-clickable
+					// columns (tags, technique, plain numbers) contribute
+					// an empty slot so positional alignment is preserved.
+					String slotId = extractMarkdownLinkId(cellValue);
+					if (packedIds.length() > 0) packedIds.append(DELIM);
+					packedIds.append(slotId != null ? slotId : "");
+				}
 				// Some VFBquery functions (PaintedDomains is the canonical
 				// example) return `thumbnail` as a plain URL string rather
 				// than the `[![alt](url 'alt')](ref)` markdown form that
@@ -432,8 +462,41 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 					r.getValues().add(formatGenericCell(col, cellValue, imageType));
 				}
 			}
+			// Replace the id-column slot with the packed-id string per
+			// SOLRQueryProcessor's pattern. Only override when we found
+			// the id column AND collected at least one extracted slot —
+			// otherwise the API's existing id stays as-is so single-
+			// clickable-column queries that just want the row's primary
+			// id (e.g. legacy callers) still behave.
+			if (idColIdx >= 0 && packedIds.length() > 0)
+			{
+				r.getValues().set(idColIdx, packedIds.toString());
+			}
 			out.getResults().add(r);
 		}
+	}
+
+	/**
+	 * Extract the `id` half from a `[label](id)` markdown link, or null
+	 * if {@code value} isn't that shape. Mirrors
+	 * {@link #stripMarkdownLink(String)} but returns the parens content
+	 * instead of the brackets content. Used by the row loop to build the
+	 * SOLRQueryProcessor-style packed id column from per-cell markdown.
+	 *
+	 * Returns null for image-wrapped markdown of the form
+	 * {@code [![alt](url 'alt')](ref)} — those cells aren't clickable
+	 * navigation links and their `(ref)` is a different shape.
+	 */
+	private static String extractMarkdownLinkId(Object value)
+	{
+		if (!(value instanceof String)) return null;
+		String s = (String) value;
+		if (s.length() < 4) return null;
+		if (s.charAt(0) != '[' || s.charAt(s.length() - 1) != ')') return null;
+		if (s.charAt(1) == '!') return null;
+		int close = s.indexOf("](");
+		if (close <= 0) return null;
+		return s.substring(close + 2, s.length() - 1);
 	}
 
 	/**
