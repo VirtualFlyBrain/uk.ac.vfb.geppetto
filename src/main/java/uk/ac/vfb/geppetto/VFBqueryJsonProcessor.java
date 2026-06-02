@@ -1,5 +1,6 @@
 package uk.ac.vfb.geppetto;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -423,14 +424,35 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 				}
 				else
 				{
-					// Capture this column's slot in the packed id BEFORE
+					// Capture this column's slot(s) in the packed id BEFORE
 					// any thumbnail-wrapping or numeric-padding rewrites
-					// alter the markdown. Non-markdown / non-clickable
-					// columns (tags, technique, plain numbers) contribute
-					// an empty slot so positional alignment is preserved.
-					String slotId = extractMarkdownLinkId(cellValue);
-					if (packedIds.length() > 0) packedIds.append(DELIM);
-					packedIds.append(slotId != null ? slotId : "");
+					// alter the markdown. Three shapes to handle:
+					//
+					//   (a) plain markdown `[label](id)` → ONE slot with id
+					//   (b) `;`-separated list of `[label](id)` items
+					//        (pubs from v1.14.7+) → N slots, ONE PER ITEM —
+					//        matches legacy SOLRQueryProcessor.id() at
+					//        lines 402-407 where pubs.size() > 1 loops
+					//        per-pub. Safe when the list column is followed
+					//        only by columns whose customComponent reads
+					//        the cell value rather than the id slot.
+					//   (c) anything else (plain text, image markdown,
+					//        numeric) → ONE empty slot so positional
+					//        alignment for non-list columns is preserved.
+					List<String> slotIds = extractMarkdownLinkIds(cellValue);
+					if (slotIds == null || slotIds.isEmpty())
+					{
+						if (packedIds.length() > 0) packedIds.append(DELIM);
+						packedIds.append("");
+					}
+					else
+					{
+						for (String slotId : slotIds)
+						{
+							if (packedIds.length() > 0) packedIds.append(DELIM);
+							packedIds.append(slotId);
+						}
+					}
 				}
 				// Some VFBquery functions (PaintedDomains is the canonical
 				// example) return `thumbnail` as a plain URL string rather
@@ -477,26 +499,51 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 	}
 
 	/**
-	 * Extract the `id` half from a `[label](id)` markdown link, or null
-	 * if {@code value} isn't that shape. Mirrors
-	 * {@link #stripMarkdownLink(String)} but returns the parens content
-	 * instead of the brackets content. Used by the row loop to build the
-	 * SOLRQueryProcessor-style packed id column from per-cell markdown.
+	 * Extract the `id` halves from each `[label](id)` markdown link in a
+	 * cell, returning a list of ids in left-to-right order. Used by the
+	 * row loop to build the SOLRQueryProcessor-style packed id column.
 	 *
-	 * Returns null for image-wrapped markdown of the form
-	 * {@code [![alt](url 'alt')](ref)} — those cells aren't clickable
-	 * navigation links and their `(ref)` is a different shape.
+	 * Handles three shapes:
+	 *   - single `[label](id)` → list of size 1
+	 *   - `;`-separated list of `[label](id)` items (pubs from
+	 *     VFBquery v1.14.7+) → list with one entry per item, matching
+	 *     the legacy SOLRQueryProcessor.id() per-pub loop at lines
+	 *     402-407
+	 *   - anything else (plain text, image markdown `[![…](…)](ref)`,
+	 *     numeric, etc.) → empty list
+	 *
+	 * Image-wrapped markdown is deliberately rejected per item — those
+	 * cells aren't clickable navigation links.
 	 */
-	private static String extractMarkdownLinkId(Object value)
+	private static List<String> extractMarkdownLinkIds(Object value)
 	{
-		if (!(value instanceof String)) return null;
-		String s = (String) value;
-		if (s.length() < 4) return null;
-		if (s.charAt(0) != '[' || s.charAt(s.length() - 1) != ')') return null;
-		if (s.charAt(1) == '!') return null;
-		int close = s.indexOf("](");
-		if (close <= 0) return null;
-		return s.substring(close + 2, s.length() - 1);
+		List<String> ids = new ArrayList<>();
+		if (!(value instanceof String)) return ids;
+		String s = ((String) value).trim();
+		if (s.length() < 4) return ids;
+		// Pre-check: must start with `[` AND end with `)`. A `;`-joined
+		// list satisfies this because each item ends with `)` and items
+		// are joined by `; `, so the full string ends with the last
+		// item's `)`.
+		if (s.charAt(0) != '[' || s.charAt(s.length() - 1) != ')') return ids;
+
+		// Per-item parse. We split on the literal `; ` delimiter
+		// between markdown items (mirroring Cypher's
+		// apoc.text.join(..., '; ')). The split is precise enough that
+		// labels containing `;` (uncommon in pub titles) don't get
+		// shredded as long as the markdown brackets are well-formed.
+		for (String part : s.split(";\\s*"))
+		{
+			String item = part.trim();
+			if (item.length() < 4) continue;
+			if (item.charAt(0) != '[' || item.charAt(item.length() - 1) != ')') continue;
+			// Reject image-wrapped markdown.
+			if (item.charAt(1) == '!') continue;
+			int close = item.indexOf("](");
+			if (close <= 0) continue;
+			ids.add(item.substring(close + 2, item.length() - 1));
+		}
+		return ids;
 	}
 
 	/**
@@ -907,7 +954,28 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 			return "";
 		}
 		// Plain markdown link `[label](id)` — strip to label so the
-		// composite-ID-driven frontend linker can render plain text + links.
+		// composite-ID-driven frontend linker can render plain text +
+		// links.
+		//
+		// Multi-item list shape `[label1](id1); [label2](id2); ...`
+		// (pubs from VFBquery v1.14.7+): strip each item and re-join
+		// with `; ` so QueryLinkArrayComponent can split it back into
+		// chips. The corresponding id-column slots are added by the
+		// row loop via extractMarkdownLinkIds.
+		if (s.length() > 2 && s.charAt(0) == '['
+				&& s.indexOf(");") > 0)
+		{
+			StringBuilder out = new StringBuilder();
+			for (String part : s.split(";\\s*"))
+			{
+				String item = part.trim();
+				if (item.length() == 0) continue;
+				String label = stripMarkdownLink(item);
+				if (out.length() > 0) out.append("; ");
+				out.append(label);
+			}
+			if (out.length() > 0) return out.toString();
+		}
 		return stripMarkdownLink(s);
 	}
 
