@@ -1749,7 +1749,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 					if(QueryChecker.check(runnableQuery, variable))
 					{
 						querys += badge + "<a href=\"/org.geppetto.frontend/geppetto?q=" + variable.getId() + "," + (String) runnableQuery.getPath() + "\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + variable.getId() + "," + variable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
-						if (runnableQuery.getPath().equals("ExpressionOverlapsHere")) {
+						if (runnableQuery.getPath().equals("AnatomyExpressedIn")) {
 							queryExpressedInX = "<a href=\"/org.geppetto.frontend/geppetto?q=" + variable.getId() + "," + (String) runnableQuery.getPath() + "\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + variable.getId() + "," + variable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
 						}else if (runnableQuery.getPath().equals("TransgeneExpressionHere")) {
 							queryExpressedInX = "<a href=\"/org.geppetto.frontend/geppetto?q=" + variable.getId() + "," + (String) runnableQuery.getPath() + "\" data-instancepath=\"" + (String) runnableQuery.getPath() + "," + variable.getId() + "," + variable.getName() + "\">" + runnableQuery.getDescription().replace("$NAME", variable.getName()) + "</a></br>";
