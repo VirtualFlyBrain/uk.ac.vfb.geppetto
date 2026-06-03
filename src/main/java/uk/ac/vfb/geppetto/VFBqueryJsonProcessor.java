@@ -1,9 +1,12 @@
 package uk.ac.vfb.geppetto;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -58,6 +61,16 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 	private Boolean debug=false;
 
 	private static final String DELIM = "----";
+
+	// Columns VFBquery emits that no v2 report consumes. They have no entry in
+	// COL_HEADER_MAP or queryBuilderConfiguration.js, so the frontend cannot
+	// resolve a columnName for them and collapses every such column onto a
+	// single `undefined` griddle column. `source` and `source_id` are the
+	// per-image data-source links (FlyLight / neuronbridge / Janelia slidecode);
+	// both carry the title "Data Source", so they also collide with each other.
+	// Drop them here rather than render an unmapped column.
+	private static final Set<String> DROPPED_COLUMNS =
+			new HashSet<String>(Arrays.asList("source", "source_id"));
 
 	// VFBqueryResponseProcessor emits the API column id (the dict key) as the
 	// QueryResults header. Below are the keys for class-connectivity columns.
@@ -372,6 +385,10 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 		List<String> headers = in.getHeader();
 		for (String col : headers)
 		{
+			if (DROPPED_COLUMNS.contains(col))
+			{
+				continue;
+			}
 			out.getHeader().add(mapHeader(col));
 		}
 		int n = in.getResults().size();
@@ -411,6 +428,12 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 			for (int ci = 0; ci < nCols; ci++)
 			{
 				String col = headers.get(ci);
+				// Skip data-source columns to keep the emitted value list
+				// aligned with the filtered header list above.
+				if (DROPPED_COLUMNS.contains(col))
+				{
+					continue;
+				}
 				Object cellValue = safeGetValue(in, col, i);
 				// Some VFBquery functions (PaintedDomains is the canonical
 				// example) return `thumbnail` as a plain URL string rather
