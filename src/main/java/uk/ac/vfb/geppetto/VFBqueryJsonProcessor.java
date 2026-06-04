@@ -943,36 +943,48 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 	{
 		if (imageType == null) return null;
 		Matcher m = IMAGE_MARKDOWN.matcher(s);
-		if (!m.find()) return null;
-		String alt = m.group(1);
-		String url = m.group(2);
-		String ref = m.group(4);
-		// Cells where the API has no thumbnail URL but still produces the
-		// `[![alt]( 'alt')](ref)` form — return "" so the caller emits an
-		// empty Images cell (matches SOLRQueryProcessor empty-images branch).
-		// Distinct from "regex didn't match" (returns null) so the caller can
-		// suppress the warning log for this expected case.
-		if (url == null || url.trim().length() == 0)
-		{
-			return "";
-		}
-		url = url.trim();
-
 		try
 		{
 			ArrayValue images = ValuesFactory.eINSTANCE.createArrayValue();
-			Image image = ValuesFactory.eINSTANCE.createImage();
-			image.setName(alt == null ? "" : alt);
-			// Match SOLRQueryProcessor.secureUrl: any http:// URL gets promoted
-			// to https:// so the v2 frontend (HTTPS-served) doesn't break mixed-
-			// content blocking when rendering the thumbnail.
-			image.setData(url == null ? "" : url.replace("http://", "https://"));
-			image.setReference(ref);
-			image.setFormat(ImageFormat.PNG);
-			ArrayElement element = ValuesFactory.eINSTANCE.createArrayElement();
-			element.setIndex(0);
-			element.setInitialValue(image);
-			images.getElements().add(element);
+			boolean anyMatch = false;
+			int index = 0;
+			// A cell may carry several `[![alt](url 'alt')](ref)` items: the
+			// owlery-backed class queries (PartsOf, SubclassesOf, …) emit every
+			// example image for the term so the V2 Images column carousels them.
+			// ArrayValue already models the slideshow's image list, so we add one
+			// Image element per item.
+			while (m.find())
+			{
+				anyMatch = true;
+				String alt = m.group(1);
+				String url = m.group(2);
+				String ref = m.group(4);
+				// Skip items with no thumbnail URL (e.g. a neuron with no image
+				// materialised, emitted as `[![alt]( 'alt')](ref)`) rather than
+				// adding a blank carousel slide.
+				if (url == null || url.trim().length() == 0)
+				{
+					continue;
+				}
+				Image image = ValuesFactory.eINSTANCE.createImage();
+				image.setName(alt == null ? "" : alt);
+				// Match SOLRQueryProcessor.secureUrl: any http:// URL gets promoted
+				// to https:// so the v2 frontend (HTTPS-served) doesn't break mixed-
+				// content blocking when rendering the thumbnail.
+				image.setData(url.trim().replace("http://", "https://"));
+				image.setReference(ref);
+				image.setFormat(ImageFormat.PNG);
+				ArrayElement element = ValuesFactory.eINSTANCE.createArrayElement();
+				element.setIndex(index++);
+				element.setInitialValue(image);
+				images.getElements().add(element);
+			}
+			// Not image markdown at all — let the caller fall back to text.
+			if (!anyMatch) return null;
+			// Matched, but every item had an empty URL — emit "" so the caller
+			// produces an empty Images cell (matches SOLRQueryProcessor's
+			// empty-images branch) and suppresses the warning log.
+			if (images.getElements().isEmpty()) return "";
 
 			Variable v = VariablesFactory.eINSTANCE.createVariable();
 			v.setId("images");
@@ -983,8 +995,8 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 		}
 		catch (Exception e)
 		{
-			// Don't blow up the row over a single bad thumbnail — return null
-			// so the caller falls back to text rendering.
+			// Don't blow up the row over a bad thumbnail — return null so the
+			// caller falls back to text rendering.
 			return null;
 		}
 	}
