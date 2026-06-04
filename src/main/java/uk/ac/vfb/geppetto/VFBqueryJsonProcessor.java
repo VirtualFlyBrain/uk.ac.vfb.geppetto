@@ -60,8 +60,6 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 	// dev builds. The pattern requires NO SPACES around the `=` — leave it.
 	private Boolean debug=false;
 
-	private static final String DELIM = "----";
-
 	// Columns VFBquery emits that no v2 report consumes. They have no entry in
 	// COL_HEADER_MAP or queryBuilderConfiguration.js, so the frontend cannot
 	// resolve a columnName for them and collapses every such column onto a
@@ -302,17 +300,13 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 		out.getHeader().add("Avg_Weight");
 
 		String queriedId = variable != null && variable.getId() != null ? variable.getId() : "";
-		// V2 SOLRQueryProcessor emits PLAIN LABEL TEXT in the Upstream_Class /
-		// Downstream_Class columns (SOLRQueryProcessor.java:1087-1088), not
-		// markdown — the frontend reads the composite ID column
-		// (upstream_id----downstream_id) and applies its own linking on top of
-		// the plain label text. VFBquery's API returns the partner column as
-		// markdown ("[label](id)"); strip that to the label only so the v2
-		// frontend can link both label columns from the composite ID.
-		// For the queried-term column we synthesise the label from the
-		// Variable's Node.getName() (the human label, set when the term-info
-		// processor created the variable). Fall back to the id if the name
-		// is null/empty.
+		// The Upstream_Class / Downstream_Class columns now carry `[label](id)`
+		// markdown so the frontend MarkdownLinkComponent links them directly
+		// (matching the generic-row path). VFBquery already returns the partner
+		// column as markdown; we pass it through and synthesise matching markdown
+		// for the queried-term column from the Variable's Node.getName() (the
+		// human label, set when the term-info processor created the variable),
+		// falling back to the id if the name is null/empty.
 		String queriedName = variable != null ? variable.getName() : null;
 		String queriedLabel = (queriedName != null && !queriedName.isEmpty()) ? queriedName : queriedId;
 
@@ -336,13 +330,20 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 			SerializableQueryResult r = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 
 			String partnerId = stringValue(in, COL_ID, i);
-			String partnerLabel = stripMarkdownLink(stringValue(in, partnerColumn, i));
-			String upstreamId = upstreamCall ? partnerId : queriedId;
-			String downstreamId = upstreamCall ? queriedId : partnerId;
-			String upstreamLabel = upstreamCall ? partnerLabel : queriedLabel;
-			String downstreamLabel = upstreamCall ? queriedLabel : partnerLabel;
+			// Partner column is already `[label](id)` markdown from VFBquery; keep
+			// it so MarkdownLinkComponent links it. Synthesise the same markdown
+			// for the queried-term column from its label + id.
+			String partnerLabel = stringValue(in, partnerColumn, i);
+			String queriedMarkdown = (queriedId != null && !queriedId.isEmpty())
+					? "[" + queriedLabel + "](" + queriedId + ")"
+					: queriedLabel;
+			String upstreamLabel = upstreamCall ? partnerLabel : queriedMarkdown;
+			String downstreamLabel = upstreamCall ? queriedMarkdown : partnerLabel;
 
-			r.getValues().add(upstreamId + DELIM + downstreamId);
+			// ID column is the partner class id (the selectable entity for the
+			// row). MarkdownLinkComponent links the label columns directly, so
+			// the old `upstream_id----downstream_id` composite is no longer used.
+			r.getValues().add(partnerId);
 			r.getValues().add(upstreamLabel);
 			r.getValues().add(downstreamLabel);
 			r.getValues().add(formatInt(in, COL_TOTAL_N, i, 6));
