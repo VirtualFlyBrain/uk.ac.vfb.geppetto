@@ -220,29 +220,38 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 					+ ", inputHeader=" + results.getHeader());
 		}
 
-		// Detect connectivity-style responses by API column id. The upstream-class
-		// VFBquery call returns headers [id, upstream_class, total_n, ...];
-		// downstream returns [id, downstream_class, ...]. We synthesise the
-		// missing column so output matches the v2 9-column shape.
-		// (Headers are API ids — VFBqueryResponseProcessor emits the dict key
-		// not the human title, so mapping is stable across server-side title
-		// changes.)
-		boolean isUpstreamCall = results.getHeader().contains(COL_UPSTREAM)
-				&& !results.getHeader().contains(COL_DOWNSTREAM);
-		boolean isDownstreamCall = results.getHeader().contains(COL_DOWNSTREAM)
-				&& !results.getHeader().contains(COL_UPSTREAM);
-		boolean isClassConnectivity = isUpstreamCall || isDownstreamCall;
+		// Detect connectivity-style responses by their statistic columns
+		// (total_n / connected_n / percent_connected / pairwise_connections),
+		// which are unique to the upstream/downstream-class queries and present
+		// in every variant of that response. (Headers are API ids —
+		// VFBqueryResponseProcessor emits the dict key not the human title, so
+		// matching is stable across server-side title changes.)
+		//
+		// VFBquery now emits BOTH upstream_class and downstream_class on every
+		// row: the queried (sub)class fills one slot and the partner the other,
+		// so the per-subclass breakdown shows the actual (sub)class per row. We
+		// pass both straight through. Older responses carried only the partner's
+		// class column and relied on this processor to synthesise the queried
+		// term into the missing one; buildClassConnectivityRows still does that
+		// as a fallback, but never overrides a column the API already populated.
+		boolean hasUpstream = results.getHeader().contains(COL_UPSTREAM);
+		boolean hasDownstream = results.getHeader().contains(COL_DOWNSTREAM);
+		boolean isClassConnectivity = (hasUpstream || hasDownstream)
+				&& results.getHeader().contains(COL_TOTAL_N)
+				&& results.getHeader().contains(COL_CONNECTED_N)
+				&& results.getHeader().contains(COL_PERCENT)
+				&& results.getHeader().contains(COL_PAIRWISE);
 
 		if (debug)
 		{
-			System.out.println("VFBqueryJsonProcessor.process: isUpstreamCall=" + isUpstreamCall
-					+ ", isDownstreamCall=" + isDownstreamCall
+			System.out.println("VFBqueryJsonProcessor.process: hasUpstream=" + hasUpstream
+					+ ", hasDownstream=" + hasDownstream
 					+ ", isClassConnectivity=" + isClassConnectivity);
 		}
 
 		if (isClassConnectivity)
 		{
-			buildClassConnectivityRows(variable, results, out, isUpstreamCall);
+			buildClassConnectivityRows(variable, results, out, hasUpstream, hasDownstream);
 		}
 		else
 		{
@@ -271,7 +280,7 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 		{
 			System.out.println("VFBqueryJsonProcessor: " + out.getResults().size() + " rows in "
 					+ (System.currentTimeMillis() - t0) + " ms (mode="
-					+ (isClassConnectivity ? (isUpstreamCall ? "upstream-class" : "downstream-class") : "generic")
+					+ (isClassConnectivity ? "class-connectivity" : "generic")
 					+ ")");
 		}
 
@@ -279,15 +288,23 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 	}
 
 	/**
-	 * Rebuild the v2 9-column class-connectivity table from the VFBquery
-	 * one-direction response. The queried term occupies the column the API
-	 * didn't return (Downstream_Class for an upstream query and vice versa).
+	 * Rebuild the v2 9-column class-connectivity table.
+	 *
+	 * VFBquery emits the partner class plus, for the per-subclass breakdown, the
+	 * queried (sub)class — one in {@code upstream_class}, the other in
+	 * {@code downstream_class} — so both columns are passed straight through and
+	 * the queried-side column shows the actual (sub)class per row. For older
+	 * responses that carried only the partner's class column ({@code hasUpstream}
+	 * XOR {@code hasDownstream}), the missing column is synthesised from the
+	 * queried Variable (its label + id) as a single constant. A column the API
+	 * already populated is never overridden.
 	 *
 	 * Output header order matches SOLRQueryProcessor.java:996-1005:
 	 *   ID | Upstream_Class | Downstream_Class | Total_N | Connected_N |
 	 *   Percent_Connected | Pairwise_Connections | Total_Weight | Avg_Weight
 	 */
-	private void buildClassConnectivityRows(Variable variable, QueryResults in, QueryResults out, boolean upstreamCall)
+	private void buildClassConnectivityRows(Variable variable, QueryResults in, QueryResults out,
+			boolean hasUpstream, boolean hasDownstream)
 	{
 		out.getHeader().add("ID");
 		out.getHeader().add("Upstream_Class");
@@ -299,51 +316,41 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 		out.getHeader().add("Total_Weight");
 		out.getHeader().add("Avg_Weight");
 
+		// Fallback only: when the API omitted a class column (older single-
+		// direction responses) synthesise it from the queried Variable's
+		// Node.getName() (the human label, set when the term-info processor
+		// created the variable) + id as `[label](id)` markdown, so
+		// MarkdownLinkComponent links it just like the partner column. Falls
+		// back to the id if the name is null/empty.
 		String queriedId = variable != null && variable.getId() != null ? variable.getId() : "";
-		// The Upstream_Class / Downstream_Class columns now carry `[label](id)`
-		// markdown so the frontend MarkdownLinkComponent links them directly
-		// (matching the generic-row path). VFBquery already returns the partner
-		// column as markdown; we pass it through and synthesise matching markdown
-		// for the queried-term column from the Variable's Node.getName() (the
-		// human label, set when the term-info processor created the variable),
-		// falling back to the id if the name is null/empty.
 		String queriedName = variable != null ? variable.getName() : null;
 		String queriedLabel = (queriedName != null && !queriedName.isEmpty()) ? queriedName : queriedId;
-
-		String partnerColumn = upstreamCall ? COL_UPSTREAM : COL_DOWNSTREAM;
+		String queriedMarkdown = (queriedId != null && !queriedId.isEmpty())
+				? "[" + queriedLabel + "](" + queriedId + ")"
+				: queriedLabel;
 
 		int n = in.getResults().size();
 		if (debug)
 		{
 			System.out.println("VFBqueryJsonProcessor.buildClassConnectivityRows: queriedId=" + queriedId
-					+ ", partnerColumn=" + partnerColumn + ", n=" + n);
-			if (n > 0)
-			{
-				System.out.println("VFBqueryJsonProcessor.buildClassConnectivityRows: first row probe -- "
-						+ "ID=" + safeGetValue(in, COL_ID, 0)
-						+ ", " + partnerColumn + "=" + safeGetValue(in, partnerColumn, 0)
-						+ ", " + COL_TOTAL_N + "=" + safeGetValue(in, COL_TOTAL_N, 0));
-			}
+					+ ", hasUpstream=" + hasUpstream + ", hasDownstream=" + hasDownstream + ", n=" + n);
 		}
 		for (int i = 0; i < n; i++)
 		{
 			SerializableQueryResult r = DatasourcesFactory.eINSTANCE.createSerializableQueryResult();
 
-			String partnerId = stringValue(in, COL_ID, i);
-			// Partner column is already `[label](id)` markdown from VFBquery; keep
-			// it so MarkdownLinkComponent links it. Synthesise the same markdown
-			// for the queried-term column from its label + id.
-			String partnerLabel = stringValue(in, partnerColumn, i);
-			String queriedMarkdown = (queriedId != null && !queriedId.isEmpty())
-					? "[" + queriedLabel + "](" + queriedId + ")"
-					: queriedLabel;
-			String upstreamLabel = upstreamCall ? partnerLabel : queriedMarkdown;
-			String downstreamLabel = upstreamCall ? queriedMarkdown : partnerLabel;
+			// Both class columns carry `[label](id)` markdown so
+			// MarkdownLinkComponent links them. Pass through whichever the API
+			// populated; synthesise the queried term only into a genuinely
+			// absent column (older single-direction responses).
+			String upstreamLabel = hasUpstream ? stringValue(in, COL_UPSTREAM, i) : queriedMarkdown;
+			String downstreamLabel = hasDownstream ? stringValue(in, COL_DOWNSTREAM, i) : queriedMarkdown;
 
 			// ID column is the partner class id (the selectable entity for the
-			// row). MarkdownLinkComponent links the label columns directly, so
-			// the old `upstream_id----downstream_id` composite is no longer used.
-			r.getValues().add(partnerId);
+			// row); VFBquery returns it in the `id` column. MarkdownLinkComponent
+			// links the label columns directly, so the old
+			// `upstream_id----downstream_id` composite is no longer used.
+			r.getValues().add(stringValue(in, COL_ID, i));
 			r.getValues().add(upstreamLabel);
 			r.getValues().add(downstreamLabel);
 			r.getValues().add(formatInt(in, COL_TOTAL_N, i, 6));
