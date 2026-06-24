@@ -116,6 +116,13 @@
 	<aop:scoped-proxy proxy-target-class="false"/>
 	</bean>
 
+	<osgi:service id="VFBAddProcessTermInfoVFBqueryJson" ref="vfbProcessTermInfoVFBqueryJson"
+		interface="org.geppetto.core.datasources.IQueryProcessor">
+	</osgi:service>
+	<bean id="vfbProcessTermInfoVFBqueryJson" scope="prototype" class="uk.ac.vfb.geppetto.VFBProcessTermInfoVFBqueryJson">
+	<aop:scoped-proxy proxy-target-class="false"/>
+	</bean>
+
 	<osgi:service id="VFBqueryJsonProcessorExporter" ref="vfbqueryJsonProcessor"
 		interface="org.geppetto.core.datasources.IQueryProcessor">
 	</osgi:service>
