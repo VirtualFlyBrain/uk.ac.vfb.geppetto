@@ -763,6 +763,11 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 			return;
 		}
 		Gson g = new Gson();
+		// Inline pill style so the result count reads clearly as a badge, not text,
+		// regardless of whether the frontend ships terminfo-count-badge CSS.
+		final String pill = "display:inline-block;min-width:0.9em;padding:1px 6px;margin-right:6px;"
+				+ "border-radius:9px;font-size:0.72em;font-weight:bold;line-height:1.5;text-align:center;"
+				+ "vertical-align:middle;color:#ffffff;";
 		List<String> rows = new ArrayList<String>();
 		for (JsonElement el : ti.getAsJsonArray("Queries")) {
 			Query q = g.fromJson(el, Query.class);
@@ -771,10 +776,12 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 			String badge;
 			String cssExtra = "";
 			if (count == 0) {
-				badge = "<span class=\"terminfo-count-badge terminfo-count-empty\">0</span>";
+				badge = "<span class=\"terminfo-count-badge terminfo-count-empty\" style=\"" + pill
+						+ "background-color:#9b9b9b;\" title=\"0 results\">0</span>";
 				cssExtra = " terminfo-query-empty";
 			} else if (count > 0) {
-				badge = "<span class=\"terminfo-count-badge\">" + formatCount(count) + "</span>";
+				badge = "<span class=\"terminfo-count-badge\" style=\"" + pill
+						+ "background-color:#428bca;\" title=\"" + count + " results\">" + formatCount(count) + "</span>";
 			} else {
 				badge = "<i class=\"popup-icon-link fa fa-quora\"></i>";
 			}
