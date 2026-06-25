@@ -60,7 +60,7 @@ import org.geppetto.model.datasources.DataSourceLibraryConfiguration;
  */
 public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 
-	private Boolean debug = false;
+	private Boolean debug=false;
 
 	private static final Pattern MD_LINK = Pattern.compile("\\[([^\\]]+)\\]\\(([^)]+)\\)");
 	private static final Pattern MD_IMAGE = Pattern.compile("\\[!\\[([^\\]]*)\\]\\(([^)\\s]+)(?:\\s+'([^']*)')?\\)\\]\\(([^)]+)\\)");
@@ -207,13 +207,15 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 			// Unconditional diagnostic: the v2-dev build target is "release", so the
 			// Dockerfile sed leaves debug=false; log the received container shape
 			// regardless so a mishandled term can be inspected from the server log.
-			StringBuilder dbgKeys = new StringBuilder();
-			for (Map.Entry<String, JsonElement> de : ti.entrySet()) {
-				dbgKeys.append(de.getKey()).append(' ');
+			if (debug) {
+				StringBuilder dbgKeys = new StringBuilder();
+				for (Map.Entry<String, JsonElement> de : ti.entrySet()) {
+					dbgKeys.append(de.getKey()).append(' ');
+				}
+				System.out.println("VFBProcessTermInfoVFBqueryJson: raw term_info top-level keys=["
+						+ dbgKeys.toString().trim() + "] head="
+						+ json.substring(0, Math.min(180, json.length())));
 			}
-			System.out.println("VFBProcessTermInfoVFBqueryJson: raw term_info top-level keys=["
-					+ dbgKeys.toString().trim() + "] head="
-					+ json.substring(0, Math.min(180, json.length())));
 			// get_term_info returns the term keyed by its short_form, e.g.
 			// {"VFB_00101567": {Id, Name, ...}}. Unwrap to the inner term object
 			// (the variable id key if present, else a single id-keyed object).
@@ -265,9 +267,11 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 			// Debug: surface the raw term_info JSON fed into this processor so a
 			// mishandled term can be inspected in-panel even if later steps fail.
 			// Emitted early and HTML-escaped; always present in debug builds.
-			String dbg = json.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
-			addModelHtml("<pre style=\"white-space:pre-wrap;word-break:break-all\">" + dbg + "</pre>",
-					"Debug (raw term_info)", "debug", metaDataType, geppettoModelAccess);
+			if (debug) {
+				String dbg = json.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
+				addModelHtml("<pre style=\"white-space:pre-wrap;word-break:break-all\">" + dbg + "</pre>",
+						"Debug (raw term_info)", "debug", metaDataType, geppettoModelAccess);
+			}
 
 			if (!superTypes.isEmpty()) {
 				for (String supertype : superTypes) {
