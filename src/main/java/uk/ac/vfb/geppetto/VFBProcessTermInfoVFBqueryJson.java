@@ -91,6 +91,30 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 
 	/** Convert a VFBquery Meta.* string ("[rel](id): [a](id), [b](id); ...")
 	 *  to the old list HTML: <ul class="terminfo-CSS"><li>...</li></ul>. */
+	// Relationships render the RELATION as plain text (the relation-ontology id,
+	// e.g. RO_/BFO_/PATO_, is not VFB-browsable so must not be a link) and the
+	// object(s) after the first ":" as links, mirroring v2.
+	private static String relationshipsToHtml(String metaValue) {
+		if (metaValue == null || metaValue.isEmpty()) {
+			return "";
+		}
+		StringBuilder sb = new StringBuilder("<ul class=\"terminfo-relationships\">");
+		for (String seg : metaValue.split(";")) {
+			seg = seg.trim();
+			if (seg.isEmpty()) continue;
+			int colon = seg.indexOf(':');
+			if (colon > 0) {
+				String rel = symbolText(seg.substring(0, colon).trim());
+				String objs = mdToHtml(seg.substring(colon + 1).trim());
+				sb.append("<li>").append(rel).append(": ").append(objs).append("</li>");
+			} else {
+				sb.append("<li>").append(mdToHtml(seg)).append("</li>");
+			}
+		}
+		sb.append("</ul>");
+		return sb.toString();
+	}
+
 	private static String metaListToHtml(String metaValue, String css) {
 		if (metaValue == null || metaValue.isEmpty()) {
 			return "";
@@ -358,7 +382,7 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 
 			// Classification (parents) / Relationships / Related Individuals
 			addModelHtml(metaListToHtml(optStr(meta, "Types"), "Classification"), "Classification", "type", metaDataType, geppettoModelAccess);
-			addModelHtml(metaListToHtml(optStr(meta, "Relationships"), "relationships"), "Relationships", "relationships", metaDataType, geppettoModelAccess);
+			addModelHtml(relationshipsToHtml(optStr(meta, "Relationships")), "Relationships", "relationships", metaDataType, geppettoModelAccess);
 			addModelHtml(metaListToHtml(optStr(meta, "RelatedIndividuals"), "related_individuals"), "Related Individuals", "related_individuals", metaDataType, geppettoModelAccess);
 
 			// Cross References (xrefs)
