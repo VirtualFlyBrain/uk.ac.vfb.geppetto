@@ -210,15 +210,16 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 			if (ti == null) {
 				return results;
 			}
-			if (debug) {
-				StringBuilder dbgKeys = new StringBuilder();
-				for (Map.Entry<String, JsonElement> de : ti.entrySet()) {
-					dbgKeys.append(de.getKey()).append(' ');
-				}
-				System.out.println("VFBProcessTermInfoVFBqueryJson: raw term_info top-level keys=["
-						+ dbgKeys.toString().trim() + "] head="
-						+ json.substring(0, Math.min(180, json.length())));
+			// Unconditional diagnostic: the v2-dev build target is "release", so the
+			// Dockerfile sed leaves debug=false; log the received container shape
+			// regardless so a mishandled term can be inspected from the server log.
+			StringBuilder dbgKeys = new StringBuilder();
+			for (Map.Entry<String, JsonElement> de : ti.entrySet()) {
+				dbgKeys.append(de.getKey()).append(' ');
 			}
+			System.out.println("VFBProcessTermInfoVFBqueryJson: raw term_info top-level keys=["
+					+ dbgKeys.toString().trim() + "] head="
+					+ json.substring(0, Math.min(180, json.length())));
 			// get_term_info returns the term keyed by its short_form, e.g.
 			// {"VFB_00101567": {Id, Name, ...}}. Unwrap to the inner term object
 			// (the variable id key if present, else a single id-keyed object).
@@ -267,11 +268,9 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 			// Debug: surface the raw term_info JSON fed into this processor so a
 			// mishandled term can be inspected in-panel even if later steps fail.
 			// Emitted early and HTML-escaped; always present in debug builds.
-			if (debug) {
-				String dbg = json.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
-				addModelHtml("<pre style=\"white-space:pre-wrap;word-break:break-all\">" + dbg + "</pre>",
-						"Debug (raw term_info)", "debug", metaDataType, geppettoModelAccess);
-			}
+			String dbg = json.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
+			addModelHtml("<pre style=\"white-space:pre-wrap;word-break:break-all\">" + dbg + "</pre>",
+					"Debug (raw term_info)", "debug", metaDataType, geppettoModelAccess);
 
 			if (!superTypes.isEmpty()) {
 				for (String supertype : superTypes) {
