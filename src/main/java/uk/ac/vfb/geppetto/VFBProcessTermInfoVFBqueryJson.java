@@ -210,6 +210,10 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 			if (ti == null) {
 				return results;
 			}
+			if (debug) {
+				System.out.println("VFBProcessTermInfoVFBqueryJson: raw term_info top-level keys="
+						+ ti.keySet() + " head=" + json.substring(0, Math.min(180, json.length())));
+			}
 			// get_term_info returns the term keyed by its short_form, e.g.
 			// {"VFB_00101567": {Id, Name, ...}}. Unwrap to the inner term object
 			// (the variable id key if present, else a single id-keyed object).
