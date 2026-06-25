@@ -39,6 +39,8 @@ import org.geppetto.model.values.HTML;
 import org.geppetto.model.values.Image;
 import org.geppetto.model.values.Text;
 import org.geppetto.model.types.TypesFactory;
+import org.geppetto.model.types.ImportType;
+import org.geppetto.model.datasources.DataSourceLibraryConfiguration;
 
 /**
  * Term-info processor for the VFBquery get_term_info JSON shape.
@@ -167,6 +169,17 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 		String obj;
 		String wlz;
 		String swc;
+		Integer index;
+		String orientation;
+		XYZ center;
+		XYZ extent;
+		XYZ voxel;
+	}
+
+	private class XYZ {
+		Double X;
+		Double Y;
+		Double Z;
 	}
 
 	private class Publication {
@@ -312,7 +325,7 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 			addModelHtml(xrefs, "Cross References", "xrefs", metaDataType, geppettoModelAccess);
 
 			// Images / Examples / Domains -> thumbnails + downloads
-			emitImages(ti, metaDataType, geppettoModelAccess);
+			emitImages(ti, variable, parentType, metaDataType, dataSource, geppettoModelAccess, dependenciesLibrary);
 
 			// References
 			String refs = referencesHtml(pubs);
@@ -414,53 +427,270 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 		return any ? sb.toString() : "";
 	}
 
-	private void emitImages(JsonObject ti, CompositeType metaDataType, GeppettoModelAccess access) throws GeppettoVisitingException {
-		// Examples (anatomy images) then Images (channel/template) — build a
-		// thumbnail carousel + a downloads list from the record formats.
-		ArrayValue thumbs = ValuesFactory.eINSTANCE.createArrayValue();
-		List<String> downloads = new ArrayList<String>();
-		int[] idx = {0};
-		String[] downloadHtml = {""};
-		collectImages(ti, "Examples", thumbs, downloads, downloadHtml, idx);
-		collectImages(ti, "Images", thumbs, downloads, downloadHtml, idx);
-		if (!thumbs.getElements().isEmpty()) {
-			addModelThumbnails(thumbs, "Available Images", "examples", metaDataType, access);
-		}
-		if (!downloadHtml[0].isEmpty()) {
-			addModelHtml(downloadHtml[0], "Downloads", "downloads", metaDataType, access);
-			addModelFileMeta(downloads, "DownloadMeta", "filemeta", metaDataType, access);
-		}
-	}
+	// ---- images / visualisation ---------------------------------------------
 
-	private void collectImages(JsonObject ti, String key, ArrayValue thumbs, List<String> downloads,
-			String[] downloadHtml, int[] idx) {
-		if (!ti.has(key) || !ti.get(key).isJsonObject()) {
-			return;
-		}
+	private void emitImages(JsonObject ti, Variable variable, CompositeType parentType, CompositeType metaDataType,
+			DataSource dataSource, GeppettoModelAccess access, List<GeppettoLibrary> dependenciesLibrary) throws GeppettoVisitingException {
 		Gson g = new Gson();
-		JsonObject byTemplate = ti.getAsJsonObject(key);
-		for (Map.Entry<String, JsonElement> e : byTemplate.entrySet()) {
-			if (!e.getValue().isJsonArray()) continue;
-			for (JsonElement el : e.getValue().getAsJsonArray()) {
-				ImageRec r = g.fromJson(el, ImageRec.class);
-				if (r == null || r.thumbnail == null) continue;
-				String thumb = r.thumbnail_transparent != null ? r.thumbnail_transparent : r.thumbnail;
-				addImage(thumb, r.label != null ? r.label : r.id, r.id, thumbs, idx[0]++);
-				StringBuilder dl = new StringBuilder();
-				if (r.nrrd != null) dl.append("\"nrrd\":\"").append(secureUrl(r.nrrd)).append("\",");
-				if (r.obj != null) dl.append("\"obj\":\"").append(secureUrl(r.obj)).append("\",");
-				if (r.wlz != null) dl.append("\"wlz\":\"").append(secureUrl(r.wlz)).append("\",");
-				if (r.swc != null) dl.append("\"swc\":\"").append(secureUrl(r.swc)).append("\",");
-				if (dl.length() > 0) {
-					downloads.add("\"" + r.id + "\":{" + dl.substring(0, dl.length() - 1) + "}");
-					if (r.obj != null) {
-						downloadHtml[0] += "<a href=\"" + secureUrl(r.obj) + "\" download>Mesh (OBJ)</a> ";
-					}
-					if (r.nrrd != null) {
-						downloadHtml[0] += "<a href=\"" + secureUrl(r.nrrd) + "\" download>Signal (NRRD)</a> ";
+		String varId = variable.getId();
+		String varName = variable.getName() != null && !variable.getName().isEmpty() ? variable.getName() : varId;
+
+		// Term's own images: 3D geometry (OBJ/SWC) + slices (WLZ) attach to parentType;
+		// thumbnail carousel + downloads + "Aligned to" attach to metaDataType.
+		if (ti.has("Images") && ti.get("Images").isJsonObject() && ti.getAsJsonObject("Images").entrySet().size() > 0) {
+			JsonObject images = ti.getAsJsonObject("Images");
+			ArrayValue thumbs = ValuesFactory.eINSTANCE.createArrayValue();
+			int[] tIdx = {0};
+			List<String> downloadData = new ArrayList<String>();
+			StringBuilder downloadFiles = new StringBuilder();
+			List<List<String>> domains = buildDomains(ti);
+			String primaryTemplate = null;
+			boolean geometryLoaded = false;
+			for (Map.Entry<String, JsonElement> e : images.entrySet()) {
+				String templateSf = e.getKey();
+				if (!e.getValue().isJsonArray()) continue;
+				if (primaryTemplate == null) primaryTemplate = templateSf;
+				for (JsonElement el : e.getValue().getAsJsonArray()) {
+					ImageRec r = g.fromJson(el, ImageRec.class);
+					if (r == null) continue;
+					// Carousel shows the term's own thumbnail(s) in the primary template space.
+					if (templateSf.equals(primaryTemplate)) {
+						String thumb = r.thumbnail_transparent != null ? r.thumbnail_transparent : r.thumbnail;
+						if (thumb != null && !thumb.isEmpty()) {
+							addImage(secureUrl(thumb), r.label != null ? r.label : r.id, r.id, thumbs, tIdx[0]++);
+						}
+						// 3D geometry + slices: load once for the primary alignment.
+						if (!geometryLoaded) {
+							if (r.obj != null && r.obj.contains(".obj")) {
+								addModelObj(secureUrl(r.obj).replace("https://", "http://"), "3D Volume", varId, parentType, access, dataSource);
+								appendDownload(downloadFiles, downloadData, "obj", r.obj, templateSf, varId, varName);
+							}
+							if (r.swc != null && r.swc.contains(".swc")) {
+								addModelSwc(secureUrl(r.swc).replace("https://", "http://"), "3D Skeleton", varId, parentType, access, dataSource);
+								appendDownload(downloadFiles, downloadData, "swc", r.swc, templateSf, varId, varName);
+							}
+							if (r.wlz != null && r.wlz.contains(".wlz")) {
+								addModelSlices(secureUrl(r.wlz), "Stack Viewer Slices", varId, parentType, access, dataSource, domains);
+								appendDownload(downloadFiles, downloadData, "wlz", r.wlz, templateSf, varId, varName);
+							}
+							if (r.nrrd != null && r.nrrd.contains(".nrrd")) {
+								appendDownload(downloadFiles, downloadData, "nrrd", r.nrrd, templateSf, varId, varName);
+							}
+							geometryLoaded = true;
+						}
 					}
 				}
 			}
+			if (primaryTemplate != null) {
+				String tplLink = "<a href=\"?id=" + primaryTemplate + "\" data-instancepath=\"" + primaryTemplate + "\">" + primaryTemplate + "</a>";
+				addModelHtml(tplLink, "Aligned to", "template", metaDataType, access);
+				parentType.getSuperType().add(access.getOrCreateSimpleType(primaryTemplate, dependenciesLibrary));
+			}
+			if (!thumbs.getElements().isEmpty()) {
+				addModelThumbnails(thumbs, "Thumbnail", "thumbnail", metaDataType, access);
+			}
+			if (downloadFiles.length() > 0) {
+				downloadFiles.append("<br>Note: see source &amp; license above for terms of reuse and correct attribution.");
+				addModelHtml(downloadFiles.toString(), "Downloads", "downloads", metaDataType, access);
+				addModelFileMeta(downloadData, "DownloadMeta", "filemeta", metaDataType, access);
+			}
+		}
+
+		// Examples (classes): thumbnail carousel + hasExamples flag, no geometry.
+		if (ti.has("Examples") && ti.get("Examples").isJsonObject() && ti.getAsJsonObject("Examples").entrySet().size() > 0) {
+			JsonObject examples = ti.getAsJsonObject("Examples");
+			ArrayValue exThumbs = ValuesFactory.eINSTANCE.createArrayValue();
+			int[] eIdx = {0};
+			for (Map.Entry<String, JsonElement> e : examples.entrySet()) {
+				if (!e.getValue().isJsonArray()) continue;
+				for (JsonElement el : e.getValue().getAsJsonArray()) {
+					ImageRec r = g.fromJson(el, ImageRec.class);
+					if (r == null) continue;
+					String thumb = r.thumbnail_transparent != null ? r.thumbnail_transparent : r.thumbnail;
+					if (thumb != null && !thumb.isEmpty()) {
+						addImage(secureUrl(thumb), r.label != null ? r.label : r.id, r.id, exThumbs, eIdx[0]++);
+					}
+				}
+			}
+			if (!exThumbs.getElements().isEmpty()) {
+				addModelThumbnails(exThumbs, "Available Images", "examples", metaDataType, access);
+				parentType.getSuperType().add(access.getOrCreateSimpleType("hasExamples", dependenciesLibrary));
+			}
+		}
+	}
+
+	// Build the WLZ stack-viewer domain arrays (voxel size + per-domain id/name/type/centre),
+	// mirroring VFBProcessTermInfoCachedJson.getDomains().
+	private List<List<String>> buildDomains(JsonObject ti) {
+		List<List<String>> domains = new ArrayList<List<String>>();
+		Gson g = new Gson();
+		boolean isTemplate = ti.has("IsTemplate") && !ti.get("IsTemplate").isJsonNull() && ti.get("IsTemplate").getAsBoolean();
+		if (isTemplate && ti.has("Domains") && ti.get("Domains").isJsonObject() && ti.getAsJsonObject("Domains").entrySet().size() > 0) {
+			String[] domainId = new String[600];
+			String[] domainName = new String[600];
+			String[] domainType = new String[600];
+			String[] domainCentre = new String[600];
+			String[] voxelSize = new String[]{null, null, null, null};
+			if (ti.has("Images") && ti.get("Images").isJsonObject()) {
+				for (Map.Entry<String, JsonElement> e : ti.getAsJsonObject("Images").entrySet()) {
+					if (e.getValue().isJsonArray() && e.getValue().getAsJsonArray().size() > 0) {
+						ImageRec self = g.fromJson(e.getValue().getAsJsonArray().get(0), ImageRec.class);
+						if (self != null && self.voxel != null) {
+							voxelSize[0] = String.valueOf(self.voxel.X);
+							voxelSize[1] = String.valueOf(self.voxel.Y);
+							voxelSize[2] = String.valueOf(self.voxel.Z);
+						}
+						break;
+					}
+				}
+			}
+			for (Map.Entry<String, JsonElement> e : ti.getAsJsonObject("Domains").entrySet()) {
+				int i;
+				try { i = Integer.parseInt(e.getKey()); } catch (NumberFormatException ex) { continue; }
+				if (i < 0 || i >= 600 || !e.getValue().isJsonObject()) continue;
+				JsonObject d = e.getValue().getAsJsonObject();
+				domainId[i] = d.has("id") && !d.get("id").isJsonNull() ? d.get("id").getAsString() : null;
+				domainName[i] = d.has("type_label") && !d.get("type_label").isJsonNull() ? d.get("type_label").getAsString() : null;
+				domainType[i] = d.has("type_id") && !d.get("type_id").isJsonNull() ? d.get("type_id").getAsString() : null;
+				if (d.has("center") && d.get("center").isJsonObject()) {
+					JsonObject c = d.getAsJsonObject("center");
+					if (c.has("X") && c.has("Y") && c.has("Z") && !c.get("Z").isJsonNull()) {
+						domainCentre[i] = "[" + c.get("X").getAsInt() + ", " + c.get("Y").getAsInt() + ", " + c.get("Z").getAsInt() + "]";
+					}
+				}
+			}
+			domains.add(Arrays.asList(voxelSize));
+			domains.add(Arrays.asList(domainId));
+			domains.add(Arrays.asList(domainName));
+			domains.add(Arrays.asList(domainType));
+			domains.add(Arrays.asList(domainCentre));
+		} else {
+			String sf = optStr(ti, "Id");
+			String label = optStr(ti, "Name");
+			if (label.isEmpty()) label = sf;
+			domains.add(Arrays.asList(new String[]{"0.622088", "0.622088", "0.622088", null}));
+			domains.add(Arrays.asList(new String[]{sf}));
+			domains.add(Arrays.asList(new String[]{label}));
+			domains.add(Arrays.asList(new String[]{sf}));
+			domains.add(Arrays.asList(new String[]{"[511, 255, 108]"}));
+		}
+		return domains;
+	}
+
+	// Append one download entry (HTML link + filemeta JSON) for a format, mirroring the legacy processor.
+	private void appendDownload(StringBuilder html, List<String> data, String fmt, String url, String template, String varId, String varName) {
+		if (url == null || url.isEmpty()) return;
+		String https = url.replace("http://", "https://");
+		String href = https.replace("https://www.virtualflybrain.org/data/", "/data/");
+		String v2 = https.replace("https://www.virtualflybrain.org/data/", "https://v2.virtualflybrain.org/data/");
+		String safeName = varName.replace(" ", "_");
+		String label;
+		String folder;
+		String ext;
+		if ("obj".equals(fmt)) {
+			boolean pcl = url.contains("volume.obj");
+			label = pcl ? "Pointcloud (OBJ)" : "Mesh (OBJ)";
+			folder = pcl ? "PointCloudFiles(OBJ)" : "MeshFiles(OBJ)";
+			ext = "obj";
+		} else if ("swc".equals(fmt)) {
+			label = "Skeleton (SWC)"; folder = "Skeleton(SWC)"; ext = "swc";
+		} else if ("wlz".equals(fmt)) {
+			label = "Slices (Woolz)"; folder = "Slices(WOOLZ)"; ext = "wlz";
+		} else {
+			label = "Signal (NRRD)"; folder = "SignalFiles(NRRD)"; ext = "nrrd";
+		}
+		html.append("<br>").append(label).append(": <a download=\"").append(varId).append(".").append(ext)
+			.append("\" href=\"").append(href).append("\">").append(varId).append(".").append(ext).append("</a>");
+		data.add("'" + fmt + "':{'url':'" + v2 + "','local':'" + template + "/" + folder + "/" + varId + "_(" + safeName + ")." + ext + "'}");
+	}
+
+	// ---- 3D / slice model loaders (ported verbatim from VFBProcessTermInfoCachedJson) ----
+
+	private void addModelObj(String url, String name, String reference, CompositeType parentType, GeppettoModelAccess geppettoModelAccess, DataSource dataSource) {
+		try {
+			if (url == null || url.equals("")) {
+				return;
+			}
+			Variable Variable = VariablesFactory.eINSTANCE.createVariable();
+			ImportType importType = TypesFactory.eINSTANCE.createImportType();
+			importType.setUrl(url);
+			importType.setId(reference + "_obj");
+			importType.setModelInterpreterId("objModelInterpreterService");
+			Variable.getTypes().add(importType);
+			Variable.setId(reference + "_obj");
+			Variable.setName("3D Volume");
+			geppettoModelAccess.addVariableToType(Variable, parentType);
+			geppettoModelAccess.addTypeToLibrary(importType, getLibraryFor(dataSource, "obj"));
+		} catch (Exception e) {
+			System.out.println("Error adding OBJ to model (" + reference + ") " + e.toString());
+			e.printStackTrace();
+		}
+	}
+
+	private void addModelSwc(String url, String name, String reference, CompositeType parentType, GeppettoModelAccess geppettoModelAccess, DataSource dataSource) {
+		try {
+			if (url == null || url.equals("")) {
+				return;
+			}
+			Variable Variable = VariablesFactory.eINSTANCE.createVariable();
+			ImportType importType = TypesFactory.eINSTANCE.createImportType();
+			importType.setUrl(url);
+			importType.setId(reference + "_swc");
+			importType.setModelInterpreterId("swcModelInterpreter");
+			Variable.getTypes().add(importType);
+			Variable.setId(reference + "_swc");
+			Variable.setName("3D Skeleton");
+			geppettoModelAccess.addVariableToType(Variable, parentType);
+			geppettoModelAccess.addTypeToLibrary(importType, getLibraryFor(dataSource, "swc"));
+		} catch (Exception e) {
+			System.out.println("Error adding SWC to model (" + reference + ") " + e.toString());
+			e.printStackTrace();
+		}
+	}
+
+	private void addModelSlices(String url, String name, String reference, CompositeType parentType, GeppettoModelAccess geppettoModelAccess, DataSource dataSource, List<List<String>> domains) throws GeppettoVisitingException {
+		try {
+			if (url == null || url.equals("")) {
+				return;
+			}
+			Type imageType = geppettoModelAccess.getType(TypesPackage.Literals.IMAGE_TYPE);
+			Variable slicesVar = VariablesFactory.eINSTANCE.createVariable();
+			Image slicesValue = ValuesFactory.eINSTANCE.createImage();
+			slicesValue.setData(new Gson().toJson(new IIPJSON(0, "https://www.virtualflybrain.org/fcgi/wlziipsrv.fcgi", url.replace("https://", "http://").replace("www.virtualflybrain.org", "virtualflybrain.org").replace("http://virtualflybrain.org/data/", "/disk/data/VFB/IMAGE_DATA/").replace("http://virtualflybrain.org/private/", "/disk/data/VFB/IMAGE_PRIVATE/"), domains)));
+			slicesValue.setFormat(ImageFormat.IIP);
+			slicesValue.setReference(reference);
+			slicesVar.setId(reference + "_slices");
+			slicesVar.setName("Stack Viewer Slices");
+			slicesVar.getTypes().add(imageType);
+			slicesVar.getInitialValues().put(imageType, slicesValue);
+			geppettoModelAccess.addVariableToType(slicesVar, parentType);
+		} catch (Exception e) {
+			System.out.println("Error adding slices:");
+			e.printStackTrace();
+		}
+	}
+
+	private GeppettoLibrary getLibraryFor(DataSource dataSource, String format) {
+		for (DataSourceLibraryConfiguration lc : dataSource.getLibraryConfigurations()) {
+			if (lc.getFormat().equals(format)) {
+				return lc.getLibrary();
+			}
+		}
+		System.out.println(format + " Not Found!");
+		return null;
+	}
+
+	private class IIPJSON {
+		int indexNumber;
+		String serverUrl;
+		String fileLocation;
+		List<List<String>> subDomains;
+
+		public IIPJSON(int indexNumber, String serverUrl, String fileLocation, List<List<String>> subDomains) {
+			this.indexNumber = indexNumber;
+			this.fileLocation = fileLocation;
+			this.serverUrl = serverUrl;
+			this.subDomains = subDomains;
 		}
 	}
 
