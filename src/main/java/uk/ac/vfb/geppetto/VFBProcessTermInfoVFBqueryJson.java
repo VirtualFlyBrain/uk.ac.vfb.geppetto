@@ -479,6 +479,7 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 			StringBuilder downloadFiles = new StringBuilder();
 			List<List<String>> domains = buildDomains(ti);
 			String primaryTemplate = null;
+			String bibtexFolder = null;
 			boolean geometryLoaded = false;
 			for (Map.Entry<String, JsonElement> e : images.entrySet()) {
 				String templateSf = e.getKey();
@@ -510,13 +511,21 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 							if (r.nrrd != null && r.nrrd.contains(".nrrd")) {
 								appendDownload(downloadFiles, downloadData, "nrrd", r.nrrd, templateSf, varId, varName);
 							}
+							String fldSrc = (r.nrrd != null) ? r.nrrd : (r.obj != null) ? r.obj : r.wlz;
+							if (fldSrc != null && fldSrc.lastIndexOf('/') >= 0) {
+								bibtexFolder = fldSrc.substring(0, fldSrc.lastIndexOf('/') + 1);
+							}
 							geometryLoaded = true;
 						}
 					}
 				}
 			}
 			if (primaryTemplate != null) {
-				String tplLink = "<a href=\"?id=" + primaryTemplate + "\" data-instancepath=\"" + primaryTemplate + "\">" + primaryTemplate + "</a>";
+				// Show the template's label when the term IS the template (self image
+				// record label = term label); for other terms the template label is
+				// not in the per-term payload, so fall back to the short_form.
+				String tplText = primaryTemplate.equals(varId) && varName != null && !varName.isEmpty() ? varName : primaryTemplate;
+				String tplLink = "<a href=\"?id=" + primaryTemplate + "\" data-instancepath=\"" + primaryTemplate + "\">" + tplText + "</a>";
 				addModelHtml(tplLink, "Aligned to", "template", metaDataType, access);
 				parentType.getSuperType().add(access.getOrCreateSimpleType(primaryTemplate, dependenciesLibrary));
 			}
@@ -524,7 +533,14 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 				addModelThumbnails(thumbs, "Thumbnail", "thumbnail", metaDataType, access);
 			}
 			if (downloadFiles.length() > 0) {
-				downloadFiles.append("<br>Note: see source &amp; license above for terms of reuse and correct attribution.");
+				if (bibtexFolder != null) {
+					String bibHref = bibtexFolder.replace("http://", "https://").replace("https://www.virtualflybrain.org/data/", "/data/") + "citations.bibtex";
+					downloadFiles.append("<br>Remember to cite: <a download=\"").append(varId)
+						.append(".bibtex\" href=\"").append(bibHref).append("\">citations.bibtex</a>");
+					downloadFiles.append("<br>The license shown above applies to this data.");
+				} else {
+					downloadFiles.append("<br>Note: see source &amp; license above for terms of reuse and correct attribution.");
+				}
 				addModelHtml(downloadFiles.toString(), "Downloads", "downloads", metaDataType, access);
 				addModelFileMeta(downloadData, "DownloadMeta", "filemeta", metaDataType, access);
 			}
@@ -641,8 +657,9 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 		} else {
 			label = "Signal (NRRD)"; folder = "SignalFiles(NRRD)"; ext = "nrrd";
 		}
-		html.append("<br>").append(label).append(": <a download=\"").append(varId).append(".").append(ext)
-			.append("\" href=\"").append(href).append("\">").append(varId).append(".").append(ext).append("</a>");
+		String fname = "obj".equals(fmt) ? varId + (url.contains("volume.obj") ? "_pointCloud.obj" : "_mesh.obj") : varId + "." + ext;
+		html.append("<br>").append(label).append(": <a download=\"").append(fname)
+			.append("\" href=\"").append(href).append("\">").append(fname).append("</a>");
 		data.add("'" + fmt + "':{'url':'" + v2 + "','local':'" + template + "/" + folder + "/" + varId + "_(" + safeName + ")." + ext + "'}");
 	}
 
