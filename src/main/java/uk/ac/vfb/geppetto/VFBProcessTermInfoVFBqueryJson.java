@@ -112,27 +112,18 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 
 	/** Round-down compact count: 999, 1.2K, 9.9K, 12K, 226K, 1.5M, 2B. */
 	static String formatCount(long n) {
-		if (n < 1000) {
+		// Floor to the smallest compact representation: 46789 -> 46k, 527179 -> 527k,
+		// 1_000_000 -> 1M. Integer division floors for non-negative n.
+		if (n < 1000L) {
 			return Long.toString(n);
 		}
-		final String[] units = {"K", "M", "B"};
-		double value = n;
-		int unit = -1;
-		while (value >= 1000 && unit < units.length - 1) {
-			value /= 1000.0;
-			unit++;
+		if (n < 1000000L) {
+			return (n / 1000L) + "k";
 		}
-		String out;
-		if (value < 10) {
-			double floored = Math.floor(value * 10) / 10.0; // one decimal, floored
-			out = String.format("%.1f", floored);
-			if (out.endsWith(".0")) {
-				out = out.substring(0, out.length() - 2);
-			}
-		} else {
-			out = Long.toString((long) Math.floor(value));
+		if (n < 1000000000L) {
+			return (n / 1000000L) + "M";
 		}
-		return out + units[unit];
+		return (n / 1000000000L) + "B";
 	}
 
 	// ---- VFBquery JSON POJOs (subset of get_term_info we render) -------------
