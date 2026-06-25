@@ -11,8 +11,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonObject;
 
 import org.geppetto.datasources.AQueryProcessor;
@@ -205,8 +205,11 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 				return results;
 			}
 			String json = results.getValue("term_info", 0).toString();
-			Gson gson = new GsonBuilder().create();
-			JsonObject ti = gson.fromJson(json, JsonObject.class);
+			// NB: gson.fromJson(json, JsonObject.class) returns an EMPTY JsonObject in
+			// this OSGi/Gson environment (confirmed via the debug log: valid json head
+			// but zero top-level keys). JsonParser builds the tree directly and works,
+			// matching the typed-POJO fromJson the legacy processor relies on.
+			JsonObject ti = new JsonParser().parse(json).getAsJsonObject();
 			if (ti == null) {
 				return results;
 			}
