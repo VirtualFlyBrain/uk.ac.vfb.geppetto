@@ -169,7 +169,7 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 		String obj;
 		String wlz;
 		String swc;
-		Integer index;
+		Double index;
 		String orientation;
 		XYZ center;
 		XYZ extent;
@@ -192,7 +192,7 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 	private class Query {
 		String query;            // query type id, e.g. "SplitsTargeting"
 		String label;            // display label
-		Long count;              // result count (may be null / -1 for deferred)
+		Double count;            // result count (JSON sends 46.0; null/-1 = deferred)
 	}
 
 	// ---- main process -------------------------------------------------------
@@ -734,7 +734,7 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 		for (JsonElement el : ti.getAsJsonArray("Queries")) {
 			Query q = g.fromJson(el, Query.class);
 			if (q == null || q.query == null) continue;
-			long count = q.count == null ? -1 : q.count;
+			long count = q.count == null ? -1 : q.count.longValue();
 			String badge;
 			String cssExtra = "";
 			if (count == 0) {
