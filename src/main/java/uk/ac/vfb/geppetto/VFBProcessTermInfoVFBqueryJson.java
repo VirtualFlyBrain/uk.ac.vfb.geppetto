@@ -569,10 +569,18 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 				for (Map.Entry<String, JsonElement> e : ti.getAsJsonObject("Images").entrySet()) {
 					if (e.getValue().isJsonArray() && e.getValue().getAsJsonArray().size() > 0) {
 						ImageRec self = g.fromJson(e.getValue().getAsJsonArray().get(0), ImageRec.class);
-						if (self != null && self.voxel != null) {
-							voxelSize[0] = String.valueOf(self.voxel.X);
-							voxelSize[1] = String.valueOf(self.voxel.Y);
-							voxelSize[2] = String.valueOf(self.voxel.Z);
+						if (self != null) {
+							if (self.voxel != null) {
+								voxelSize[0] = String.valueOf(self.voxel.X);
+								voxelSize[1] = String.valueOf(self.voxel.Y);
+								voxelSize[2] = String.valueOf(self.voxel.Z);
+							}
+							// Index 0 is the template itself; its centre lives on the self
+							// image record (Domains["0"].center is null). The slice viewer's
+							// callDstRange joins this centre, so it must not be null.
+							if (self.center != null && self.center.X != null && self.center.Y != null && self.center.Z != null) {
+								domainCentre[0] = "[" + self.center.X.intValue() + ", " + self.center.Y.intValue() + ", " + self.center.Z.intValue() + "]";
+							}
 						}
 						break;
 					}
