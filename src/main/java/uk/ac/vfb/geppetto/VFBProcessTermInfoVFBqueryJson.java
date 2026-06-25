@@ -211,8 +211,13 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 				return results;
 			}
 			if (debug) {
-				System.out.println("VFBProcessTermInfoVFBqueryJson: raw term_info top-level keys="
-						+ ti.keySet() + " head=" + json.substring(0, Math.min(180, json.length())));
+				StringBuilder dbgKeys = new StringBuilder();
+				for (Map.Entry<String, JsonElement> de : ti.entrySet()) {
+					dbgKeys.append(de.getKey()).append(' ');
+				}
+				System.out.println("VFBProcessTermInfoVFBqueryJson: raw term_info top-level keys=["
+						+ dbgKeys.toString().trim() + "] head="
+						+ json.substring(0, Math.min(180, json.length())));
 			}
 			// get_term_info returns the term keyed by its short_form, e.g.
 			// {"VFB_00101567": {Id, Name, ...}}. Unwrap to the inner term object
@@ -258,6 +263,15 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 			metaDataType.setName("Info");
 			geppettoModelAccess.addVariableToType(metaDataVar, parentType);
 			geppettoModelAccess.addTypeToLibrary(metaDataType, dataSource.getTargetLibrary());
+
+			// Debug: surface the raw term_info JSON fed into this processor so a
+			// mishandled term can be inspected in-panel even if later steps fail.
+			// Emitted early and HTML-escaped; always present in debug builds.
+			if (debug) {
+				String dbg = json.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
+				addModelHtml("<pre style=\"white-space:pre-wrap;word-break:break-all\">" + dbg + "</pre>",
+						"Debug (raw term_info)", "debug", metaDataType, geppettoModelAccess);
+			}
 
 			if (!superTypes.isEmpty()) {
 				for (String supertype : superTypes) {
@@ -351,9 +365,6 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 			// Queries (from VFBquery Queries[]) with count badge + grey-out
 			emitQueries(ti, tempId, name, metaDataType, geppettoModelAccess);
 
-			if (debug) {
-				addModelHtml(json, "Debug", "debug", metaDataType, geppettoModelAccess);
-			}
 
 		} catch (Exception e) {
 			System.out.println("Error in VFBProcessTermInfoVFBqueryJson: " + e.toString());
