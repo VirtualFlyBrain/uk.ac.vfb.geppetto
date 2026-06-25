@@ -210,6 +210,19 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 			if (ti == null) {
 				return results;
 			}
+			// get_term_info returns the term keyed by its short_form, e.g.
+			// {"VFB_00101567": {Id, Name, ...}}. Unwrap to the inner term object
+			// (the variable id key if present, else a single id-keyed object).
+			if (!ti.has("Id") && !ti.has("Name")) {
+				JsonElement keyed = ti.has(variable.getId()) ? ti.get(variable.getId()) : null;
+				if (keyed == null && ti.entrySet().size() == 1) {
+					keyed = ti.entrySet().iterator().next().getValue();
+				}
+				if (keyed != null && keyed.isJsonObject()
+						&& (keyed.getAsJsonObject().has("Id") || keyed.getAsJsonObject().has("Name"))) {
+					ti = keyed.getAsJsonObject();
+				}
+			}
 
 			String tempId = variable.getId();
 			List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
