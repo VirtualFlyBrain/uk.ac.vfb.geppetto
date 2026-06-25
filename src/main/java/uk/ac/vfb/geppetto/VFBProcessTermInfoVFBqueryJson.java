@@ -235,7 +235,7 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 			String name = optStr(ti, "Name");
 			String id = optStr(ti, "Id");
 			List<String> superTypes = strList(ti, "SuperTypes");
-			String typeString = typesString(superTypes);
+			String typeString = typesString(strList(ti, "Tags"));
 			String tempName = (name != null && !name.isEmpty()) ? name : tempId;
 
 			// Connect the metadata to the fetched variable, mirroring
@@ -277,7 +277,7 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 			}
 
 			// Name: <b>{label}</b> [{sf}] {types}
-			addModelHtml("<b>" + name + "</b> [" + id + "]" + (typeString.isEmpty() ? "" : " " + typeString),
+			addModelHtml("<b>" + name + "</b> [" + id + "] " + typeString,
 					"Name", "label", metaDataType, geppettoModelAccess);
 
 			// Title (pub terms)
@@ -802,18 +802,21 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 		return s;
 	}
 
-	private static String typesString(List<String> superTypes) {
-		// Mirror the old types() rendering loosely: space-joined readable types,
-		// excluding structural markers.
-		StringBuilder sb = new StringBuilder();
-		for (String t : superTypes) {
-			if (t.equals("Entity") || t.equals("Class") || t.equals("Individual") || t.startsWith("has_")) {
-				continue;
+	private static String typesString(List<String> tags) {
+		// Mirror the legacy returnType(): wrap each tag in a label span and the
+		// whole set in a "label types" span (prepended, so order is reversed to
+		// match v2). The outer span MUST always be emitted even when there are no
+		// tags, because the Term Context list renderer
+		// (listViewerConfiguration.js) does htmlLabels.match(/<span>/).join() on
+		// the Name-row HTML and NPEs if no span is present.
+		String result = "";
+		if (tags != null) {
+			for (String t : tags) {
+				if (t == null || t.isEmpty()) continue;
+				result = "<span class=\"label label-" + t + "\">" + t.replace("_", " ") + "</span> " + result;
 			}
-			if (sb.length() > 0) sb.append(" ");
-			sb.append(t.replace("_", " "));
 		}
-		return sb.toString();
+		return "<span class=\"label types\">" + result + "</span>";
 	}
 
 	// ---- model helpers (mirrors of VFBProcessTermInfoCachedJson) ------------
