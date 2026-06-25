@@ -232,8 +232,11 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 			List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
 
 			JsonObject meta = ti.has("Meta") && ti.get("Meta").isJsonObject() ? ti.getAsJsonObject("Meta") : new JsonObject();
-			String name = optStr(ti, "Name");
 			String id = optStr(ti, "Id");
+			// Bold the term LABEL (from Meta.Name markdown) -- for templates the
+			// top-level Name is the short symbol, but v2 shows the label.
+			String name = symbolText(optStr(meta, "Name"));
+			if (name.isEmpty()) name = optStr(ti, "Name");
 			List<String> superTypes = strList(ti, "SuperTypes");
 			String typeString = typesString(strList(ti, "Tags"));
 			String tempName = (name != null && !name.isEmpty()) ? name : tempId;
@@ -297,11 +300,19 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 			addModelHtml(mdToHtml(optStr(meta, "Logo")), "Logo", "logo", metaDataType, geppettoModelAccess);
 			addModelHtml(mdToHtml(optStr(meta, "Link")), "Link", "link", metaDataType, geppettoModelAccess);
 
-			// Description (def_pubs already inline)
+			// Description (def_pubs already inline) + Comment block, mirroring legacy definition()
 			String desc = optStr(meta, "Description");
-			if (!desc.isEmpty()) {
-				addModelHtml("<span class=\"terminfo-description\">" + mdToHtml(desc) + "</span>",
-						"Description", "description", metaDataType, geppettoModelAccess);
+			String comment = optStr(meta, "Comment");
+			if (!desc.isEmpty() || !comment.isEmpty()) {
+				StringBuilder d = new StringBuilder();
+				if (!desc.isEmpty()) {
+					d.append("<span class=\"terminfo-description\">").append(mdToHtml(desc)).append("</span>");
+				}
+				if (!comment.isEmpty()) {
+					d.append("<br /><span class=\"terminfo-comment-title\">Comment</span><br /><span class=\"terminfo-comment\">")
+					 .append(mdToHtml(comment)).append("</span>");
+				}
+				addModelHtml(d.toString(), "Description", "description", metaDataType, geppettoModelAccess);
 			}
 
 			// Synonyms -> Alternative Names
@@ -322,7 +333,9 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 						src.append(s);
 					}
 					if (l.label != null && !l.label.isEmpty()) {
-						String licHtml = l.label;
+						String licHtml = (l.short_form != null && !l.short_form.isEmpty())
+								? "<a href=\"?id=" + l.short_form + "\" data-instancepath=\"" + l.short_form + "\">" + l.label + "</a>"
+								: l.label;
 						if (l.icon != null && !l.icon.isEmpty()) {
 							licHtml += " <img class=\"terminfo-licenseicon\" src=\"" + secureUrl(l.icon) + "\" title=\"" + l.label + "\"/>";
 						}
@@ -335,7 +348,7 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 					addModelHtml(src.toString(), isPub ? "Related DataSets" : "Source", "source", metaDataType, geppettoModelAccess);
 				}
 				if (lic.length() > 0 && !isPub) {
-					addModelHtml(lic.toString(), "License", "license", metaDataType, geppettoModelAccess);
+					addModelHtml("<span class=\"terminfo-license\">" + lic.toString() + "</span>", "License", "license", metaDataType, geppettoModelAccess);
 				}
 			}
 
