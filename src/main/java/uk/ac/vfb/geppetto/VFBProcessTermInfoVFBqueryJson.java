@@ -32,6 +32,8 @@ import org.geppetto.model.values.ValuesFactory;
 import org.geppetto.model.variables.Variable;
 import org.geppetto.model.variables.VariablesFactory;
 import org.geppetto.model.types.CompositeType;
+import org.geppetto.model.GeppettoLibrary;
+import org.geppetto.model.GeppettoPackage;
 import org.geppetto.model.types.Type;
 import org.geppetto.model.values.HTML;
 import org.geppetto.model.values.Image;
@@ -197,21 +199,45 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 			}
 
 			String tempId = variable.getId();
-
-			CompositeType metaDataType = TypesFactory.eINSTANCE.createCompositeType();
-			Variable metaDataVar = VariablesFactory.eINSTANCE.createVariable();
-			metaDataVar.setId(tempId + "_meta");
-			metaDataVar.setName("Info");
-			metaDataVar.getTypes().add(metaDataType);
-			metaDataType.setId(tempId + "_metadata");
-			metaDataType.setName("Info");
-			geppettoModelAccess.addTypeToLibrary(metaDataType, dataSource.getTargetLibrary());
+			List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
 
 			JsonObject meta = ti.has("Meta") && ti.get("Meta").isJsonObject() ? ti.getAsJsonObject("Meta") : new JsonObject();
 			String name = optStr(ti, "Name");
 			String id = optStr(ti, "Id");
 			List<String> superTypes = strList(ti, "SuperTypes");
 			String typeString = typesString(superTypes);
+			String tempName = (name != null && !name.isEmpty()) ? name : tempId;
+
+			// Connect the metadata to the fetched variable, mirroring
+			// VFBProcessTermInfoCachedJson: variable -> (anonymousType) parentType
+			// -> (variable) metaDataVar -> (type) metaDataType -> HTML rows. Without
+			// this the term variable has no attached metadata and the client crashes
+			// processing the runtime tree.
+			geppettoModelAccess.setObjectAttribute(variable, GeppettoPackage.Literals.NODE__NAME, tempName);
+
+			CompositeType parentType = TypesFactory.eINSTANCE.createCompositeType();
+			parentType.setId(tempId);
+			variable.getAnonymousTypes().add(parentType);
+
+			CompositeType metaDataType = TypesFactory.eINSTANCE.createCompositeType();
+			Variable metaDataVar = VariablesFactory.eINSTANCE.createVariable();
+			metaDataVar.getTypes().add(metaDataType);
+			metaDataVar.setId(tempId + "_meta");
+			metaDataVar.setName(tempName);
+			metaDataType.setId(tempId + "_metadata");
+			metaDataType.setName("Info");
+			geppettoModelAccess.addVariableToType(metaDataVar, parentType);
+			geppettoModelAccess.addTypeToLibrary(metaDataType, dataSource.getTargetLibrary());
+
+			if (!superTypes.isEmpty()) {
+				for (String supertype : superTypes) {
+					if (!supertype.startsWith("_")) {
+						parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType(supertype, dependenciesLibrary));
+					}
+				}
+			} else {
+				parentType.getSuperType().add(geppettoModelAccess.getOrCreateSimpleType("Orphan", dependenciesLibrary));
+			}
 
 			// Name: <b>{label}</b> [{sf}] {types}
 			addModelHtml("<b>" + name + "</b> [" + id + "]" + (typeString.isEmpty() ? "" : " " + typeString),
