@@ -393,7 +393,7 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 			emitImages(ti, variable, parentType, metaDataType, dataSource, geppettoModelAccess, dependenciesLibrary);
 
 			// References
-			String refs = referencesHtml(pubs);
+			String refs = referencesHtml(ti, pubs);
 			addModelHtml(refs, "References", "references", metaDataType, geppettoModelAccess);
 
 			// Queries (from VFBquery Queries[]) with count badge + grey-out
@@ -462,31 +462,63 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 		return sb.toString();
 	}
 
-	private String referencesHtml(List<Publication> pubs) {
-		if (pubs == null || pubs.isEmpty()) {
+	// References aggregates every publication the term cites: its own Publications
+	// (full microref + xref icons), plus the pubs carried on synonyms and inline in
+	// the definition (label + link only -- the full FlyBase/DOI/PMID breakdown is not
+	// in get_term_info for referenced pubs). De-duplicated by target short_form.
+	private String referencesHtml(JsonObject ti, List<Publication> pubs) {
+		java.util.LinkedHashMap<String, String> byId = new java.util.LinkedHashMap<String, String>();
+		// 1) the term's own Publications -- full entry with xref icons
+		if (pubs != null) {
+			for (Publication p : pubs) {
+				if (p == null) continue;
+				String mref = p.microref != null && !p.microref.isEmpty() ? mdToHtml(p.microref)
+						: (p.short_form != null ? p.short_form : "");
+				if (mref.isEmpty()) continue;
+				StringBuilder icons = new StringBuilder();
+				if (p.refs != null) {
+					for (String r : p.refs) {
+						String cls = r.contains("pubmed") ? "gpt-pubmed" : r.contains("doi.org") ? "gpt-doi"
+								: r.contains("flybase") ? "gpt-fly" : "fa-external-link";
+						icons.append(" <a href=\"").append(r).append("\" target=\"_blank\"><i class=\"popup-icon-link ")
+								.append(cls).append("\"></i></a>");
+					}
+				}
+				String key = p.short_form != null && !p.short_form.isEmpty() ? p.short_form : mref;
+				byId.put(key, mref + icons.toString());
+			}
+		}
+		// 2) synonym pubs + 3) inline definition pubs -- label + link, only if new
+		java.util.List<String> mds = new java.util.ArrayList<String>();
+		if (ti.has("Synonyms") && ti.get("Synonyms").isJsonArray()) {
+			for (JsonElement el : ti.getAsJsonArray("Synonyms")) {
+				if (el.isJsonObject() && el.getAsJsonObject().has("publication") && !el.getAsJsonObject().get("publication").isJsonNull()) {
+					mds.add(el.getAsJsonObject().get("publication").getAsString());
+				}
+			}
+		}
+		JsonObject meta = ti.has("Meta") && ti.get("Meta").isJsonObject() ? ti.getAsJsonObject("Meta") : null;
+		if (meta != null && meta.has("Description") && !meta.get("Description").isJsonNull()) {
+			mds.add(meta.get("Description").getAsString());
+		}
+		for (String md : mds) {
+			if (md == null) continue;
+			Matcher m = MD_LINK.matcher(md);
+			while (m.find()) {
+				String id = m.group(2);
+				if (id == null || id.isEmpty() || byId.containsKey(id)) continue;
+				byId.put(id, "<a href=\"?id=" + id + "\" data-instancepath=\"" + id + "\">" + m.group(1) + "</a>");
+			}
+		}
+		if (byId.isEmpty()) {
 			return "";
 		}
 		StringBuilder sb = new StringBuilder("<ul class=\"terminfo-references\">");
-		boolean any = false;
-		for (Publication p : pubs) {
-			if (p == null) continue;
-			String mref = p.microref != null && !p.microref.isEmpty() ? mdToHtml(p.microref)
-					: (p.short_form != null ? p.short_form : "");
-			if (mref.isEmpty()) continue;
-			StringBuilder icons = new StringBuilder();
-			if (p.refs != null) {
-				for (String r : p.refs) {
-					String cls = r.contains("pubmed") ? "gpt-pubmed" : r.contains("doi.org") ? "gpt-doi"
-							: r.contains("flybase") ? "gpt-fly" : "fa-external-link";
-					icons.append(" <a href=\"").append(r).append("\" target=\"_blank\"><i class=\"popup-icon-link ")
-							.append(cls).append("\"></i></a>");
-				}
-			}
-			sb.append("<li>").append(mref).append(icons).append("</li>");
-			any = true;
+		for (String entry : byId.values()) {
+			sb.append("<li>").append(entry).append("</li>");
 		}
 		sb.append("</ul>");
-		return any ? sb.toString() : "";
+		return sb.toString();
 	}
 
 	// ---- images / visualisation ---------------------------------------------
