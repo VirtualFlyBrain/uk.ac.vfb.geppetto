@@ -463,29 +463,20 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 	}
 
 	// References aggregates every publication the term cites: its own Publications
-	// (full microref + xref icons), plus the pubs carried on synonyms and inline in
-	// the definition (label + link only -- the full FlyBase/DOI/PMID breakdown is not
-	// in get_term_info for referenced pubs). De-duplicated by target short_form.
+	// (microref label + link), plus the pubs carried on synonyms and inline in the
+	// definition (also label + link). The DOI/PMID/FlyBase xref icons are deliberately
+	// not rendered here. De-duplicated by target short_form.
 	private String referencesHtml(JsonObject ti, List<Publication> pubs) {
 		java.util.LinkedHashMap<String, String> byId = new java.util.LinkedHashMap<String, String>();
-		// 1) the term's own Publications -- full entry with xref icons
+		// 1) the term's own Publications -- microref label + link
 		if (pubs != null) {
 			for (Publication p : pubs) {
 				if (p == null) continue;
 				String mref = p.microref != null && !p.microref.isEmpty() ? mdToHtml(p.microref)
 						: (p.short_form != null ? p.short_form : "");
 				if (mref.isEmpty()) continue;
-				StringBuilder icons = new StringBuilder();
-				if (p.refs != null) {
-					for (String r : p.refs) {
-						String cls = r.contains("pubmed") ? "gpt-pubmed" : r.contains("doi.org") ? "gpt-doi"
-								: r.contains("flybase") ? "gpt-fly" : "fa-external-link";
-						icons.append(" <a href=\"").append(r).append("\" target=\"_blank\"><i class=\"popup-icon-link ")
-								.append(cls).append("\"></i></a>");
-					}
-				}
 				String key = p.short_form != null && !p.short_form.isEmpty() ? p.short_form : mref;
-				byId.put(key, mref + icons.toString());
+				byId.put(key, mref);
 			}
 		}
 		// 2) synonym pubs + 3) inline definition pubs -- label + link, only if new
