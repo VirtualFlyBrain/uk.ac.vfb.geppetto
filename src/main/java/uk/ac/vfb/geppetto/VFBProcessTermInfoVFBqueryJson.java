@@ -373,7 +373,7 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 				}
 				boolean isPub = superTypes.contains("pub");
 				if (src.length() > 0) {
-					addModelHtml(src.toString(), isPub ? "Related DataSets" : "Source", "source", metaDataType, geppettoModelAccess);
+					addModelHtml("<span class=\"terminfo-source\">" + src.toString() + "</span>", isPub ? "Related DataSets" : "Source", "source", metaDataType, geppettoModelAccess);
 				}
 				if (lic.length() > 0 && !isPub) {
 					addModelHtml("<span class=\"terminfo-license\">" + lic.toString() + "</span>", "License", "license", metaDataType, geppettoModelAccess);
