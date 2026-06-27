@@ -453,7 +453,7 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 			}
 			String label = x.label == null ? "" : x.label;
 			String icon = (x.icon != null && !x.icon.isEmpty())
-					? "<img class=\"popup-icon-link\" src=\"" + secureUrl(x.icon) + "\"/> "
+					? "<img class=\"terminfo-siteicon\" src=\"" + secureUrl(x.icon) + "\"/> "
 					: "";
 			if (sb.length() > 0) sb.append("<br/>");
 			sb.append("<a href=\"").append(x.link).append("\" target=\"_blank\" title=\"").append(label).append("\">")
