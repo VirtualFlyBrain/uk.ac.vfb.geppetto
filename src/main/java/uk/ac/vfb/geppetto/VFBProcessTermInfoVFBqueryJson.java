@@ -539,12 +539,14 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 			StringBuilder downloadFiles = new StringBuilder();
 			List<List<String>> domains = buildDomains(ti);
 			String primaryTemplate = null;
+			java.util.List<String> alignedTemplates = new java.util.ArrayList<String>();
 			String bibtexFolder = null;
 			boolean geometryLoaded = false;
 			for (Map.Entry<String, JsonElement> e : images.entrySet()) {
 				String templateSf = e.getKey();
 				if (!e.getValue().isJsonArray()) continue;
 				if (primaryTemplate == null) primaryTemplate = templateSf;
+				if (!alignedTemplates.contains(templateSf)) alignedTemplates.add(templateSf);
 				for (JsonElement el : e.getValue().getAsJsonArray()) {
 					ImageRec r = g.fromJson(el, ImageRec.class);
 					if (r == null) continue;
@@ -580,14 +582,21 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 					}
 				}
 			}
-			if (primaryTemplate != null) {
-				// Show the template's label when the term IS the template (self image
-				// record label = term label); for other terms the template label is
-				// not in the per-term payload, so fall back to the short_form.
-				String tplText = primaryTemplate.equals(varId) && varName != null && !varName.isEmpty() ? varName : primaryTemplate;
-				String tplLink = "<a href=\"?id=" + primaryTemplate + "\" data-instancepath=\"" + primaryTemplate + "\">" + tplText + "</a>";
-				addModelHtml(tplLink, "Aligned to", "template", metaDataType, access);
-				parentType.getSuperType().add(access.getOrCreateSimpleType(primaryTemplate, dependenciesLibrary));
+			if (!alignedTemplates.isEmpty()) {
+				// Every template the term is registered to (the Images keys) becomes a
+				// super-type, so the loader can test the loaded template against the
+				// complete aligned set rather than a single value; and each is listed in
+				// "Aligned to". Primary (first key) stays first, preserving existing
+				// single-template behaviour. Template label is not in the per-term payload
+				// for other terms, so fall back to the short_form (self = term label).
+				StringBuilder tplLinks = new StringBuilder();
+				for (String tpl : alignedTemplates) {
+					String tplText = tpl.equals(varId) && varName != null && !varName.isEmpty() ? varName : tpl;
+					if (tplLinks.length() > 0) tplLinks.append(", ");
+					tplLinks.append("<a href=\"?id=").append(tpl).append("\" data-instancepath=\"").append(tpl).append("\">").append(tplText).append("</a>");
+					parentType.getSuperType().add(access.getOrCreateSimpleType(tpl, dependenciesLibrary));
+				}
+				addModelHtml(tplLinks.toString(), "Aligned to", "template", metaDataType, access);
 			}
 			if (!thumbs.getElements().isEmpty()) {
 				addModelThumbnails(thumbs, "Thumbnail", "thumbnail", metaDataType, access);
