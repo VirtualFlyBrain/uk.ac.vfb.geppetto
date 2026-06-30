@@ -275,19 +275,6 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 
 			String tempId = variable.getId();
 			List<GeppettoLibrary> dependenciesLibrary = dataSource.getDependenciesLibrary();
-			// Detect the currently loaded template (its *_metadata type is in the
-			// library) so a multi-template term loads the loaded template's alignment.
-			String loadedTemplate = "";
-			for (String at : AVAILABLE_TEMPLATES) {
-				try {
-					if (ModelUtility.getTypeFromLibrary(at + "_metadata", dataSource.getTargetLibrary()) != null) {
-						loadedTemplate = at;
-						break;
-					}
-				} catch (Exception ex) {
-					/* template not loaded */
-				}
-			}
 
 			JsonObject meta = ti.has("Meta") && ti.get("Meta").isJsonObject() ? ti.getAsJsonObject("Meta") : new JsonObject();
 			String id = optStr(ti, "Id");
@@ -560,6 +547,19 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 		Gson g = new Gson();
 		String varId = variable.getId();
 		String varName = variable.getName() != null && !variable.getName().isEmpty() ? variable.getName() : varId;
+		// Detect the currently loaded template (its *_metadata type is in the
+		// library) so a multi-template term loads the loaded template's alignment.
+		String loadedTemplate = "";
+		for (String at : AVAILABLE_TEMPLATES) {
+			try {
+				if (ModelUtility.getTypeFromLibrary(at + "_metadata", dataSource.getTargetLibrary()) != null) {
+					loadedTemplate = at;
+					break;
+				}
+			} catch (Exception ex) {
+				/* template not loaded */
+			}
+		}
 
 		// Term's own images: 3D geometry (OBJ/SWC) + slices (WLZ) attach to parentType;
 		// thumbnail carousel + downloads + "Aligned to" attach to metaDataType.
