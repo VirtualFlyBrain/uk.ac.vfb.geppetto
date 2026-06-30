@@ -547,19 +547,6 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 		Gson g = new Gson();
 		String varId = variable.getId();
 		String varName = variable.getName() != null && !variable.getName().isEmpty() ? variable.getName() : varId;
-		// Detect the currently loaded template (its *_metadata type is in the
-		// library) so a multi-template term loads the loaded template's alignment.
-		String loadedTemplate = "";
-		for (String at : AVAILABLE_TEMPLATES) {
-			try {
-				if (ModelUtility.getTypeFromLibrary(at + "_metadata", dataSource.getTargetLibrary()) != null) {
-					loadedTemplate = at;
-					break;
-				}
-			} catch (Exception ex) {
-				/* template not loaded */
-			}
-		}
 
 		// Term's own images: 3D geometry (OBJ/SWC) + slices (WLZ) attach to parentType;
 		// thumbnail carousel + downloads + "Aligned to" attach to metaDataType.
@@ -572,6 +559,21 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 			List<List<String>> domains = buildDomains(ti);
 			// Prefer the loaded template as primary so the attached geometry/carousel
 			// is the loaded template's alignment (not an arbitrary first Images key).
+			// Detect the loaded template only for multi-template terms; the common
+			// single-template case keeps the first key as primary with zero overhead.
+			String loadedTemplate = "";
+			if (images.entrySet().size() > 1) {
+				for (String at : AVAILABLE_TEMPLATES) {
+					try {
+						if (ModelUtility.getTypeFromLibrary(at + "_metadata", dataSource.getTargetLibrary()) != null) {
+							loadedTemplate = at;
+							break;
+						}
+					} catch (Exception ex) {
+						/* template not loaded */
+					}
+				}
+			}
 			String primaryTemplate = (!loadedTemplate.isEmpty() && images.has(loadedTemplate)) ? loadedTemplate : null;
 			java.util.List<String> alignedTemplates = new java.util.ArrayList<String>();
 			String bibtexFolder = null;
