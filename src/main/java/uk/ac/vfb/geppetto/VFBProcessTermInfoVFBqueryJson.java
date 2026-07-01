@@ -26,6 +26,7 @@ import org.geppetto.core.model.GeppettoModelAccess;
 import org.geppetto.model.values.ArrayElement;
 import org.geppetto.model.types.TypesPackage;
 import org.geppetto.model.util.GeppettoVisitingException;
+import org.geppetto.model.util.ModelUtility;
 import org.geppetto.model.values.ArrayValue;
 import org.geppetto.model.values.ImageFormat;
 import org.geppetto.model.values.ValuesFactory;
@@ -61,6 +62,24 @@ import org.geppetto.model.datasources.DataSourceLibraryConfiguration;
 public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 
 	private Boolean debug=false;
+
+	/* Hard-coded template display names (symbol, or label where no symbol exists).
+	   VFB has a small, rarely-changing set of templates and the per-term payload does
+	   not carry the template's own label, so resolve the name here. */
+	private static final java.util.List<String> AVAILABLE_TEMPLATES = java.util.Arrays.asList(
+			"VFB_00017894", "VFB_00101567", "VFB_00101384", "VFB_00050000",
+			"VFB_00049000", "VFB_00100000", "VFB_00030786", "VFB_00200000");
+	private static final java.util.Map<String, String> TEMPLATE_NAMES = new java.util.HashMap<String, String>();
+	static {
+		TEMPLATE_NAMES.put("VFB_00017894", "JFRC2");
+		TEMPLATE_NAMES.put("VFB_00101567", "JRC2018U");
+		TEMPLATE_NAMES.put("VFB_00101384", "JRCFIB2018Fum");
+		TEMPLATE_NAMES.put("VFB_00050000", "L1 larval CNS ssTEM");
+		TEMPLATE_NAMES.put("VFB_00049000", "L3 CNS template - Wood2018");
+		TEMPLATE_NAMES.put("VFB_00100000", "COURT2018VNS");
+		TEMPLATE_NAMES.put("VFB_00030786", "adult brain template Ito2014");
+		TEMPLATE_NAMES.put("VFB_00200000", "JRCVNC2018U");
+	}
 
 	private static final Pattern MD_LINK = Pattern.compile("\\[([^\\]]+)\\]\\(([^)]+)\\)");
 	private static final Pattern MD_IMAGE = Pattern.compile("\\[!\\[([^\\]]*)\\]\\(([^)\\s]+)(?:\\s+'([^']*)')?\\)\\]\\(([^)]+)\\)");
@@ -538,7 +557,24 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 			List<String> downloadData = new ArrayList<String>();
 			StringBuilder downloadFiles = new StringBuilder();
 			List<List<String>> domains = buildDomains(ti);
-			String primaryTemplate = null;
+			// Prefer the loaded template as primary so the attached geometry/carousel
+			// is the loaded template's alignment (not an arbitrary first Images key).
+			// Detect the loaded template only for multi-template terms; the common
+			// single-template case keeps the first key as primary with zero overhead.
+			String loadedTemplate = "";
+			if (images.entrySet().size() > 1) {
+				for (String at : AVAILABLE_TEMPLATES) {
+					try {
+						if (ModelUtility.getTypeFromLibrary(at + "_metadata", dataSource.getTargetLibrary()) != null) {
+							loadedTemplate = at;
+							break;
+						}
+					} catch (Exception ex) {
+						/* template not loaded */
+					}
+				}
+			}
+			String primaryTemplate = (!loadedTemplate.isEmpty() && images.has(loadedTemplate)) ? loadedTemplate : null;
 			java.util.List<String> alignedTemplates = new java.util.ArrayList<String>();
 			String bibtexFolder = null;
 			boolean geometryLoaded = false;
@@ -582,6 +618,11 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 					}
 				}
 			}
+			// List the loaded/primary template first so the (single-template) frontend
+			// reads it as the alignment and does not prompt a template change.
+			if (primaryTemplate != null && alignedTemplates.remove(primaryTemplate)) {
+				alignedTemplates.add(0, primaryTemplate);
+			}
 			if (!alignedTemplates.isEmpty()) {
 				// Every template the term is registered to (the Images keys) becomes a
 				// super-type, so the loader can test the loaded template against the
@@ -591,7 +632,8 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 				// for other terms, so fall back to the short_form (self = term label).
 				StringBuilder tplLinks = new StringBuilder();
 				for (String tpl : alignedTemplates) {
-					String tplText = tpl.equals(varId) && varName != null && !varName.isEmpty() ? varName : tpl;
+					String tplText = tpl.equals(varId) && varName != null && !varName.isEmpty() ? varName
+							: (TEMPLATE_NAMES.containsKey(tpl) ? TEMPLATE_NAMES.get(tpl) : tpl);
 					if (tplLinks.length() > 0) tplLinks.append(", ");
 					tplLinks.append("<a href=\"?id=").append(tpl).append("\" data-instancepath=\"").append(tpl).append("\">").append(tplText).append("</a>");
 					parentType.getSuperType().add(access.getOrCreateSimpleType(tpl, dependenciesLibrary));
