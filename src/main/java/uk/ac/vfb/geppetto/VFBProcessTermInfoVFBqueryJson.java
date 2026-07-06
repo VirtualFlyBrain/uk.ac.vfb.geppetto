@@ -82,6 +82,12 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 	}
 
 	private static final Pattern MD_LINK = Pattern.compile("\\[([^\\]]+)\\]\\(([^)]+)\\)");
+	// Leading "NN%" confidence prefix on a relationship (e.g. "89% capable of").
+	private static final Pattern CONF_PREFIX = Pattern.compile("^(\\d+%)\\s+(.*)$", Pattern.DOTALL);
+	// Trailing "(...refs...)" group of markdown links appended to an enriched
+	// relationship -- the reference(s) supporting the confidence assertion.
+	private static final Pattern TRAILING_REF = Pattern.compile(
+			"^(.*?)\\s*\\(((?:\\[[^\\]]+\\]\\([^)]+\\)(?:,\\s*)?)+)\\)\\s*$", Pattern.DOTALL);
 	private static final Pattern MD_IMAGE = Pattern.compile("\\[!\\[([^\\]]*)\\]\\(([^)\\s]+)(?:\\s+'([^']*)')?\\)\\]\\(([^)]+)\\)");
 
 	// ---- markdown -> HTML helpers (reproduce the old intLink format) --------
@@ -156,17 +162,52 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 		for (String seg : metaValue.split(";")) {
 			seg = seg.trim();
 			if (seg.isEmpty()) continue;
+
+			// Leading confidence -> linked grey badge (as in v2).
+			String badge = "";
+			Matcher cm = CONF_PREFIX.matcher(seg);
+			if (cm.matches()) {
+				badge = confidenceBadge(cm.group(1));
+				seg = cm.group(2).trim();
+			}
+			// Trailing "(...refs...)" is the reference for the confidence assertion,
+			// so render it as icon linkout(s) placed with the badge (before the
+			// relation), matching v2 -- not trailing after the object.
+			String refs = "";
+			Matcher rm = TRAILING_REF.matcher(seg);
+			if (rm.matches()) {
+				refs = mdToHtml(rm.group(2));
+				seg = rm.group(1).trim();
+			}
+
+			String body;
 			int colon = seg.indexOf(':');
 			if (colon > 0) {
 				String rel = stripLinks(seg.substring(0, colon).trim());
 				String objs = mdToHtml(seg.substring(colon + 1).trim());
-				sb.append("<li>").append(rel).append(": ").append(objs).append("</li>");
+				body = rel + ": " + objs;
 			} else {
-				sb.append("<li>").append(mdToHtml(seg)).append("</li>");
+				body = mdToHtml(seg);
 			}
+
+			sb.append("<li>");
+			if (!badge.isEmpty()) {
+				sb.append(badge).append(" ");
+			}
+			if (!refs.isEmpty()) {
+				sb.append(refs).append(" ");
+			}
+			sb.append(body).append("</li>");
 		}
 		sb.append("</ul>");
 		return sb.toString();
+	}
+
+	/** v2 confidence badge: a grey pill linked to the confidence-value docs. */
+	private static String confidenceBadge(String pct) {
+		return "<a href=\"https://virtualflybrain.org/docs/concepts/confidence-value/\""
+				+ " target=\"_blank\" title=\"confidence value\">"
+				+ "<span class=\"badge badge-secondary\" title=\"confidence value\">" + pct + "</span></a>";
 	}
 
 	private static String metaListToHtml(String metaValue, String css) {
