@@ -158,7 +158,7 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 			if (seg.isEmpty()) continue;
 			int colon = seg.indexOf(':');
 			if (colon > 0) {
-				String rel = symbolText(seg.substring(0, colon).trim());
+				String rel = stripLinks(seg.substring(0, colon).trim());
 				String objs = mdToHtml(seg.substring(colon + 1).trim());
 				sb.append("<li>").append(rel).append(": ").append(objs).append("</li>");
 			} else {
@@ -983,6 +983,21 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 		if (md == null || md.isEmpty()) return "";
 		Matcher m = MD_LINK.matcher(md);
 		return m.find() ? m.group(1) : md;
+	}
+
+	/** De-link markdown to plain text, replacing every [label](id) with its label
+	 *  but KEEPING any surrounding text. Unlike symbolText (which returns only the
+	 *  first link's label), this preserves e.g. a leading confidence "84% " prefix
+	 *  on a relationship. */
+	private static String stripLinks(String md) {
+		if (md == null || md.isEmpty()) return "";
+		Matcher m = MD_LINK.matcher(md);
+		StringBuffer sb = new StringBuffer();
+		while (m.find()) {
+			m.appendReplacement(sb, Matcher.quoteReplacement(m.group(1)));
+		}
+		m.appendTail(sb);
+		return sb.toString();
 	}
 
 	private static String lastId(String iri) {
