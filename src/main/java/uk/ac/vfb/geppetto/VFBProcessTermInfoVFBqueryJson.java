@@ -98,14 +98,49 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 		while (m.find()) {
 			String label = m.group(1);
 			String target = m.group(2);
-			// target may be "TEMPLATE,SF" for image cells; take the last id for linking.
-			String sf = target.contains(",") ? target.substring(target.lastIndexOf(',') + 1) : target;
-			String repl = "<a href=\"?id=" + sf + "\" data-instancepath=\"" + sf + "\">"
-					+ Matcher.quoteReplacement(label) + "</a>";
+			String repl;
+			if (target.startsWith("http://") || target.startsWith("https://")) {
+				// External reference (e.g. a relationship's database_cross_reference
+				// such as "FlyBase:FBrf...") -- render as an external linkout, using
+				// the site-typed icon where the label carries a known prefix, so the
+				// neurotransmitter reference shows the fly/DOI/PubMed icon as it did
+				// before the VFBquery migration (rather than a broken ?id= link).
+				String icon = referenceIcon(label);
+				String inner = icon.isEmpty() ? Matcher.quoteReplacement(label) : icon;
+				repl = "<a href=\"" + target + "\" target=\"_blank\" title=\"" + label + "\">"
+						+ inner + "</a>";
+			} else {
+				// Internal VFB term: target may be "TEMPLATE,SF" for image cells; take the last id.
+				String sf = target.contains(",") ? target.substring(target.lastIndexOf(',') + 1) : target;
+				repl = "<a href=\"?id=" + sf + "\" data-instancepath=\"" + sf + "\">"
+						+ Matcher.quoteReplacement(label) + "</a>";
+			}
 			m.appendReplacement(sb, Matcher.quoteReplacement(repl));
 		}
 		m.appendTail(sb);
 		return sb.toString();
+	}
+
+	/** Site-typed icon for a "SITE:accession" reference label, matching the old
+	 *  cached-JSON rendering (fly for FlyBase, etc.); "" if the prefix is unknown. */
+	private static String referenceIcon(String ref) {
+		if (ref == null) {
+			return "";
+		}
+		String low = ref.toLowerCase();
+		if (low.startsWith("doi:")) {
+			return "<i class=\"popup-icon-link gpt-doi\"></i>";
+		}
+		if (low.startsWith("flybase:")) {
+			return "<i class=\"popup-icon-link gpt-fly\"></i>";
+		}
+		if (low.startsWith("pmid:") || low.startsWith("pubmed:")) {
+			return "<i class=\"popup-icon-link gpt-pubmed\"></i>";
+		}
+		if (low.startsWith("go_ref:")) {
+			return "<i class=\"popup-icon-link gpt-geneontology\"></i>";
+		}
+		return "";
 	}
 
 	/** Convert a VFBquery Meta.* string ("[rel](id): [a](id), [b](id); ...")
