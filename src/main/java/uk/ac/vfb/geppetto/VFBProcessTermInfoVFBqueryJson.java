@@ -14,6 +14,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonPrimitive;
 
 import org.geppetto.datasources.AQueryProcessor;
 import org.geppetto.core.datasources.GeppettoDataSourceException;
@@ -305,6 +307,116 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 		Double count;            // result count (JSON sends 46.0; null/-1 = deferred)
 	}
 
+	// ---- defensive parse / repair / report ---------------------------------
+
+	// A backslash immediately before a quote/apostrophe is never legitimate in
+	// term-info data; it is an over-escaping artifact from upstream (Cypher /
+	// string-literal escaping). Left in place it corrupts labels and, if it
+	// reaches a request target, triggers Tomcat "Invalid character in the request
+	// target" 400s. Match it so we can strip it defensively.
+	private static final Pattern STRAY_ESCAPE = Pattern.compile("\\\\(['\"])");
+
+	private static String cleanStr(String s) {
+		if (s == null || s.indexOf('\\') < 0) {
+			return s;
+		}
+		return STRAY_ESCAPE.matcher(s).replaceAll("$1");
+	}
+
+	private static String stripControlChars(String s) {
+		// Strip raw control chars (except tab/newline/carriage-return) that make
+		// a payload invalid JSON, so a stray control byte doesn't lose the whole term.
+		return s.replaceAll("[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F]", "");
+	}
+
+	private static String trunc(String s) {
+		return (s != null && s.length() > 100) ? s.substring(0, 100) + "…" : s;
+	}
+
+	// Recursively rebuild the tree with stray-escape artifacts repaired in every
+	// string value. Gson 2.2.2 (the bundle's version) has no JsonArray.set, so we
+	// build new containers rather than mutate in place. fixCount[0] tallies fixes;
+	// a capped set of before/after examples is collected for the report.
+	private JsonElement sanitizeElement(JsonElement el, String path, StringBuilder examples,
+			int[] exampleBudget, int[] fixCount) {
+		if (el == null || el.isJsonNull()) {
+			return el;
+		}
+		if (el.isJsonObject()) {
+			JsonObject o = el.getAsJsonObject();
+			JsonObject out = new JsonObject();
+			for (Map.Entry<String, JsonElement> e : o.entrySet()) {
+				out.add(e.getKey(), sanitizeElement(e.getValue(), path + "." + e.getKey(), examples, exampleBudget, fixCount));
+			}
+			return out;
+		}
+		if (el.isJsonArray()) {
+			JsonArray arr = el.getAsJsonArray();
+			JsonArray out = new JsonArray();
+			for (int i = 0; i < arr.size(); i++) {
+				out.add(sanitizeElement(arr.get(i), path + "[" + i + "]", examples, exampleBudget, fixCount));
+			}
+			return out;
+		}
+		if (el.isJsonPrimitive() && el.getAsJsonPrimitive().isString()) {
+			String orig = el.getAsString();
+			String cl = cleanStr(orig);
+			if (!cl.equals(orig)) {
+				fixCount[0]++;
+				if (exampleBudget[0]-- > 0) {
+					examples.append("\n    ").append(path).append(": \"").append(trunc(orig))
+							.append("\" -> \"").append(trunc(cl)).append('"');
+				}
+				return new JsonPrimitive(cl);
+			}
+		}
+		return el;
+	}
+
+	/**
+	 * Parse the term-info JSON defensively: recover a malformed payload where
+	 * possible and repair stray-escape character artifacts, reporting a full
+	 * diagnostic to stdout so a bad term still processes instead of failing the
+	 * whole load. Returns null only if the payload is unrecoverable.
+	 */
+	private JsonObject parseAndRepairTermInfo(String json, String varId) {
+		JsonObject ti = null;
+		try {
+			JsonElement parsed = new JsonParser().parse(json);
+			ti = parsed.isJsonObject() ? parsed.getAsJsonObject() : null;
+		} catch (Exception pe) {
+			System.out.println("VFBProcessTermInfoVFBqueryJson: term_info JSON parse FAILED for [" + varId
+					+ "]: " + pe.getMessage() + " | raw(2k)=" + json.substring(0, Math.min(2000, json.length())));
+			try {
+				JsonElement parsed = new JsonParser().parse(stripControlChars(json));
+				ti = parsed.isJsonObject() ? parsed.getAsJsonObject() : null;
+				if (ti != null) {
+					System.out.println("VFBProcessTermInfoVFBqueryJson: RECOVERED term_info for [" + varId
+							+ "] after stripping control characters");
+				}
+			} catch (Exception pe2) {
+				System.out.println("VFBProcessTermInfoVFBqueryJson: term_info for [" + varId
+						+ "] is UNRECOVERABLE, skipping: " + pe2.getMessage());
+				return null;
+			}
+		}
+		if (ti == null) {
+			System.out.println("VFBProcessTermInfoVFBqueryJson: term_info for [" + varId
+					+ "] did not parse to a JSON object, skipping");
+			return null;
+		}
+		StringBuilder examples = new StringBuilder();
+		int[] fixCount = new int[] { 0 };
+		ti = sanitizeElement(ti, varId, examples, new int[] { 10 }, fixCount).getAsJsonObject();
+		int fixes = fixCount[0];
+		if (fixes > 0) {
+			System.out.println("VFBProcessTermInfoVFBqueryJson: repaired " + fixes
+					+ " stray-escape character issue(s) in term_info for [" + varId
+					+ "] (should be fixed upstream in VFBquery):" + examples.toString());
+		}
+		return ti;
+	}
+
 	// ---- main process -------------------------------------------------------
 
 	@Override
@@ -319,7 +431,12 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 			// this OSGi/Gson environment (confirmed via the debug log: valid json head
 			// but zero top-level keys). JsonParser builds the tree directly and works,
 			// matching the typed-POJO fromJson the legacy processor relies on.
-			JsonObject ti = new JsonParser().parse(json).getAsJsonObject();
+			// parseAndRepairTermInfo() adds a defensive layer: it recovers from a
+			// malformed payload where possible and detects/repairs stray-escape
+			// character artifacts (e.g. a backslash before an apostrophe surviving
+			// from upstream), reporting a full diagnostic to stdout, so a bad term
+			// still renders instead of failing the whole load.
+			JsonObject ti = parseAndRepairTermInfo(json, variable.getId());
 			if (ti == null) {
 				return results;
 			}

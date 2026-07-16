@@ -5,7 +5,7 @@
 	<groupId>uk.ac</groupId>
 	<artifactId>vfb.geppetto</artifactId>
 	<name>VFB Geppetto Data Sources</name>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<packaging>bundle</packaging>
 	<properties>
 		<spring.version>4.3.9.RELEASE</spring.version>
