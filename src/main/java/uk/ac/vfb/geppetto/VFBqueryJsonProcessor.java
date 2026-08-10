@@ -178,6 +178,33 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 		COL_HEADER_MAP.put("tract_id", "ID");
 		COL_HEADER_MAP.put("clone_label", "Name");
 		COL_HEADER_MAP.put("clone_id", "ID");
+		// FindStocks (FindStocks_to_schema / get_flybase_stocks). Every one of
+		// these four was unmapped, so the frontend resolved no column name for
+		// any of them, collapsed the lot onto one `undefined` column and ended
+		// up with an empty column list -- at which point griddle rendered the
+		// raw record keys instead, put the synthesised controls column in front
+		// of a row with no id, and QueryResultsControlsComponent threw.
+		// stock_id is the row's selection id (FlyBase FBst..., not a VFB term).
+		COL_HEADER_MAP.put("stock_id", "ID");
+		COL_HEADER_MAP.put("stock_number", "Stock_Number");
+		COL_HEADER_MAP.put("genotype", "Genotype");
+		COL_HEADER_MAP.put("collection", "Collection");
+		// FindComboPublications (FindComboPublications_to_schema /
+		// get_flybase_combo_pubs). Same failure as FindStocks. fbrf is the
+		// row's selection id and IS a VFB pub individual, so the controls
+		// info button resolves.
+		COL_HEADER_MAP.put("fbrf", "ID");
+		COL_HEADER_MAP.put("title", "Title");
+		COL_HEADER_MAP.put("year", "Year");
+		COL_HEADER_MAP.put("miniref", "Citation");
+		COL_HEADER_MAP.put("pub_type", "Publication_Type");
+		COL_HEADER_MAP.put("doi", "DOI");
+		COL_HEADER_MAP.put("pmid", "PMID");
+		COL_HEADER_MAP.put("pmcid", "PMCID");
+		// TermsForPub: the one remaining unmapped column across every
+		// query_type wired in vfb.xmi. It did not crash (that report keeps id
+		// and name) -- the column was just dropped from the table.
+		COL_HEADER_MAP.put("reference_type", "Reference_Type");
 	}
 
 	private static String mapHeader(String apiId)
