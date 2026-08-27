@@ -104,7 +104,9 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 		Matcher m = MD_LINK.matcher(text);
 		StringBuffer sb = new StringBuffer();
 		while (m.find()) {
-			String label = m.group(1);
+			// Undo VFBquery's %5B/%5D bracket-escaping now that the label has
+			// been pulled out of its markdown wrapper -- see MarkdownBracketCodec.
+			String label = MarkdownBracketCodec.decodeBrackets(m.group(1));
 			String target = m.group(2);
 			String repl;
 			if (target.startsWith("http://") || target.startsWith("https://")) {
@@ -719,7 +721,8 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 			while (m.find()) {
 				String id = m.group(2);
 				if (id == null || id.isEmpty() || byId.containsKey(id)) continue;
-				byId.put(id, "<a href=\"?id=" + id + "\" data-instancepath=\"" + id + "\">" + m.group(1) + "</a>");
+				String refLabel = MarkdownBracketCodec.decodeBrackets(m.group(1));
+				byId.put(id, "<a href=\"?id=" + id + "\" data-instancepath=\"" + id + "\">" + refLabel + "</a>");
 			}
 		}
 		if (byId.isEmpty()) {
@@ -1140,7 +1143,7 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 	private static String symbolText(String md) {
 		if (md == null || md.isEmpty()) return "";
 		Matcher m = MD_LINK.matcher(md);
-		return m.find() ? m.group(1) : md;
+		return MarkdownBracketCodec.decodeBrackets(m.find() ? m.group(1) : md);
 	}
 
 	/** De-link markdown to plain text, replacing every [label](id) with its label
@@ -1152,7 +1155,7 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 		Matcher m = MD_LINK.matcher(md);
 		StringBuffer sb = new StringBuffer();
 		while (m.find()) {
-			m.appendReplacement(sb, Matcher.quoteReplacement(m.group(1)));
+			m.appendReplacement(sb, Matcher.quoteReplacement(MarkdownBracketCodec.decodeBrackets(m.group(1))));
 		}
 		m.appendTail(sb);
 		return sb.toString();

@@ -990,7 +990,12 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 			while (m.find())
 			{
 				anyMatch = true;
-				String alt = m.group(1);
+				// Decode VFBquery's %5B/%5D bracket-escaping now that the alt text
+				// has been pulled out of its markdown wrapper -- see
+				// MarkdownBracketCodec. This becomes the image's display name/title
+				// directly (not re-parsed as markdown downstream), so it must be
+				// decoded here rather than left encoded like a pass-through cell.
+				String alt = MarkdownBracketCodec.decodeBrackets(m.group(1));
 				String url = m.group(2);
 				String ref = m.group(4);
 				// Skip items with no thumbnail URL (e.g. a neuron with no image
@@ -1059,7 +1064,9 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 		if (s.length() > 1 && s.charAt(1) == '!') return s;
 		int close = s.indexOf("](");
 		if (close <= 0) return s;
-		return s.substring(1, close);
+		// Undo VFBquery's %5B/%5D bracket-escaping now that the label has been
+		// pulled out of its markdown wrapper -- see MarkdownBracketCodec.
+		return MarkdownBracketCodec.decodeBrackets(s.substring(1, close));
 	}
 
 	private static Object safeGetValue(QueryResults in, String col, int rowIdx)
