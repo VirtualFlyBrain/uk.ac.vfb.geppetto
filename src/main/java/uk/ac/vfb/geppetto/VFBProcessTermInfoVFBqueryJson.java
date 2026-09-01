@@ -779,38 +779,49 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 				if (!e.getValue().isJsonArray()) continue;
 				if (primaryTemplate == null) primaryTemplate = templateSf;
 				if (!alignedTemplates.contains(templateSf)) alignedTemplates.add(templateSf);
+				boolean isPrimaryTemplate = templateSf.equals(primaryTemplate);
 				for (JsonElement el : e.getValue().getAsJsonArray()) {
 					ImageRec r = g.fromJson(el, ImageRec.class);
 					if (r == null) continue;
-					// Carousel shows the term's own thumbnail(s) in the primary template space.
-					if (templateSf.equals(primaryTemplate)) {
-						String thumb = r.thumbnail_transparent != null ? r.thumbnail_transparent : r.thumbnail;
-						if (thumb != null && !thumb.isEmpty()) {
-							addImage(secureUrl(thumb), r.label != null ? r.label : r.id, r.id, thumbs, tIdx[0]++);
+					// Carousel shows the term's own thumbnail(s) for every template it is
+					// aligned to (e.g. a neuron with both a Brain and a VNC alignment), not
+					// just the primary one, so the user can see and pick the version they
+					// want. A non-primary thumbnail's reference is wrapped in the
+					// "[TEMPLATE,ID]" convention VFBTermInfo.js's customHandler already
+					// understands: clicking it offers to reopen the viewer against that
+					// template instead of adding cross-template geometry to the loaded scene.
+					String thumb = r.thumbnail_transparent != null ? r.thumbnail_transparent : r.thumbnail;
+					if (thumb != null && !thumb.isEmpty()) {
+						String label = r.label != null ? r.label : r.id;
+						if (!isPrimaryTemplate) {
+							String tplName = TEMPLATE_NAMES.containsKey(templateSf) ? TEMPLATE_NAMES.get(templateSf) : templateSf;
+							label = label + " (" + tplName + ")";
 						}
-						// 3D geometry + slices: load once for the primary alignment.
-						if (!geometryLoaded) {
-							if (r.obj != null && r.obj.contains(".obj")) {
-								addModelObj(secureUrl(r.obj).replace("https://", "http://"), "3D Volume", varId, parentType, access, dataSource);
-								appendDownload(downloadFiles, downloadData, "obj", r.obj, templateSf, varId, varName);
-							}
-							if (r.swc != null && r.swc.contains(".swc")) {
-								addModelSwc(secureUrl(r.swc).replace("https://", "http://"), "3D Skeleton", varId, parentType, access, dataSource);
-								appendDownload(downloadFiles, downloadData, "swc", r.swc, templateSf, varId, varName);
-							}
-							if (r.wlz != null && r.wlz.contains(".wlz")) {
-								addModelSlices(secureUrl(r.wlz), "Stack Viewer Slices", varId, parentType, access, dataSource, domains);
-								appendDownload(downloadFiles, downloadData, "wlz", r.wlz, templateSf, varId, varName);
-							}
-							if (r.nrrd != null && r.nrrd.contains(".nrrd")) {
-								appendDownload(downloadFiles, downloadData, "nrrd", r.nrrd, templateSf, varId, varName);
-							}
-							String fldSrc = (r.nrrd != null) ? r.nrrd : (r.obj != null) ? r.obj : r.wlz;
-							if (fldSrc != null && fldSrc.lastIndexOf('/') >= 0) {
-								bibtexFolder = fldSrc.substring(0, fldSrc.lastIndexOf('/') + 1);
-							}
-							geometryLoaded = true;
+						String ref = isPrimaryTemplate ? r.id : "[" + templateSf + "," + r.id + "]";
+						addImage(secureUrl(thumb), label, ref, thumbs, tIdx[0]++);
+					}
+					// 3D geometry + slices: load once for the primary alignment.
+					if (isPrimaryTemplate && !geometryLoaded) {
+						if (r.obj != null && r.obj.contains(".obj")) {
+							addModelObj(secureUrl(r.obj).replace("https://", "http://"), "3D Volume", varId, parentType, access, dataSource);
+							appendDownload(downloadFiles, downloadData, "obj", r.obj, templateSf, varId, varName);
 						}
+						if (r.swc != null && r.swc.contains(".swc")) {
+							addModelSwc(secureUrl(r.swc).replace("https://", "http://"), "3D Skeleton", varId, parentType, access, dataSource);
+							appendDownload(downloadFiles, downloadData, "swc", r.swc, templateSf, varId, varName);
+						}
+						if (r.wlz != null && r.wlz.contains(".wlz")) {
+							addModelSlices(secureUrl(r.wlz), "Stack Viewer Slices", varId, parentType, access, dataSource, domains);
+							appendDownload(downloadFiles, downloadData, "wlz", r.wlz, templateSf, varId, varName);
+						}
+						if (r.nrrd != null && r.nrrd.contains(".nrrd")) {
+							appendDownload(downloadFiles, downloadData, "nrrd", r.nrrd, templateSf, varId, varName);
+						}
+						String fldSrc = (r.nrrd != null) ? r.nrrd : (r.obj != null) ? r.obj : r.wlz;
+						if (fldSrc != null && fldSrc.lastIndexOf('/') >= 0) {
+							bibtexFolder = fldSrc.substring(0, fldSrc.lastIndexOf('/') + 1);
+						}
+						geometryLoaded = true;
 					}
 				}
 			}
