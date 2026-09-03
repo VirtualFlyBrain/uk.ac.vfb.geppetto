@@ -129,7 +129,13 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 		COL_HEADER_MAP.put("partner_neuron", "Name");
 		COL_HEADER_MAP.put("dataset", "Dataset");
 		COL_HEADER_MAP.put("template", "Template_Space");
-		COL_HEADER_MAP.put("cell_type", "Cell type");
+		// Must match queryBuilderConfiguration.js displayName exactly -- the
+		// frontend resolves columnName by `displayName == header` (queryBuilder.js
+		// buildResults). geppetto-vfb PR #1739 renamed this to the underscore form
+		// used by every other multi-word column (Gross_Type, Template_Space,
+		// Imaging_Technique); a space here leaves the column unresolved, so it
+		// loses MarkdownLinkComponent and renders raw `[label](id)` markdown.
+		COL_HEADER_MAP.put("cell_type", "Cell_Type");
 		COL_HEADER_MAP.put("cluster", "Cluster");
 		COL_HEADER_MAP.put("gene", "Gene");
 		COL_HEADER_MAP.put("level", "Level");
@@ -184,8 +190,15 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 		// up with an empty column list -- at which point griddle rendered the
 		// raw record keys instead, put the synthesised controls column in front
 		// of a row with no id, and QueryResultsControlsComponent threw.
-		// stock_id is the row's selection id (FlyBase FBst..., not a VFB term).
-		COL_HEADER_MAP.put("stock_id", "ID");
+		// stock_id is the row's selection id (FlyBase FBst..., not a VFB term),
+		// but it must NOT reuse the "ID" header: VFBquery emits `id` as well, and
+		// two columns mapping to one header collapse to a single entry in the
+		// QueryResults header list while both values are still emitted. The
+		// frontend reads cells positionally (`header.indexOf(field)` in
+		// queryBuilderConfiguration.js resultsFilters.getItem), so every column
+		// after the first then reads one slot early -- Stock_Number showed the
+		// FBst id, Genotype showed the stock number, and Collection was lost.
+		COL_HEADER_MAP.put("stock_id", "Stock_ID");
 		COL_HEADER_MAP.put("stock_number", "Stock_Number");
 		COL_HEADER_MAP.put("genotype", "Genotype");
 		COL_HEADER_MAP.put("collection", "Collection");
@@ -193,7 +206,7 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 		// get_flybase_combo_pubs). Same failure as FindStocks. fbrf is the
 		// row's selection id and IS a VFB pub individual, so the controls
 		// info button resolves.
-		COL_HEADER_MAP.put("fbrf", "ID");
+		COL_HEADER_MAP.put("fbrf", "FlyBase_ID");
 		COL_HEADER_MAP.put("title", "Title");
 		COL_HEADER_MAP.put("year", "Year");
 		COL_HEADER_MAP.put("miniref", "Citation");
@@ -418,13 +431,30 @@ public class VFBqueryJsonProcessor extends AQueryProcessor
 		// Unknown ids pass through unchanged so future VFBquery fields don't
 		// disappear — they just render as plain text under their raw API name.
 		List<String> headers = in.getHeader();
+		// Header names must stay unique. The emitted value list is positional
+		// and the frontend resolves a cell by the INDEX of its header name
+		// (resultsFilters.getItem does `header.indexOf(field)`), so two API
+		// columns sharing one mapped name silently shift every later column
+		// by one. Fall back to the raw API id, then to a suffixed form,
+		// rather than emitting a duplicate: an unstyled column is a visible
+		// gap, misaligned data is not.
+		Set<String> usedHeaders = new HashSet<String>();
 		for (String col : headers)
 		{
 			if (DROPPED_COLUMNS.contains(col))
 			{
 				continue;
 			}
-			out.getHeader().add(mapHeader(col));
+			String mapped = mapHeader(col);
+			if (!usedHeaders.add(mapped))
+			{
+				mapped = col;
+				for (int dup = 2; !usedHeaders.add(mapped); dup++)
+				{
+					mapped = col + "_" + dup;
+				}
+			}
+			out.getHeader().add(mapped);
 		}
 		int n = in.getResults().size();
 		// Pass 1: per-column numeric width analysis. For any column whose
