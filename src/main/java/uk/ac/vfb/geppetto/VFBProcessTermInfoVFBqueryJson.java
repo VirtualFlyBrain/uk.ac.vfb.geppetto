@@ -3,6 +3,7 @@ package uk.ac.vfb.geppetto;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -887,8 +888,53 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 		}
 	}
 
+	// Display orientation per template, as a DICOM-style code giving the anatomical
+	// direction each positive image axis points to (+X, +Y, +Z), in BODY axes with
+	// S/I for dorsal/ventral. The KB `orientation` on the in_register_with edge is
+	// written in neuraxis terms for the adult-brain templates (Ito et al. 2014:
+	// body dorsal = neuraxis anterior, body anterior = neuraxis ventral), and the L3
+	// code disagrees with its meshes, so these are overridden here; anything not
+	// listed passes the KB value through. Checked against painted-domain and neuron
+	// centroids, Sept 2026 (geppetto-vfb orientation gizmo).
+	private static final Map<String, String> DISPLAY_ORIENTATION = new HashMap<String, String>();
+	static {
+		DISPLAY_ORIENTATION.put("VFB_00101567", "LIP"); // JRC2018U: KB LPS (neuraxis)
+		DISPLAY_ORIENTATION.put("VFB_00017894", "LIP"); // JFRC2: KB LPS (neuraxis)
+		DISPLAY_ORIENTATION.put("VFB_00030786", "LIP"); // Ito2014: KB LPS (neuraxis)
+		DISPLAY_ORIENTATION.put("VFB_00101384", "LAI"); // JRC_FlyEM_Hemibrain: KB LIP (neuraxis, tilted frame)
+		DISPLAY_ORIENTATION.put("VFB_00049000", "RPI"); // L3 Wood2018: KB RIA does not match the meshes
+	}
+
+	static String displayOrientation(String templateId, String kbOrientation) {
+		if (templateId != null && DISPLAY_ORIENTATION.containsKey(templateId)) {
+			return DISPLAY_ORIENTATION.get(templateId);
+		}
+		if (kbOrientation != null && kbOrientation.trim().length() == 3) {
+			return kbOrientation.trim().toUpperCase();
+		}
+		return null;
+	}
+
+	// Orientation for a template that has no painted domains (e.g. L1 EM): taken from
+	// its own image record, keyed by template id.
+	private String orientationFromImages(JsonObject ti) {
+		if (ti.has("Images") && ti.get("Images").isJsonObject()) {
+			Gson g = new Gson();
+			for (Map.Entry<String, JsonElement> e : ti.getAsJsonObject("Images").entrySet()) {
+				if (e.getValue().isJsonArray() && e.getValue().getAsJsonArray().size() > 0) {
+					ImageRec self = g.fromJson(e.getValue().getAsJsonArray().get(0), ImageRec.class);
+					if (self != null) {
+						return displayOrientation(e.getKey(), self.orientation);
+					}
+				}
+			}
+		}
+		return null;
+	}
+
 	// Build the WLZ stack-viewer domain arrays (voxel size + per-domain id/name/type/centre),
-	// mirroring VFBProcessTermInfoCachedJson.getDomains().
+	// mirroring VFBProcessTermInfoCachedJson.getDomains(). subDomains[0] is
+	// [voxelX, voxelY, voxelZ, orientation]; the stack viewer reads only [0..2].
 	private List<List<String>> buildDomains(JsonObject ti) {
 		List<List<String>> domains = new ArrayList<List<String>>();
 		Gson g = new Gson();
@@ -909,6 +955,7 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 								voxelSize[1] = String.valueOf(self.voxel.Y);
 								voxelSize[2] = String.valueOf(self.voxel.Z);
 							}
+							voxelSize[3] = displayOrientation(e.getKey(), self.orientation);
 							// Index 0 is the template itself; its centre lives on the self
 							// image record (Domains["0"].center is null). The slice viewer's
 							// callDstRange joins this centre, so it must not be null.
@@ -944,7 +991,7 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 			String sf = optStr(ti, "Id");
 			String label = optStr(ti, "Name");
 			if (label.isEmpty()) label = sf;
-			domains.add(Arrays.asList(new String[]{"0.622088", "0.622088", "0.622088", null}));
+			domains.add(Arrays.asList(new String[]{"0.622088", "0.622088", "0.622088", orientationFromImages(ti)}));
 			domains.add(Arrays.asList(new String[]{sf}));
 			domains.add(Arrays.asList(new String[]{label}));
 			domains.add(Arrays.asList(new String[]{sf}));
