@@ -1005,7 +1005,7 @@ public class VFBProcessTermInfoVFBqueryJson extends AQueryProcessor {
 		if (url == null || url.isEmpty()) return;
 		String https = url.replace("http://", "https://");
 		String href = https.replace("https://www.virtualflybrain.org/data/", "/data/");
-		String v2 = https.replace("https://www.virtualflybrain.org/data/", "https://v2.virtualflybrain.org/data/");
+		String v2 = https.replace("https://www.virtualflybrain.org/data/", "https://v3.virtualflybrain.org/data/");
 		String safeName = varName.replace(" ", "_");
 		String label;
 		String folder;

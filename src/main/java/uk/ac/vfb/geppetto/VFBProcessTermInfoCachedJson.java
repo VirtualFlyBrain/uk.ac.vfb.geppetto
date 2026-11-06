@@ -1573,10 +1573,10 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 									if (debug) System.out.println("OBJ " + tempData);
 									if (tempData.contains("volume.obj")) {
 										downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + "_pointCloud.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_pointCloud.obj</a>";
-										downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/PointCloudFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
+										downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v3.virtualflybrain.org/data/") + "','local':'" + template + "/PointCloudFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
 									}else {
 										downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + "_mesh.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_mesh.obj</a>";
-										downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/MeshFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
+										downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v3.virtualflybrain.org/data/") + "','local':'" + template + "/MeshFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
 									}
 									if (tempData != null){
 										addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId(), parentType, geppettoModelAccess, dataSource);
@@ -1588,11 +1588,11 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 								if (tempData != null && !tempData.isEmpty() && tempData != "" && tempData.contains(".nrrd")){
 									if (debug) System.out.println("NRRD " + tempData);
 									downloadFiles += "<br>Signal (NRRD): <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a>";
-									downloadData.add("'nrrd':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/SignalFiles(NRRD)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").nrrd" + "'}");
+									downloadData.add("'nrrd':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v3.virtualflybrain.org/data/") + "','local':'" + template + "/SignalFiles(NRRD)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").nrrd" + "'}");
 									tempData = alignment.image.image_folder	+ "citations.bibtex";
 									if (tempData != null){
-										downloadFiles += "<br>Remember to cite: <a download=\"" + variable.getId() + ".bibtex\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "\">citations.bibtex</a>";
-										downloadData.add("'bibtex':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/RequiredCitations(BIBTEX)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").bibtex" + "'}");
+										downloadFiles += "<br>Remember to cite: <a download=\"" + variable.getId() + ".bibtex\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v3.virtualflybrain.org/data/") + "\">citations.bibtex</a>";
+										downloadData.add("'bibtex':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v3.virtualflybrain.org/data/") + "','local':'" + template + "/RequiredCitations(BIBTEX)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").bibtex" + "'}");
 									}
 									downloadFiles += "<br>Note: see source & license above for terms of reuse and correct attribution.";
 									addModelHtml(downloadFiles, "Downloads", "downloads", metaDataType, geppettoModelAccess);
@@ -1612,10 +1612,10 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 								if (debug) System.out.println("OBJ " + tempData);
 								if (tempData.contains("volume.obj")) {
 									downloadFiles += "<br>Pointcloud (OBJ): <a download=\"" + variable.getId() + "_pointCloud.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_pointCloud.obj</a>";
-									downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/PointCloudFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
+									downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v3.virtualflybrain.org/data/") + "','local':'" + template + "/PointCloudFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
 								}else {
 									downloadFiles += "<br>Mesh (OBJ): <a download=\"" + variable.getId() + "_mesh.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_mesh.obj</a>";
-									downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/MeshFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
+									downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v3.virtualflybrain.org/data/") + "','local':'" + template + "/MeshFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
 								}
 								if (tempData != null){
 									addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId(), parentType, geppettoModelAccess, dataSource);
@@ -1628,7 +1628,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 								if (debug) System.out.println("SWC " + tempData);
 								addModelSwc(tempData.replace("https://","http://"), "3D Skeleton", variable.getId(), parentType, geppettoModelAccess, dataSource);
 								downloadFiles += "<br>Skeleton (SWC): <a download=\"" + variable.getId() + ".swc\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".swc</a>";
-								downloadData.add("'swc':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/Skeleton(SWC)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").swc" + "'}");
+								downloadData.add("'swc':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v3.virtualflybrain.org/data/") + "','local':'" + template + "/Skeleton(SWC)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").swc" + "'}");
 							}
 
 							// Slices - 3D slice viewer
@@ -1637,7 +1637,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 								if (debug) System.out.println("WLZ " + tempData);
 								addModelSlices(tempData.replace("http://","https://"), "Stack Viewer Slices", variable.getId(), parentType, geppettoModelAccess, dataSource, vfbTerm.getDomains());
 								downloadFiles += "<br>Slices (Woolz): <a download=\"" + variable.getId() + ".wlz\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".wlz</a>";
-								downloadData.add("'wlz':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/Slices(WOOLZ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").wlz" + "'}");
+								downloadData.add("'wlz':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v3.virtualflybrain.org/data/") + "','local':'" + template + "/Slices(WOOLZ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").wlz" + "'}");
 							}
 
 							// Download - NRRD stack
@@ -1645,12 +1645,12 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 							if (tempData != null && !tempData.isEmpty() && tempData != "" && tempData.contains(".nrrd")){
 								if (debug) System.out.println("NRRD " + tempData);
 								downloadFiles += "<br>Signal (NRRD): <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a>";
-								downloadData.add("'nrrd':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/SignalFiles(NRRD)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").nrrd" + "'}");
+								downloadData.add("'nrrd':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v3.virtualflybrain.org/data/") + "','local':'" + template + "/SignalFiles(NRRD)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").nrrd" + "'}");
 								tempData = alignment.image.image_folder + "citations.bibtex";
 								if (tempData != null){
 									downloadFiles += "<br>Remember to cite: <a download=\"" + variable.getId() + ".bibtex\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">citations.bibtex</a>";
 									downloadFiles += "<br>The license shown above applies to this data.";
-									downloadData.add("'bibtex':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/RequiredCitations(BIBTEX)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").bibtex" + "'}");
+									downloadData.add("'bibtex':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v3.virtualflybrain.org/data/") + "','local':'" + template + "/RequiredCitations(BIBTEX)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").bibtex" + "'}");
 								} else {
 									downloadFiles += "<br>Note: see source & license above for terms of reuse and correct attribution.";
 								}
@@ -1685,10 +1685,10 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 					if (!tempData.isEmpty() && tempData != "" && tempData.contains(".obj")){
 						if (tempData.contains("volume.obj")) {
 							downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + "_pointCloud.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_pointCloud.obj</a>";
-							downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/PointCloudFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
+							downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v3.virtualflybrain.org/data/") + "','local':'" + template + "/PointCloudFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
 						}else {
 							downloadFiles += "<br>Mesh/Pointcloud (OBJ): <a download=\"" + variable.getId() + "_mesh.obj\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + "_mesh.obj</a>";
-							downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/MeshFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
+							downloadData.add("'obj':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v3.virtualflybrain.org/data/") + "','local':'" + template + "/MeshFiles(OBJ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").obj" + "'}");
 						}
 						if (tempData != null){
 							addModelObj(tempData.replace("https://","http://"), "3D volume", variable.getId(), parentType, geppettoModelAccess, dataSource);
@@ -1701,7 +1701,7 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 					if (tempData != null && !tempData.isEmpty() && tempData != "" && tempData.contains(".wlz")){
 						addModelSlices(tempData.replace("http://","https://"), "Stack Viewer Slices", variable.getId(), parentType, geppettoModelAccess, dataSource, vfbTerm.getDomains());
 						downloadFiles += "<br>Slices (Woolz): <a download=\"" + variable.getId() + ".wlz\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".wlz</a>";
-						downloadData.add("'wlz':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/Slices(WOOLZ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").wlz" + "'}");
+						downloadData.add("'wlz':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v3.virtualflybrain.org/data/") + "','local':'" + template + "/Slices(WOOLZ)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").wlz" + "'}");
 					}
 					if (debug) System.out.println("WLZ " + tempData);
 
@@ -1710,12 +1710,12 @@ public class VFBProcessTermInfoCachedJson extends AQueryProcessor
 					if (debug) System.out.println("NRRD " + tempData);
 					if (tempData != null && !tempData.isEmpty() && tempData != "" && tempData.contains(".nrrd")){
 						downloadFiles += "<br>Aligned Image: <a download=\"" + variable.getId() + ".nrrd\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">" + variable.getId() + ".nrrd</a>";
-						downloadData.add("'nrrd':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/SignalFiles(NRRD)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").nrrd" + "'}");
+						downloadData.add("'nrrd':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v3.virtualflybrain.org/data/") + "','local':'" + template + "/SignalFiles(NRRD)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").nrrd" + "'}");
 						tempData = vfbTerm.template_channel.image_folder + "citations.bibtex";
 						if (tempData != null){
 							downloadFiles += "<br>Remember to cite: <a download=\"" + variable.getId() + ".bibtex\" href=\"" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","/data/") + "\">citations.bibtex</a>";
 							downloadFiles += "<br>The license shown above applies to this data.";
-							downloadData.add("'bibtex':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v2.virtualflybrain.org/data/") + "','local':'" + template + "/RequiredCitations(BIBTEX)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").bibtex" + "'}");
+							downloadData.add("'bibtex':{'url':'" + tempData.replace("http://","https://").replace("https://www.virtualflybrain.org/data/","https://v3.virtualflybrain.org/data/") + "','local':'" + template + "/RequiredCitations(BIBTEX)/" + variable.getId() + "_(" + variable.getName().replace(" ","_") + ").bibtex" + "'}");
 						}
 						downloadFiles += "<br>Note: see source & license above for terms of reuse and correct attribution.";
 						addModelFileMeta(downloadData, "DownloadMeta", "filemeta", metaDataType, geppettoModelAccess);
